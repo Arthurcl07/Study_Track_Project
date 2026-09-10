@@ -1,4 +1,4 @@
-  # StudyTrack — Requisitos Funcionais (EARS)
+# StudyTrack — Requisitos Funcionais (EARS)
 
 ## RF-01 — Autenticação
 - WHEN o usuário submete e-mail e senha, o sistema SHALL validar as credenciais e, se corretas, iniciar a sessão.
@@ -51,4 +51,12 @@
 - WHEN um professor ou coordenador solicita um relatório, o sistema SHALL gerar informações consolidadas de desempenho, frequência e situação acadêmica, respeitando a autorização do solicitante.
 
 ---
+
+## Resumo das regras
+- O sistema deve validar autenticação e autorizar o acesso por perfil.
+- O sistema deve registrar e relacionar estudantes, turmas, disciplinas, notas, frequência e atividades.
+- O sistema deve calcular indicadores acadêmicos e gerar alertas.
+- O sistema deve apoiar acompanhamento escolar individual e por turma.
+- O sistema deve disponibilizar relatórios e planos de recuperação quando necessário.
+
 Convenção de obrigação: **SHALL** = obrigatório (reprova a aceitação) · **SHOULD** = recomendado · **MAY** = opcional.
