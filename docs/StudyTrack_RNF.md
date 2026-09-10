@@ -1,24 +1,21 @@
-# StudyTrack — Requisitos Não Funcionais (Formato de Regras)
+# StudyTrack — Requisitos Não Funcionais (EARS)
 
-## Regra RNF-01 — Desempenho
-- Quando um usuário acessar as principais páginas do sistema, o sistema deve carregá-las em até 3 segundos em condições normais de utilização.
-- Quando houver uso normal, o sistema deve manter tempo de resposta aceitável para navegação e consulta.
+## RNF-01 — Desempenho
+- O sistema SHALL carregar as páginas principais em até 3 segundos, em condições normais de utilização (P95).
 
-## Regra RNF-02 — Segurança
-- Quando um usuário cadastrar ou alterar uma senha, o sistema deve armazená-la utilizando hash seguro.
-- Quando a senha for persistida, o sistema não deve armazená-la em texto puro.
+## RNF-02 — Segurança
+- O sistema SHALL armazenar toda senha de usuário utilizando hash seguro, nunca em texto puro.
 
-## Regra RNF-03 — Controle de acesso
-- Quando um usuário tentar acessar uma funcionalidade ou dado, o sistema deve verificar se o perfil do usuário possui autorização.
-- Quando a autorização não existir, o sistema deve bloquear o acesso e exibir mensagem de negação.
+## RNF-03 — Controle de acesso
+- O sistema SHALL verificar a autorização do perfil do usuário antes de conceder acesso a qualquer funcionalidade ou dado.
+- IF a autorização não existir, THEN o sistema SHALL bloquear o acesso e exibir mensagem de negação.
 
-## Regra RNF-04 — Usabilidade
-- Quando o sistema for acessado em computadores, tablets ou smartphones, a interface deve adaptar-se ao dispositivo.
-- Quando a interface for utilizada em diferentes tamanhos de tela, o sistema deve manter navegação e leitura adequadas.
+## RNF-04 — Usabilidade
+- O sistema SHALL adaptar a interface a diferentes tamanhos de tela (computador, tablet, smartphone), mantendo navegação e leitura adequadas.
 
-## Regra RNF-05 — Privacidade
-- Quando um estudante possuir dados acadêmicos, o sistema deve restringir o acesso apenas aos usuários autorizados.
-- Quando um usuário sem autorização tentar visualizar informações acadêmicas, o sistema deve bloquear a operação.
+## RNF-05 — Privacidade
+- O sistema SHALL restringir o acesso aos dados acadêmicos de um estudante apenas a usuários autorizados.
+- IF um usuário sem autorização tentar visualizar dados acadêmicos de terceiros, THEN o sistema SHALL bloquear a operação.
 
 ---
 
