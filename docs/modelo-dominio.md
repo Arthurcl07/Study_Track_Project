@@ -102,3 +102,4 @@ classDiagram
     Usuario "1" --> "0..*" PlanoRecuperacao : acompanha (Estudante)
     Usuario "1" --> "0..*" PlanoRecuperacao : responsavel (Professor)
     PlanoRecuperacao "1" --> "1..*" Atividade : preve
+```
