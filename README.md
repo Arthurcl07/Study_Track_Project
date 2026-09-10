@@ -25,3 +25,7 @@ Toda a documentação do projeto está em [`/docs`](./docs):
 - [Combinados da equipe](./docs/combinados.md)
 
 ## Estrutura do repositório
+
+- `/docs` — documentação do projeto (specs, modelagem, ADRs)
+- `/src` — código-fonte (a implementar)
+- `/tests` — testes automatizados (a implementar)
