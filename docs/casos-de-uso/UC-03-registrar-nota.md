@@ -18,4 +18,4 @@
 - Valor de nota inválido (fora da faixa permitida): sistema rejeita o registro e solicita correção.
 
 **Pós-condições**: nota registrada; média e indicador atualizados.
-**Regras aplicadas**: RB-06, RB-07, RB-10.
+**Regras aplicadas**: RB-06, RB-07, RB-10
