@@ -1,56 +1,74 @@
-# StudyTrack — Regras de Negócio (Formato de Regras)
+# StudyTrack — Regras de Negócio
 
-## Regra RB-01 — Perfis de usuário
-- Quando o sistema for inicializado, ele deve disponibilizar os perfis de usuário: Estudante, Professor e Coordenador.
-- Quando um usuário for cadastrado, o sistema deve atribuir um perfil válido a ele.
+# Regras de Negócio — StudyTrack
 
-## Regra RB-02 — Acesso do estudante
-- Quando um estudante acessar o sistema, ele deve visualizar apenas seus próprios dados acadêmicos.
-- Quando um estudante tentar acessar dados de outro estudante, o sistema deve bloquear a visualização.
+RB-01 — Perfis de usuário
+Descrição: O sistema opera com três perfis: Estudante, Professor e Coordenador. Todo usuário cadastrado possui exatamente um perfil.
+Cláusula EARS: O sistema SHALL atribuir a cada usuário cadastrado exatamente um perfil dentre: Estudante, Professor ou Coordenador.
+Aplicada por: RF-02, RF-03.
 
-## Regra RB-03 — Acesso do professor
-- Quando um professor acessar o sistema, ele deve visualizar os dados acadêmicos dos estudantes vinculados às suas turmas.
-- Quando um professor tentar acessar dados fora de suas turmas, o sistema deve negar o acesso.
+RB-02 — Acesso do estudante
+Descrição: Um estudante visualiza apenas os próprios dados acadêmicos.
+Cláusula EARS: WHEN um estudante solicitar a visualização de dados acadêmicos, o sistema SHALL exibir apenas os dados do próprio estudante.
+Aplicada por: RF-02, RNF-05.
 
-## Regra RB-04 — Acesso do coordenador
-- Quando um coordenador acessar o sistema, ele deve visualizar os indicadores das turmas sob sua responsabilidade.
-- Quando a turma não estiver sob sua responsabilidade, o sistema deve impedir o acesso aos indicadores.
+RB-03 — Acesso do professor
+Descrição: Um professor visualiza os dados acadêmicos apenas dos estudantes vinculados às turmas que leciona.
+Cláusula EARS: WHEN um professor solicitar a visualização de dados acadêmicos, o sistema SHALL exibir apenas os dados dos estudantes vinculados às turmas que ele leciona.
+Aplicada por: RF-02, RF-13.
 
-## Regra RB-05 — Frequência mínima
-- Quando a frequência de um estudante for inferior a 75%, o sistema deve considerar essa situação como risco.
-- Quando a frequência for igual ou superior a 75%, o sistema não deve classificar automaticamente como risco por frequência.
+RB-04 — Acesso do coordenador
+Descrição: Um coordenador visualiza os indicadores apenas das turmas sob sua responsabilidade.
+Cláusula EARS: WHEN um coordenador solicitar a visualização de indicadores acadêmicos, o sistema SHALL exibir apenas os indicadores das turmas sob sua responsabilidade.
+Aplicada por: RF-02, RF-15.
 
-## Regra RB-06 — Média de atenção
-- Quando a média de um estudante for inferior a 7,0, o sistema deve considerar essa situação como atenção.
-- Quando a média for igual ou superior a 7,0, o sistema não deve sinalizar atenção por média.
+RB-05 — Frequência mínima
+Descrição: Frequência inferior a 75% caracteriza risco acadêmico, independentemente da média.
+Cláusula EARS: IF a frequência do estudante em uma turma for inferior a 75%, THEN o sistema SHALL classificar a situação do estudante nessa turma como Risco, independentemente da média.
+Aplicada por: RF-11.
 
-## Regra RB-07 — Baixo desempenho
-- Quando a média de um estudante for inferior a 5,0, o sistema deve considerar essa situação como risco.
-- Quando a média for igual ou superior a 5,0, o sistema não deve classificar automaticamente como risco por desempenho.
+RB-06 — Média de atenção
+Descrição: Média inferior a 7,0 caracteriza situação de Atenção. [AJUSTAR: ver nota de inconsistência abaixo]
+Cláusula EARS: IF a média do estudante em uma turma for inferior a 7,0 e a frequência for igual ou superior a 75%, THEN o sistema SHALL classificar a situação do estudante nessa turma como Atenção.
+Aplicada por: RF-11.
 
-## Regra RB-08 — Atividade atrasada
-- Quando o prazo de uma atividade for encerrado sem registro de entrega, o sistema deve considerar a atividade como atrasada.
-- Quando houver entrega registrada dentro do prazo, a atividade não deve ser classificada como atrasada.
+RB-07 — Baixo desempenho
+Descrição: Média inferior a 5,0 caracteriza situação de Risco.
+Cláusula EARS: IF a média do estudante em uma turma for inferior a 5,0, THEN o sistema SHALL classificar a situação do estudante nessa turma como Risco.
+Aplicada por: RF-11.
 
-## Regra RB-09 — Classificação acadêmica
-- Quando o sistema avaliar o desempenho acadêmico, ele deve classificar a situação em: Normal, Atenção ou Risco.
-- Quando a classificação for definida, o sistema deve armazenar o status para exibição em dashboards e relatórios.
+RB-08 — Atividade atrasada
+Descrição: Uma atividade sem entrega registrada até o fim do prazo é considerada atrasada.
+Cláusula EARS: IF uma atividade não tiver entrega registrada até o fim do prazo, THEN o sistema SHALL marcar a entrega correspondente com status Atrasada.
+Aplicada por: RF-09.
 
-## Regra RB-10 — Atualização do indicador
-- Quando ocorrer alteração em nota, frequência ou atividade relevante, o sistema deve atualizar o indicador acadêmico do estudante.
-- Quando o indicador for atualizado, o sistema deve refletir a nova situação em alertas e relatórios.
+RB-09 — Classificação acadêmica
+Descrição: A situação do estudante é sempre uma entre: Normal, Atenção ou Risco. Frequência < 75% ou média < 5,0 → Risco; média entre 5,0 e 6,9 (com frequência OK) → Atenção; caso contrário → Normal.
+Cláusula EARS:
+  IF a frequência do estudante for inferior a 75% ou a média for inferior a 5,0, THEN o sistema SHALL classificar a situação do estudante como Risco.
+  IF a média do estudante estiver entre 5,0 e 6,9 e a frequência for igual ou superior a 75%, THEN o sistema SHALL classificar a situação do estudante como Atenção.
+  IF nenhuma das condições anteriores for satisfeita, THEN o sistema SHALL classificar a situação do estudante como Normal.
+Aplicada por: RF-11, RF-12.
 
-## Regra RB-11 — Plano de recuperação
-- Quando um estudante for classificado como risco, ele pode ter um plano de recuperação.
-- Quando um professor responsável criar o plano, o sistema deve associá-lo ao estudante correspondente.
+RB-10 — Atualização do indicador
+Descrição: Toda alteração em nota, frequência ou atividade relevante recalcula o indicador acadêmico do estudante correspondente.
+Cláusula EARS: WHEN houver alteração em nota, frequência ou atividade relevante de um estudante, o sistema SHALL recalcular o indicador acadêmico correspondente.
+Aplicada por: RF-06, RF-07, RF-11.
 
-## Regra RB-12 — Progresso do plano
-- Quando um plano de recuperação for criado, o sistema deve calcular seu progresso com base na quantidade de atividades concluídas.
-- Quando houver mudanças nas atividades concluídas, o sistema deve recalcular o progresso do plano.
+RB-11 — Plano de recuperação
+Descrição: Somente um estudante em Risco pode ter um plano de recuperação; o plano é sempre associado a um professor responsável.
+Cláusula EARS:
+  IF um estudante não estiver classificado como Risco, THEN o sistema SHALL impedir a criação de um plano de recuperação para esse estudante.
+  WHEN um plano de recuperação for criado, o sistema SHALL associá-lo a exatamente um professor responsável.
+Aplicada por: RF-14.
 
----
+RB-12 — Progresso do plano
+Descrição: O progresso de um plano de recuperação é a proporção de atividades do plano concluídas em relação ao total previsto.
+Cláusula EARS: O sistema SHALL calcular o progresso de um plano de recuperação como a proporção de atividades concluídas em relação ao total de atividades previstas no plano.
+Aplicada por: RF-14.
 
 ## Resumo das regras
+
 - O sistema deve operar com base em perfis e autorizações distintas.
 - O sistema deve aplicar critérios acadêmicos para classificação de risco e atenção.
 - O sistema deve controlar acesso aos dados conforme a responsabilidade do usuário.
