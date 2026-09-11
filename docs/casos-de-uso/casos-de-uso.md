@@ -1,6 +1,6 @@
 # Casos de Uso — StudyTrack
 
-## Diagrama (atores x casos de uso)
+## Diagrama (atores x casos de uso) 
 
 ```mermaid
 flowchart LR
