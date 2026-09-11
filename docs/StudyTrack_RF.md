@@ -52,6 +52,7 @@
 
 ---
 
+
 ## Resumo das regras
 - O sistema deve validar autenticação e autorizar o acesso por perfil.
 - O sistema deve registrar e relacionar estudantes, turmas, disciplinas, notas, frequência e atividades.
