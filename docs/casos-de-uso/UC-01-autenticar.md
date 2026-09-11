@@ -11,7 +11,7 @@
 
 **Exceções**
 - Credenciais inválidas: sistema exibe mensagem de erro e mantém o usuário na tela de login. (RF-01)
-- 
+
 **Pós-condições**: sessão ativa vinculada ao perfil do usuário.
   
 **Regras aplicadas**: RB-01.
