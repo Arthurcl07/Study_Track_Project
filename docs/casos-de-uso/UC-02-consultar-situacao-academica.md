@@ -22,7 +22,7 @@
 **Pós-condições**: estudante visualiza sua situação acadêmica atualizada.
 **Regras aplicadas**: RB-05, RB-06, RB-07, RB-09, RB-10.
 
-## Diagrama de sequência
+## Diagrama de sequência e aplicações
 
 ```mermaid
 sequenceDiagram
