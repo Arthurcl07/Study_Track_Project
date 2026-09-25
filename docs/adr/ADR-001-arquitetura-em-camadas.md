@@ -15,7 +15,7 @@ deploy (monólito modular), em vez de microsserviços.
 - **Script único sem separação de camadas**: rejeitado. Mistura regra de negócio com
   persistência/UI, o que viola DA-02 e DA-07 (regra de negócio precisa ser isolada e testável).
 
-## Consequências
+## Consequências possiveis
 - Deploy simples, um único processo.
 - Testes de domínio rodam sem subir banco nem servidor web (DA-07).
 - Se o sistema crescer muito, separar módulos em serviços exigirá refatoração — risco aceito
