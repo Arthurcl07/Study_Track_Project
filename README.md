@@ -1,4 +1,4 @@
-# Study Track
+# Study Track -
 
 Sistema web de acompanhamento acadêmico que centraliza notas, frequência, atividades e situação acadêmica de estudantes, com apoio a professores e coordenadores.
 
