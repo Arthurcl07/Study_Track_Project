@@ -8,6 +8,7 @@ diferentes dos dados acadêmicos, de acordo com vínculo (próprio estudante / t
 ## Decisão
 Toda consulta de dados acadêmicos filtra pelo usuário autenticado dentro da própria query
 de acesso a dados (nunca como uma verificação posterior, feita depois de já ter buscado tudo).
+
 Negar por padrão (deny by default).
 
 ## Alternativas consideradas
