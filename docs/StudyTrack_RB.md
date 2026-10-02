@@ -28,8 +28,8 @@ Cláusula EARS: IF a frequência do estudante em uma turma for inferior a 75%, T
 Aplicada por: RF-11.
 
 RB-06 — Média de atenção
-Descrição: Média inferior a 7,0 caracteriza situação de Atenção. [AJUSTAR: ver nota de inconsistência abaixo]
-Cláusula EARS: IF a média do estudante em uma turma for inferior a 7,0 e a frequência for igual ou superior a 75%, THEN o sistema SHALL classificar a situação do estudante nessa turma como Atenção.
+Descrição: Média inferior a 6,0 (e igual ou superior a 5,0) caracteriza situação de Atenção, desde que a frequência esteja igual ou superior a 75%.
+Cláusula EARS: IF a média do estudante em uma turma for igual ou superior a 5,0 e inferior a 6,0, e a frequência for igual ou superior a 75%, THEN o sistema SHALL classificar a situação do estudante nessa turma como Atenção.
 Aplicada por: RF-11.
 
 RB-07 — Baixo desempenho
@@ -43,11 +43,11 @@ Cláusula EARS: IF uma atividade não tiver entrega registrada até o fim do pra
 Aplicada por: RF-09.
 
 RB-09 — Classificação acadêmica
-Descrição: A situação do estudante é sempre uma entre: Normal, Atenção ou Risco. Frequência < 75% ou média < 5,0 → Risco; média entre 5,0 e 6,9 (com frequência OK) → Atenção; caso contrário → Normal.
+Descrição: A situação do estudante é sempre uma entre: Normal, Atenção ou Risco. Frequência < 75% ou média < 5,0 → Risco; média entre 5,0 e 5,9 (com frequência OK) → Atenção; média igual ou superior a 6,0 (com frequência OK) → Normal.
 Cláusula EARS:
   IF a frequência do estudante for inferior a 75% ou a média for inferior a 5,0, THEN o sistema SHALL classificar a situação do estudante como Risco.
-  IF a média do estudante estiver entre 5,0 e 6,9 e a frequência for igual ou superior a 75%, THEN o sistema SHALL classificar a situação do estudante como Atenção.
-  IF nenhuma das condições anteriores for satisfeita, THEN o sistema SHALL classificar a situação do estudante como Normal.
+  IF a média do estudante estiver entre 5,0 e 5,9 e a frequência for igual ou superior a 75%, THEN o sistema SHALL classificar a situação do estudante como Atenção.
+  IF a média do estudante for igual ou superior a 6,0 e a frequência for igual ou superior a 75%, THEN o sistema SHALL classificar a situação do estudante como Normal.
 Aplicada por: RF-11, RF-12.
 
 RB-10 — Atualização do indicador

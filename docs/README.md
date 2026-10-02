@@ -9,8 +9,8 @@ Grupo: Luiz Eduardo Rodrigues Alves Santos - 10735730; Rafael Ajimura - 10743067
 * Estudantes devem ter acesso somente aos seus próprios dados acadêmicos, enquanto professores e coordenadores devem acessar informações de acordo com suas respectivas responsabilidades.
 * A frequência inferior a 75% deve caracterizar uma situação de risco acadêmico.
 * O desempenho acadêmico deve ser classificado de acordo com a média do estudante:
-  * **Média igual ou superior a 7,0: situação Normal;**
-  * **Média entre 5,0 e 6,9: situação de Atenção;**
+  * **Média igual ou superior a 6,0: situação Normal;**
+  * **Média entre 5,0 e 5,9: situação de Atenção;**
   * **Média inferior a 5,0: situação de Risco.** 
 * Uma frequência inferior a 75% deve resultar em classificação de risco, independentemente da média do estudante.
 * Atividades cujo prazo tenha sido encerrado sem registro de entrega devem ser consideradas atrasadas.
