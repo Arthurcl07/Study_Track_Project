@@ -133,7 +133,7 @@ Nenhuma (é a primeira Spec da ordem). Estabelece a base de identidade usada por
 | Autenticar | e-mail, senha | sessão criada + perfil | credenciais inválidas |
 | Verificar autorização | sessão + recurso solicitado | acesso liberado | acesso negado |
 
-Mecanismo concreto de sessão (cookie de servidor vs JWT) não foi escolhido — ver OPEN-006.
+Mecanismo de sessão: JWT assinado no servidor, entregue em cookie httpOnly (ADR-004).
 
 ## 10. RNFs aplicáveis
 
