@@ -1,4 +1,5 @@
 # Mapa ordenado de Specs — StudyTrack
+> Nota (2026-10-02): este mapa reflete a baseline de 2026-09-25. Desde então o OPEN-006 foi fechado (ADR-004), o OPEN-007 foi fechado (visão do produto reescrita) e o UC-05 foi criado. Novas questões (OPEN-008 a OPEN-012) surgiram ao escrever as Specs completas. Ver `decisoes-em-aberto.md` e `specs.md`.
 
 ## Escopo deste documento
 

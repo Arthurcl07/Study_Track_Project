@@ -1,6 +1,7 @@
 # StudyTrack — Arquitetura, Drivers e Decisões Técnicas
 
 ## Drivers arquiteturais
+Versão priorizada, com critério de seleção e ligação com as decisões: ver `docs/drivers-arquiteturais.md`.
 
 O que mais pesa nas decisões de estrutura do sistema, sintetizado a partir de RF, RNF e RB:
 
