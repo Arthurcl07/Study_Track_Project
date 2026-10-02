@@ -2,7 +2,7 @@
 
 ## Diagrama (atores x casos de uso)
 
-​```mermaid
+```mermaid
 flowchart LR
     Estudante((Estudante))
     Professor((Professor))
@@ -20,7 +20,7 @@ flowchart LR
 
     UC3 -.include.-> UC6[Recalcular Indicador Acadêmico]
     UC6 -.include.-> UC7[Emitir Alerta de Atenção/Risco]
-​```
+```
 
 Os casos de uso completos estão em arquivos individuais nesta pasta: `UC-01-autenticar.md`, `UC-02-consultar-situacao-academica.md`, `UC-03-registrar-nota.md`, `UC-04-criar-plano-recuperacao.md`, `UC-05-consultar-relatorios.md`.
 
