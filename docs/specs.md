@@ -162,7 +162,7 @@ Mecanismo concreto de sessão (cookie de servidor vs JWT) não foi escolhido —
 
 ## 13. Questões em aberto
 
-- **OPEN-006:** decidir entre sessão de servidor (cookie) ou JWT como mecanismo de autenticação — nenhuma das duas foi escolhida na baseline (ADR-003/DA-01 citam ambas como alternativas). Precisa de decisão humana antes da implementação.
+Nenhuma. O mecanismo de autenticação foi decidido em ADR-004 (JWT em cookie httpOnly), fechando o OPEN-006.
 
 ## 14. Definition of Done
 
