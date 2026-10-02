@@ -35,11 +35,15 @@ Toda a documentação do projeto está em `/docs`:
 - Glossário — `docs/glossario.md`
 - Modelo de Domínio — `docs/modelo-dominio.md`
 - Casos de Uso — `docs/casos-de-uso/`
-- Arquitetura e drivers — `docs/arquitetura.md`
+- Arquitetura — `docs/arquitetura.md`
+- Drivers arquiteturais — `docs/drivers-arquiteturais.md`
 - ADRs — `docs/adr/`
 - Mapa de Specs — `docs/mapa-specs.md`
 - Specs completas — `docs/specs.md`
 - Decisões em aberto — `docs/decisoes-em-aberto.md`
+- Matriz de rastreabilidade — `docs/rastreabilidade.md`
+- Estratégia de testes — `docs/estrategia-testes.md`
+- Segurança e SSDLC — `docs/seguranca-ssdlc.md`
 - Combinados da equipe — `docs/combinados.md`
 
 ## Estrutura do repositório
@@ -48,3 +52,4 @@ Toda a documentação do projeto está em `/docs`:
 - `/src` — código-fonte (a implementar)
 - `/tests` — testes automatizados (a implementar)
 - `/.claude` — configuração do agente Claude Code usado pelo grupo
+- `/.github` — templates de PR e de issue
