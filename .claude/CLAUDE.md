@@ -3,14 +3,18 @@
 StudyTrack: sistema web de acompanhamento acadêmico (notas, frequência, atividades, situação
 acadêmica), com perfis Estudante, Professor e Coordenador.
 
+## Stack
+Next.js (App Router, TypeScript) com Route Handlers em `app/api/`, Prisma + PostgreSQL, JWT em
+cookie httpOnly, Tailwind CSS (ADR-004).
+
 ## Como rodar
 Em construção — código-fonte ainda não implementado (Fase 4 do projeto). Instruções de
 execução serão adicionadas quando a implementação começar.
 
 ## Onde está o quê
-- `docs/` — toda a documentação do projeto: visão, personas, RF, RNF, RB, glossário, modelo de
-  domínio, casos de uso, arquitetura, ADRs (`docs/adr/`), mapa de Specs (`docs/mapa-specs.md`)
-  e texto completo das Specs (`docs/specs.md`).
+- `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
+  uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
+  decisões em aberto, rastreabilidade, estratégia de testes e segurança.
 - `src/` — código-fonte (a implementar).
 - `tests/` — testes automatizados (a implementar).
 
@@ -19,19 +23,23 @@ execução serão adicionadas quando a implementação começar.
 - Banco relacional PostgreSQL, com FKs e constraints (ADR-002).
 - Toda consulta de dados acadêmicos filtra pelo usuário autenticado dentro da própria query,
   nega por padrão (ADR-003).
+- Stack e autenticação (ADR-004).
 - Classificação acadêmica (Normal/Atenção/Risco) é função pura na camada de domínio, nunca
   duplicada em controller ou trigger de banco (DA-02).
 
 ## Como o agente deve se comportar
 - Não inventar requisito, entidade, regra ou tecnologia fora de `docs/`.
-- Specs em `docs/specs.md`: só implementar Spec com texto completo e status `aprovada`.
-  Spec `especificada` sem detalhamento não autoriza código.
-- Questão sem decisão na baseline vira `OPEN-XX` registrada na própria Spec — não decidir
+- Só implementar Spec com texto completo e status `aprovada` em `docs/specs.md`.
+- Questão sem decisão vira `OPEN-XX` em `docs/decisoes-em-aberto.md` — não decidir
   silenciosamente no código.
-- Regra de negócio sempre isolada da camada web/ORM, com um teste por RB (DA-07).
+- Regra de negócio isolada da camada web/ORM, com um teste por RB (DA-07).
+- Nunca ler, imprimir ou commitar `.env` ou qualquer segredo.
+- Conflito entre código, Spec e baseline é registrado, não resolvido em silêncio.
 
 ## Ponteiros
 - Requisitos: `docs/StudyTrack_RF.md`, `docs/StudyTrack_RNF.md`, `docs/StudyTrack_RB.md`.
 - Modelo de domínio: `docs/modelo-dominio.md`.
 - Casos de uso: `docs/casos-de-uso/`.
-- Arquitetura e decisões: `docs/arquitetura.md`, `docs/adr/`.
+- Arquitetura: `docs/arquitetura.md`, `docs/drivers-arquiteturais.md`, `docs/adr/`.
+- Testes e segurança: `docs/estrategia-testes.md`, `docs/seguranca-ssdlc.md`.
+- Rastreabilidade: `docs/rastreabilidade.md`.
