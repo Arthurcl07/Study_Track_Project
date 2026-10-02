@@ -19,6 +19,7 @@
 
 ---
 
+
 ## Resumo das regras
 - O sistema deve ter boa performance e resposta rápida.
 - O sistema deve garantir segurança na persistência de senhas.

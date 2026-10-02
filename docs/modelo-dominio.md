@@ -1,5 +1,6 @@
 # Modelo de Domínio — StudyTrack
 
+
 ## Classes e responsabilidades
 
 - **Usuario** — id, nome, email, senhaHash, perfil {Estudante, Professor, Coordenador}. Representa qualquer pessoa que acessa o sistema; o atributo `perfil` define o papel (um usuário, não classes separadas).
@@ -12,6 +13,7 @@
 - **Entrega** — id, dataEntrega, status {NoPrazo, Atrasada, Pendente}.
 - **IndicadorAcademico** — id, media, frequenciaAtual, situacao {Normal, Atenção, Risco}, atualizadoEm.
 - **PlanoRecuperacao** — id, progresso, criadoEm.
+
 
 ## Relacionamentos e multiplicidades
 
@@ -26,6 +28,7 @@
 - Um Estudante possui, por Turma, exatamente 1 Indicador Acadêmico vigente (RB-09, RB-10).
 - Um Estudante em Risco pode ter de 0 a N Planos de Recuperação (RB-11); cada Plano é responsabilidade de exatamente 1 Professor e contém de 1 a N Atividades previstas (RB-12).
 - Um Usuario (Coordenador) é responsável por 0 a N Turmas; cada Turma pode ter, opcionalmente, 1 Coordenador responsável.
+
 
 ## Diagrama de classes (versionável — GitHub renderiza Mermaid nativamente)
 

@@ -67,6 +67,7 @@ Descrição: O progresso de um plano de recuperação é a proporção de ativid
 Cláusula EARS: O sistema SHALL calcular o progresso de um plano de recuperação como a proporção de atividades concluídas em relação ao total de atividades previstas no plano.
 Aplicada por: RF-14.
 
+
 ## Resumo das regras
 
 - O sistema deve operar com base em perfis e autorizações distintas.
