@@ -2,7 +2,6 @@
 name: Requisito
 about: Requisito funcional rastreável
 title: "RF-XX — Nome"
-labels: MVP
 ---
 
 ## Cláusula EARS
