@@ -70,7 +70,7 @@ Somente a SPEC-001 tem o texto completo abaixo; as demais seguem resumidas em `m
 | **Entidades** | `Usuario` (perfil), vínculos `Usuario`-`Turma` usados para delimitar escopo |
 | **Drivers** | DA-01, DA-06, DA-07 |
 | **ADRs** | ADR-001, ADR-003 |
-| **OPEN relacionados** | OPEN-006 (sessão vs JWT) |
+| **OPEN relacionados** | Nenhum (OPEN-006 fechado em ADR-004) |
 
 ## 3. Escopo
 
@@ -83,7 +83,6 @@ Somente a SPEC-001 tem o texto completo abaixo; as demais seguem resumidas em `m
 **Fora do escopo**
 - Recuperação de senha por e-mail (sem RF definido para isso).
 - Login social / OAuth (não mencionado na baseline).
-- Escolha do mecanismo de sessão (sessão de servidor vs JWT) — ver OPEN-006.
 
 ## 4. Dependências
 
