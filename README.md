@@ -20,7 +20,8 @@ Decisões completas em `docs/adr/`.
 
 ## Como executar
 
-Implementado até agora: SPEC-001 (autenticação, perfis e autorização) e SPEC-002 (disciplinas, turmas, cadastro e matrícula de estudantes).
+Implementado até agora: SPEC-001 (autenticação, perfis e autorização) SPEC-002 (disciplinas, turmas, cadastro e matrícula de estudantes) e SPEC-003 (cálculo da situação
+Normal/Atenção/Risco e indicador persistido, consultável em `/api/indicadores`).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 

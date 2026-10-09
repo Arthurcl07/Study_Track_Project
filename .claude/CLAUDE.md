@@ -25,7 +25,10 @@ Camadas: `src/domain` (regras puras, sem Next.js/Prisma), `src/server/dados` (Pr
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 implementada; SPEC-002 em implementação).
+- `src/` — código-fonte (SPEC-001 implementada; SPEC-002 e SPEC-003 em implementação).
+  A regra Normal/Atenção/Risco fica só em `src/domain/situacao-academica.ts`; o recálculo do
+  indicador é `recalcularIndicador` (`src/server/academico/indicador.ts`), chamado na mesma
+  transação de qualquer escrita de nota ou frequência (SPEC-004/005).
 - `tests/` — testes automatizados (Vitest).
 
 ## Decisões já tomadas (não reinventar)
