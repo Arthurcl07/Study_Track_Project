@@ -70,12 +70,12 @@ Todas as Specs têm texto completo abaixo. Somente a SPEC-001 está `aprovada`; 
 | **Entidades** | `Usuario` (perfil), vínculos `Usuario`-`Turma` usados para delimitar escopo |
 | **Drivers** | DA-01, DA-06, DA-07 |
 | **ADRs** | ADR-001, ADR-003 |
-| **OPEN relacionados** | Nenhum (OPEN-006 fechado em ADR-004) |
+| **OPEN relacionados** | OPEN-013 (fechada); OPEN-006 fechado em ADR-004 |
 
 ## 3. Escopo
 
 **Incluído**
-- Cadastro e login de usuário com e-mail e senha.
+- Login de usuário com e-mail e senha. Nesta Spec as contas são criadas por script de carga inicial (seed); o cadastro por perfil autorizado fica para a SPEC-002 (OPEN-013).
 - Atribuição de exatamente um perfil (Estudante, Professor ou Coordenador) a cada usuário.
 - Bloqueio de acesso a funcionalidades não autorizadas ao perfil do usuário.
 - Criação de sessão autenticada após login bem-sucedido.
@@ -161,10 +161,11 @@ Mecanismo de sessão: JWT assinado no servidor, entregue em cookie httpOnly (ADR
 
 ## 13. Questões em aberto
 
-Nenhuma. O mecanismo de autenticação foi decidido em ADR-004 (JWT em cookie httpOnly), fechando o OPEN-006.
+OPEN-013 (fechada): sem cadastro público nesta versão. O mecanismo de autenticação foi decidido em ADR-004 (JWT em cookie httpOnly), fechando o OPEN-006.
 
 ## 14. Definition of Done
 
+Critérios AC-001-* implementados; INV-001-* preservados; testes da seção 12 aprovados; RNFs da seção 10 verificados; sem divergência conhecida em relação a esta Spec; qualquer divergência de baseline registrada e decidida por humano.
 
 ---
 
@@ -1081,4 +1082,3 @@ OPEN-005.
 ## 14. Definition of Done
 
 Padrão da SPEC-001 (seção 14).
-Critérios AC-001-* implementados; INV-001-* preservados; testes da seção 12 aprovados; RNFs da seção 10 verificados; sem divergência conhecida em relação a esta Spec; qualquer divergência de baseline registrada e decidida por humano.
