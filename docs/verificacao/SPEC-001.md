@@ -1,7 +1,7 @@
 # Verificação — SPEC-001 (Autenticação, perfis e autorização por escopo)
 
 **Data:** 2026-10-09
-**Status da Spec:** `em implementação`
+**Status da Spec:** `implementada`
 **Comando:** `npm test` (Vitest 3.2.7, PostgreSQL 17 local)
 **Resultado geral:** 2 arquivos, 11 testes aprovados, 1 pendente (`todo`), 0 falhas.
 
