@@ -10,4 +10,4 @@
 - [ ] Spec e código (ou doc) mudam neste mesmo PR
 - [ ] Questões sem decisão foram registradas em `docs/decisoes-em-aberto.md`
 - [ ] Testes ou verificação manual documentados
-- [ ] Revisado por pelo menos 1 colega
+- [ ] Revisado por pelo menos 1 colega para checklist
