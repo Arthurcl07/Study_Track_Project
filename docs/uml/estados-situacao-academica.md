@@ -18,7 +18,7 @@ Modela os estados e transições da Situação Acadêmica de um estudante (atrib
 
 ## Diagrama de estados
 
-​```mermaid
+```mermaid
 stateDiagram-v2
     [*] --> Normal
     Normal --> Atencao: media cai abaixo de 6,0 (RB-06)
@@ -28,4 +28,4 @@ stateDiagram-v2
     Risco --> Atencao: frequencia volta a >= 75% e media entre 5,0 e 5,9
     Risco --> Normal: frequencia volta a >= 75% e media volta a >= 6,0
     Risco --> Risco: plano de recuperacao em andamento (RB-11, RB-12)
-​```
+```

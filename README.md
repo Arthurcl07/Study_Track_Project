@@ -20,7 +20,7 @@ Decisões completas em `docs/adr/`.
 
 ## Como executar
 
-Implementado até agora: SPEC-001 (autenticação, perfis e autorização).
+Implementado até agora: SPEC-001 (autenticação, perfis e autorização) e SPEC-002 (disciplinas, turmas, cadastro e matrícula de estudantes).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 
@@ -63,7 +63,8 @@ Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 ### Contas de teste (somente ambiente local)
 
 Não há cadastro público (OPEN-013). O seed (`prisma/seed.ts`) cria uma conta por perfil, todas
-com a senha `StudyTrack@2026`:
+com a senha `StudyTrack@2026`, e uma "Turma de exemplo" com o Professor, o Coordenador (responsável)
+e o Estudante matriculado:
 
 | Perfil | E-mail |
 |---|---|
@@ -75,6 +76,10 @@ São credenciais fictícias para desenvolvimento; nunca use em produção.
 
 Para ver a negação de acesso, entre como Estudante e abra `/coordenador/area` (página) ou
 `/api/coordenacao` (API) — ambas exclusivas de Coordenador.
+
+Cadastros da SPEC-002 (OPEN-001): entre como Coordenador e use **Disciplinas** e **Turmas e
+estudantes**. Estudantes são cadastrados dentro da turma, com nome, e-mail e senha inicial de no
+mínimo 8 caracteres (OPEN-009). Professor e Estudante veem só as próprias turmas no painel.
 
 ## Documentação
 

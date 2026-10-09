@@ -8,6 +8,10 @@ export const RECURSOS = {
   painelCoordenador: "painel-coordenador",
   // Função exclusiva de Coordenador usada para demonstrar a negação de acesso (AC-001-03).
   areaCoordenacao: "area-coordenacao",
+  // SPEC-002 (OPEN-001): cadastro de disciplina, turma, estudante e matrícula.
+  cadastroAcademico: "cadastro-academico",
+  // SPEC-002: consulta de turmas; o recorte por escopo é feito na própria query (ADR-003).
+  consultaTurmas: "consulta-turmas",
 } as const;
 
 export type Recurso = (typeof RECURSOS)[keyof typeof RECURSOS];
@@ -17,6 +21,8 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "painel-professor": ["Professor"],
   "painel-coordenador": ["Coordenador"],
   "area-coordenacao": ["Coordenador"],
+  "cadastro-academico": ["Coordenador"],
+  "consulta-turmas": ["Estudante", "Professor", "Coordenador"],
 };
 
 export function podeAcessar(perfil: unknown, recurso: unknown): boolean {

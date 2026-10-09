@@ -7,7 +7,16 @@ import { RECURSOS, podeAcessar } from "@/domain/autorizacao";
 import { GET as apiCoordenacao } from "@/app/api/coordenacao/route";
 import { prisma } from "@/server/dados/prisma";
 import { gerarHashSenha } from "@/server/auth/senha";
-import { criarUsuarioDeTeste, entrarComo, removerUsuariosDeTeste, requisicaoComSessao } from "../apoio";
+import { GET as listarTurmas } from "@/app/api/turmas/route";
+import { GET as buscarTurma } from "@/app/api/turmas/[id]/route";
+import {
+  PREFIXO_DISCIPLINA_TESTE,
+  criarUsuarioDeTeste,
+  entrarComo,
+  parametros,
+  removerUsuariosDeTeste,
+  requisicaoComSessao,
+} from "../apoio";
 
 const URL_COORDENACAO = "http://localhost/api/coordenacao";
 
@@ -72,8 +81,36 @@ describe("SPEC-001 — autorização", () => {
     for (const { perfil } of usuarios) expect(ehPerfilValido(perfil)).toBe(true);
   });
 
-  // INV-001-04 depende de dados acadêmicos (notas, frequência, matrícula em Turma) que só existem
-  // a partir da SPEC-002. Sem esses dados não há como testar o vazamento entre estudantes;
-  // o teste será escrito junto com a SPEC-002. Ver docs/verificacao/SPEC-001.md.
-  it.todo("INV-001-04: Estudante nunca recebe dados acadêmicos de outro estudante (pendente: SPEC-002)");
+  // INV-001-04: escrito junto com a SPEC-002, quando passaram a existir turmas e matrículas.
+  // Notas e frequência (SPEC-003 em diante) reforçam este invariante nos testes das próprias Specs.
+  it("INV-001-04: Estudante nunca recebe dados de outro estudante ao consultar turmas", async () => {
+    const coordenador = await criarUsuarioDeTeste("Coordenador");
+    const professor = await criarUsuarioDeTeste("Professor");
+    const estudante = await criarUsuarioDeTeste("Estudante");
+    const colega = await criarUsuarioDeTeste("Estudante");
+    const disciplina = await prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 40 } });
+    const criarTurma = () =>
+      prisma.turma.create({
+        data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, coordenadorId: coordenador.id },
+      });
+    const comum = await criarTurma();
+    const soDoColega = await criarTurma();
+    await prisma.matricula.createMany({
+      data: [
+        { estudanteId: estudante.id, turmaId: comum.id },
+        { estudanteId: colega.id, turmaId: comum.id },
+        { estudanteId: colega.id, turmaId: soDoColega.id },
+      ],
+    });
+    const token = await entrarComo(estudante.email, estudante.senha);
+
+    const lista = await (await listarTurmas(requisicaoComSessao("http://localhost/api/turmas", token))).json();
+    const textoResposta = JSON.stringify(lista);
+
+    expect(lista.map((t: { id: string }) => t.id)).toEqual([comum.id]);
+    expect(textoResposta).not.toContain(colega.id);
+    expect(textoResposta).not.toContain(colega.email);
+    const alheia = await buscarTurma(requisicaoComSessao(`http://localhost/api/turmas/${soDoColega.id}`, token), parametros(soDoColega.id));
+    expect(alheia.status).toBe(404);
+  });
 });

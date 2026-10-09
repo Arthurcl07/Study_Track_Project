@@ -4,7 +4,7 @@ Registro humano das questões levantadas durante a modelagem, o mapa de Specs e 
 
 | ID | Questão | Origem | Status |
 |---|---|---|---|
-| OPEN-001 | Permissões exatas para cada operação de cadastro/registro (quem cadastra estudante, disciplina, turma, avaliação, atividade e registra frequência) | mapa-specs.md | aberta |
+| OPEN-001 | Permissões exatas para cada operação de cadastro/registro (quem cadastra estudante, disciplina, turma, avaliação, atividade e registra frequência) | mapa-specs.md | fechada (2026-10-09; decisão delegada pelo grupo ao agente, aprovada por Arthur) — Coordenador cadastra disciplinas, turmas e estudantes e faz matrículas, só nas turmas sob sua responsabilidade (quem cria a turma passa a ser o coordenador responsável); Professor registra avaliações, notas, frequência e atividades só nas turmas que leciona (RF-05, RF-07, RF-08); contas de Professor e Coordenador continuam criadas por seed (não há RF de cadastro desses perfis) |
 | OPEN-002 | Faixa válida de nota, fórmula da média, pesos e tratamento de dados incompletos | mapa-specs.md | aberta |
 | OPEN-003 | Ator, contrato e momento do registro de Entrega e da conclusão de atividade | mapa-specs.md | aberta |
 | OPEN-004 | Canal, persistência, deduplicação e momento de exibição dos alertas | mapa-specs.md | aberta |
@@ -12,7 +12,7 @@ Registro humano das questões levantadas durante a modelagem, o mapa de Specs e 
 | OPEN-006 | Sessão de servidor vs JWT para autenticação | mapa-specs.md / SPEC-001 | fechada — decidido JWT em ADR-004 |
 | OPEN-007 | Metas/prioridades/tarefas da visão do produto pertencem à baseline? | mapa-specs.md | fechada — visão reescrita para o escopo acadêmico |
 | OPEN-008 | Framework de testes automatizados | estrategia-testes.md | fechada — Vitest (TypeScript sem configuração extra, serve para unitário e integração) |
-| OPEN-009 | Dados obrigatórios do cadastro de estudante, disciplina e turma (campos, credencial inicial do estudante) | SPEC-002 | aberta |
+| OPEN-009 | Dados obrigatórios do cadastro de estudante, disciplina e turma (campos, credencial inicial do estudante) | SPEC-002 | fechada (2026-10-09; decisão delegada pelo grupo ao agente, aprovada por Arthur) — Estudante: nome, e-mail (único), senha inicial com no mínimo 8 caracteres informada pelo coordenador e a turma de vínculo; e-mail já cadastrado é recusado; troca de senha fica fora do escopo (sem RF). Disciplina: nome e carga horária (inteiro maior que zero). Turma: nome, período, disciplina e professor responsável (usuário com perfil Professor) |
 | OPEN-010 | Momento da marcação de entrega como Atrasada (rotina agendada vs derivada na leitura) | SPEC-005 | aberta |
 | OPEN-011 | Definição de "evolução" e "histórico acadêmico" (RF-07, RF-10): o modelo guarda só frequência e indicador vigentes | SPEC-007 | aberta |
 | OPEN-012 | Destino do plano de recuperação quando o estudante deixa de estar em Risco | SPEC-008 | aberta |

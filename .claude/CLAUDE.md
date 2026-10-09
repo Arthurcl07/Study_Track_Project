@@ -18,13 +18,14 @@ Pré-requisitos: Node.js 24 LTS, PostgreSQL 17 em `localhost:5432`, `.env` criad
 - `npm test` — Vitest (`tests/`), usa o banco local e limpa os dados que cria.
 
 Camadas: `src/domain` (regras puras, sem Next.js/Prisma), `src/server/dados` (Prisma),
-`src/server/auth` (serviços e guardas), `src/app` (páginas e Route Handlers finos).
+`src/server/auth` (serviços e guardas), `src/server/academico` (casos de uso de cadastro),
+`src/app` (páginas e Route Handlers finos).
 
 ## Onde está o quê
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 em implementação).
+- `src/` — código-fonte (SPEC-001 implementada; SPEC-002 em implementação).
 - `tests/` — testes automatizados (Vitest).
 
 ## Decisões já tomadas (não reinventar)

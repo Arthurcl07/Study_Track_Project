@@ -19,8 +19,28 @@ export async function criarUsuarioDeTeste(perfil: Perfil) {
   return { ...usuario, senha };
 }
 
+export const PREFIXO_DISCIPLINA_TESTE = "vitest-";
+
+// Remove turmas (e matrículas, em cascata) ligadas a usuários de teste, disciplinas de teste e os usuários.
 export async function removerUsuariosDeTeste() {
-  await prisma.usuario.deleteMany({ where: { email: { endsWith: DOMINIO_TESTE } } });
+  const deTeste = { email: { endsWith: DOMINIO_TESTE } };
+  await prisma.turma.deleteMany({ where: { OR: [{ professor: deTeste }, { coordenador: deTeste }] } });
+  await prisma.disciplina.deleteMany({ where: { nome: { startsWith: PREFIXO_DISCIPLINA_TESTE } } });
+  await prisma.usuario.deleteMany({ where: deTeste });
+}
+
+export function emailDeTeste(prefixo: string) {
+  return `${prefixo}-${randomUUID()}${DOMINIO_TESTE}`;
+}
+
+export function requisicaoJson(url: string, corpo: unknown, token?: string) {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers.cookie = `${NOME_COOKIE_SESSAO}=${token}`;
+  return new Request(url, { method: "POST", headers, body: JSON.stringify(corpo) });
+}
+
+export function parametros(id: string) {
+  return { params: Promise.resolve({ id }) };
 }
 
 export function requisicaoDeLogin(email: string, senha: string) {
