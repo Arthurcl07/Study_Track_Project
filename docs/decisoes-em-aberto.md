@@ -17,3 +17,5 @@ Registro humano das questões levantadas durante a modelagem, o mapa de Specs e 
 | OPEN-011 | Definição de "evolução" e "histórico acadêmico" (RF-07, RF-10): o modelo guarda só frequência e indicador vigentes | SPEC-007 | aberta |
 | OPEN-012 | Destino do plano de recuperação quando o estudante deixa de estar em Risco | SPEC-008 | aberta |
 | OPEN-013 | Quem cria contas e com qual perfil na SPEC-001 (risco de autocadastro como Coordenador) | SPEC-001 | fechada — sem cadastro público; contas de teste por script de seed; cadastro por perfil autorizado na SPEC-002 (ver OPEN-001) |
+| OPEN-014 | A SPEC-001 exige "cadastro ativo" como pré-condição do login, mas `Usuario` em `modelo-dominio.md` não tem atributo de ativo/inativo | SPEC-001 (implementação) | aberta — provisório (decisão humana, 2026-10-09): sem campo novo; todo usuário existente é tratado como ativo |
+| OPEN-015 | Duração da sessão (expiração do JWT e do cookie) não definida na baseline | SPEC-001 (implementação) | aberta — provisório (decisão humana, 2026-10-09): 8 horas |

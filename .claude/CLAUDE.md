@@ -8,15 +8,24 @@ Next.js (App Router, TypeScript) com Route Handlers em `app/api/`, Prisma + Post
 cookie httpOnly, Tailwind CSS (ADR-004).
 
 ## Como rodar
-Em construção — código-fonte ainda não implementado (Fase 4 do projeto). Instruções de
-execução serão adicionadas quando a implementação começar.
+Pré-requisitos: Node.js 24 LTS, PostgreSQL 17 em `localhost:5432`, `.env` criado a partir de
+`.env.example` (`DATABASE_URL`, `JWT_SECRET`). O agente não lê nem altera o `.env`.
+
+- `npm install` — dependências + `prisma generate`.
+- `npx prisma migrate dev` — cria o banco e aplica as migrações (`prisma/migrations/`).
+- `npm run seed` — contas de teste, uma por perfil (credenciais no README).
+- `npm run dev` — aplicação em http://localhost:3000.
+- `npm test` — Vitest (`tests/`), usa o banco local e limpa os dados que cria.
+
+Camadas: `src/domain` (regras puras, sem Next.js/Prisma), `src/server/dados` (Prisma),
+`src/server/auth` (serviços e guardas), `src/app` (páginas e Route Handlers finos).
 
 ## Onde está o quê
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (a implementar).
-- `tests/` — testes automatizados (a implementar).
+- `src/` — código-fonte (SPEC-001 em implementação).
+- `tests/` — testes automatizados (Vitest).
 
 ## Decisões já tomadas (não reinventar)
 - Arquitetura em camadas, monólito modular (ADR-001).
