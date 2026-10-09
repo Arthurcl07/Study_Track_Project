@@ -32,7 +32,7 @@ Legenda de status da Spec:
 
 | Ordem | ID | Nome | Dependências | Status |
 |---|---|---|---|---|
-| 1 | SPEC-001 | Autenticação, perfis e autorização por escopo | — | `aprovada` |
+| 1 | SPEC-001 | Autenticação, perfis e autorização por escopo | — | `implementada` |
 | 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `especificada` |
 | 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `especificada` |
 | 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `especificada` |
@@ -42,13 +42,15 @@ Legenda de status da Spec:
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `especificada` |
 | 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `especificada` |
 
-Todas as Specs têm texto completo abaixo. Somente a SPEC-001 está `aprovada`; as demais estão `especificadas` e aguardam aprovação humana antes de qualquer código.
+Todas as Specs têm texto completo abaixo. Somente a SPEC-001 foi aprovada (hoje `implementada`); as demais estão `especificadas` e aguardam aprovação humana antes de qualquer código.
 
 ---
 
 # SPEC-001 — Autenticação, perfis e autorização por escopo
 
-**Status:** `aprovada`
+**Status:** `implementada`
+
+Ressalva: INV-001-04 sem teste automatizado até existirem dados acadêmicos (SPEC-002); ver `docs/verificacao/SPEC-001.md`.
 
 ## 1. Identificação
 
@@ -162,6 +164,8 @@ Mecanismo de sessão: JWT assinado no servidor, entregue em cookie httpOnly (ADR
 ## 13. Questões em aberto
 
 OPEN-013 (fechada): sem cadastro público nesta versão. O mecanismo de autenticação foi decidido em ADR-004 (JWT em cookie httpOnly), fechando o OPEN-006.
+
+Levantadas na implementação (decisão provisória do humano, 2026-10-09): OPEN-014 (cadastro ativo sem atributo no modelo) e OPEN-015 (duração da sessão: 8 h).
 
 ## 14. Definition of Done
 

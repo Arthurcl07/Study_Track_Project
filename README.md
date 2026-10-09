@@ -20,8 +20,61 @@ Decisões completas em `docs/adr/`.
 
 ## Como executar
 
-Em construção — o código-fonte ainda não foi implementado (fase de requisitos e modelagem
-concluída). Instruções de execução serão adicionadas quando a implementação (Fase 4) começar.
+Implementado até agora: SPEC-001 (autenticação, perfis e autorização).
+
+Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
+
+1. Crie o `.env` a partir do exemplo e ajuste `DATABASE_URL` e `JWT_SECRET` (32+ caracteres):
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Instale as dependências (também gera o Prisma Client):
+
+   ```bash
+   npm install
+   ```
+
+3. Crie o banco e aplique as migrações (na primeira vez, também roda o seed):
+
+   ```bash
+   npx prisma migrate dev
+   ```
+
+4. Carregue as contas de teste (pode rodar de novo a qualquer momento):
+
+   ```bash
+   npm run seed
+   ```
+
+5. Suba a aplicação em http://localhost:3000:
+
+   ```bash
+   npm run dev
+   ```
+
+6. Rode os testes (Vitest; usam o banco do `.env` e removem os dados que criam):
+
+   ```bash
+   npm test
+   ```
+
+### Contas de teste (somente ambiente local)
+
+Não há cadastro público (OPEN-013). O seed (`prisma/seed.ts`) cria uma conta por perfil, todas
+com a senha `StudyTrack@2026`:
+
+| Perfil | E-mail |
+|---|---|
+| Estudante | `estudante@studytrack.test` |
+| Professor | `professor@studytrack.test` |
+| Coordenador | `coordenador@studytrack.test` |
+
+São credenciais fictícias para desenvolvimento; nunca use em produção.
+
+Para ver a negação de acesso, entre como Estudante e abra `/coordenador/area` (página) ou
+`/api/coordenacao` (API) — ambas exclusivas de Coordenador.
 
 ## Documentação
 
@@ -49,7 +102,8 @@ Toda a documentação do projeto está em `/docs`:
 ## Estrutura do repositório
 
 - `/docs` — documentação do projeto (specs, modelagem, ADRs)
-- `/src` — código-fonte (a implementar)
-- `/tests` — testes automatizados (a implementar)
+- `/src` — código-fonte (Next.js; camadas em `src/domain`, `src/server`, `src/app`)
+- `/tests` — testes automatizados (Vitest)
+- `/prisma` — schema, migrações e seed
 - `/.claude` — configuração do agente Claude Code usado pelo grupo
 - `/.github` — templates de PR e de issue

@@ -7,3 +7,7 @@ node_modules/
 
 # Testes
 coverage/
+
+# Next.js
+next-env.d.ts
+*.tsbuildinfo

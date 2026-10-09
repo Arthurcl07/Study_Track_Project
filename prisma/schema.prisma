@@ -1,0 +1,27 @@
+// Schema derivado de docs/modelo-dominio.md (ADR-004).
+// SPEC-001: somente a entidade Usuario. Turma, Disciplina, notas e frequência entram a partir da SPEC-002.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// INV-001-01: exatamente um perfil dentre Estudante, Professor ou Coordenador (RB-01).
+enum Perfil {
+  Estudante
+  Professor
+  Coordenador
+}
+
+model Usuario {
+  id        String @id @default(uuid())
+  nome      String
+  email     String @unique
+  // INV-001-02: somente o hash bcrypt é armazenado, nunca a senha em texto puro (RNF-02).
+  senhaHash String
+  perfil    Perfil
+}
