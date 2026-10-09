@@ -13,5 +13,5 @@ title: "RF-XX — Nome"
 ## Spec
 <!-- SPEC-XXX -->
 
-## Critérios de aceite
+## Critérios de aceite para o programa
 - [ ]
