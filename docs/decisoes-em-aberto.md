@@ -11,8 +11,9 @@ Registro humano das questões levantadas durante a modelagem, o mapa de Specs e 
 | OPEN-005 | Detalhar o UC-05 (relatórios): formato, filtros, granularidade | mapa-specs.md | parcial — UC-05 criado; formato e filtros ainda em aberto |
 | OPEN-006 | Sessão de servidor vs JWT para autenticação | mapa-specs.md / SPEC-001 | fechada — decidido JWT em ADR-004 |
 | OPEN-007 | Metas/prioridades/tarefas da visão do produto pertencem à baseline? | mapa-specs.md | fechada — visão reescrita para o escopo acadêmico |
-| OPEN-008 | Framework de testes automatizados (sugestão: Vitest, compatível com TypeScript/Next.js) | estrategia-testes.md | aberta |
+| OPEN-008 | Framework de testes automatizados | estrategia-testes.md | fechada — Vitest (TypeScript sem configuração extra, serve para unitário e integração) |
 | OPEN-009 | Dados obrigatórios do cadastro de estudante, disciplina e turma (campos, credencial inicial do estudante) | SPEC-002 | aberta |
 | OPEN-010 | Momento da marcação de entrega como Atrasada (rotina agendada vs derivada na leitura) | SPEC-005 | aberta |
 | OPEN-011 | Definição de "evolução" e "histórico acadêmico" (RF-07, RF-10): o modelo guarda só frequência e indicador vigentes | SPEC-007 | aberta |
 | OPEN-012 | Destino do plano de recuperação quando o estudante deixa de estar em Risco | SPEC-008 | aberta |
+| OPEN-013 | Quem cria contas e com qual perfil na SPEC-001 (risco de autocadastro como Coordenador) | SPEC-001 | fechada — sem cadastro público; contas de teste por script de seed; cadastro por perfil autorizado na SPEC-002 (ver OPEN-001) |
