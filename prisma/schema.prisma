@@ -1,6 +1,6 @@
 // Schema derivado de docs/modelo-dominio.md (ADR-002, ADR-004).
 // SPEC-001: Usuario. SPEC-002: Disciplina, Turma e matrícula (N:M).
-// Avaliações, notas, frequência e indicador entram a partir da SPEC-003.
+// SPEC-003: Avaliacao (estrutura), Nota, Frequencia e IndicadorAcademico.
 
 generator client {
   provider = "prisma-client-js"
@@ -26,9 +26,12 @@ model Usuario {
   senhaHash String
   perfil    Perfil
 
-  turmasLecionadas  Turma[]     @relation("ProfessorDaTurma")
-  turmasCoordenadas Turma[]     @relation("CoordenadorDaTurma")
+  turmasLecionadas  Turma[]              @relation("ProfessorDaTurma")
+  turmasCoordenadas Turma[]              @relation("CoordenadorDaTurma")
   matriculas        Matricula[]
+  notas             Nota[]
+  frequencias       Frequencia[]
+  indicadores       IndicadorAcademico[]
 }
 
 model Disciplina {
@@ -52,6 +55,9 @@ model Turma {
   coordenadorId String?
   coordenador   Usuario?    @relation("CoordenadorDaTurma", fields: [coordenadorId], references: [id], onDelete: SetNull)
   matriculas    Matricula[]
+  avaliacoes    Avaliacao[]
+  frequencias   Frequencia[]
+  indicadores   IndicadorAcademico[]
 
   @@index([professorId])
   @@index([coordenadorId])
@@ -65,5 +71,73 @@ model Matricula {
   turma       Turma   @relation(fields: [turmaId], references: [id], onDelete: Cascade)
 
   @@id([estudanteId, turmaId])
+  @@index([turmaId])
+}
+
+// RB-09: a situação é sempre exatamente uma entre Normal, Atenção e Risco.
+enum Situacao {
+  Normal
+  Atencao @map("Atenção")
+  Risco
+}
+
+// Estrutura usada pelo cálculo da média (OPEN-002). O cadastro de avaliações é da SPEC-004.
+model Avaliacao {
+  id      String   @id @default(uuid())
+  turmaId String
+  turma   Turma    @relation(fields: [turmaId], references: [id], onDelete: Cascade)
+  nome    String
+  // Peso maior que zero (OPEN-002); garantido também por CHECK na migração.
+  peso    Float
+  data    DateTime
+  notas   Nota[]
+
+  @@index([turmaId])
+}
+
+// Cada nota pertence a exatamente 1 avaliação e 1 estudante (modelo de domínio).
+model Nota {
+  id           String    @id @default(uuid())
+  avaliacaoId  String
+  avaliacao    Avaliacao @relation(fields: [avaliacaoId], references: [id], onDelete: Cascade)
+  estudanteId  String
+  estudante    Usuario   @relation(fields: [estudanteId], references: [id], onDelete: Cascade)
+  // De 0 a 10 (OPEN-002); garantido também por CHECK na migração.
+  valor        Float
+  dataRegistro DateTime  @default(now())
+
+  @@unique([avaliacaoId, estudanteId])
+  @@index([estudanteId])
+}
+
+// Exatamente 1 registro de frequência vigente por estudante e turma (modelo de domínio).
+model Frequencia {
+  id           String   @id @default(uuid())
+  estudanteId  String
+  estudante    Usuario  @relation(fields: [estudanteId], references: [id], onDelete: Cascade)
+  turmaId      String
+  turma        Turma    @relation(fields: [turmaId], references: [id], onDelete: Cascade)
+  // De 0 a 100 (OPEN-002); garantido também por CHECK na migração.
+  percentual   Float
+  atualizadaEm DateTime @updatedAt
+
+  @@unique([estudanteId, turmaId])
+}
+
+// INV-003-05: exatamente 1 indicador vigente por estudante e turma (índice único composto, DA-05).
+model IndicadorAcademico {
+  id              String   @id @default(uuid())
+  estudanteId     String
+  estudante       Usuario  @relation(fields: [estudanteId], references: [id], onDelete: Cascade)
+  turmaId         String
+  turma           Turma    @relation(fields: [turmaId], references: [id], onDelete: Cascade)
+  // Vazio quando o estudante ainda não tem nota (OPEN-002).
+  media           Float?
+  // Vazio quando ainda não há registro de frequência (OPEN-002).
+  frequenciaAtual Float?
+  situacao        Situacao
+  atualizadoEm    DateTime
+
+  @@unique([estudanteId, turmaId])
   @@index([turmaId])
 }
