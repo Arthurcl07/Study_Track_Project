@@ -49,7 +49,7 @@
 
 ## 6. Ferramentas
 
-Framework de testes ainda não decidido: ver OPEN-008 em `decisoes-em-aberto.md`. Sugestão: Vitest, que roda TypeScript sem configuração extra e serve para unitário e integração.
+Framework de testes: Vitest (OPEN-008, fechada). Comando: `npm test`. Os resultados de cada Spec ficam em `docs/verificacao/`.
 
 ## 7. Dados de teste
 
