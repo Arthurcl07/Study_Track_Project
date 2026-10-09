@@ -27,3 +27,4 @@
 - **Plano de Recuperação**: conjunto de atividades definido por um professor para apoiar um estudante em situação de Risco.
   
 - **Progresso do Plano**: percentual de conclusão das atividades previstas em um plano de recuperação.
+
