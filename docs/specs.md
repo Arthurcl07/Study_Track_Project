@@ -25,6 +25,7 @@ Legenda de status da Spec:
 | Lista SPEC-001 … SPEC-009 | `aprovada` | 2026-10-01 |
 | Ordem de execução | 001 → 002 → 003 → 004 → 005 → 006 → 007 → 008 → 009 | 2026-10-01 |
 | Primeira Spec a implementar | SPEC-001 | 2026-10-01 |
+| SPEC-002 aprovada para implementação, com OPEN-001 e OPEN-009 fechadas (decisão delegada pelo grupo ao agente, aprovada por Arthur) | `aprovada` | 2026-10-09 |
 
 ---
 
@@ -33,7 +34,7 @@ Legenda de status da Spec:
 | Ordem | ID | Nome | Dependências | Status |
 |---|---|---|---|---|
 | 1 | SPEC-001 | Autenticação, perfis e autorização por escopo | — | `implementada` |
-| 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `especificada` |
+| 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `em implementação` |
 | 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `especificada` |
 | 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `especificada` |
 | 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `especificada` |
@@ -42,7 +43,7 @@ Legenda de status da Spec:
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `especificada` |
 | 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `especificada` |
 
-Todas as Specs têm texto completo abaixo. Somente a SPEC-001 foi aprovada (hoje `implementada`); as demais estão `especificadas` e aguardam aprovação humana antes de qualquer código.
+Todas as Specs têm texto completo abaixo. A SPEC-001 está `implementada` e a SPEC-002 foi aprovada em 2026-10-09 (hoje `em implementação`); as demais estão `especificadas` e aguardam aprovação humana antes de qualquer código.
 
 ---
 
@@ -175,7 +176,7 @@ Critérios AC-001-* implementados; INV-001-* preservados; testes da seção 12 a
 
 # SPEC-002 — Estrutura acadêmica e vínculos de turma
 
-**Status:** `especificada`
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -193,12 +194,12 @@ Critérios AC-001-* implementados; INV-001-* preservados; testes da seção 12 a
 | **RF** | RF-03, RF-04 |
 | **RB** | RB-01 e vínculos do modelo de domínio |
 | **RNF** | RNF-03, RNF-05; RNF-04 nas telas de cadastro |
-| **UC / fluxo** | Fluxos de cadastro ainda não documentados |
+| **UC / fluxo** | Fluxos de cadastro descritos na seção 5 (sem UC próprio) |
 | **Entidades** | `Usuario`, `Disciplina`, `Turma` |
 | **Drivers** | AD-01, AD-04 |
 | **ADRs** | ADR-001, ADR-002, ADR-003 |
 | **Issues** | #8, #9 |
-| **OPEN relacionados** | OPEN-001, OPEN-009 |
+| **OPEN relacionados** | OPEN-001 e OPEN-009 (fechadas em 2026-10-09) |
 
 ## 3. Escopo
 
@@ -206,11 +207,14 @@ Critérios AC-001-* implementados; INV-001-* preservados; testes da seção 12 a
 - Cadastro de estudante e vínculo à turma correspondente.
 - Cadastro de disciplina e de turma.
 - Associação da turma a um professor responsável, a estudantes (matrícula) e, opcionalmente, a um coordenador.
+- Matrícula de estudante já cadastrado em outra turma (vínculo N:M).
+- Consulta de turmas respeitando o escopo de cada perfil (INV-002-06).
 
 **Fora do escopo**
 - Edição e exclusão de cadastros (sem RF definido).
 - Avaliações (SPEC-004), atividades e frequência (SPEC-005).
-- Definição exata de quem executa cada cadastro (OPEN-001).
+- Cadastro de contas de Professor e Coordenador (sem RF; continuam por seed, OPEN-001).
+- Troca de senha do estudante (sem RF, OPEN-009).
 
 ## 4. Dependências
 
@@ -218,16 +222,19 @@ SPEC-001.
 
 ## 5. Comportamento esperado
 
-**Pré-condições:** usuário autenticado com permissão para o cadastro (OPEN-001).
+**Pré-condições:** usuário autenticado com perfil Coordenador (OPEN-001). Estudantes só são cadastrados ou matriculados em turmas sob a responsabilidade desse coordenador; quem cria a turma passa a ser o coordenador responsável por ela.
 
 **Fluxo principal:**
-1. Usuário autorizado informa os dados do estudante.
+1. Coordenador informa nome, e-mail, senha inicial (mínimo de 8 caracteres) e a turma do estudante (OPEN-009).
 2. Sistema valida que todos os dados obrigatórios foram informados.
 3. Sistema armazena o cadastro e vincula o estudante à turma correspondente.
 
 **Alternativo:** cadastro de disciplina ou turma armazena as informações e permite associação com professores e estudantes (RF-04).
 
-**Exceções:** dado obrigatório ausente: sistema impede o cadastro e indica o campo pendente (RF-03).
+**Exceções:**
+- Dado obrigatório ausente: sistema impede o cadastro e indica o campo pendente (RF-03).
+- E-mail já cadastrado: sistema impede o cadastro (OPEN-009).
+- Turma fora da responsabilidade do coordenador, ou professor inexistente: sistema recusa a operação.
 
 **Pós-condições de sucesso:** registro persistido com seus vínculos.
 **Pós-condição de falha:** nada é persistido parcialmente.
@@ -255,9 +262,11 @@ Chaves estrangeiras e constraints refletem as multiplicidades do modelo (ADR-002
 
 | Operação | Entrada | Saída de sucesso | Erros |
 |---|---|---|---|
-| Cadastrar estudante | dados obrigatórios (OPEN-009) | estudante vinculado à turma | campo obrigatório ausente |
+| Cadastrar estudante | nome, e-mail, senha inicial, turma (OPEN-009) | estudante vinculado à turma | campo obrigatório ausente, e-mail já cadastrado, turma fora do escopo |
 | Cadastrar disciplina | nome, carga horária | disciplina criada | campo ausente |
-| Cadastrar turma | nome, período, disciplina, professor | turma criada | campo ausente, vínculo inexistente |
+| Cadastrar turma | nome, período, disciplina, professor | turma criada, com o coordenador autor como responsável | campo ausente, vínculo inexistente |
+| Matricular estudante existente | turma, e-mail do estudante | matrícula criada | estudante inexistente, turma fora do escopo |
+| Consultar turmas | sessão | turmas do escopo do perfil, com disciplina e professor | sem sessão |
 
 ## 10. RNFs aplicáveis
 
@@ -286,7 +295,7 @@ Chaves estrangeiras e constraints refletem as multiplicidades do modelo (ADR-002
 
 ## 13. Questões em aberto
 
-OPEN-001 (quem pode cadastrar) e OPEN-009 (campos obrigatórios e credencial inicial).
+Nenhuma. OPEN-001 (quem pode cadastrar) e OPEN-009 (campos obrigatórios e credencial inicial) foram fechadas em 2026-10-09; ver `decisoes-em-aberto.md`.
 
 ## 14. Definition of Done
 
