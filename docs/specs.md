@@ -32,7 +32,7 @@ Legenda de status da Spec:
 
 | Ordem | ID | Nome | Dependências | Status |
 |---|---|---|---|---|
-| 1 | SPEC-001 | Autenticação, perfis e autorização por escopo | — | `em implementação` |
+| 1 | SPEC-001 | Autenticação, perfis e autorização por escopo | — | `implementada` |
 | 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `especificada` |
 | 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `especificada` |
 | 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `especificada` |
@@ -42,13 +42,15 @@ Legenda de status da Spec:
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `especificada` |
 | 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `especificada` |
 
-Todas as Specs têm texto completo abaixo. Somente a SPEC-001 foi aprovada (hoje `em implementação`); as demais estão `especificadas` e aguardam aprovação humana antes de qualquer código.
+Todas as Specs têm texto completo abaixo. Somente a SPEC-001 foi aprovada (hoje `implementada`); as demais estão `especificadas` e aguardam aprovação humana antes de qualquer código.
 
 ---
 
 # SPEC-001 — Autenticação, perfis e autorização por escopo
 
-**Status:** `em implementação`
+**Status:** `implementada`
+
+Ressalva: INV-001-04 sem teste automatizado até existirem dados acadêmicos (SPEC-002); ver `docs/verificacao/SPEC-001.md`.
 
 ## 1. Identificação
 
