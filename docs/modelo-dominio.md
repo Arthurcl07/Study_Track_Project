@@ -32,7 +32,7 @@
 
 ## Diagrama de classes (versionável — GitHub renderiza Mermaid nativamente)
 
-​```mermaid
+```mermaid
 classDiagram
     class Usuario {
       +id
@@ -107,4 +107,4 @@ classDiagram
     Usuario "1" --> "0..*" PlanoRecuperacao : responsavel (Professor)
     PlanoRecuperacao "1" --> "1..*" Atividade : preve
     Usuario "1" --> "0..*" Turma : responsavel (Coordenador)
-​```
+```
