@@ -1,5 +1,6 @@
-// Schema derivado de docs/modelo-dominio.md (ADR-004).
-// SPEC-001: somente a entidade Usuario. Turma, Disciplina, notas e frequência entram a partir da SPEC-002.
+// Schema derivado de docs/modelo-dominio.md (ADR-002, ADR-004).
+// SPEC-001: Usuario. SPEC-002: Disciplina, Turma e matrícula (N:M).
+// Avaliações, notas, frequência e indicador entram a partir da SPEC-003.
 
 generator client {
   provider = "prisma-client-js"
@@ -24,4 +25,45 @@ model Usuario {
   // INV-001-02: somente o hash bcrypt é armazenado, nunca a senha em texto puro (RNF-02).
   senhaHash String
   perfil    Perfil
+
+  turmasLecionadas  Turma[]     @relation("ProfessorDaTurma")
+  turmasCoordenadas Turma[]     @relation("CoordenadorDaTurma")
+  matriculas        Matricula[]
+}
+
+model Disciplina {
+  id           String  @id @default(uuid())
+  nome         String
+  // Inteiro maior que zero (OPEN-009); garantido também por CHECK na migração.
+  cargaHoraria Int
+  turmas       Turma[]
+}
+
+// INV-002-02: toda turma tem exatamente 1 disciplina e 1 professor responsável.
+// INV-002-03: de 0 a 1 coordenador responsável.
+model Turma {
+  id            String      @id @default(uuid())
+  nome          String
+  periodo       String
+  disciplinaId  String
+  disciplina    Disciplina  @relation(fields: [disciplinaId], references: [id], onDelete: Restrict)
+  professorId   String
+  professor     Usuario     @relation("ProfessorDaTurma", fields: [professorId], references: [id], onDelete: Restrict)
+  coordenadorId String?
+  coordenador   Usuario?    @relation("CoordenadorDaTurma", fields: [coordenadorId], references: [id], onDelete: SetNull)
+  matriculas    Matricula[]
+
+  @@index([professorId])
+  @@index([coordenadorId])
+}
+
+// INV-002-04: matrícula N:M entre estudantes e turmas, sem duplicidade.
+model Matricula {
+  estudanteId String
+  estudante   Usuario @relation(fields: [estudanteId], references: [id], onDelete: Cascade)
+  turmaId     String
+  turma       Turma   @relation(fields: [turmaId], references: [id], onDelete: Cascade)
+
+  @@id([estudanteId, turmaId])
+  @@index([turmaId])
 }

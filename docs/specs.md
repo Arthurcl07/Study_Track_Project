@@ -51,7 +51,7 @@ Todas as Specs têm texto completo abaixo. A SPEC-001 está `implementada` e a S
 
 **Status:** `implementada`
 
-Ressalva: INV-001-04 sem teste automatizado até existirem dados acadêmicos (SPEC-002); ver `docs/verificacao/SPEC-001.md`.
+INV-001-04 coberto por teste automatizado desde 2026-10-09 (junto com a SPEC-002); ver `docs/verificacao/SPEC-001.md`.
 
 ## 1. Identificação
 
