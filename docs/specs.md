@@ -26,6 +26,7 @@ Legenda de status da Spec:
 | Ordem de execução | 001 → 002 → 003 → 004 → 005 → 006 → 007 → 008 → 009 | 2026-10-01 |
 | Primeira Spec a implementar | SPEC-001 | 2026-10-01 |
 | SPEC-002 aprovada para implementação, com OPEN-001 e OPEN-009 fechadas (decisão delegada pelo grupo ao agente, aprovada por Arthur) | `aprovada` | 2026-10-09 |
+| SPEC-003 aprovada para implementação, com OPEN-002 fechada (decisão delegada pelo grupo ao agente, aprovada por Arthur) | `aprovada` | 2026-10-09 |
 
 ---
 
@@ -35,7 +36,7 @@ Legenda de status da Spec:
 |---|---|---|---|---|
 | 1 | SPEC-001 | Autenticação, perfis e autorização por escopo | — | `implementada` |
 | 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `em implementação` |
-| 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `especificada` |
+| 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `em implementação` |
 | 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `especificada` |
 | 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `especificada` |
 | 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `especificada` |
@@ -43,7 +44,7 @@ Legenda de status da Spec:
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `especificada` |
 | 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `especificada` |
 
-Todas as Specs têm texto completo abaixo. A SPEC-001 está `implementada` e a SPEC-002 foi aprovada em 2026-10-09 (hoje `em implementação`); as demais estão `especificadas` e aguardam aprovação humana antes de qualquer código.
+Todas as Specs têm texto completo abaixo. A SPEC-001 está `implementada` e as SPEC-002 e SPEC-003 foram aprovadas em 2026-10-09 (hoje `em implementação`); as demais estão `especificadas` e aguardam aprovação humana antes de qualquer código.
 
 ---
 
@@ -305,7 +306,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-003 — Cálculo da situação acadêmica e indicador persistido
 
-**Status:** `especificada`
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -324,11 +325,11 @@ Padrão da SPEC-001 (seção 14).
 | **RB** | RB-05, RB-06, RB-07, RB-09, RB-10 |
 | **RNF** | RNF-01 nas leituras; RNF-03 e RNF-05 quando consultado |
 | **UC / fluxo** | UC-02; inclusão "Recalcular Indicador Acadêmico" |
-| **Entidades** | `Nota`, `Frequencia`, `IndicadorAcademico`, `Turma` |
+| **Entidades** | `Avaliacao` (só a estrutura: turma e peso), `Nota`, `Frequencia`, `IndicadorAcademico`, `Turma` |
 | **Drivers** | AD-02, AD-03, AD-05 |
 | **ADRs** | ADR-001, ADR-002 |
 | **Issues** | #11, #19 |
-| **OPEN relacionados** | OPEN-002 |
+| **OPEN relacionados** | OPEN-002 (fechada em 2026-10-09) |
 
 ## 3. Escopo
 
@@ -336,10 +337,12 @@ Padrão da SPEC-001 (seção 14).
 - Regra de classificação como função pura no domínio.
 - Recálculo síncrono sempre que nota, frequência ou atividade relevante mudar.
 - Persistência do indicador vigente (um por estudante e turma).
+- Estrutura de dados de `Avaliacao`, `Nota` e `Frequencia` necessária ao cálculo (a média depende dos pesos das avaliações).
+- Consulta de indicadores filtrada pelo escopo do perfil (RNF-03, RNF-05).
 
 **Fora do escopo**
 - Telas e alertas (SPEC-006, SPEC-007).
-- Fórmula da média, faixa de nota e dados incompletos (OPEN-002).
+- Telas e rotas de registro de avaliação, nota e frequência (SPEC-004 e SPEC-005); elas chamam o recálculo desta Spec na mesma transação da escrita.
 
 ## 4. Dependências
 
@@ -351,11 +354,14 @@ SPEC-002.
 
 **Fluxo principal:**
 1. Uma nota, frequência ou atividade relevante é registrada ou alterada.
-2. Sistema recalcula a média do estudante na turma.
+2. Sistema recalcula a média do estudante na turma: média ponderada pelos pesos das avaliações que já têm nota (OPEN-002).
 3. Sistema classifica a situação: Risco se frequência < 75% ou média < 5,0; Atenção se média entre 5,0 e menos de 6,0 com frequência ≥ 75%; Normal se média ≥ 6,0 com frequência ≥ 75%.
 4. Sistema atualiza o indicador vigente e o instante de atualização.
 
-**Exceções:** dados insuficientes para calcular: comportamento em aberto (OPEN-002).
+**Exceções:**
+- Dados incompletos (OPEN-002): sem nota, só a frequência classifica; sem frequência, só a média classifica; sem nenhum dos dois, a situação é Normal.
+- Valor fora da faixa (nota fora de 0–10, frequência fora de 0–100%, peso menor ou igual a zero): o cálculo é recusado e o indicador anterior é preservado.
+- Estudante não matriculado na turma: o recálculo é recusado.
 
 **Pós-condições de sucesso:** indicador vigente reflete os dados mais recentes.
 **Pós-condição de falha:** indicador anterior preservado.
@@ -384,7 +390,8 @@ Função pura na camada de domínio chamada nas escritas (DA-02). Indicador pers
 | Operação | Entrada | Saída de sucesso | Erros |
 |---|---|---|---|
 | Classificar | média, frequência | situação | dados inválidos |
-| Recalcular indicador | estudante, turma | indicador atualizado | estudante não matriculado |
+| Recalcular indicador | estudante, turma | indicador atualizado | estudante não matriculado, dados fora da faixa |
+| Consultar indicadores | sessão | indicadores do escopo do perfil | sem sessão |
 
 ## 10. RNFs aplicáveis
 
@@ -414,7 +421,7 @@ Função pura na camada de domínio chamada nas escritas (DA-02). Indicador pers
 
 ## 13. Questões em aberto
 
-OPEN-002 (fórmula da média, faixa válida, avaliações sem nota).
+Nenhuma. OPEN-002 (fórmula da média, faixa válida, avaliações sem nota) foi fechada em 2026-10-09; ver `decisoes-em-aberto.md`.
 
 ## 14. Definition of Done
 
