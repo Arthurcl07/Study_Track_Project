@@ -27,6 +27,7 @@ Legenda de status da Spec:
 | Primeira Spec a implementar | SPEC-001 | 2026-10-01 |
 | SPEC-002 aprovada para implementação, com OPEN-001 e OPEN-009 fechadas (decisão delegada pelo grupo ao agente, aprovada por Arthur) | `aprovada` | 2026-10-09 |
 | SPEC-003 aprovada para implementação, com OPEN-002 fechada (decisão delegada pelo grupo ao agente, aprovada por Arthur) | `aprovada` | 2026-10-09 |
+| SPEC-004 aprovada para implementação (aprovada por Arthur) | `aprovada` | 2026-10-13 |
 
 ---
 
@@ -37,7 +38,7 @@ Legenda de status da Spec:
 | 1 | SPEC-001 | Autenticação, perfis e autorização por escopo | — | `implementada` |
 | 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `em implementação` |
 | 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `em implementação` |
-| 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `especificada` |
+| 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `aprovada` |
 | 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `especificada` |
 | 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `especificada` |
 | 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `especificada` |
@@ -431,7 +432,7 @@ Padrão da SPEC-001 (seção 14), mais teste de limites da tabela 12.1.
 
 # SPEC-004 — Registro de avaliações, notas e médias
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
