@@ -28,6 +28,7 @@ Legenda de status da Spec:
 | SPEC-002 aprovada para implementação, com OPEN-001 e OPEN-009 fechadas (decisão delegada pelo grupo ao agente, aprovada por Arthur) | `aprovada` | 2026-10-09 |
 | SPEC-003 aprovada para implementação, com OPEN-002 fechada (decisão delegada pelo grupo ao agente, aprovada por Arthur) | `aprovada` | 2026-10-09 |
 | SPEC-004 aprovada para implementação (aprovada por Arthur) | `aprovada` | 2026-10-13 |
+| SPEC-004: alteração de escopo — cadastro de avaliação pelo professor passa a fazer parte da Spec (OPEN-017); sem migração nova, tabelas da `spec_003_indicador` (OPEN-016) (aprovada por Arthur) | `aprovada` | 2026-10-13 |
 
 ---
 
@@ -38,7 +39,7 @@ Legenda de status da Spec:
 | 1 | SPEC-001 | Autenticação, perfis e autorização por escopo | — | `implementada` |
 | 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `em implementação` |
 | 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `em implementação` |
-| 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `aprovada` |
+| 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
 | 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `especificada` |
 | 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `especificada` |
 | 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `especificada` |
@@ -432,7 +433,7 @@ Padrão da SPEC-001 (seção 14), mais teste de limites da tabela 12.1.
 
 # SPEC-004 — Registro de avaliações, notas e médias
 
-**Status:** `aprovada`
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -455,13 +456,13 @@ Padrão da SPEC-001 (seção 14), mais teste de limites da tabela 12.1.
 | **Drivers** | AD-01, AD-02, AD-04 |
 | **ADRs** | ADR-001, ADR-002, ADR-003 |
 | **Issues** | #10, #11, #19 |
-| **OPEN relacionados** | OPEN-001, OPEN-002 |
+| **OPEN relacionados** | OPEN-001, OPEN-002, OPEN-016, OPEN-017 |
 
 ## 3. Escopo
 
-**Incluído:** lançar nota, alterar nota já lançada, recalcular média e indicador (via SPEC-003).
+**Incluído:** cadastrar avaliação (turma, nome, peso, data) pelo professor responsável pela turma (OPEN-001, OPEN-017), lançar nota, alterar nota já lançada, recalcular média e indicador (via SPEC-003).
 
-**Fora do escopo:** cadastro de avaliação (quem cria e como: OPEN-001), faixa de nota e fórmula da média (OPEN-002).
+**Fora do escopo:** faixa de nota e fórmula da média (OPEN-002).
 
 ## 4. Dependências
 
@@ -508,6 +509,7 @@ Escrita da nota e recálculo do indicador na mesma transação (consistência, A
 |---|---|---|---|
 | Registrar nota | turma, avaliação, estudante, valor | nota registrada, indicador atualizado | valor inválido, sem permissão |
 | Alterar nota | nota, novo valor | nota atualizada, indicador recalculado | valor inválido, sem permissão |
+| Cadastrar avaliação (OPEN-017) | turma, nome, peso, data | avaliação cadastrada | peso não maior que zero ou dado ausente, sem permissão |
 
 ## 10. RNFs aplicáveis
 
@@ -525,6 +527,8 @@ Escrita da nota e recálculo do indicador na mesma transação (consistência, A
 | AC-004-03 | Nota já lançada | Professor altera o valor | Valor sobrescrito e média recalculada |
 | AC-004-04 | Professor de outra turma | Tenta lançar nota | Acesso negado |
 | AC-004-05 | Estudante autenticado | Tenta lançar nota | Acesso negado |
+| AC-004-06 | Professor responsável pela turma | Cria avaliação (turma, peso, data) com peso > 0 | Avaliação cadastrada na turma; peso ≤ 0 é recusado (OPEN-017) |
+| AC-004-07 | Professor de outra turma ou estudante | Tenta criar avaliação | Acesso negado (OPEN-017) |
 
 ## 12. Casos de teste derivados
 
@@ -532,10 +536,11 @@ Escrita da nota e recálculo do indicador na mesma transação (consistência, A
 2. Valor fora da faixa (depende de OPEN-002).
 3. Alteração de nota recalcula indicador.
 4. Escopo do professor e negação ao estudante.
+5. Cadastro de avaliação pelo professor responsável; negação a outro professor e ao estudante (OPEN-017).
 
 ## 13. Questões em aberto
 
-OPEN-001, OPEN-002.
+OPEN-001, OPEN-002, OPEN-016 e OPEN-017 (todas fechadas).
 
 ## 14. Definition of Done
 

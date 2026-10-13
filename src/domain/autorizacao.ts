@@ -14,6 +14,9 @@ export const RECURSOS = {
   consultaTurmas: "consulta-turmas",
   // SPEC-003: consulta de indicadores; o recorte por escopo é feito na própria query (ADR-003).
   consultaIndicadores: "consulta-indicadores",
+  // SPEC-004 (OPEN-001, OPEN-017): cadastro de avaliação e lançamento/alteração de nota pelo professor;
+  // a turma lecionada é conferida na própria query (ADR-003, RB-03).
+  registroDesempenho: "registro-desempenho",
 } as const;
 
 export type Recurso = (typeof RECURSOS)[keyof typeof RECURSOS];
@@ -26,6 +29,7 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "cadastro-academico": ["Coordenador"],
   "consulta-turmas": ["Estudante", "Professor", "Coordenador"],
   "consulta-indicadores": ["Estudante", "Professor", "Coordenador"],
+  "registro-desempenho": ["Professor"],
 };
 
 export function podeAcessar(perfil: unknown, recurso: unknown): boolean {

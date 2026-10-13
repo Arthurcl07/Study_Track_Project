@@ -21,7 +21,7 @@
 |---|---|---|
 | SPEC-001 | AC-001-01 a 04 | Integração |
 | SPEC-003 | AC-003-01 a 07 | Unitário (limites de 5,0, 6,0 e 75%) |
-| SPEC-004 | AC-004-01 a 05 | Integração |
+| SPEC-004 | AC-004-01 a 07 | Integração (+ unitário da validação e da média) |
 | SPEC-005 | AC-005-01 a 05 | Unitário + integração |
 | SPEC-006 | AC-006-01 a 05 | Integração |
 | SPEC-007 | AC-007-01 a 06 | Integração + ponta a ponta |

@@ -1,5 +1,6 @@
 // Carga inicial: contas de TESTE, uma por perfil (OPEN-013 — sem cadastro público na SPEC-001),
-// e uma turma de exemplo da SPEC-002 ligando as três contas. Apenas para ambiente local.
+// uma turma de exemplo da SPEC-002 ligando as três contas e uma avaliação de exemplo nessa turma
+// (SPEC-004, OPEN-017), sem nota, para o professor lançar pela tela. Apenas para ambiente local.
 import { salvarConta } from "../src/server/auth/contas";
 import { prisma } from "../src/server/dados/prisma";
 import type { Perfil } from "../src/domain/perfil";
@@ -14,6 +15,7 @@ const CONTAS_DE_TESTE: { nome: string; email: string; perfil: Perfil }[] = [
 
 const DISCIPLINA_EXEMPLO = { nome: "Modelagem de Software (exemplo)", cargaHoraria: 60 };
 const TURMA_EXEMPLO = { nome: "Turma de exemplo", periodo: "2026/2" };
+const AVALIACAO_EXEMPLO = { nome: "Prova 1 (exemplo)", peso: 1, data: new Date("2026-09-15T00:00:00Z") };
 
 async function main() {
   const contas: Partial<Record<Perfil, { id: string }>> = {};
@@ -39,6 +41,12 @@ async function main() {
     create: { estudanteId: estudante.id, turmaId: turma.id },
   });
   console.log(`Turma de exemplo pronta: ${turma.nome} (${disciplina.nome})`);
+
+  // Idempotente: só cria a avaliação de exemplo se a turma ainda não tiver uma com esse nome.
+  const avaliacao =
+    (await prisma.avaliacao.findFirst({ where: { nome: AVALIACAO_EXEMPLO.nome, turmaId: turma.id } })) ??
+    (await prisma.avaliacao.create({ data: { ...AVALIACAO_EXEMPLO, turmaId: turma.id } }));
+  console.log(`Avaliação de exemplo pronta: ${avaliacao.nome} (peso ${avaliacao.peso})`);
 }
 
 main()
