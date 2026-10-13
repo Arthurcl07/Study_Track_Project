@@ -20,8 +20,9 @@ Decisões completas em `docs/adr/`.
 
 ## Como executar
 
-Implementado até agora: SPEC-001 (autenticação, perfis e autorização) SPEC-002 (disciplinas, turmas, cadastro e matrícula de estudantes) e SPEC-003 (cálculo da situação
-Normal/Atenção/Risco e indicador persistido, consultável em `/api/indicadores`).
+Implementado até agora: SPEC-001 (autenticação, perfis e autorização) SPEC-002 (disciplinas, turmas, cadastro e matrícula de estudantes), SPEC-003 (cálculo da situação
+Normal/Atenção/Risco e indicador persistido, consultável em `/api/indicadores`) e SPEC-004 (cadastro de
+avaliações e lançamento/alteração de notas pelo professor, com recálculo da média e do indicador).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 
@@ -64,8 +65,8 @@ Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 ### Contas de teste (somente ambiente local)
 
 Não há cadastro público (OPEN-013). O seed (`prisma/seed.ts`) cria uma conta por perfil, todas
-com a senha `StudyTrack@2026`, e uma "Turma de exemplo" com o Professor, o Coordenador (responsável)
-e o Estudante matriculado:
+com a senha `StudyTrack@2026`, uma "Turma de exemplo" com o Professor, o Coordenador (responsável)
+e o Estudante matriculado, e uma avaliação "Prova 1 (exemplo)" (peso 1) nessa turma, ainda sem nota:
 
 | Perfil | E-mail |
 |---|---|
@@ -81,6 +82,12 @@ Para ver a negação de acesso, entre como Estudante e abra `/coordenador/area` 
 Cadastros da SPEC-002 (OPEN-001): entre como Coordenador e use **Disciplinas** e **Turmas e
 estudantes**. Estudantes são cadastrados dentro da turma, com nome, e-mail e senha inicial de no
 mínimo 8 caracteres (OPEN-009). Professor e Estudante veem só as próprias turmas no painel.
+
+Notas da SPEC-004 (OPEN-001, OPEN-017): entre como Professor e clique em **Lançar e alterar notas**
+(`/professor/notas`). Escolha a turma, a avaliação e o estudante e informe a nota de 0 a 10 (OPEN-002);
+se o estudante já tiver nota naquela avaliação, o valor é sobrescrito. Na mesma tela o professor
+cadastra novas avaliações (nome, peso maior que zero e data) nas turmas que leciona. Pela API:
+`POST /api/notas`, `PATCH /api/notas/:id` e `POST /api/turmas/:id/avaliacoes`.
 
 ## Documentação
 

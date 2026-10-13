@@ -11,5 +11,7 @@ export default defineConfig({
     setupFiles: ["tests/setup.ts"],
     // Testes de integração compartilham o banco local; rodar em sequência evita disputa.
     fileParallelism: false,
+    // bcrypt no cadastro deixa alguns testes de integração perto de 5 s na suíte completa.
+    testTimeout: 15000,
   },
 });

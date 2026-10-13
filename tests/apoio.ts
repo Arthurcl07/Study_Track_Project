@@ -33,10 +33,11 @@ export function emailDeTeste(prefixo: string) {
   return `${prefixo}-${randomUUID()}${DOMINIO_TESTE}`;
 }
 
-export function requisicaoJson(url: string, corpo: unknown, token?: string) {
+// POST por padrão; a SPEC-004 usa PATCH para alterar nota.
+export function requisicaoJson(url: string, corpo: unknown, token?: string, metodo: "POST" | "PATCH" = "POST") {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers.cookie = `${NOME_COOKIE_SESSAO}=${token}`;
-  return new Request(url, { method: "POST", headers, body: JSON.stringify(corpo) });
+  return new Request(url, { method: metodo, headers, body: JSON.stringify(corpo) });
 }
 
 export function parametros(id: string) {
