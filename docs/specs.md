@@ -33,6 +33,7 @@ Legenda de status da Spec:
 | Layout da SPEC-005 (frequência, atividades, entregas, minhas atividades) | `aprovado` (Arthur) | 2026-10-16 |
 | SPEC-006 e SPEC-007 aprovadas, com OPEN-004 e OPEN-011 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
 | Layout das SPEC-006 e SPEC-007 (alertas e painel do estudante) | `aprovado` (Arthur) | 2026-10-16 |
+| SPEC-008 e SPEC-009 aprovadas, com OPEN-005, OPEN-012 e OPEN-021 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
 
 ---
 
@@ -47,8 +48,8 @@ Legenda de status da Spec:
 | 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
 | 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `em implementação` |
 | 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `em implementação` |
-| 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `especificada` |
-| 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `especificada` |
+| 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `aprovada` |
+| 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `aprovada` |
 
 Todas as Specs têm texto completo abaixo. A SPEC-001 está `implementada` e as SPEC-002 e SPEC-003 foram aprovadas em 2026-10-09 (hoje `em implementação`); as demais estão `especificadas` e aguardam aprovação humana antes de qualquer código.
 
@@ -1015,7 +1016,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-008 — Dashboard do professor e plano de recuperação
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -1032,19 +1033,37 @@ Padrão da SPEC-001 (seção 14).
 |---|---|
 | **RF** | RF-13, RF-14 |
 | **RB** | RB-03, RB-09, RB-11, RB-12 |
-| **RNF** | RNF-01, RNF-03, RNF-04, RNF-05 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-05, RNF-06 |
 | **UC / fluxo** | Dashboard do professor; UC-04, incluindo progresso |
-| **Entidades** | `Usuario`, `Turma`, `IndicadorAcademico`, `PlanoRecuperacao`, `Atividade` |
+| **Entidades** | `Usuario`, `Turma`, `IndicadorAcademico`, `PlanoRecuperacao`, `ItemPlano` |
 | **Drivers** | AD-01, AD-02, AD-04, AD-05 |
 | **ADRs** | ADR-001, ADR-002, ADR-003 |
 | **Issues** | #21, #22 |
-| **OPEN relacionados** | OPEN-003, OPEN-012 |
+| **OPEN relacionados** | OPEN-003, OPEN-012 e OPEN-021 (fechadas) |
 
 ## 3. Escopo
 
-**Incluído:** indicadores dos estudantes da turma (com contagem Normal, Atenção e Risco); criação de plano para estudante em Risco; cálculo de progresso do plano.
+**Incluído**
+- Dashboard da turma (RF-13): estudantes da turma com média, frequência e situação vigentes, contagem Normal, Atenção, Risco e sem dados, e o plano de cada estudante.
+- Criação de plano de recuperação para estudante em Risco (RF-14, RB-11), com 1 ou mais itens próprios do plano (OPEN-021).
+- Marcar e desmarcar a conclusão de cada item pelo professor (OPEN-003) e cálculo do progresso (RB-12).
+- Encerramento do plano pelo professor (OPEN-012); a tela avisa quando o estudante já saiu do Risco.
 
-**Fora do escopo:** quem marca a conclusão de atividade do plano (OPEN-003); o que acontece com o plano se o estudante sair de Risco (OPEN-012).
+**Fora do escopo**
+- Visão do plano pelo estudante (sem RF).
+- Edição ou exclusão de itens e de planos (sem RF).
+- Encerramento automático (OPEN-012).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Professor — Dashboard da turma e criação de plano | [prototipo.html#professor-turma](layout/prototipo.html#professor-turma) | [ ] | [ ] | — | — |
+| Professor — Plano de recuperação | [prototipo.html#professor-plano](layout/prototipo.html#professor-plano) | [ ] | [ ] | — | — |
+
+Checklist RNF: situação e progresso com cor, símbolo e rótulo (RNF-06); usável em computador e celular (RNF-04).
 
 ## 4. Dependências
 
@@ -1054,53 +1073,62 @@ SPEC-001 a SPEC-006; SPEC-007 como padrão de consulta consolidada.
 
 **Pré-condições:** professor autenticado e responsável pela turma.
 
-**Fluxo principal (dashboard):** professor acessa uma turma; sistema apresenta os indicadores apenas dos estudantes dessa turma.
+**Fluxo principal (dashboard):** professor abre uma turma que leciona; sistema apresenta os indicadores vigentes apenas dos estudantes dessa turma e a contagem por situação.
 
 **Fluxo principal (plano):**
-1. Professor acessa o dashboard da turma e seleciona um estudante em Risco.
-2. Professor define as atividades previstas no plano.
-3. Sistema associa o plano ao estudante e ao professor responsável.
+1. No dashboard da turma, professor escolhe um estudante em Risco.
+2. Professor informa os itens previstos no plano (um por linha).
+3. Sistema cria o plano `Ativo`, vinculado ao estudante, à turma e ao professor responsável.
 4. Sistema inicializa o progresso em 0%.
 
-**Alternativo:** a cada atividade concluída, o sistema recalcula o progresso (concluídas dividido pelo total previsto).
+**Alternativo (progresso):** professor marca ou desmarca um item como concluído; o progresso é recalculado como concluídos ÷ previstos (RB-12).
 
-**Exceções:** estudante fora de Risco: sistema impede a criação do plano e explica o motivo.
+**Alternativo (encerramento):** professor encerra o plano; ele fica `Encerrado` e somente leitura. Se o estudante voltar ao Risco, um novo plano pode ser criado.
+
+**Exceções:**
+- Estudante fora de Risco: sistema impede a criação e explica o motivo (RB-11).
+- Plano sem nenhum item: sistema impede a criação e indica o campo.
+- Estudante já com plano ativo na turma: sistema impede um segundo plano ativo.
+- Turma de outro professor: acesso negado.
 
 **Pós-condições de sucesso:** plano vinculado ao estudante e a exatamente um professor.
-**Pós-condição de falha:** nenhum plano criado.
+**Pós-condição de falha:** nenhum plano criado ou alterado.
 
 ## 6. Regras e invariantes
 
 | ID | Invariante |
 |---|---|
 | INV-008-01 | Só estudante em Risco recebe plano de recuperação (RB-11). |
-| INV-008-02 | Todo plano tem exatamente 1 professor responsável (RB-11). |
-| INV-008-03 | Progresso é concluídas dividido por previstas, e o plano tem de 1 a N atividades (RB-12). |
-| INV-008-04 | O professor só vê estudantes das turmas que leciona (RB-03). |
+| INV-008-02 | Todo plano tem exatamente 1 professor responsável, o da turma (RB-11). |
+| INV-008-03 | Progresso é concluídos ÷ previstos, e o plano tem de 1 a N itens (RB-12). |
+| INV-008-04 | O professor só vê estudantes e planos das turmas que leciona (RB-03). |
+| INV-008-05 | Há no máximo 1 plano `Ativo` por estudante e turma. |
+| INV-008-06 | Plano `Encerrado` não aceita alteração de itens. |
 
 ## 7. Modelo de domínio envolvido
 
-`PlanoRecuperacao` (progresso, criadoEm) ligado a estudante, professor e atividades previstas.
+`PlanoRecuperacao` (status Ativo/Encerrado, criadoEm, encerradoEm; 1 estudante, 1 turma, 1 professor) com `ItemPlano` (descrição, concluído, concluídoEm). O progresso é derivado, não gravado.
 
 ## 8. Impacto arquitetural
 
-Cálculo de progresso no domínio, testável sem banco (DA-07). Escopo na query (ADR-003).
+Progresso e regra de criação como funções puras em `src/domain` (DA-07). Escopo na query (ADR-003). Índice parcial único garante INV-008-05 no banco.
 
 ## 9. Contratos necessários
 
 | Operação | Entrada | Saída de sucesso | Erros |
 |---|---|---|---|
-| Consultar turma | professor responsável, turma | indicadores e contagem por situação | sem permissão |
-| Criar plano | estudante, atividades previstas | plano criado com progresso 0% | estudante fora de Risco, sem permissão |
-| Atualizar progresso | plano, atividade concluída | progresso recalculado | atividade fora do plano |
+| Consultar turma | professor responsável, turma | indicadores, contagem por situação e planos | turma fora do escopo |
+| Criar plano | turma, estudante, itens | plano Ativo com progresso 0% | estudante fora de Risco, sem itens, plano ativo existente, sem permissão |
+| Marcar item | item, concluído (sim/não) | item atualizado, progresso recalculado | plano encerrado, sem permissão |
+| Encerrar plano | plano | plano Encerrado | já encerrado, sem permissão |
 
 ## 10. RNFs aplicáveis
 
 | RNF | Como verificar |
 |---|---|
-| RNF-01 | Dashboard da turma em até 3 s |
-| RNF-03, RNF-05 | Professor só acessa as turmas dele |
-| RNF-04 | Telas utilizáveis em desktop e mobile |
+| RNF-01 | Dashboard da turma lê o indicador persistido, em até 3 s |
+| RNF-03, RNF-05 | Professor só acessa as turmas e planos dele |
+| RNF-04, RNF-06 | Telas aprovadas no protótipo, em computador e celular |
 
 ## 11. Critérios de aceitação
 
@@ -1109,8 +1137,10 @@ Cálculo de progresso no domínio, testável sem banco (DA-07). Escopo na query 
 | AC-008-01 | Professor responsável por uma turma | Acessa a turma | Vê só os estudantes dela, com contagem Normal, Atenção e Risco |
 | AC-008-02 | Estudante em Risco | Professor cria um plano | Plano associado ao estudante e ao professor, progresso 0% |
 | AC-008-03 | Estudante em Normal ou Atenção | Professor tenta criar plano | Criação impedida com mensagem explicativa |
-| AC-008-04 | Plano com 4 atividades previstas | 1 atividade é concluída | Progresso 25% |
+| AC-008-04 | Plano com 4 itens previstos | 1 item é concluído | Progresso 25% |
 | AC-008-05 | Professor de outra turma | Tenta acessar a turma ou criar plano | Acesso negado |
+| AC-008-06 | Estudante já com plano ativo | Professor tenta criar outro | Criação impedida |
+| AC-008-07 | Plano ativo de estudante que saiu de Risco | Professor encerra o plano | Plano Encerrado e sem alteração de itens |
 
 ## 12. Casos de teste derivados
 
@@ -1118,10 +1148,11 @@ Cálculo de progresso no domínio, testável sem banco (DA-07). Escopo na query 
 2. Criação só para Risco.
 3. Plano com exatamente 1 professor.
 4. Escopo do professor.
+5. Um plano ativo por estudante e turma.
 
 ## 13. Questões em aberto
 
-OPEN-003, OPEN-012.
+Nenhuma. OPEN-003, OPEN-012 e OPEN-021 fechadas.
 
 ## 14. Definition of Done
 
@@ -1131,7 +1162,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-009 — Relatórios acadêmicos autorizados
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -1147,20 +1178,37 @@ Padrão da SPEC-001 (seção 14).
 | Artefato | Referências |
 |---|---|
 | **RF** | RF-15 |
-| **RB** | RB-03, RB-04, RB-09, RB-10 |
-| **RNF** | RNF-01, RNF-03, RNF-04, RNF-05 |
+| **RB** | RB-03, RB-04, RB-08, RB-09, RB-10 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-05, RNF-06 |
 | **UC / fluxo** | UC-05 |
-| **Entidades** | `Usuario`, `Turma`, `Disciplina`, `Nota`, `Frequencia`, `Atividade`, `IndicadorAcademico` |
+| **Entidades** | `Usuario`, `Turma`, `Disciplina`, `Frequencia`, `Atividade`, `Entrega`, `IndicadorAcademico` |
 | **Drivers** | AD-01, AD-02, AD-04, AD-05 |
 | **ADRs** | ADR-001, ADR-002, ADR-003 |
 | **Issues** | #2 |
-| **OPEN relacionados** | OPEN-005 |
+| **OPEN relacionados** | OPEN-005 (fechada) |
 
 ## 3. Escopo
 
-**Incluído:** relatório consolidado de uma turma (professor) ou das turmas sob responsabilidade (coordenador).
+**Incluído (OPEN-005)**
+- Relatório na tela, para Professor (turmas que leciona) e Coordenador (turmas sob sua responsabilidade).
+- Resumo por turma: estudantes, média da turma, frequência média, quantos em Normal, Atenção, Risco e sem dados, e entregas atrasadas.
+- Detalhe por estudante: média, frequência, situação e entregas atrasadas.
+- Filtros por turma e por situação.
+- Exportação em CSV (separador `;` e vírgula decimal, para abrir no Excel em português), com os mesmos filtros.
 
-**Fora do escopo:** formato de saída, filtros e granularidade (OPEN-005).
+**Fora do escopo**
+- PDF e gráficos no relatório.
+- Relatórios agendados ou enviados por e-mail.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Relatório acadêmico (professor e coordenador) | [prototipo.html#relatorio](layout/prototipo.html#relatorio) | [ ] | [ ] | — | — |
+
+Checklist RNF: situação com cor, símbolo e rótulo (RNF-06); usável em computador e celular (RNF-04).
 
 ## 4. Dependências
 
@@ -1171,10 +1219,12 @@ SPEC-001 a SPEC-008.
 **Pré-condições:** usuário autenticado com perfil Professor ou Coordenador.
 
 **Fluxo principal:**
-1. Usuário solicita um relatório.
-2. Sistema valida a autorização conforme o perfil (RB-03, RB-04).
-3. Sistema consolida notas, frequência e situação das turmas autorizadas.
-4. Sistema apresenta o relatório.
+1. Usuário abre o relatório e, se quiser, escolhe turma e situação.
+2. Sistema valida a autorização conforme o perfil (RB-03, RB-04), filtrando dentro da query (ADR-003).
+3. Sistema consolida média, frequência e situação vigentes (RB-10) e as entregas atrasadas (RB-08) das turmas autorizadas.
+4. Sistema apresenta o relatório; o usuário pode exportar o mesmo conteúdo em CSV.
+
+**Média da turma:** média simples das médias dos estudantes que já têm média; **frequência média:** média simples das frequências registradas. Estudante sem dados conta em "sem dados" e não entra nessas médias.
 
 **Exceções:** turma fora do escopo: sistema bloqueia e exibe mensagem de negação.
 
@@ -1189,6 +1239,7 @@ SPEC-001 a SPEC-008.
 | INV-009-02 | Coordenador só obtém relatório das turmas sob sua responsabilidade (RB-04). |
 | INV-009-03 | Estudante não solicita relatórios. |
 | INV-009-04 | O relatório usa os indicadores vigentes (RB-10). |
+| INV-009-05 | Tela e CSV trazem exatamente as mesmas linhas para os mesmos filtros. |
 
 ## 7. Modelo de domínio envolvido
 
@@ -1196,22 +1247,22 @@ Leitura de todas as entidades acadêmicas filtradas por escopo de professor ou c
 
 ## 8. Impacto arquitetural
 
-Consulta agregada com filtro de escopo na própria query (ADR-003), apoiada no indicador persistido (DA-05).
+Consolidação (médias e contagens) como funções puras em `src/domain` (DA-07); consulta agregada com filtro de escopo na própria query (ADR-003), apoiada no indicador persistido (DA-05); status de entrega pela regra única da SPEC-005.
 
 ## 9. Contratos necessários
 
 | Operação | Entrada | Saída de sucesso | Erros |
 |---|---|---|---|
-| Gerar relatório | usuário autenticado, turma(s) | informações consolidadas | sem permissão, turma fora do escopo |
-
-Formato de saída em aberto (OPEN-005).
+| Gerar relatório | sessão, turma (opcional), situação (opcional) | resumo por turma e detalhe por estudante | turma fora do escopo, perfil sem permissão |
+| Exportar CSV | os mesmos filtros | arquivo `relatorio-studytrack.csv` | os mesmos |
 
 ## 10. RNFs aplicáveis
 
 | RNF | Como verificar |
 |---|---|
 | RNF-01 | Relatório em até 3 s para turmas de tamanho típico |
-| RNF-03, RNF-05 | Nenhuma linha de turma fora do escopo aparece |
+| RNF-03, RNF-05 | Nenhuma linha de turma fora do escopo aparece, na tela nem no CSV |
+| RNF-04, RNF-06 | Tela aprovada no protótipo, em computador e celular |
 
 ## 11. Critérios de aceitação
 
@@ -1222,6 +1273,8 @@ Formato de saída em aberto (OPEN-005).
 | AC-009-03 | Professor | Solicita relatório de turma alheia | Bloqueado com mensagem de negação |
 | AC-009-04 | Estudante | Tenta solicitar relatório | Acesso negado |
 | AC-009-05 | Indicador alterado | Relatório é gerado em seguida | Reflete o indicador atual |
+| AC-009-06 | Filtro por situação Risco | Relatório é gerado | Só estudantes em Risco no detalhe |
+| AC-009-07 | Mesmos filtros | Usuário exporta CSV | CSV com as mesmas linhas da tela |
 
 ## 12. Casos de teste derivados
 
@@ -1229,11 +1282,14 @@ Formato de saída em aberto (OPEN-005).
 2. Turma fora do escopo é bloqueada.
 3. Negação ao estudante.
 4. Relatório reflete a última alteração.
+5. Consolidação: médias e contagens com estudantes sem dados.
+6. CSV com separador `;` e vírgula decimal.
 
 ## 13. Questões em aberto
 
-OPEN-005.
+Nenhuma. OPEN-005 fechada em 2026-10-16.
 
 ## 14. Definition of Done
 
 Padrão da SPEC-001 (seção 14).
+
