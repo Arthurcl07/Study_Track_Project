@@ -85,10 +85,24 @@ INV-001-04 coberto por teste automatizado desde 2026-10-09 (junto com a SPEC-002
 - Atribuição de exatamente um perfil (Estudante, Professor ou Coordenador) a cada usuário.
 - Bloqueio de acesso a funcionalidades não autorizadas ao perfil do usuário.
 - Criação de sessão autenticada após login bem-sucedido.
+- Ação **Sair** na casca autenticada: `POST /api/auth/logout` apaga o cookie de sessão e volta ao login (OPEN-019, incluída em 2026-10-16).
 
 **Fora do escopo**
 - Recuperação de senha por e-mail (sem RF definido para isso).
 - Login social / OAuth (não mencionado na baseline).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Login | [prototipo.html#login](layout/prototipo.html#login) | [ ] | [ ] | — | — |
+| Credencial inválida | [prototipo.html#login-erro](layout/prototipo.html#login-erro) | [ ] | [ ] | — | — |
+| Acesso negado | [prototipo.html#acesso-negado](layout/prototipo.html#acesso-negado) | [ ] | [ ] | — | — |
+| Casca autenticada com menu do perfil e **Sair** (OPEN-019) | todas as telas autenticadas do protótipo | [ ] | [ ] | — | — |
+
+Checklist RNF: navegação consistente com menu do perfil e Sair (RNF-06); usável em computador, tablet e smartphone (RNF-04); situação sempre com cor, símbolo e rótulo (RNF-06).
 
 ## 4. Dependências
 
@@ -219,6 +233,22 @@ Critérios AC-001-* implementados; INV-001-* preservados; testes da seção 12 a
 - Cadastro de contas de Professor e Coordenador (sem RF; continuam por seed, OPEN-001).
 - Troca de senha do estudante (sem RF, OPEN-009).
 
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Estudante — Minhas turmas | [prototipo.html#estudante-inicio](layout/prototipo.html#estudante-inicio) | [ ] | [ ] | — | — |
+| Professor — Turmas que leciono | [prototipo.html#professor-inicio](layout/prototipo.html#professor-inicio) | [ ] | [ ] | — | — |
+| Coordenador — Início | [prototipo.html#coordenador-inicio](layout/prototipo.html#coordenador-inicio) | [ ] | [ ] | — | — |
+| Coordenador — Disciplinas | [prototipo.html#coordenador-disciplinas](layout/prototipo.html#coordenador-disciplinas) | [ ] | [ ] | — | — |
+| Coordenador — Turmas | [prototipo.html#coordenador-turmas](layout/prototipo.html#coordenador-turmas) | [ ] | [ ] | — | — |
+| Coordenador — Detalhe da turma | [prototipo.html#coordenador-turma](layout/prototipo.html#coordenador-turma) | [ ] | [ ] | — | — |
+| Campos pendentes no cadastro (AC-002-02) | [prototipo.html#cadastro-erro](layout/prototipo.html#cadastro-erro) | [ ] | [ ] | — | — |
+
+Checklist RNF: navegação consistente com menu do perfil e Sair (RNF-06); usável em computador, tablet e smartphone (RNF-04); situação sempre com cor, símbolo e rótulo (RNF-06).
+
 ## 4. Dependências
 
 SPEC-001.
@@ -346,6 +376,10 @@ Padrão da SPEC-001 (seção 14).
 - Telas e alertas (SPEC-006, SPEC-007).
 - Telas e rotas de registro de avaliação, nota e frequência (SPEC-004 e SPEC-005); elas chamam o recálculo desta Spec na mesma transação da escrita.
 
+## Telas e evidência de layout
+
+Sem tela própria nesta Spec (indicador exposto só pela API). As telas que mostram média e situação são das SPEC-006 e SPEC-007 e seguem os selos de situação de [`identidade-visual.md`](identidade-visual.md).
+
 ## 4. Dependências
 
 SPEC-002.
@@ -463,6 +497,16 @@ Padrão da SPEC-001 (seção 14), mais teste de limites da tabela 12.1.
 **Incluído:** cadastrar avaliação (turma, nome, peso, data) pelo professor responsável pela turma (OPEN-001, OPEN-017), lançar nota, alterar nota já lançada, recalcular média e indicador (via SPEC-003).
 
 **Fora do escopo:** faixa de nota e fórmula da média (OPEN-002).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Professor — Notas e avaliações (lançar, alterar, nova avaliação) | [prototipo.html#professor-notas](layout/prototipo.html#professor-notas) | [ ] | [ ] | — | — |
+
+Checklist RNF: navegação consistente com menu do perfil e Sair (RNF-06); usável em computador, tablet e smartphone (RNF-04); situação sempre com cor, símbolo e rótulo (RNF-06).
 
 ## 4. Dependências
 
