@@ -20,13 +20,16 @@
 | Spec | Critérios | Nível principal |
 |---|---|---|
 | SPEC-001 | AC-001-01 a 04 | Integração |
+| SPEC-002 | AC-002-01 a 05 | Integração (+ unitário da validação dos cadastros) |
 | SPEC-003 | AC-003-01 a 07 | Unitário (limites de 5,0, 6,0 e 75%) |
 | SPEC-004 | AC-004-01 a 07 | Integração (+ unitário da validação e da média) |
-| SPEC-005 | AC-005-01 a 05 | Unitário + integração |
-| SPEC-006 | AC-006-01 a 05 | Integração |
-| SPEC-007 | AC-007-01 a 06 | Integração + ponta a ponta |
-| SPEC-008 | AC-008-01 a 05 | Unitário + integração |
-| SPEC-009 | AC-009-01 a 05 | Integração |
+| SPEC-005 | AC-005-01 a 09 | Unitário + integração |
+| SPEC-006 | AC-006-01 a 06 | Integração |
+| SPEC-007 | AC-007-01 a 07 | Integração (ponta a ponta: OPEN-023) |
+| SPEC-008 | AC-008-01 a 07 | Unitário + integração |
+| SPEC-009 | AC-009-01 a 07 | Unitário + integração |
+
+Situação em 2026-10-16: todos os AC, INV e RB têm teste com o identificador no nome (128 testes). Detalhe em `docs/verificacao/qualidade.md`.
 
 ## 4. Atributos de qualidade (ISO/IEC 25010) e onde são verificados
 

@@ -87,7 +87,7 @@ describe("SPEC-008 — dashboard da turma e plano de recuperação", () => {
     expect(JSON.stringify(corpo)).not.toContain(outra.risco.id);
   });
 
-  it("AC-008-02: plano para estudante em Risco fica com o professor da turma e começa em 0%", async () => {
+  it("AC-008-02 / INV-008-02: plano para estudante em Risco fica com o professor da turma e começa em 0%", async () => {
     const { professor, risco, turma, token } = await cenario();
 
     const { status, corpo } = await criar(token, { turmaId: turma.id, estudanteId: risco.id, itens: ITENS.join("\n") });
@@ -132,7 +132,7 @@ describe("SPEC-008 — dashboard da turma e plano de recuperação", () => {
     expect(desmarcado.corpo.item.concluidoEm).toBeNull();
   });
 
-  it("AC-008-05 / INV-008-04: professor de outra turma não acessa a turma, nem cria, marca ou encerra plano", async () => {
+  it("RB-03 / AC-008-05 / INV-008-04: professor de outra turma não acessa a turma, nem cria, marca ou encerra plano", async () => {
     const { risco, turma, token } = await cenario();
     const plano = (await criar(token, { turmaId: turma.id, estudanteId: risco.id, itens: ITENS })).corpo;
     const intruso = await criarUsuarioDeTeste("Professor");

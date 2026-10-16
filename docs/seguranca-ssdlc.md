@@ -37,7 +37,8 @@ Regras de uso:
 | Controle de acesso quebrado (um aluno ver dados de outro) | ADR-003, INV-001-03 e INV-001-04, testes por perfil |
 | Falhas de autenticação | Hash de senha, mensagem de erro genérica, cookie httpOnly |
 | Injeção | Prisma com consultas parametrizadas; validação de entrada |
-
+| Exposição de dados sensíveis | Privacidade (RNF-05); dados acadêmicos só para perfis autorizados |
+| Dependências vulneráveis | Revisar atualizações em PR; rodar auditoria de dependências (`npm audit`) a cada entrega |
 
 ## 4. Registro de verificação (2026-10-02)
 
@@ -47,5 +48,15 @@ Regras de uso:
 | 2. Permissões (`.claude/settings.json`) | Tentativa de checar a existência do `.env` por ferramenta do agente | Acesso bloqueado pela ferramenta. A mensagem foi genérica, então o teste isolado da regra (sem a instrução da camada 1) ainda está pendente |
 
 Observação: o teste da camada 1 não prova a camada 2, porque o agente recusou antes de tentar acessar o arquivo. Esse é o motivo de existirem as duas camadas.
-| Exposição de dados sensíveis | Privacidade (RNF-05); dados acadêmicos só para perfis autorizados |
-| Dependências vulneráveis | Revisar atualizações em PR; rodar auditoria de dependências quando houver código |
+
+## 5. Registro de verificação da aplicação (2026-10-16)
+
+Detalhe em `docs/verificacao/qualidade.md`.
+
+| Verificação | Resultado |
+|---|---|
+| Autorização no servidor em toda rota de API e página autenticada | Aprovado (só login, logout, `/login`, `/acesso-negado` e `/` ficam sem guarda, por definição) |
+| Testes de escopo por perfil em todas as Specs com dados acadêmicos | Aprovado |
+| Logs sem senha, hash ou token | Aprovado (não há logs em `src/`) |
+| Auditoria de dependências (`npm audit`) | 3 alertas em ferramentas de desenvolvimento (`prisma` CLI e `vitest`), com correção só em versão major: OPEN-022 |
+| Camadas 3 (hook local) e 4 (CI) | Ainda não configuradas: OPEN-024 |

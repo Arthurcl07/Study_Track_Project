@@ -89,7 +89,7 @@ describe("SPEC-009 — consolidação e CSV", () => {
 });
 
 describe("SPEC-009 — relatório com escopo", () => {
-  it("AC-009-01 / INV-009-01: professor obtém o relatório consolidado só das turmas que leciona", async () => {
+  it("RB-03 / AC-009-01 / INV-009-01: professor obtém o relatório consolidado só das turmas que leciona", async () => {
     const { professor, turma, estudantes } = await cenario();
     const outra = await cenario();
 
@@ -107,7 +107,7 @@ describe("SPEC-009 — relatório com escopo", () => {
     expect(JSON.stringify(corpo)).not.toContain(outra.turma.id);
   });
 
-  it("AC-009-02 / INV-009-02: coordenador obtém só as turmas sob sua responsabilidade", async () => {
+  it("RB-04 / AC-009-02 / INV-009-02: coordenador obtém só as turmas sob sua responsabilidade", async () => {
     const coordenador = await criarUsuarioDeTeste("Coordenador");
     const minha = await cenario(coordenador.id);
     const alheia = await cenario();

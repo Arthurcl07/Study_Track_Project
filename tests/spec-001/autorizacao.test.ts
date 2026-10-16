@@ -63,7 +63,7 @@ describe("SPEC-001 — autorização", () => {
     expect(podeAcessar("Coordenador", RECURSOS.areaCoordenacao)).toBe(true);
   });
 
-  it("INV-001-01: todo usuário tem exatamente um perfil dentre Estudante, Professor ou Coordenador", async () => {
+  it("RB-01 / INV-001-01: todo usuário tem exatamente um perfil dentre Estudante, Professor ou Coordenador", async () => {
     expect(PERFIS).toEqual(["Estudante", "Professor", "Coordenador"]);
     expect(ehPerfilValido("Admin")).toBe(false);
 
@@ -83,7 +83,7 @@ describe("SPEC-001 — autorização", () => {
 
   // INV-001-04: escrito junto com a SPEC-002, quando passaram a existir turmas e matrículas.
   // Notas e frequência (SPEC-003 em diante) reforçam este invariante nos testes das próprias Specs.
-  it("INV-001-04: Estudante nunca recebe dados de outro estudante ao consultar turmas", async () => {
+  it("RB-02 / INV-001-04: Estudante nunca recebe dados de outro estudante ao consultar turmas", async () => {
     const coordenador = await criarUsuarioDeTeste("Coordenador");
     const professor = await criarUsuarioDeTeste("Professor");
     const estudante = await criarUsuarioDeTeste("Estudante");
