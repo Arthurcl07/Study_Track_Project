@@ -10,7 +10,7 @@
 - **Nota** — id, valor, dataRegistro.
 - **Frequencia** — id, percentual, atualizadaEm.
 - **Atividade** — id, descrição, prazo.
-- **Entrega** — id, dataEntrega, status {NoPrazo, Atrasada, Pendente}.
+- **Entrega** — id, dataEntrega, status {NoPrazo, Atrasada, Pendente}. O status é **derivado** de prazo, data da entrega e data atual (OPEN-010); só a entrega registrada é persistida, e "Pendente"/"Atrasada" sem entrega não geram registro.
 - **IndicadorAcademico** — id, media, frequenciaAtual, situacao {Normal, Atenção, Risco}, atualizadoEm.
 - **PlanoRecuperacao** — id, progresso, criadoEm.
 
