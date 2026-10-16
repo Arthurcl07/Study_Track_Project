@@ -5,7 +5,7 @@ import { MEDIA_NORMAL, MEDIA_RISCO, NOTA_MAXIMA } from "@/domain/situacao-academ
 
 const LARGURA = 300;
 const ALTURA = 120;
-const MARGEM = 26;
+const MARGEM = 18;
 
 const formatar = (nota: number) => nota.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
 
@@ -18,6 +18,8 @@ export function GraficoEvolucao({ pontos }: { pontos: PontoEvolucao[] }) {
   const y = (nota: number) => ALTURA - 22 - (nota / NOTA_MAXIMA) * (ALTURA - 40);
   const linha = pontos.map((p, i) => `${x(i)},${y(p.nota)}`).join(" ");
   const descricao = pontos.map((p) => `${p.avaliacao}: ${formatar(p.nota)}`).join("; ");
+  // Primeiro rótulo alinhado à esquerda e último à direita, para não sair do gráfico.
+  const ancora = (i: number) => (pontos.length === 1 ? "middle" : i === 0 ? "start" : i === pontos.length - 1 ? "end" : "middle");
 
   return (
     <svg viewBox={`0 0 ${LARGURA} ${ALTURA}`} className="w-full" role="img" aria-label={`Evolução das notas — ${descricao}`}>
@@ -29,7 +31,7 @@ export function GraficoEvolucao({ pontos }: { pontos: PontoEvolucao[] }) {
         <g key={`${p.avaliacao}-${i}`}>
           <circle cx={x(i)} cy={y(p.nota)} r={4} fill="var(--color-azul)" />
           <text x={x(i)} y={y(p.nota) - 9} fontSize={11} textAnchor="middle" fill="var(--color-texto)">{formatar(p.nota)}</text>
-          <text x={x(i)} y={ALTURA - 5} fontSize={10} textAnchor="middle" fill="var(--color-mudo)">
+          <text x={x(i)} y={ALTURA - 5} fontSize={10} textAnchor={ancora(i)} fill="var(--color-mudo)">
             {p.avaliacao.length > 14 ? `${p.avaliacao.slice(0, 13)}…` : p.avaliacao}
           </text>
         </g>
