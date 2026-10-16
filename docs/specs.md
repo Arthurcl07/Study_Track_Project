@@ -32,6 +32,7 @@ Legenda de status da Spec:
 | SPEC-005 aprovada, com OPEN-003 e OPEN-010 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
 | Layout da SPEC-005 (frequência, atividades, entregas, minhas atividades) | `aprovado` (Arthur) | 2026-10-16 |
 | SPEC-006 e SPEC-007 aprovadas, com OPEN-004 e OPEN-011 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
+| Layout das SPEC-006 e SPEC-007 (alertas e painel do estudante) | `aprovado` (Arthur) | 2026-10-16 |
 
 ---
 
@@ -44,8 +45,8 @@ Legenda de status da Spec:
 | 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `em implementação` |
 | 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
 | 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
-| 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `aprovada` |
-| 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `aprovada` |
+| 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `em implementação` |
+| 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `em implementação` |
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `especificada` |
 | 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `especificada` |
 
@@ -754,7 +755,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-006 — Alertas de atenção e risco
 
-**Status:** `aprovada`
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -793,12 +794,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-16 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Estudante — alertas no topo do painel | [prototipo.html#estudante-painel](layout/prototipo.html#estudante-painel) | [ ] | [ ] | — | — |
-| Professor — alertas das minhas turmas | [prototipo.html#professor-inicio](layout/prototipo.html#professor-inicio) | [ ] | [ ] | — | — |
+| Estudante — alertas no topo do painel | [prototipo.html#estudante-painel](layout/prototipo.html#estudante-painel) | [x] | [x] | Arthur | 2026-10-16 |
+| Professor — alertas das minhas turmas | [prototipo.html#professor-inicio](layout/prototipo.html#professor-inicio) | [x] | [x] | Arthur | 2026-10-16 |
 
 Checklist RNF: alerta sempre com cor, símbolo e rótulo (RNF-06); usável em computador e celular (RNF-04).
 
@@ -879,7 +880,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-007 — Dashboard acadêmico do estudante
 
-**Status:** `aprovada`
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -919,12 +920,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-16 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Estudante — painel acadêmico (alertas, turmas, evolução, atividades) | [prototipo.html#estudante-painel](layout/prototipo.html#estudante-painel) | [ ] | [ ] | — | — |
-| Estudante — painel sem turmas | [prototipo.html#estudante-vazio](layout/prototipo.html#estudante-vazio) | [ ] | [ ] | — | — |
+| Estudante — painel acadêmico (alertas, turmas, evolução, atividades) | [prototipo.html#estudante-painel](layout/prototipo.html#estudante-painel) | [x] | [x] | Arthur | 2026-10-16 |
+| Estudante — painel sem turmas | [prototipo.html#estudante-vazio](layout/prototipo.html#estudante-vazio) | [x] | [x] | Arthur | 2026-10-16 |
 
 Checklist RNF: situação sempre com cor, símbolo e rótulo e gráfico com valores legíveis (RNF-06); usável em computador e celular (RNF-04).
 
