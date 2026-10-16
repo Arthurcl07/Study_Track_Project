@@ -3,6 +3,7 @@
 // Formulário genérico que envia JSON para uma rota da API e mostra o campo pendente (RF-03, AC-002-02).
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { CLASSE_BOTAO_PRIMARIO, CLASSE_BOTAO_SECUNDARIO, CLASSE_CAMPO, CLASSE_ROTULO, ErroCampo, Mensagem } from "./ui";
 
 export type Campo = {
   nome: string;
@@ -11,19 +12,18 @@ export type Campo = {
   opcoes?: { valor: string; rotulo: string }[];
 };
 
-const CLASSE_CAMPO =
-  "mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200";
-
 export function FormularioApi({
   url,
   campos,
   textoBotao,
   mensagemSucesso,
+  secundario = false,
 }: {
   url: string;
   campos: Campo[];
   textoBotao: string;
   mensagemSucesso: string;
+  secundario?: boolean;
 }) {
   const router = useRouter();
   const [erro, setErro] = useState<string | null>(null);
@@ -62,30 +62,30 @@ export function FormularioApi({
   }
 
   return (
-    <form onSubmit={enviar} className="space-y-3" noValidate>
-      {campos.map((campo) => (
-        <div key={campo.nome}>
-          <label htmlFor={`${url}-${campo.nome}`} className="block text-sm font-medium">{campo.rotulo}</label>
-          {campo.tipo === "select" ? (
-            <select id={`${url}-${campo.nome}`} name={campo.nome} defaultValue="" className={CLASSE_CAMPO}>
-              <option value="">Selecione...</option>
-              {campo.opcoes?.map((opcao) => (
-                <option key={opcao.valor} value={opcao.valor}>{opcao.rotulo}</option>
-              ))}
-            </select>
-          ) : (
-            <input id={`${url}-${campo.nome}`} name={campo.nome} type={campo.tipo ?? "text"} className={CLASSE_CAMPO} />
-          )}
-          {errosCampo[campo.nome] && <p className="mt-1 text-sm text-red-700">{errosCampo[campo.nome]}</p>}
-        </div>
-      ))}
-      {erro && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{erro}</p>}
-      {sucesso && <p role="status" className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-800">{sucesso}</p>}
-      <button
-        type="submit"
-        disabled={enviando}
-        className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white hover:bg-indigo-700 disabled:opacity-60 sm:w-auto"
-      >
+    <form onSubmit={enviar} className="space-y-4" noValidate>
+      {campos.map((campo) => {
+        const id = `${url}-${campo.nome}`;
+        const invalido = Boolean(errosCampo[campo.nome]);
+        return (
+          <div key={campo.nome}>
+            <label htmlFor={id} className={CLASSE_ROTULO}>{campo.rotulo}</label>
+            {campo.tipo === "select" ? (
+              <select id={id} name={campo.nome} defaultValue="" aria-invalid={invalido} className={CLASSE_CAMPO}>
+                <option value="">Selecione...</option>
+                {campo.opcoes?.map((opcao) => (
+                  <option key={opcao.valor} value={opcao.valor}>{opcao.rotulo}</option>
+                ))}
+              </select>
+            ) : (
+              <input id={id} name={campo.nome} type={campo.tipo ?? "text"} aria-invalid={invalido} className={CLASSE_CAMPO} />
+            )}
+            <ErroCampo mensagem={errosCampo[campo.nome]} />
+          </div>
+        );
+      })}
+      {erro && <Mensagem tipo="erro">{erro}</Mensagem>}
+      {sucesso && <Mensagem tipo="sucesso">{sucesso}</Mensagem>}
+      <button type="submit" disabled={enviando} className={`w-full ${secundario ? CLASSE_BOTAO_SECUNDARIO : CLASSE_BOTAO_PRIMARIO}`}>
         {enviando ? "Salvando..." : textoBotao}
       </button>
     </form>

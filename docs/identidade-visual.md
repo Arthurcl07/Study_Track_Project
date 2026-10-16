@@ -64,7 +64,7 @@ Contraste: Texto sobre Branco/Névoa e Branco sobre Marinho/Azul atendem leitura
 
 ## Tipografia
 
-- Fonte da interface: **Inter** (carregada pelo `next/font`, servida pela própria aplicação), com fallback `Segoe UI`, `system-ui`, `sans-serif`.
+- Fonte da interface: **Inter** (pacote `@fontsource-variable/inter`, servida pela própria aplicação, sem depender de internet), com fallback `Segoe UI`, `system-ui`, `sans-serif`.
 - Escala: título de página 24 px semibold; título de cartão 18 px semibold; corpo 16 px; legenda e rótulos de tabela 13–14 px.
 - Números de nota, média e frequência usam algarismos tabulares (`tabular-nums`) para alinhar em tabelas.
 
