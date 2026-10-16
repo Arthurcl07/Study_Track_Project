@@ -34,6 +34,7 @@ Legenda de status da Spec:
 | SPEC-006 e SPEC-007 aprovadas, com OPEN-004 e OPEN-011 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
 | Layout das SPEC-006 e SPEC-007 (alertas e painel do estudante) | `aprovado` (Arthur) | 2026-10-16 |
 | SPEC-008 e SPEC-009 aprovadas, com OPEN-005, OPEN-012 e OPEN-021 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
+| Layout das SPEC-008 e SPEC-009 (dashboard da turma, plano e relatório) | `aprovado` (Arthur) | 2026-10-16 |
 
 ---
 
@@ -48,8 +49,8 @@ Legenda de status da Spec:
 | 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
 | 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `em implementação` |
 | 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `em implementação` |
-| 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `aprovada` |
-| 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `aprovada` |
+| 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `em implementação` |
+| 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `em implementação` |
 
 Todas as Specs têm texto completo abaixo. A SPEC-001 está `implementada` e as SPEC-002 e SPEC-003 foram aprovadas em 2026-10-09 (hoje `em implementação`); as demais estão `especificadas` e aguardam aprovação humana antes de qualquer código.
 
@@ -1016,7 +1017,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-008 — Dashboard do professor e plano de recuperação
 
-**Status:** `aprovada`
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -1056,12 +1057,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-16 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Professor — Dashboard da turma e criação de plano | [prototipo.html#professor-turma](layout/prototipo.html#professor-turma) | [ ] | [ ] | — | — |
-| Professor — Plano de recuperação | [prototipo.html#professor-plano](layout/prototipo.html#professor-plano) | [ ] | [ ] | — | — |
+| Professor — Dashboard da turma e criação de plano | [prototipo.html#professor-turma](layout/prototipo.html#professor-turma) | [x] | [x] | Arthur | 2026-10-16 |
+| Professor — Plano de recuperação | [prototipo.html#professor-plano](layout/prototipo.html#professor-plano) | [x] | [x] | Arthur | 2026-10-16 |
 
 Checklist RNF: situação e progresso com cor, símbolo e rótulo (RNF-06); usável em computador e celular (RNF-04).
 
@@ -1162,7 +1163,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-009 — Relatórios acadêmicos autorizados
 
-**Status:** `aprovada`
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -1202,11 +1203,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-16 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Relatório acadêmico (professor e coordenador) | [prototipo.html#relatorio](layout/prototipo.html#relatorio) | [ ] | [ ] | — | — |
+| Relatório acadêmico (professor e coordenador) | [prototipo.html#relatorio](layout/prototipo.html#relatorio) | [x] | [x] | Arthur | 2026-10-16 |
 
 Checklist RNF: situação com cor, símbolo e rótulo (RNF-06); usável em computador e celular (RNF-04).
 
