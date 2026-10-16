@@ -26,7 +26,7 @@ export default async function PainelProfessor() {
         }
       />
       <TabelaAlertasProfessor alertas={alertas} />
-      <ListaTurmas turmas={turmas} vazio="Você ainda não leciona nenhuma turma." />
+      <ListaTurmas turmas={turmas} vazio="Você ainda não leciona nenhuma turma." linkTurma={(id) => `/professor/turmas/${id}`} />
     </Casca>
   );
 }

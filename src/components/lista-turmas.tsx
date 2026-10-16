@@ -1,6 +1,7 @@
+import Link from "next/link";
 import type { listarTurmasDoEscopo } from "@/server/dados/estrutura";
 import { Icone } from "./icones";
-import { EstadoVazio, Etiqueta } from "./ui";
+import { CLASSE_LINK, EstadoVazio, Etiqueta } from "./ui";
 
 type Turmas = Awaited<ReturnType<typeof listarTurmasDoEscopo>>;
 
@@ -11,7 +12,8 @@ function resumoEstudantes(nomes: string[]) {
 }
 
 // Cartões das turmas do escopo. A lista de estudantes só existe para Professor e Coordenador (RB-02).
-export function ListaTurmas({ turmas, vazio }: { turmas: Turmas; vazio: string }) {
+// linkTurma (opcional): leva ao dashboard da turma do professor (SPEC-008, RF-13).
+export function ListaTurmas({ turmas, vazio, linkTurma }: { turmas: Turmas; vazio: string; linkTurma?: (id: string) => string }) {
   if (turmas.length === 0) return <EstadoVazio>{vazio}</EstadoVazio>;
   return (
     <ul className="grid gap-4 sm:grid-cols-2">
@@ -28,6 +30,9 @@ export function ListaTurmas({ turmas, vazio }: { turmas: Turmas; vazio: string }
               </p>
               <p className="mt-1 text-mudo">{resumoEstudantes(t.estudantes.map((e) => e.nome))}</p>
             </div>
+          )}
+          {linkTurma && (
+            <Link href={linkTurma(t.id)} className={`mt-3 inline-block text-sm ${CLASSE_LINK}`}>Abrir turma →</Link>
           )}
         </li>
       ))}
