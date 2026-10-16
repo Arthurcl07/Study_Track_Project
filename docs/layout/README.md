@@ -34,8 +34,8 @@ Em todas as telas autenticadas: menu lateral do perfil, nome e perfil do usuári
 
 | Item | Status | Aprovado por | Data |
 |---|---|---|---|
-| Identidade visual (`identidade-visual.md`) | `pendente` | — | — |
-| Casca autenticada (menu lateral + Sair) | `pendente` | — | — |
-| Telas das SPEC-001 a SPEC-004 | `pendente` | — | — |
+| Identidade visual (`identidade-visual.md`) | `aprovado` | Arthur | 2026-10-16 |
+| Casca autenticada (menu lateral + Sair) | `aprovado` | Arthur | 2026-10-16 |
+| Telas das SPEC-001 a SPEC-004 | `aprovado` | Arthur | 2026-10-16 |
 
 Ao aprovar: preencher esta tabela, a seção "Telas e evidência de layout" de cada Spec em `specs.md` e o campo "Aprovação humana" de `identidade-visual.md`.

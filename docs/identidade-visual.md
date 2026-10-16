@@ -4,7 +4,7 @@ Fonte normativa do logotipo, da paleta, da tipografia e dos componentes da inter
 
 Vale para todas as Specs com tela (SPEC-001 em diante). Não é ADR: trocar um tom de azul não muda o domínio nem a arquitetura.
 
-**Aprovação humana:** `pendente` (ver [`layout/README.md`](layout/README.md)).
+**Aprovação humana:** `aprovada` em 2026-10-16 por Arthur, junto com os protótipos de [`layout/README.md`](layout/README.md).
 
 ## Ideia da marca
 

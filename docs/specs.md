@@ -93,14 +93,14 @@ INV-001-04 coberto por teste automatizado desde 2026-10-09 (junto com a SPEC-002
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-16 por Arthur; aplicado ao código como refatoração visual. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Login | [prototipo.html#login](layout/prototipo.html#login) | [ ] | [ ] | — | — |
-| Credencial inválida | [prototipo.html#login-erro](layout/prototipo.html#login-erro) | [ ] | [ ] | — | — |
-| Acesso negado | [prototipo.html#acesso-negado](layout/prototipo.html#acesso-negado) | [ ] | [ ] | — | — |
-| Casca autenticada com menu do perfil e **Sair** (OPEN-019) | todas as telas autenticadas do protótipo | [ ] | [ ] | — | — |
+| Login | [prototipo.html#login](layout/prototipo.html#login) | [x] | [x] | Arthur | 2026-10-16 |
+| Credencial inválida | [prototipo.html#login-erro](layout/prototipo.html#login-erro) | [x] | [x] | Arthur | 2026-10-16 |
+| Acesso negado | [prototipo.html#acesso-negado](layout/prototipo.html#acesso-negado) | [x] | [x] | Arthur | 2026-10-16 |
+| Casca autenticada com menu do perfil e **Sair** (OPEN-019) | todas as telas autenticadas do protótipo | [x] | [x] | Arthur | 2026-10-16 |
 
 Checklist RNF: navegação consistente com menu do perfil e Sair (RNF-06); usável em computador, tablet e smartphone (RNF-04); situação sempre com cor, símbolo e rótulo (RNF-06).
 
@@ -235,17 +235,17 @@ Critérios AC-001-* implementados; INV-001-* preservados; testes da seção 12 a
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-16 por Arthur; aplicado ao código como refatoração visual. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Estudante — Minhas turmas | [prototipo.html#estudante-inicio](layout/prototipo.html#estudante-inicio) | [ ] | [ ] | — | — |
-| Professor — Turmas que leciono | [prototipo.html#professor-inicio](layout/prototipo.html#professor-inicio) | [ ] | [ ] | — | — |
-| Coordenador — Início | [prototipo.html#coordenador-inicio](layout/prototipo.html#coordenador-inicio) | [ ] | [ ] | — | — |
-| Coordenador — Disciplinas | [prototipo.html#coordenador-disciplinas](layout/prototipo.html#coordenador-disciplinas) | [ ] | [ ] | — | — |
-| Coordenador — Turmas | [prototipo.html#coordenador-turmas](layout/prototipo.html#coordenador-turmas) | [ ] | [ ] | — | — |
-| Coordenador — Detalhe da turma | [prototipo.html#coordenador-turma](layout/prototipo.html#coordenador-turma) | [ ] | [ ] | — | — |
-| Campos pendentes no cadastro (AC-002-02) | [prototipo.html#cadastro-erro](layout/prototipo.html#cadastro-erro) | [ ] | [ ] | — | — |
+| Estudante — Minhas turmas | [prototipo.html#estudante-inicio](layout/prototipo.html#estudante-inicio) | [x] | [x] | Arthur | 2026-10-16 |
+| Professor — Turmas que leciono | [prototipo.html#professor-inicio](layout/prototipo.html#professor-inicio) | [x] | [x] | Arthur | 2026-10-16 |
+| Coordenador — Início | [prototipo.html#coordenador-inicio](layout/prototipo.html#coordenador-inicio) | [x] | [x] | Arthur | 2026-10-16 |
+| Coordenador — Disciplinas | [prototipo.html#coordenador-disciplinas](layout/prototipo.html#coordenador-disciplinas) | [x] | [x] | Arthur | 2026-10-16 |
+| Coordenador — Turmas | [prototipo.html#coordenador-turmas](layout/prototipo.html#coordenador-turmas) | [x] | [x] | Arthur | 2026-10-16 |
+| Coordenador — Detalhe da turma | [prototipo.html#coordenador-turma](layout/prototipo.html#coordenador-turma) | [x] | [x] | Arthur | 2026-10-16 |
+| Campos pendentes no cadastro (AC-002-02) | [prototipo.html#cadastro-erro](layout/prototipo.html#cadastro-erro) | [x] | [x] | Arthur | 2026-10-16 |
 
 Checklist RNF: navegação consistente com menu do perfil e Sair (RNF-06); usável em computador, tablet e smartphone (RNF-04); situação sempre com cor, símbolo e rótulo (RNF-06).
 
@@ -500,11 +500,11 @@ Padrão da SPEC-001 (seção 14), mais teste de limites da tabela 12.1.
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-16 por Arthur; aplicado ao código como refatoração visual. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Professor — Notas e avaliações (lançar, alterar, nova avaliação) | [prototipo.html#professor-notas](layout/prototipo.html#professor-notas) | [ ] | [ ] | — | — |
+| Professor — Notas e avaliações (lançar, alterar, nova avaliação) | [prototipo.html#professor-notas](layout/prototipo.html#professor-notas) | [x] | [x] | Arthur | 2026-10-16 |
 
 Checklist RNF: navegação consistente com menu do perfil e Sair (RNF-06); usável em computador, tablet e smartphone (RNF-04); situação sempre com cor, símbolo e rótulo (RNF-06).
 
