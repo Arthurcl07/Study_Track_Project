@@ -31,6 +31,7 @@ Legenda de status da Spec:
 | SPEC-004: alteração de escopo — cadastro de avaliação pelo professor passa a fazer parte da Spec (OPEN-017); sem migração nova, tabelas da `spec_003_indicador` (OPEN-016) (aprovada por Arthur) | `aprovada` | 2026-10-13 |
 | SPEC-005 aprovada, com OPEN-003 e OPEN-010 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
 | Layout da SPEC-005 (frequência, atividades, entregas, minhas atividades) | `aprovado` (Arthur) | 2026-10-16 |
+| SPEC-006 e SPEC-007 aprovadas, com OPEN-004 e OPEN-011 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
 
 ---
 
@@ -43,8 +44,8 @@ Legenda de status da Spec:
 | 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `em implementação` |
 | 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
 | 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
-| 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `especificada` |
-| 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `especificada` |
+| 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `aprovada` |
+| 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `aprovada` |
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `especificada` |
 | 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `especificada` |
 
@@ -753,7 +754,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-006 — Alertas de atenção e risco
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -769,20 +770,37 @@ Padrão da SPEC-001 (seção 14).
 | Artefato | Referências |
 |---|---|
 | **RF** | RF-12 |
-| **RB** | RB-03, RB-04, RB-09, RB-10 |
-| **RNF** | RNF-01, RNF-03, RNF-05; RNF-04 na apresentação |
+| **RB** | RB-02, RB-03, RB-09, RB-10 |
+| **RNF** | RNF-01, RNF-03, RNF-05, RNF-06; RNF-04 na apresentação |
 | **UC / fluxo** | Inclusão "Emitir Alerta de Atenção/Risco"; extensão 1 do UC-02 |
 | **Entidades** | `IndicadorAcademico`, `Usuario`, `Turma` |
 | **Drivers** | AD-01, AD-02, AD-05 |
 | **ADRs** | ADR-001, ADR-003 |
 | **Issues** | #20 |
-| **OPEN relacionados** | OPEN-004 |
+| **OPEN relacionados** | OPEN-004 (fechada) |
 
 ## 3. Escopo
 
-**Incluído:** exibir alerta quando a situação for Atenção ou Risco, ao estudante e ao professor responsável.
+**Incluído**
+- Alerta derivado do indicador vigente (OPEN-004): existe enquanto a situação da turma for Atenção ou Risco e some sozinho quando ela volta a Normal.
+- Apresentação ao estudante, no topo do seu painel, e ao professor responsável, no início do professor ("Alertas das minhas turmas").
+- Consulta de alertas pela API, com o escopo de cada perfil.
 
-**Fora do escopo:** canal de envio (e-mail, notificação), persistência e deduplicação (OPEN-004).
+**Fora do escopo**
+- E-mail, notificação push ou outro canal fora da tela (sem RF nem infraestrutura, OPEN-004).
+- Histórico de alertas, "marcar como lido" e deduplicação: o alerta não é gravado (OPEN-004).
+- Alertas para o Coordenador (RF-12 cita só estudante e professor responsável; relatórios são da SPEC-009).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Estudante — alertas no topo do painel | [prototipo.html#estudante-painel](layout/prototipo.html#estudante-painel) | [ ] | [ ] | — | — |
+| Professor — alertas das minhas turmas | [prototipo.html#professor-inicio](layout/prototipo.html#professor-inicio) | [ ] | [ ] | — | — |
+
+Checklist RNF: alerta sempre com cor, símbolo e rótulo (RNF-06); usável em computador e celular (RNF-04).
 
 ## 4. Dependências
 
@@ -793,11 +811,11 @@ SPEC-001, SPEC-003, SPEC-004, SPEC-005.
 **Pré-condições:** indicador vigente existente.
 
 **Fluxo principal:**
-1. O indicador de um estudante é atualizado.
-2. Se a situação for Atenção ou Risco, o sistema apresenta o alerta ao estudante e ao professor responsável pela turma.
+1. O indicador de um estudante é recalculado (nota ou frequência, SPEC-004/005).
+2. Na próxima consulta, se a situação da turma for Atenção ou Risco, o sistema apresenta o alerta ao estudante e ao professor responsável pela turma, com a disciplina, a média e a frequência que levaram à situação.
 3. Se for Normal, nenhum alerta é apresentado.
 
-**Exceções:** nenhuma específica; falha ao exibir não altera o indicador.
+**Exceções:** nenhuma específica; como o alerta é só leitura, uma falha ao exibir não altera o indicador.
 
 **Pós-condições de sucesso:** alerta visível para os destinatários corretos.
 **Pós-condição de falha:** indicador preservado.
@@ -807,30 +825,30 @@ SPEC-001, SPEC-003, SPEC-004, SPEC-005.
 | ID | Invariante |
 |---|---|
 | INV-006-01 | Só existe alerta para situação Atenção ou Risco (RB-09). |
-| INV-006-02 | O alerta reflete o indicador atual, nunca um valor desatualizado. |
+| INV-006-02 | O alerta reflete o indicador atual, nunca um valor desatualizado: é derivado na leitura e não é gravado (OPEN-004). |
 | INV-006-03 | O alerta é visível apenas ao próprio estudante e ao professor responsável (RB-02, RB-03). |
 
 ## 7. Modelo de domínio envolvido
 
-`IndicadorAcademico.situacao`; vínculo professor responsável pela `Turma`.
+`IndicadorAcademico` (situação, média, frequência atual); vínculo professor responsável pela `Turma`.
 
 ## 8. Impacto arquitetural
 
-O alerta é derivado do indicador persistido (DA-05); o canal fica fora até OPEN-004.
+Regra "o que gera alerta" como função pura em `src/domain` (DA-02); consulta sobre o indicador persistido (DA-05), com escopo na query (ADR-003). Sem fila, agendador ou tabela nova.
 
 ## 9. Contratos necessários
 
 | Operação | Entrada | Saída de sucesso | Erros |
 |---|---|---|---|
-| Consultar alertas do estudante | estudante autenticado | lista de alertas | sem permissão |
-| Consultar alertas da turma | professor responsável | lista de alertas dos estudantes da turma | sem permissão |
+| Consultar alertas | sessão de Estudante ou Professor | alertas do escopo (estudante: os próprios; professor: os dos estudantes das turmas que leciona) | sem sessão, perfil sem permissão |
 
 ## 10. RNFs aplicáveis
 
 | RNF | Como verificar |
 |---|---|
-| RNF-01 | Consulta de alertas dentro de 3 s |
+| RNF-01 | Consulta de alertas lê o indicador persistido, sem recálculo |
 | RNF-03, RNF-05 | Alertas só aparecem para os destinatários corretos |
+| RNF-04, RNF-06 | Telas aprovadas no protótipo, em computador e celular |
 
 ## 11. Critérios de aceitação
 
@@ -841,6 +859,7 @@ O alerta é derivado do indicador persistido (DA-05); o canal fica fora até OPE
 | AC-006-03 | Indicador Normal | O estudante consulta | Nenhum alerta |
 | AC-006-04 | Alerta de um estudante | Outro estudante consulta | Não vê o alerta |
 | AC-006-05 | Estudante que sai de Risco | O indicador é recalculado | O alerta de Risco deixa de ser exibido |
+| AC-006-06 | Professor de outra turma ou Coordenador | Consulta alertas | Não recebe alerta de estudantes fora do seu escopo |
 
 ## 12. Casos de teste derivados
 
@@ -850,7 +869,7 @@ O alerta é derivado do indicador persistido (DA-05); o canal fica fora até OPE
 
 ## 13. Questões em aberto
 
-OPEN-004.
+Nenhuma. OPEN-004 fechada em 2026-10-16.
 
 ## 14. Definition of Done
 
@@ -860,7 +879,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-007 — Dashboard acadêmico do estudante
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -877,19 +896,37 @@ Padrão da SPEC-001 (seção 14).
 |---|---|
 | **RF** | RF-09, RF-10, RF-11, RF-12 |
 | **RB** | RB-02, RB-05, RB-06, RB-07, RB-08, RB-09, RB-10 |
-| **RNF** | RNF-01, RNF-03, RNF-04, RNF-05 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-05, RNF-06 |
 | **UC / fluxo** | UC-02, incluindo estudante sem turmas, alertas e atrasos |
 | **Entidades** | `Usuario`, `Turma`, `Disciplina`, `Avaliacao`, `Nota`, `Frequencia`, `Atividade`, `Entrega`, `IndicadorAcademico` |
 | **Drivers** | AD-01, AD-02, AD-05 |
 | **ADRs** | ADR-001, ADR-002, ADR-003 |
 | **Issues** | #18, #17, #19, #20 |
-| **OPEN relacionados** | OPEN-011 |
+| **OPEN relacionados** | OPEN-011 (fechada) |
 
 ## 3. Escopo
 
-**Incluído:** painel consolidado do estudante autenticado, com destaque de Atenção, Risco e atividades atrasadas.
+**Incluído**
+- Painel do estudante autenticado (página inicial do perfil), por turma: disciplina, professor, média, frequência, situação, notas por avaliação e **evolução** (OPEN-011).
+- Alertas de Atenção e Risco no topo (SPEC-006) e destaque da disciplina afetada.
+- Atividades atrasadas e pendentes do estudante (SPEC-005), com atalho para "Minhas atividades".
 
-**Fora do escopo:** dados de outros estudantes; definição de "evolução" (OPEN-011).
+**Fora do escopo**
+- Dados de outros estudantes.
+- Histórico gravado do indicador (OPEN-011: a evolução usa as notas já existentes).
+
+**Evolução (OPEN-011):** a sequência das notas do estudante nas avaliações da turma, em ordem de data, apresentada em um gráfico de linha simples (0 a 10). Avaliação ainda sem nota não entra no gráfico.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Estudante — painel acadêmico (alertas, turmas, evolução, atividades) | [prototipo.html#estudante-painel](layout/prototipo.html#estudante-painel) | [ ] | [ ] | — | — |
+| Estudante — painel sem turmas | [prototipo.html#estudante-vazio](layout/prototipo.html#estudante-vazio) | [ ] | [ ] | — | — |
+
+Checklist RNF: situação sempre com cor, símbolo e rótulo e gráfico com valores legíveis (RNF-06); usável em computador e celular (RNF-04).
 
 ## 4. Dependências
 
@@ -900,15 +937,15 @@ SPEC-001 a SPEC-006.
 **Pré-condições:** estudante autenticado (UC-01).
 
 **Fluxo principal:**
-1. Estudante acessa o dashboard.
-2. Sistema consulta notas, médias, frequência e atividades das turmas em que está matriculado.
-3. Sistema recupera o indicador vigente de cada turma.
-4. Sistema apresenta o painel consolidado com a situação (Normal, Atenção ou Risco).
+1. Estudante acessa o painel (início do perfil).
+2. Sistema consulta notas, médias, frequência e atividades das turmas em que está matriculado, filtrando pelo estudante dentro da query (ADR-003).
+3. Sistema recupera o indicador vigente de cada turma (sem recalcular, DA-05).
+4. Sistema apresenta o painel consolidado com a situação (Normal, Atenção ou Risco) e a evolução das notas.
 
-**Extensão 1:** situação Atenção ou Risco: destaque da disciplina afetada e alerta.
+**Extensão 1:** situação Atenção ou Risco: alerta no topo e destaque da disciplina afetada.
 **Extensão 2:** atividade sem entrega após o prazo: sinalizada como atrasada.
 
-**Exceções:** estudante sem turmas: painel vazio com orientação para procurar a coordenação.
+**Exceções:** estudante sem turmas: painel vazio com orientação para procurar a coordenação. Turma ainda sem indicador (sem nota nem frequência): mostra "sem dados ainda" em vez da situação.
 
 **Pós-condições de sucesso:** estudante visualiza sua situação acadêmica atualizada.
 **Pós-condição de falha:** nenhum dado de terceiros é exibido.
@@ -920,6 +957,7 @@ SPEC-001 a SPEC-006.
 | INV-007-01 | O painel mostra apenas dados do próprio estudante (RB-02). |
 | INV-007-02 | A situação exibida é a do indicador vigente (RB-09, RB-10). |
 | INV-007-03 | O escopo é aplicado dentro da consulta (ADR-003). |
+| INV-007-04 | A evolução usa só notas já lançadas, em ordem de data da avaliação (OPEN-011). |
 
 ## 7. Modelo de domínio envolvido
 
@@ -927,32 +965,33 @@ Leitura de todas as entidades acadêmicas filtradas pelo estudante autenticado.
 
 ## 8. Impacto arquitetural
 
-Consulta agregada com índice composto, usando o indicador persistido para cumprir RNF-01 (DA-05).
+Consulta agregada com índice composto, usando o indicador persistido para cumprir RNF-01 (DA-05). Gráfico de evolução em SVG gerado no servidor, sem biblioteca externa.
 
 ## 9. Contratos necessários
 
 | Operação | Entrada | Saída de sucesso | Erros |
 |---|---|---|---|
-| Consultar dashboard | estudante autenticado | painel consolidado | sem sessão |
+| Consultar painel | estudante autenticado | turmas com média, frequência, situação, notas, evolução, alertas e atividades | sem sessão, perfil diferente de Estudante |
 
 ## 10. RNFs aplicáveis
 
 | RNF | Como verificar |
 |---|---|
-| RNF-01 | Carga do dashboard em até 3 s (P95) |
+| RNF-01 | Carga do painel em até 3 s (P95) com dados de amostra |
 | RNF-03, RNF-05 | Estudante nunca recebe dados de outro |
-| RNF-04 | Painel utilizável em desktop, tablet e smartphone |
+| RNF-04, RNF-06 | Painel aprovado no protótipo, utilizável em computador e celular |
 
 ## 11. Critérios de aceitação
 
 | ID | Dado | Quando | Então |
 |---|---|---|---|
-| AC-007-01 | Estudante com turmas | Acessa o dashboard | Vê notas, médias, frequência, atividades e situação |
-| AC-007-02 | Situação Atenção ou Risco | Acessa o dashboard | Disciplina afetada destacada e alerta exibido |
-| AC-007-03 | Atividade sem entrega após o prazo | Acessa o dashboard | Atividade sinalizada como atrasada |
-| AC-007-04 | Estudante sem turmas | Acessa o dashboard | Painel vazio com orientação |
+| AC-007-01 | Estudante com turmas | Acessa o painel | Vê notas, médias, frequência, atividades, evolução e situação |
+| AC-007-02 | Situação Atenção ou Risco | Acessa o painel | Disciplina afetada destacada e alerta exibido |
+| AC-007-03 | Atividade sem entrega após o prazo | Acessa o painel | Atividade sinalizada como atrasada |
+| AC-007-04 | Estudante sem turmas | Acessa o painel | Painel vazio com orientação |
 | AC-007-05 | Dois estudantes com dados diferentes | Cada um acessa | Cada um vê só os próprios dados |
-| AC-007-06 | Dashboard com dados de amostra | Medição de carga | Resposta em até 3 s (P95) |
+| AC-007-06 | Painel com dados de amostra | Medição de carga | Resposta em até 3 s (P95) |
+| AC-007-07 | Notas em avaliações de datas diferentes | Acessa o painel | A evolução mostra as notas na ordem das datas |
 
 ## 12. Casos de teste derivados
 
@@ -961,10 +1000,11 @@ Consulta agregada com índice composto, usando o indicador persistido para cumpr
 3. Estudante sem turmas.
 4. Isolamento entre estudantes.
 5. Medição de tempo de resposta.
+6. Ordem da evolução.
 
 ## 13. Questões em aberto
 
-OPEN-011 (o que é "evolução" e de onde vem, já que o modelo guarda só os valores vigentes).
+Nenhuma. OPEN-011 fechada em 2026-10-16.
 
 ## 14. Definition of Done
 
