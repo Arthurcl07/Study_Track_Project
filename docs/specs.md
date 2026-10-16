@@ -30,6 +30,7 @@ Legenda de status da Spec:
 | SPEC-004 aprovada para implementação (aprovada por Arthur) | `aprovada` | 2026-10-13 |
 | SPEC-004: alteração de escopo — cadastro de avaliação pelo professor passa a fazer parte da Spec (OPEN-017); sem migração nova, tabelas da `spec_003_indicador` (OPEN-016) (aprovada por Arthur) | `aprovada` | 2026-10-13 |
 | SPEC-005 aprovada, com OPEN-003 e OPEN-010 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
+| Layout da SPEC-005 (frequência, atividades, entregas, minhas atividades) | `aprovado` (Arthur) | 2026-10-16 |
 
 ---
 
@@ -41,7 +42,7 @@ Legenda de status da Spec:
 | 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `em implementação` |
 | 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `em implementação` |
 | 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
-| 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `aprovada` |
+| 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
 | 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `especificada` |
 | 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `especificada` |
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `especificada` |
@@ -595,7 +596,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-005 — Frequência, atividades e entregas atrasadas
 
-**Status:** `aprovada`
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -636,14 +637,14 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente`. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-16 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Professor — Frequência | [prototipo.html#professor-frequencia](layout/prototipo.html#professor-frequencia) | [ ] | [ ] | — | — |
-| Professor — Atividades (lista e nova atividade) | [prototipo.html#professor-atividades](layout/prototipo.html#professor-atividades) | [ ] | [ ] | — | — |
-| Professor — Entregas de uma atividade | [prototipo.html#professor-atividade](layout/prototipo.html#professor-atividade) | [ ] | [ ] | — | — |
-| Estudante — Minhas atividades | [prototipo.html#estudante-atividades](layout/prototipo.html#estudante-atividades) | [ ] | [ ] | — | — |
+| Professor — Frequência | [prototipo.html#professor-frequencia](layout/prototipo.html#professor-frequencia) | [x] | [x] | Arthur | 2026-10-16 |
+| Professor — Atividades (lista e nova atividade) | [prototipo.html#professor-atividades](layout/prototipo.html#professor-atividades) | [x] | [x] | Arthur | 2026-10-16 |
+| Professor — Entregas de uma atividade | [prototipo.html#professor-atividade](layout/prototipo.html#professor-atividade) | [x] | [x] | Arthur | 2026-10-16 |
+| Estudante — Minhas atividades | [prototipo.html#estudante-atividades](layout/prototipo.html#estudante-atividades) | [x] | [x] | Arthur | 2026-10-16 |
 
 Checklist RNF: navegação consistente com menu do perfil e Sair (RNF-06); usável em computador, tablet e smartphone (RNF-04); status de entrega sempre com cor, símbolo e rótulo (RNF-06).
 
