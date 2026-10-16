@@ -78,3 +78,32 @@ export function ErroCampo({ mensagem }: { mensagem?: string }) {
 export function EstadoVazio({ children }: { children: React.ReactNode }) {
   return <div className="rounded-xl border border-dashed border-traco px-4 py-8 text-center text-mudo">{children}</div>;
 }
+
+// Selos de status (identidade-visual.md): sempre cor + símbolo + rótulo (RNF-06).
+const SITUACOES = {
+  Normal: { classe: "bg-normal-fundo text-normal", rotulo: "● Normal" },
+  Atencao: { classe: "bg-atencao-fundo text-atencao", rotulo: "▲ Atenção" },
+  Risco: { classe: "bg-risco-fundo text-risco", rotulo: "■ Risco" },
+} as const;
+
+export function SeloSituacao({ situacao }: { situacao: keyof typeof SITUACOES }) {
+  const s = SITUACOES[situacao];
+  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[13px] font-semibold whitespace-nowrap ${s.classe}`}>{s.rotulo}</span>;
+}
+
+const ENTREGAS = {
+  NoPrazo: { classe: "bg-normal-fundo text-normal", rotulo: "● No prazo" },
+  Pendente: { classe: "bg-slate-100 text-slate-600", rotulo: "○ Pendente" },
+  Atrasada: { classe: "bg-risco-fundo text-risco", rotulo: "■ Atrasada" },
+} as const;
+
+export function SeloEntrega({ status }: { status: keyof typeof ENTREGAS }) {
+  const s = ENTREGAS[status];
+  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[13px] font-semibold whitespace-nowrap ${s.classe}`}>{s.rotulo}</span>;
+}
+
+// "AAAA-MM-DD" → "DD/MM/AAAA" sem passar por fuso horário.
+export function formatarDataCurta(texto: string) {
+  const [ano, mes, dia] = texto.split("-");
+  return `${dia}/${mes}/${ano}`;
+}

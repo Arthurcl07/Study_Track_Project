@@ -10,6 +10,8 @@ const CAMINHOS = {
   menu: "M4 6h16M4 12h16M4 18h16",
   fechar: "M6 6l12 12M18 6 6 18",
   seta: "M5 12h14M13 6l6 6-6 6",
+  calendario: "M4 6h16v14H4zM4 10h16M8 3v4M16 3v4",
+  check: "M4 12.5 9 17.5 20 6.5",
 } as const;
 
 export type NomeIcone = keyof typeof CAMINHOS;

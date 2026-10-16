@@ -5,15 +5,20 @@ import type { Sessao } from "@/server/auth/token";
 import type { NomeIcone } from "./icones";
 import { NavegacaoCasca } from "./navegacao-casca";
 
-export type ItemMenu = "inicio" | "notas" | "disciplinas" | "turmas" | "area";
+export type ItemMenu = "inicio" | "notas" | "frequencia" | "atividades" | "disciplinas" | "turmas" | "area";
 
 type Entrada = { id: ItemMenu; rotulo: string; href: string; icone: NomeIcone };
 
 const MENUS: Record<Perfil, Entrada[]> = {
-  Estudante: [{ id: "inicio", rotulo: "Início", href: "/estudante", icone: "inicio" }],
+  Estudante: [
+    { id: "inicio", rotulo: "Início", href: "/estudante", icone: "inicio" },
+    { id: "atividades", rotulo: "Minhas atividades", href: "/estudante/atividades", icone: "calendario" },
+  ],
   Professor: [
     { id: "inicio", rotulo: "Início", href: "/professor", icone: "inicio" },
     { id: "notas", rotulo: "Notas e avaliações", href: "/professor/notas", icone: "lapis" },
+    { id: "frequencia", rotulo: "Frequência", href: "/professor/frequencia", icone: "check" },
+    { id: "atividades", rotulo: "Atividades", href: "/professor/atividades", icone: "calendario" },
   ],
   Coordenador: [
     { id: "inicio", rotulo: "Início", href: "/coordenador", icone: "inicio" },
