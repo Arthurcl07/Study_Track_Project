@@ -1,7 +1,10 @@
 // Carga inicial: contas de TESTE, uma por perfil (OPEN-013 — sem cadastro público na SPEC-001),
 // uma turma de exemplo da SPEC-002 ligando as três contas e uma avaliação de exemplo nessa turma
-// (SPEC-004, OPEN-017), sem nota, para o professor lançar pela tela. Apenas para ambiente local.
+// (SPEC-004, OPEN-017), sem nota, para o professor lançar pela tela, e duas atividades de exemplo
+// (SPEC-005). Apenas para ambiente local.
+import { hojeEmBrasilia } from "../src/domain/atividades";
 import { salvarConta } from "../src/server/auth/contas";
+import { paraData } from "../src/server/dados/atividades";
 import { prisma } from "../src/server/dados/prisma";
 import type { Perfil } from "../src/domain/perfil";
 
@@ -47,6 +50,27 @@ async function main() {
     (await prisma.avaliacao.findFirst({ where: { nome: AVALIACAO_EXEMPLO.nome, turmaId: turma.id } })) ??
     (await prisma.avaliacao.create({ data: { ...AVALIACAO_EXEMPLO, turmaId: turma.id } }));
   console.log(`Avaliação de exemplo pronta: ${avaliacao.nome} (peso ${avaliacao.peso})`);
+
+  // SPEC-005: uma atividade já vencida e uma com prazo futuro, sem entregas, para mostrar
+  // os status Atrasada e Pendente. Idempotente pela descrição dentro da turma.
+  const hoje = hojeEmBrasilia();
+  const atividadesExemplo = [
+    { descricao: "Lista de exercícios 1 (exemplo)", prazo: somarDias(hoje, -3) },
+    { descricao: "Trabalho final (exemplo)", prazo: somarDias(hoje, 14) },
+  ];
+  for (const exemplo of atividadesExemplo) {
+    const existente = await prisma.atividade.findFirst({ where: { descricao: exemplo.descricao, turmaId: turma.id } });
+    if (!existente) {
+      await prisma.atividade.create({ data: { turmaId: turma.id, descricao: exemplo.descricao, prazo: paraData(exemplo.prazo) } });
+    }
+    console.log(`Atividade de exemplo pronta: ${exemplo.descricao}`);
+  }
+}
+
+function somarDias(base: string, dias: number) {
+  const data = paraData(base);
+  data.setUTCDate(data.getUTCDate() + dias);
+  return data.toISOString().slice(0, 10);
 }
 
 main()
