@@ -31,7 +31,10 @@ tela só é implementada depois do layout `aprovado` (OPEN-020).
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 implementada; SPEC-002 a SPEC-007 em implementação).
+- `src/` — código-fonte (SPEC-001 implementada; SPEC-002 a SPEC-009 em implementação).
+  Regras do plano de recuperação (só Risco, itens, progresso) em `src/domain/plano.ts`; consolidação e CSV
+  do relatório em `src/domain/relatorio.ts`. O limite de 1 plano ativo por estudante e turma é um índice
+  parcial escrito à mão na migração da SPEC-008: se `prisma migrate dev` propuser `DROP INDEX` dele, remover.
   Alertas (SPEC-006) são lidos do indicador vigente e nunca gravados (`src/domain/alertas.ts`, OPEN-004);
   a evolução do painel (SPEC-007) usa as notas existentes em ordem de data (OPEN-011).
   O status de entrega (No prazo, Pendente, Atrasada) é decidido só em `src/domain/atividades.ts`
