@@ -81,14 +81,19 @@ Telas conferidas no navegador no desktop e no celular (375 px), registradas em `
 | `tinypool` ≤ 2.1.1 | crítica | `vitest` 3.2.7 | só com `vitest` 5 (versão major) |
 | `@vitest/mocker` | moderada | `vitest` 3.2.7 | só com `vitest` 5 (versão major) |
 
-Os três estão em ferramentas de desenvolvimento (CLI de migração e framework de testes), que não recebem dados de usuários em execução. Nenhum aparece no código que roda a aplicação (`next`, `react`, `@prisma/client`, `bcryptjs`, `jose`). Atualizar versão major é decisão humana: registrado como **OPEN-022**. O agente não rodou `npm audit fix --force`.
+Os três estão em ferramentas de desenvolvimento (CLI de migração e framework de testes), que não recebem dados de usuários em execução. Nenhum aparece no código que roda a aplicação (`next`, `react`, `@prisma/client`, `bcryptjs`, `jose`). Atualizar versão major é decisão humana: **OPEN-022**, fechado como risco aceito por ora. O agente não rodou `npm audit fix --force`.
 
-## 8. O que ficou pendente (decisão humana)
+## 8. Decisões tomadas a partir desta verificação (Arthur, 2026-10-16)
+
+| Item | Decisão |
+|---|---|
+| Atualizar Prisma e Vitest para corrigir os alertas do `npm audit` | OPEN-022: risco aceito por ora |
+| Testes ponta a ponta previstos na estratégia, sem ferramenta definida | OPEN-023: a verificação manual registrada basta |
+| CI no GitHub e hook local de commit (camadas 3 e 4 de `seguranca-ssdlc.md`) | OPEN-024: CI criada em `.github/workflows/ci.yml`; hook local dispensado |
+
+## 9. O que ainda depende de humano
 
 | Item | Registro |
 |---|---|
-| Atualizar Prisma e Vitest para corrigir os alertas do `npm audit` | OPEN-022 |
-| Testes ponta a ponta previstos na estratégia, sem ferramenta definida | OPEN-023 |
-| CI no GitHub e hook local de commit (camadas 3 e 4 de `seguranca-ssdlc.md`) | OPEN-024 |
 | Teste isolado da camada 2 (`settings.json` negando `.env`) sem a instrução da camada 1 | Continua pendente; precisa ser feito por um humano, porque o agente não deve tentar ler `.env` |
 | Revisão dos PRs por um colega e conferência humana das telas | Antes de marcar as Specs como `implementadas` |

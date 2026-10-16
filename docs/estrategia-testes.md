@@ -12,8 +12,8 @@
 | Nível | O que cobre | Quantidade | Quando roda |
 |---|---|---|---|
 | Unitário | Regras de domínio: classificação (RB-05/06/07/09), progresso do plano (RB-12), atraso (RB-08) | Muitos | A cada commit |
-| Integração | Rotas `app/api/` com banco de teste: autenticação, escopo (ADR-003), recálculo na escrita | Médio | A cada PR |
-| Ponta a ponta | Fluxos críticos: login, registrar nota e ver o dashboard atualizado | Poucos | Antes de cada entrega |
+| Integração | Rotas `app/api/` com banco de teste: autenticação, escopo (ADR-003), recálculo na escrita | Médio | A cada PR (CI, `.github/workflows/ci.yml`) |
+| Ponta a ponta | Fluxos críticos: login, registrar nota e ver o dashboard atualizado | Poucos, manuais no navegador e registrados em `docs/verificacao/` (OPEN-023) | Antes de cada entrega |
 
 ## 3. Rastreabilidade Spec → teste
 
@@ -25,7 +25,7 @@
 | SPEC-004 | AC-004-01 a 07 | Integração (+ unitário da validação e da média) |
 | SPEC-005 | AC-005-01 a 09 | Unitário + integração |
 | SPEC-006 | AC-006-01 a 06 | Integração |
-| SPEC-007 | AC-007-01 a 07 | Integração (ponta a ponta: OPEN-023) |
+| SPEC-007 | AC-007-01 a 07 | Integração + ponta a ponta manual (OPEN-023) |
 | SPEC-008 | AC-008-01 a 07 | Unitário + integração |
 | SPEC-009 | AC-009-01 a 07 | Unitário + integração |
 

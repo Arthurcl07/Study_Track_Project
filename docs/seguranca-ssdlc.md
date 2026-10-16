@@ -9,8 +9,8 @@ Ferramenta de agente do grupo: **Claude Code** (configuração em `.claude/`).
 | 1. Instrução no repositório | `.claude/CLAUDE.md` orienta o agente (não inventar requisito, respeitar Specs e OPENs) | Ativa |
 | 2. Permissões da ferramenta | `.claude/settings.json` nega leitura de `.env` e comandos destrutivos (`git push --force`, `rm -rf`) | Ativa. É uma lista de bloqueio, não um hook programável |
 | 2b. Hook de ferramenta | Programa externo que decide allow/ask/deny antes de cada ação | Não configurado |
-| 3. Git hook local | Bloqueio antes do commit | Não configurado (recomendado quando houver código) |
-| 4. Revisão e CI | Ruleset `mainprotect` no GitHub: exige PR, bloqueia force push e exclusão da `main`. Sem CI ainda | Parcial: a revisão é exigida; CI será criado quando houver código e testes |
+| 3. Git hook local | Bloqueio antes do commit | Não será criado (OPEN-024): a CI faz a checagem |
+| 4. Revisão e CI | Ruleset `mainprotect` no GitHub: exige PR, bloqueia force push e exclusão da `main`. CI em `.github/workflows/ci.yml` (tipos e testes em todo PR) | Ativa: revisão exigida e CI rodando; falta marcar o check da CI como obrigatório no ruleset |
 
 Limitações assumidas: instrução não é mecanismo de segurança (o modelo pode ignorá-la), então a camada 2 e a camada 4 são as que de fato bloqueiam. A política deve ser testada: peça ao agente para ler `.env` ou fazer `git push --force` e confirme que a ação é negada.
 
@@ -58,5 +58,5 @@ Detalhe em `docs/verificacao/qualidade.md`.
 | Autorização no servidor em toda rota de API e página autenticada | Aprovado (só login, logout, `/login`, `/acesso-negado` e `/` ficam sem guarda, por definição) |
 | Testes de escopo por perfil em todas as Specs com dados acadêmicos | Aprovado |
 | Logs sem senha, hash ou token | Aprovado (não há logs em `src/`) |
-| Auditoria de dependências (`npm audit`) | 3 alertas em ferramentas de desenvolvimento (`prisma` CLI e `vitest`), com correção só em versão major: OPEN-022 |
-| Camadas 3 (hook local) e 4 (CI) | Ainda não configuradas: OPEN-024 |
+| Auditoria de dependências (`npm audit`) | 3 alertas em ferramentas de desenvolvimento (`prisma` CLI e `vitest`), com correção só em versão major: risco aceito por ora (OPEN-022) |
+| Camadas 3 (hook local) e 4 (CI) | CI criada; hook local dispensado (OPEN-024) |
