@@ -117,7 +117,7 @@ Nenhuma (é a primeira Spec da ordem). Estabelece a base de identidade usada por
 
 ## 5. Comportamento esperado
 
-**Pré-condições:** usuário possui cadastro ativo.
+**Pré-condições:** usuário cadastrado (OPEN-014: todo usuário cadastrado é ativo).
 
 **Fluxo principal:**
 1. Usuário informa e-mail e senha.
@@ -174,7 +174,7 @@ Mecanismo de sessão: JWT assinado no servidor, entregue em cookie httpOnly (ADR
 
 | ID | Dado | Quando | Então |
 |---|---|---|---|
-| AC-001-01 | Usuário com cadastro ativo e perfil Estudante | Submete e-mail e senha corretos | Sistema cria a sessão e redireciona ao painel do Estudante |
+| AC-001-01 | Usuário cadastrado com perfil Estudante | Submete e-mail e senha corretos | Sistema cria a sessão e redireciona ao painel do Estudante |
 | AC-001-02 | Usuário tentando autenticar-se | A senha informada está incorreta | Sistema recusa o acesso e não cria sessão |
 | AC-001-03 | Usuário autenticado com perfil Estudante | Tenta acessar função exclusiva de Coordenador | Sistema nega o acesso |
 | AC-001-04 | Qualquer cadastro de usuário | Registro é inspecionado no banco | O valor armazenado é um hash, nunca a senha original |
@@ -190,7 +190,7 @@ Mecanismo de sessão: JWT assinado no servidor, entregue em cookie httpOnly (ADR
 
 OPEN-013 (fechada): sem cadastro público nesta versão. O mecanismo de autenticação foi decidido em ADR-004 (JWT em cookie httpOnly), fechando o OPEN-006.
 
-Levantadas na implementação (decisão provisória do humano, 2026-10-09): OPEN-014 (cadastro ativo sem atributo no modelo) e OPEN-015 (duração da sessão: 8 h).
+Levantadas na implementação e fechadas por Arthur em 2026-10-17: OPEN-014 (todo usuário cadastrado é ativo, sem atributo novo) e OPEN-015 (sessão de 8 h, com saída manual pelo botão Sair, OPEN-019).
 
 ## 14. Definition of Done
 
