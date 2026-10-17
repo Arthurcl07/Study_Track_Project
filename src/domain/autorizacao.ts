@@ -27,6 +27,9 @@ export const RECURSOS = {
   planoRecuperacao: "plano-recuperacao",
   // SPEC-009 (RF-15): relatório para Professor (turmas que leciona) e Coordenador (turmas sob responsabilidade).
   relatorios: "relatorios",
+  // SPEC-010 (RF-16): gestão de contas, só pelo Administrador. Nenhum recurso acadêmico inclui o
+  // Administrador (RB-13, INV-010-03): ele cai no "nega por padrão" de todos os outros.
+  gestaoContas: "gestao-contas",
 } as const;
 
 export type Recurso = (typeof RECURSOS)[keyof typeof RECURSOS];
@@ -45,6 +48,7 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "consulta-alertas": ["Estudante", "Professor"],
   "plano-recuperacao": ["Professor"],
   relatorios: ["Professor", "Coordenador"],
+  "gestao-contas": ["Administrador"],
 };
 
 export function podeAcessar(perfil: unknown, recurso: unknown): boolean {
@@ -57,6 +61,7 @@ const PAINEL_POR_PERFIL: Readonly<Record<Perfil, string>> = {
   Estudante: "/estudante",
   Professor: "/professor",
   Coordenador: "/coordenador",
+  Administrador: "/admin/contas",
 };
 
 // Destino do redirecionamento após login (SPEC-001, fluxo principal passo 4).

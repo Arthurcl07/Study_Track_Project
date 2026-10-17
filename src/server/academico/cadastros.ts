@@ -59,6 +59,17 @@ export async function cadastrarEstudante(entrada: Record<string, unknown>, turma
   }
 }
 
+// RF-17 (SPEC-010): o coordenador responsável troca o professor da turma por outro professor ativo.
+export async function trocarProfessor(entrada: Record<string, unknown>, turmaId: string, coordenadorId: string) {
+  if (!(await dados.turmaSobResponsabilidade(coordenadorId, turmaId))) return falha({ tipo: "fora-do-escopo" });
+  const professorId = typeof entrada.professorId === "string" ? entrada.professorId.trim() : "";
+  if (!professorId) return falha({ tipo: "invalido", erros: { professorId: "Escolha o novo professor." } });
+  if (!(await dados.buscarProfessor(professorId))) {
+    return falha({ tipo: "invalido", erros: { professorId: "Escolha um professor ativo." } });
+  }
+  return sucesso(await dados.trocarProfessorDaTurma(turmaId, professorId));
+}
+
 // RF-04 / INV-002-04: matrícula de estudante já cadastrado em outra turma (N:M).
 export async function matricularEstudante(entrada: Record<string, unknown>, turmaId: string, coordenadorId: string) {
   if (!(await dados.turmaSobResponsabilidade(coordenadorId, turmaId))) return falha({ tipo: "fora-do-escopo" });

@@ -14,7 +14,7 @@ export function normalizarEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
-export async function buscarUsuarioPorEmail(email: string): Promise<UsuarioComHash | null> {
+export async function buscarUsuarioPorEmail(email: string): Promise<(UsuarioComHash & { ativo: boolean }) | null> {
   return prisma.usuario.findUnique({ where: { email: normalizarEmail(email) } });
 }
 
