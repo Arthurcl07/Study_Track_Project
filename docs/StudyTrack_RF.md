@@ -50,6 +50,12 @@
 ## RF-15 — Relatórios
 - WHEN um professor ou coordenador solicita um relatório, o sistema SHALL gerar informações consolidadas de desempenho, frequência e situação acadêmica, respeitando a autorização do solicitante.
 
+## RF-16 — Gestão de contas (incluído em 2026-10-17, OPEN-025)
+- WHEN um administrador cadastra uma conta com nome, e-mail, senha inicial e perfil, o sistema SHALL criar a conta com exatamente esse perfil.
+- WHEN um administrador consulta as contas, o sistema SHALL listar nome, e-mail, perfil e se a conta está ativa, com filtro por perfil.
+- WHEN um administrador desativa uma conta, o sistema SHALL impedir novos acessos e encerrar o acesso em andamento dessa conta, sem apagar seus dados.
+- IF houver dado obrigatório ausente ou e-mail já cadastrado, THEN o sistema SHALL impedir o cadastro e indicar o campo.
+
 ---
 
 

@@ -137,8 +137,9 @@ const MENUS = {
   Estudante: [["inicio", "🏠", "Início"], ["atividades", "🗓️", "Minhas atividades"]],
   Professor: [["inicio", "🏠", "Início"], ["notas", "📝", "Notas e avaliações"], ["frequencia", "✅", "Frequência"], ["atividades", "🗓️", "Atividades"], ["relatorios", "📊", "Relatórios"]],
   Coordenador: [["inicio", "🏠", "Início"], ["disciplinas", "📚", "Disciplinas"], ["turmas", "👥", "Turmas e estudantes"], ["relatorios", "📊", "Relatórios"], ["area", "🔒", "Área da coordenação"]],
+  Administrador: [["contas", "👤", "Contas"]],
 };
-const USUARIOS = { Estudante: "Ana Souza", Professor: "Prof. Carlos Lima", Coordenador: "Marina Alves" };
+const USUARIOS = { Estudante: "Ana Souza", Professor: "Prof. Carlos Lima", Coordenador: "Marina Alves", Administrador: "Admin de Teste" };
 
 function casca(perfil, ativo, conteudo) {
   const itens = MENUS[perfil].map(([id, ic, rot]) => `<a href="#" class="${id === ativo ? "ativo" : ""}"><span>${ic}</span>${rot}</a>`).join("");
@@ -411,10 +412,37 @@ Simulado da prova substitutiva</textarea></div>
         <tr><td data-r="Estudante">Ana Souza</td><td data-r="Turma">Turma A</td><td data-r="Média" class="num">7,8</td><td data-r="Frequência" class="num">92%</td><td data-r="Situação">${selo("Normal")}</td><td data-r="Atrasadas" class="num">0</td></tr>
       </tbody></table></div>`)],
 
+  "admin-contas": ["SPEC-010 · Administrador — Contas", () => casca("Administrador", "contas", contas(false))],
+  "admin-contas-erro": ["SPEC-010 · Administrador — Contas com erros", () => casca("Administrador", "contas", contas(true))],
+
   "acesso-negado": ["SPEC-001 · Acesso negado", () => `<div class="simples"><div style="max-width:420px">
     <div style="margin-bottom:24px">${logoClaro(24)}</div><div style="font-size:40px">🔒</div><h1 style="margin:8px 0">Acesso negado</h1>
     <p style="color:var(--mudo)">Seu perfil não tem permissão para acessar esta página.</p><a class="btn btn-primario" href="#">Voltar ao meu painel</a></div></div>`],
 };
+
+function contas(comErro) {
+  const situacao = (ativa) => ativa ? '<span class="selo s-normal">● Ativa</span>' : '<span class="selo s-pendente">○ Inativa</span>';
+  const linhas = [
+    ["Admin de Teste", "admin@studytrack.test", "Administrador", true, "(você)"],
+    ["Marina Alves", "marina.alves@studytrack.test", "Coordenador", true, "Desativar"],
+    ["Carlos Lima", "carlos.lima@studytrack.test", "Professor", true, "Desativar"],
+    ["Ana Souza", "ana.souza@studytrack.test", "Estudante", true, "Desativar"],
+    ["Rui Prado", "rui.prado@studytrack.test", "Estudante", false, "Reativar"],
+  ].map(([n, e, p, a, acao]) => `<tr><td data-r="Conta"><strong style="font-weight:600">${n}</strong><br><small style="color:var(--mudo)">${e}</small></td><td data-r="Perfil"><span class="etiqueta">${p}</span></td><td data-r="Situação">${situacao(a)}</td><td data-r="Ação">${acao === "(você)" ? '<span style="color:var(--mudo)">(você)</span>' : `<a class="link" href="#">${acao}</a>`}</td></tr>`).join("");
+  return `${cab("Contas", "Crie contas, escolha o perfil de cada uma e controle quem pode entrar. Dados acadêmicos não aparecem aqui.")}
+    ${comErro ? '<div class="msg msg-erro" style="margin-bottom:16px" role="alert">Carlos Lima é professor responsável por 2 turmas e não pode ser desativado.</div>' : ""}
+    <div class="grade g-form">
+      <div class="cartao"><div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px"><h2 style="margin:0">Contas (5)</h2><div style="min-width:180px">${lista("Perfil", ["Todos", "Estudante", "Professor", "Coordenador", "Administrador"], "Todos")}</div></div>
+        <table class="tabela-resp"><thead><tr><th>Conta</th><th>Perfil</th><th>Situação</th><th></th></tr></thead><tbody>${linhas}</tbody></table></div>
+      <div class="cartao"><h2>Nova conta</h2><div class="pilha">
+        ${campo("Nome", "text", comErro ? "" : "", comErro ? "Informe o nome." : "")}
+        ${campo("E-mail", "email", comErro ? "ana.souza@studytrack.test" : "", comErro ? "Já existe uma conta com este e-mail." : "")}
+        ${campo("Senha inicial (mínimo 8 caracteres)", "password")}
+        ${lista("Perfil", ["Estudante", "Professor", "Coordenador", "Administrador"], "Professor")}
+        <p style="margin:0;font-size:13px;color:var(--mudo)">A pessoa entra com este e-mail e esta senha. Estudantes também podem ser cadastrados pela coordenação, já matriculados na turma.</p>
+        <button class="btn btn-primario btn-bloco">Criar conta</button></div></div>
+    </div>`;
+}
 
 function turmaDetalhe(comErro) {
   return `${cab("Turma A · Modelagem de Software", "Período 2026/2 · Professor: Carlos Lima", "", '<a href="#">Turmas e estudantes</a> / Turma A')}
