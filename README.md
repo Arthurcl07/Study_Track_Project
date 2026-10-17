@@ -25,7 +25,8 @@ Normal/Atenção/Risco e indicador persistido, consultável em `/api/indicadores
 avaliações e lançamento/alteração de notas pelo professor, com recálculo da média e do indicador) e SPEC-005
 (frequência, atividades e entregas: o professor registra frequência, cadastra atividades e registra as
 entregas; o status No prazo/Pendente/Atrasada é calculado na hora, e o estudante vê o próprio em
-**Minhas atividades**).
+**Minhas atividades**), SPEC-006 (alertas de Atenção e Risco na tela do estudante e do professor) e
+SPEC-007 (painel do estudante com média, frequência, situação, gráfico de evolução das notas e atividades).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 

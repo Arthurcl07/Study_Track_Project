@@ -56,6 +56,23 @@ function filtroIndicadoresDoEscopo(sessao: Sessao): Prisma.IndicadorAcademicoWhe
   }
 }
 
+// SPEC-006 / OPEN-004: alertas = indicadores vigentes em Atenção ou Risco, no escopo do perfil.
+// Lidos na hora (nunca gravados), então refletem sempre o indicador atual (INV-006-02).
+export function indicadoresEmAlertaDoEscopo(sessao: Sessao) {
+  return prisma.indicadorAcademico.findMany({
+    where: { AND: [filtroIndicadoresDoEscopo(sessao), { situacao: { in: ["Atencao", "Risco"] } }] },
+    select: {
+      media: true,
+      frequenciaAtual: true,
+      situacao: true,
+      atualizadoEm: true,
+      estudante: { select: { id: true, nome: true } },
+      turma: { select: { id: true, nome: true, disciplina: { select: { nome: true } }, professor: { select: { nome: true } } } },
+    },
+    orderBy: [{ turma: { nome: "asc" } }, { estudante: { nome: "asc" } }],
+  });
+}
+
 export function listarIndicadoresDoEscopo(sessao: Sessao) {
   return prisma.indicadorAcademico.findMany({
     where: filtroIndicadoresDoEscopo(sessao),

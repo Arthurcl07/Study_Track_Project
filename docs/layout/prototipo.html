@@ -64,6 +64,15 @@
   .selo { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
   .s-normal { color: var(--normal); background: var(--normal-bg); } .s-atencao { color: var(--atencao); background: var(--atencao-bg); } .s-risco { color: var(--risco); background: var(--risco-bg); }
   .s-pendente { color: #475569; background: #F1F5F9; }
+  .alerta { border-radius: 14px; padding: 14px 16px; border: 1px solid; display: flex; gap: 12px; align-items: flex-start; }
+  .alerta strong { display: block; } .alerta p { margin: 4px 0 0; font-size: 14px; }
+  .alerta-atencao { background: var(--atencao-bg); border-color: #FCD34D; color: #78350F; }
+  .alerta-risco { background: var(--risco-bg); border-color: #FCA5A5; color: #7F1D1D; }
+  .turma-dash.destaque-atencao { border-color: #FCD34D; box-shadow: inset 4px 0 0 var(--atencao); }
+  .turma-dash.destaque-risco { border-color: #FCA5A5; box-shadow: inset 4px 0 0 var(--risco); }
+  .metricas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
+  .metricas div { background: var(--nevoa); border-radius: 10px; padding: 8px 10px; } .metricas small { display: block; color: var(--mudo); font-size: 12px; }
+  .metricas strong { font-size: 20px; font-variant-numeric: tabular-nums; }
   .etiqueta { display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--azul-suave); color: var(--azul-escuro); font-size: 12px; font-weight: 600; }
   .numero small { display: block; color: var(--mudo); font-size: 13px; } .numero strong { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
   .turma-card h3 { margin: 0; font-size: 16px; } .turma-card p { margin: 6px 0 0; color: var(--mudo); font-size: 14px; }
@@ -139,6 +148,16 @@ function casca(perfil, ativo, conteudo) {
 const cab = (titulo, sub = "", acao = "", migalha = "") =>
   `<div>${migalha ? `<div class="migalha">${migalha}</div>` : ""}</div><div class="cabecalho"><div><h1>${titulo}</h1>${sub ? `<p>${sub}</p>` : ""}</div>${acao}</div>`;
 const entrega = (s) => ({ NoPrazo: '<span class="selo s-normal">● No prazo</span>', Pendente: '<span class="selo s-pendente">○ Pendente</span>', Atrasada: '<span class="selo s-risco">■ Atrasada</span>' })[s];
+const alerta = (nivel, disc, detalhe, prof) => `<div class="alerta alerta-${nivel === 'Risco' ? 'risco' : 'atencao'}"><span style="font-size:18px">${nivel === 'Risco' ? '■' : '▲'}</span><div><strong>${nivel === 'Risco' ? 'Risco' : 'Atenção'} em ${disc}</strong><p>${detalhe}. ${prof ? 'Converse com ' + prof + ', responsável pela turma.' : ''}</p></div></div>`;
+function grafico(notas) {
+  const L = 300, A = 110, m = 24, passo = notas.length > 1 ? (L - 2 * m) / (notas.length - 1) : 0;
+  const y = (v) => A - 20 - (v / 10) * (A - 34);
+  const pts = notas.map(([r, v], i) => [m + i * passo, y(v), r, v]);
+  const linha = pts.map((p) => p[0] + ',' + p[1]).join(' ');
+  const guia = [0, 5, 6, 10].map((v) => `<line x1="${m}" x2="${L - m}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 5 ? '#FCA5A5' : v === 6 ? '#FCD34D' : '#E2E8F0'}" stroke-dasharray="${v === 0 || v === 10 ? '' : '4 4'}"/>`).join('');
+  return `<svg viewBox="0 0 ${L} ${A}" width="100%" role="img" aria-label="Evolução das notas">${guia}<polyline points="${linha}" fill="none" stroke="#2563EB" stroke-width="2.5"/>`
+    + pts.map((p) => `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#2563EB"/><text x="${p[0]}" y="${p[1] - 9}" font-size="11" text-anchor="middle" fill="#0F172A">${String(p[3]).replace('.', ',')}</text>`    + `<text x="${p[0]}" y="${A - 4}" font-size="10" text-anchor="middle" fill="#64748B">${p[2]}</text>`).join('') + '</svg>';
+}
 const selo = (s) => ({ Normal: '<span class="selo s-normal">● Normal</span>', Atencao: '<span class="selo s-atencao">▲ Atenção</span>', Risco: '<span class="selo s-risco">■ Risco</span>' })[s];
 const campo = (rot, tipo = "text", valor = "", erro = "") =>
   `<div><label class="rotulo">${rot}</label><input class="campo ${erro ? "invalido" : ""}" type="${tipo}" value="${valor}">${erro ? `<div class="erro-campo">${erro}</div>` : ""}</div>`;
@@ -185,6 +204,11 @@ const TELAS = {
 
   "professor-inicio": ["SPEC-002 · Professor — Turmas que leciono", () => casca("Professor", "inicio", `
     ${cab("Turmas que leciono", "Suas turmas neste período e os estudantes matriculados.", '<a class="btn btn-primario" href="#">📝 Lançar e alterar notas</a>')}
+    <div class="cartao" style="margin-bottom:16px"><h2>Alertas das minhas turmas (2)</h2>
+      <table class="tabela-resp"><thead><tr><th>Situação</th><th>Estudante</th><th>Turma</th><th class="num">Média</th><th class="num">Frequência</th></tr></thead><tbody>
+        <tr><td data-r="Situação">${selo("Risco")}</td><td data-r="Estudante">Carla Mendes</td><td data-r="Turma">Turma A · Modelagem de Software</td><td data-r="Média" class="num">6,2</td><td data-r="Frequência" class="num" style="color:var(--risco);font-weight:600">70%</td></tr>
+        <tr><td data-r="Situação">${selo("Atencao")}</td><td data-r="Estudante">Bruno Costa</td><td data-r="Turma">Turma A · Modelagem de Software</td><td data-r="Média" class="num" style="color:var(--atencao);font-weight:600">5,4</td><td data-r="Frequência" class="num">82%</td></tr>
+      </tbody></table></div>
     <div class="grade g2">
       ${[["Modelagem de Software", "Turma A", 32], ["Engenharia de Requisitos", "Turma C", 28]].map(([d, t, n]) =>
         `<div class="cartao turma-card"><span class="etiqueta">2026/2</span><h3 style="margin-top:10px">${d}</h3><p>${t}</p>
@@ -300,6 +324,33 @@ const TELAS = {
         <tr><td data-r="Atividade">Modelo ER</td><td data-r="Disciplina">Banco de Dados</td><td data-r="Prazo">28/10/2026</td><td data-r="Status">${entrega("Pendente")}</td></tr>
         <tr><td data-r="Atividade">Relatório final</td><td data-r="Disciplina">Modelagem de Software</td><td data-r="Prazo">25/11/2026</td><td data-r="Status">${entrega("Pendente")}</td></tr>
       </tbody></table></div>`)],
+
+  "estudante-painel": ["SPEC-006/007 · Estudante — Painel acadêmico", () => casca("Estudante", "inicio", `
+    ${cab("Olá, Ana", "Sua situação acadêmica em todas as turmas, atualizada a cada nota e frequência lançada.")}
+    <div class="pilha" style="margin-bottom:16px">${alerta("Atencao", "Banco de Dados", "Média 5,4 · Frequência 82%", "Júlia Reis")}</div>
+    <div class="grade g2">
+      <div class="cartao turma-dash">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div><span class="etiqueta">2026/2</span><h3 style="margin:8px 0 0">Modelagem de Software</h3><p style="margin:4px 0 0;color:var(--mudo);font-size:14px">Turma A · Prof. Carlos Lima</p></div>${selo("Normal")}</div>
+        <div class="metricas"><div><small>Média</small><strong>7,8</strong></div><div><small>Frequência</small><strong>92%</strong></div><div><small>Avaliações</small><strong>3</strong></div></div>
+        <small style="color:var(--mudo)">Evolução das notas</small>${grafico([["Prova 1", 6.5], ["Lista", 8], ["Prova 2", 9]])}
+      </div>
+      <div class="cartao turma-dash destaque-atencao">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div><span class="etiqueta">2026/2</span><h3 style="margin:8px 0 0">Banco de Dados</h3><p style="margin:4px 0 0;color:var(--mudo);font-size:14px">Turma B · Profa. Júlia Reis</p></div>${selo("Atencao")}</div>
+        <div class="metricas"><div><small>Média</small><strong style="color:var(--atencao)">5,4</strong></div><div><small>Frequência</small><strong>82%</strong></div><div><small>Avaliações</small><strong>2</strong></div></div>
+        <small style="color:var(--mudo)">Evolução das notas</small>${grafico([["Prova 1", 6], ["Prova 2", 4.8]])}
+      </div>
+    </div>
+    <div class="cartao" style="margin-top:16px"><h2>Atividades que pedem atenção</h2>
+      <table class="tabela-resp"><thead><tr><th>Atividade</th><th>Disciplina</th><th>Prazo</th><th>Status</th></tr></thead><tbody>
+        <tr><td data-r="Atividade">Lista de exercícios 1</td><td data-r="Disciplina">Modelagem de Software</td><td data-r="Prazo">10/10/2026</td><td data-r="Status">${entrega("Atrasada")}</td></tr>
+        <tr><td data-r="Atividade">Modelo ER</td><td data-r="Disciplina">Banco de Dados</td><td data-r="Prazo">28/10/2026</td><td data-r="Status">${entrega("Pendente")}</td></tr>
+      </tbody></table>
+      <a class="link" href="#" style="display:inline-block;margin-top:12px">Ver todas as minhas atividades →</a></div>`)],
+
+  "estudante-vazio": ["SPEC-007 · Estudante — Painel sem turmas", () => casca("Estudante", "inicio", `
+    ${cab("Olá, Ana", "Sua situação acadêmica em todas as turmas.")}
+    <div class="cartao"><div class="vazio"><div class="icone">🎓</div><p style="font-weight:600;color:var(--texto);margin:8px 0 4px">Você ainda não está matriculado em nenhuma turma.</p>
+    <p style="margin:0">Procure a coordenação do seu curso para fazer a matrícula.</p></div></div>`)],
 
   "acesso-negado": ["SPEC-001 · Acesso negado", () => `<div class="simples"><div style="max-width:420px">
     <div style="margin-bottom:24px">${logoClaro(24)}</div><div style="font-size:40px">🔒</div><h1 style="margin:8px 0">Acesso negado</h1>

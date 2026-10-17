@@ -31,6 +31,9 @@ Marca, paleta e componentes: [`../identidade-visual.md`](../identidade-visual.md
 | Professor — Atividades | SPEC-005 | atividades da turma com prazo, entregues e atrasadas; nova atividade ao lado |
 | Professor — Entregas de uma atividade | SPEC-005 | status de cada estudante (No prazo, Pendente, Atrasada); registrar ou desfazer entrega |
 | Estudante — Minhas atividades | SPEC-005 | contadores e tabela das atividades com prazo e status da própria entrega |
+| Estudante — Painel acadêmico | SPEC-006, SPEC-007 | alertas no topo; por turma: média, frequência, situação e gráfico de evolução das notas; atividades atrasadas e pendentes |
+| Estudante — Painel sem turmas | SPEC-007 | estado vazio com orientação para procurar a coordenação |
+| Professor — Turmas que leciono (com alertas) | SPEC-006 | tabela "Alertas das minhas turmas" acima dos cartões de turma |
 
 Em todas as telas autenticadas: menu lateral do perfil, nome e perfil do usuário e botão **Sair** (OPEN-019).
 
@@ -42,5 +45,6 @@ Em todas as telas autenticadas: menu lateral do perfil, nome e perfil do usuári
 | Casca autenticada (menu lateral + Sair) | `aprovado` | Arthur | 2026-10-16 |
 | Telas das SPEC-001 a SPEC-004 | `aprovado` | Arthur | 2026-10-16 |
 | Telas da SPEC-005 (frequência, atividades e entregas) | `aprovado` | Arthur | 2026-10-16 |
+| Telas das SPEC-006 e SPEC-007 (alertas e painel do estudante) | `aprovado` | Arthur | 2026-10-16 |
 
 Ao aprovar: preencher esta tabela, a seção "Telas e evidência de layout" de cada Spec em `specs.md` e o campo "Aprovação humana" de `identidade-visual.md`.
