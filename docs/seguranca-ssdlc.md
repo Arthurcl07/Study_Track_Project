@@ -9,8 +9,8 @@ Ferramenta de agente do grupo: **Claude Code** (configuração em `.claude/`).
 | 1. Instrução no repositório | `.claude/CLAUDE.md` orienta o agente (não inventar requisito, respeitar Specs e OPENs) | Ativa |
 | 2. Permissões da ferramenta | `.claude/settings.json` nega leitura de `.env` e comandos destrutivos (`git push --force`, `rm -rf`) | Ativa. É uma lista de bloqueio, não um hook programável |
 | 2b. Hook de ferramenta | Programa externo que decide allow/ask/deny antes de cada ação | Não configurado |
-| 3. Git hook local | Bloqueio antes do commit | Não configurado (recomendado quando houver código) |
-| 4. Revisão e CI | Ruleset `mainprotect` no GitHub: exige PR, bloqueia force push e exclusão da `main`. Sem CI ainda | Parcial: a revisão é exigida; CI será criado quando houver código e testes |
+| 3. Git hook local | Bloqueio antes do commit | Não será criado (OPEN-024): a CI faz a checagem |
+| 4. Revisão e CI | Ruleset `mainprotect` no GitHub: exige PR, bloqueia force push e exclusão da `main`. CI em `.github/workflows/ci.yml` (tipos e testes em todo PR) | Ativa: revisão exigida e CI rodando; falta marcar o check da CI como obrigatório no ruleset |
 
 Limitações assumidas: instrução não é mecanismo de segurança (o modelo pode ignorá-la), então a camada 2 e a camada 4 são as que de fato bloqueiam. A política deve ser testada: peça ao agente para ler `.env` ou fazer `git push --force` e confirme que a ação é negada.
 
@@ -37,7 +37,8 @@ Regras de uso:
 | Controle de acesso quebrado (um aluno ver dados de outro) | ADR-003, INV-001-03 e INV-001-04, testes por perfil |
 | Falhas de autenticação | Hash de senha, mensagem de erro genérica, cookie httpOnly |
 | Injeção | Prisma com consultas parametrizadas; validação de entrada |
-
+| Exposição de dados sensíveis | Privacidade (RNF-05); dados acadêmicos só para perfis autorizados |
+| Dependências vulneráveis | Revisar atualizações em PR; rodar auditoria de dependências (`npm audit`) a cada entrega |
 
 ## 4. Registro de verificação (2026-10-02)
 
@@ -47,5 +48,15 @@ Regras de uso:
 | 2. Permissões (`.claude/settings.json`) | Tentativa de checar a existência do `.env` por ferramenta do agente | Acesso bloqueado pela ferramenta. A mensagem foi genérica, então o teste isolado da regra (sem a instrução da camada 1) ainda está pendente |
 
 Observação: o teste da camada 1 não prova a camada 2, porque o agente recusou antes de tentar acessar o arquivo. Esse é o motivo de existirem as duas camadas.
-| Exposição de dados sensíveis | Privacidade (RNF-05); dados acadêmicos só para perfis autorizados |
-| Dependências vulneráveis | Revisar atualizações em PR; rodar auditoria de dependências quando houver código |
+
+## 5. Registro de verificação da aplicação (2026-10-16)
+
+Detalhe em `docs/verificacao/qualidade.md`.
+
+| Verificação | Resultado |
+|---|---|
+| Autorização no servidor em toda rota de API e página autenticada | Aprovado (só login, logout, `/login`, `/acesso-negado` e `/` ficam sem guarda, por definição) |
+| Testes de escopo por perfil em todas as Specs com dados acadêmicos | Aprovado |
+| Logs sem senha, hash ou token | Aprovado (não há logs em `src/`) |
+| Auditoria de dependências (`npm audit`) | 3 alertas em ferramentas de desenvolvimento (`prisma` CLI e `vitest`), com correção só em versão major: risco aceito por ora (OPEN-022) |
+| Camadas 3 (hook local) e 4 (CI) | CI criada; hook local dispensado (OPEN-024) |

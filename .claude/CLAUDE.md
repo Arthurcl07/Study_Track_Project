@@ -13,18 +13,37 @@ Pré-requisitos: Node.js 24 LTS, PostgreSQL 17 em `localhost:5432`, `.env` criad
 
 - `npm install` — dependências + `prisma generate`.
 - `npx prisma migrate dev` — cria o banco e aplica as migrações (`prisma/migrations/`).
-- `npm run seed` — contas de teste, uma por perfil (credenciais no README).
+- `npm run seed` — contas de teste, uma por perfil (credenciais no README), turma, avaliação e duas atividades de exemplo.
 - `npm run dev` — aplicação em http://localhost:3000.
 - `npm test` — Vitest (`tests/`), usa o banco local e limpa os dados que cria.
 
 Camadas: `src/domain` (regras puras, sem Next.js/Prisma), `src/server/dados` (Prisma),
-`src/server/auth` (serviços e guardas), `src/app` (páginas e Route Handlers finos).
+`src/server/auth` (serviços e guardas), `src/server/academico` (casos de uso de cadastro, notas, frequência e atividades),
+`src/app` (páginas e Route Handlers finos), `src/components` (casca com menu lateral e Sair, `ui.tsx`
+com as peças da identidade visual).
+
+Interface: seguir `docs/identidade-visual.md` (RNF-06) e o protótipo aprovado em `docs/layout/`.
+Usar os tokens do Tailwind definidos em `src/app/globals.css` (`bg-marinho`, `text-azul`, `text-mudo`...),
+nunca as cores padrão (`indigo-*`, `blue-*`). Toda página autenticada usa `<Casca>`. Spec nova com
+tela só é implementada depois do layout `aprovado` (OPEN-020).
 
 ## Onde está o quê
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 em implementação).
+- `src/` — código-fonte (SPEC-001 e SPEC-005 a SPEC-009 implementadas; SPEC-002 a SPEC-004 aguardam a revisão do PR para a `main`).
+  Regras do plano de recuperação (só Risco, itens, progresso) em `src/domain/plano.ts`; consolidação e CSV
+  do relatório em `src/domain/relatorio.ts`. O limite de 1 plano ativo por estudante e turma é um índice
+  parcial escrito à mão na migração da SPEC-008: se `prisma migrate dev` propuser `DROP INDEX` dele, remover.
+  Alertas (SPEC-006) são lidos do indicador vigente e nunca gravados (`src/domain/alertas.ts`, OPEN-004);
+  a evolução do painel (SPEC-007) usa as notas existentes em ordem de data (OPEN-011).
+  O status de entrega (No prazo, Pendente, Atrasada) é decidido só em `src/domain/atividades.ts`
+  (`statusEntrega`, OPEN-010) e nunca é gravado no banco; datas de prazo e entrega são "AAAA-MM-DD"
+  no fuso de Brasília (`hojeEmBrasilia`).
+  A regra Normal/Atenção/Risco fica só em `src/domain/situacao-academica.ts`; o recálculo do
+  indicador é `recalcularIndicador` (`src/server/academico/indicador.ts`), chamado na mesma
+  transação de qualquer escrita de nota ou frequência (SPEC-004/005). A validação do valor da nota e
+  da avaliação fica em `src/domain/registro-notas.ts`; a média continua sendo `calcularMedia`.
 - `tests/` — testes automatizados (Vitest).
 
 ## Decisões já tomadas (não reinventar)

@@ -17,6 +17,11 @@
 - O sistema SHALL restringir o acesso aos dados acadêmicos de um estudante apenas a usuários autorizados.
 - IF um usuário sem autorização tentar visualizar dados acadêmicos de terceiros, THEN o sistema SHALL bloquear a operação.
 
+## RNF-06 — Identidade visual e consistência da interface
+- O sistema SHALL aplicar o logotipo, a paleta e os componentes definidos em `identidade-visual.md` em todas as telas, para os três perfis.
+- O sistema SHALL oferecer, após o login, uma navegação única e consistente (menu do perfil, identificação do usuário e ação de sair) em todas as telas autenticadas.
+- O sistema SHALL representar a situação acadêmica sempre com as mesmas cores e rótulos (Normal, Atenção, Risco), sem depender só da cor para transmitir a informação.
+
 ---
 
 
@@ -25,3 +30,4 @@
 - O sistema deve garantir segurança na persistência de senhas.
 - O sistema deve controlar acesso por perfil e limitar dados sensíveis.
 - O sistema deve oferecer uma interface responsiva e preservar a privacidade dos dados acadêmicos.
+- O sistema deve ter identidade visual própria e navegação consistente em todas as telas.

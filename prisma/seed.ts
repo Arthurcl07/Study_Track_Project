@@ -1,6 +1,10 @@
-// Carga inicial: contas de TESTE, uma por perfil (OPEN-013 — sem cadastro público na SPEC-001).
-// Valores apenas para ambiente local; nunca usar em produção.
+// Carga inicial: contas de TESTE, uma por perfil (OPEN-013 — sem cadastro público na SPEC-001),
+// uma turma de exemplo da SPEC-002 ligando as três contas e uma avaliação de exemplo nessa turma
+// (SPEC-004, OPEN-017), sem nota, para o professor lançar pela tela, e duas atividades de exemplo
+// (SPEC-005). Apenas para ambiente local.
+import { hojeEmBrasilia } from "../src/domain/atividades";
 import { salvarConta } from "../src/server/auth/contas";
+import { paraData } from "../src/server/dados/atividades";
 import { prisma } from "../src/server/dados/prisma";
 import type { Perfil } from "../src/domain/perfil";
 
@@ -12,11 +16,61 @@ const CONTAS_DE_TESTE: { nome: string; email: string; perfil: Perfil }[] = [
   { nome: "Coordenador de Teste", email: "coordenador@studytrack.test", perfil: "Coordenador" },
 ];
 
+const DISCIPLINA_EXEMPLO = { nome: "Modelagem de Software (exemplo)", cargaHoraria: 60 };
+const TURMA_EXEMPLO = { nome: "Turma de exemplo", periodo: "2026/2" };
+const AVALIACAO_EXEMPLO = { nome: "Prova 1 (exemplo)", peso: 1, data: new Date("2026-09-15T00:00:00Z") };
+
 async function main() {
+  const contas: Partial<Record<Perfil, { id: string }>> = {};
   for (const conta of CONTAS_DE_TESTE) {
-    await salvarConta({ ...conta, senha: SENHA_DE_TESTE });
+    contas[conta.perfil] = await salvarConta({ ...conta, senha: SENHA_DE_TESTE });
     console.log(`Conta de teste pronta: ${conta.email} (${conta.perfil})`);
   }
+  const { Estudante: estudante, Professor: professor, Coordenador: coordenador } = contas;
+  if (!estudante || !professor || !coordenador) throw new Error("Contas de teste incompletas.");
+
+  // Idempotente: reutiliza disciplina e turma de exemplo se já existirem.
+  const disciplina =
+    (await prisma.disciplina.findFirst({ where: { nome: DISCIPLINA_EXEMPLO.nome } })) ??
+    (await prisma.disciplina.create({ data: DISCIPLINA_EXEMPLO }));
+  const turma =
+    (await prisma.turma.findFirst({ where: { nome: TURMA_EXEMPLO.nome, coordenadorId: coordenador.id } })) ??
+    (await prisma.turma.create({
+      data: { ...TURMA_EXEMPLO, disciplinaId: disciplina.id, professorId: professor.id, coordenadorId: coordenador.id },
+    }));
+  await prisma.matricula.upsert({
+    where: { estudanteId_turmaId: { estudanteId: estudante.id, turmaId: turma.id } },
+    update: {},
+    create: { estudanteId: estudante.id, turmaId: turma.id },
+  });
+  console.log(`Turma de exemplo pronta: ${turma.nome} (${disciplina.nome})`);
+
+  // Idempotente: só cria a avaliação de exemplo se a turma ainda não tiver uma com esse nome.
+  const avaliacao =
+    (await prisma.avaliacao.findFirst({ where: { nome: AVALIACAO_EXEMPLO.nome, turmaId: turma.id } })) ??
+    (await prisma.avaliacao.create({ data: { ...AVALIACAO_EXEMPLO, turmaId: turma.id } }));
+  console.log(`Avaliação de exemplo pronta: ${avaliacao.nome} (peso ${avaliacao.peso})`);
+
+  // SPEC-005: uma atividade já vencida e uma com prazo futuro, sem entregas, para mostrar
+  // os status Atrasada e Pendente. Idempotente pela descrição dentro da turma.
+  const hoje = hojeEmBrasilia();
+  const atividadesExemplo = [
+    { descricao: "Lista de exercícios 1 (exemplo)", prazo: somarDias(hoje, -3) },
+    { descricao: "Trabalho final (exemplo)", prazo: somarDias(hoje, 14) },
+  ];
+  for (const exemplo of atividadesExemplo) {
+    const existente = await prisma.atividade.findFirst({ where: { descricao: exemplo.descricao, turmaId: turma.id } });
+    if (!existente) {
+      await prisma.atividade.create({ data: { turmaId: turma.id, descricao: exemplo.descricao, prazo: paraData(exemplo.prazo) } });
+    }
+    console.log(`Atividade de exemplo pronta: ${exemplo.descricao}`);
+  }
+}
+
+function somarDias(base: string, dias: number) {
+  const data = paraData(base);
+  data.setUTCDate(data.getUTCDate() + dias);
+  return data.toISOString().slice(0, 10);
 }
 
 main()

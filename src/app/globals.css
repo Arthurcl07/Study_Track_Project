@@ -1,5 +1,61 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+/* Tokens de docs/identidade-visual.md (RNF-06). Usar estes nomes, nunca as cores padrão do Tailwind. */
+@theme {
+  --font-sans: "Inter Variable", "Segoe UI", system-ui, sans-serif;
+
+  --color-marinho: #0f2a4a;
+  --color-marinho-claro: #1e3a5f;
+  --color-azul: #2563eb;
+  --color-azul-escuro: #1d4ed8;
+  --color-azul-suave: #dbeafe;
+  --color-ceu: #93c5fd;
+  --color-nevoa: #f5f7fb;
+  --color-traco: #e2e8f0;
+  --color-texto: #0f172a;
+  --color-mudo: #64748b;
+
+  --color-normal: #15803d;
+  --color-normal-fundo: #dcfce7;
+  --color-atencao: #b45309;
+  --color-atencao-fundo: #fef3c7;
+  --color-risco: #b91c1c;
+  --color-risco-fundo: #fee2e2;
+
+  --color-sucesso-fundo: #f0fdf4;
+  --color-erro-fundo: #fef2f2;
+  --color-info: #1d4ed8;
+  --color-info-fundo: #eff6ff;
+}
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-nevoa font-sans text-texto antialiased;
+}
+
+/* Tabela que vira lista de cartões no celular (identidade-visual.md, componente Tabela). */
+@media (max-width: 640px) {
+  .tabela-responsiva thead {
+    display: none;
+  }
+  .tabela-responsiva tr {
+    display: block;
+    border-top: 1px solid var(--color-traco);
+    padding: 0.5rem 0;
+  }
+  .tabela-responsiva td {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 0;
+    padding: 0.25rem 0;
+    text-align: right;
+  }
+  .tabela-responsiva td::before {
+    content: attr(data-rotulo);
+    color: var(--color-mudo);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    text-align: left;
+  }
 }

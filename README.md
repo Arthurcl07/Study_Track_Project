@@ -20,7 +20,15 @@ Decisões completas em `docs/adr/`.
 
 ## Como executar
 
-Implementado até agora: SPEC-001 (autenticação, perfis e autorização).
+Implementado até agora: SPEC-001 (autenticação, perfis e autorização) SPEC-002 (disciplinas, turmas, cadastro e matrícula de estudantes), SPEC-003 (cálculo da situação
+Normal/Atenção/Risco e indicador persistido, consultável em `/api/indicadores`) e SPEC-004 (cadastro de
+avaliações e lançamento/alteração de notas pelo professor, com recálculo da média e do indicador) e SPEC-005
+(frequência, atividades e entregas: o professor registra frequência, cadastra atividades e registra as
+entregas; o status No prazo/Pendente/Atrasada é calculado na hora, e o estudante vê o próprio em
+**Minhas atividades**), SPEC-006 (alertas de Atenção e Risco na tela do estudante e do professor) e
+SPEC-007 (painel do estudante com média, frequência, situação, gráfico de evolução das notas e atividades),
+SPEC-008 (dashboard da turma do professor e plano de recuperação para estudantes em Risco) e SPEC-009
+(relatório acadêmico para Professor e Coordenador, em tela e em CSV).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 
@@ -63,7 +71,8 @@ Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 ### Contas de teste (somente ambiente local)
 
 Não há cadastro público (OPEN-013). O seed (`prisma/seed.ts`) cria uma conta por perfil, todas
-com a senha `StudyTrack@2026`:
+com a senha `StudyTrack@2026`, uma "Turma de exemplo" com o Professor, o Coordenador (responsável)
+e o Estudante matriculado, e uma avaliação "Prova 1 (exemplo)" (peso 1) nessa turma, ainda sem nota:
 
 | Perfil | E-mail |
 |---|---|
@@ -75,6 +84,29 @@ São credenciais fictícias para desenvolvimento; nunca use em produção.
 
 Para ver a negação de acesso, entre como Estudante e abra `/coordenador/area` (página) ou
 `/api/coordenacao` (API) — ambas exclusivas de Coordenador.
+
+Cadastros da SPEC-002 (OPEN-001): entre como Coordenador e use **Disciplinas** e **Turmas e
+estudantes**. Estudantes são cadastrados dentro da turma, com nome, e-mail e senha inicial de no
+mínimo 8 caracteres (OPEN-009). Professor e Estudante veem só as próprias turmas no painel.
+
+Notas da SPEC-004 (OPEN-001, OPEN-017): entre como Professor e clique em **Lançar e alterar notas**
+(`/professor/notas`). Escolha a turma, a avaliação e o estudante e informe a nota de 0 a 10 (OPEN-002);
+se o estudante já tiver nota naquela avaliação, o valor é sobrescrito. Na mesma tela o professor
+cadastra novas avaliações (nome, peso maior que zero e data) nas turmas que leciona. Pela API:
+`POST /api/notas`, `PATCH /api/notas/:id` e `POST /api/turmas/:id/avaliacoes`.
+
+Plano de recuperação da SPEC-008 (OPEN-003, OPEN-012, OPEN-021): entre como Professor e clique em
+**Abrir turma →**. O dashboard mostra quantos estudantes estão em Normal, Atenção e Risco; para quem está
+em Risco aparece **Criar plano** (um item por linha). No plano, o professor marca os itens concluídos
+(o progresso é concluídos ÷ previstos) e encerra o plano quando achar adequado.
+
+Relatório da SPEC-009 (OPEN-005): entre como Professor ou Coordenador e abra **Relatórios**. Filtre por
+turma e situação e use **Exportar CSV** para baixar as mesmas linhas (separador `;`, abre no Excel).
+
+## Integração contínua
+
+Todo PR e todo push para `development` e `main` roda `.github/workflows/ci.yml`: um PostgreSQL 17
+descartável, as migrações, `tsc --noEmit` e `npm test` (OPEN-024).
 
 ## Documentação
 
