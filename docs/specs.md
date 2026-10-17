@@ -29,6 +29,8 @@ Legenda de status da Spec:
 | SPEC-003 aprovada para implementação, com OPEN-002 fechada (decisão delegada pelo grupo ao agente, aprovada por Arthur) | `aprovada` | 2026-10-09 |
 | SPEC-004 aprovada para implementação (aprovada por Arthur) | `aprovada` | 2026-10-13 |
 | SPEC-004: alteração de escopo — cadastro de avaliação pelo professor passa a fazer parte da Spec (OPEN-017); sem migração nova, tabelas da `spec_003_indicador` (OPEN-016) (aprovada por Arthur) | `aprovada` | 2026-10-13 |
+| SPEC-005 aprovada, com OPEN-003 e OPEN-010 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
+| Layout da SPEC-005 (frequência, atividades, entregas, minhas atividades) | `aprovado` (Arthur) | 2026-10-16 |
 
 ---
 
@@ -40,7 +42,7 @@ Legenda de status da Spec:
 | 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `em implementação` |
 | 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `em implementação` |
 | 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
-| 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `especificada` |
+| 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
 | 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `especificada` |
 | 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `especificada` |
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `especificada` |
@@ -594,7 +596,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-005 — Frequência, atividades e entregas atrasadas
 
-**Status:** `especificada`
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -602,7 +604,7 @@ Padrão da SPEC-001 (seção 14).
 |---|---|
 | **ID** | SPEC-005 |
 | **Nome** | Frequência, atividades e entregas atrasadas |
-| **Objetivo** | Registrar frequência e atividades e classificar como atrasada a entrega não registrada após o prazo. |
+| **Objetivo** | Registrar frequência e atividades, registrar entregas e classificar como atrasada a entrega não registrada até o prazo. |
 | **Valor** | Acompanhamento de presença e prazos que alimenta a situação acadêmica. |
 
 ## 2. Rastreabilidade
@@ -611,19 +613,40 @@ Padrão da SPEC-001 (seção 14).
 |---|---|
 | **RF** | RF-07, RF-08, RF-09, RF-11 |
 | **RB** | RB-03, RB-05, RB-08, RB-09, RB-10 |
-| **RNF** | RNF-03, RNF-05; RNF-04 nas telas |
-| **UC / fluxo** | Extensão de atividade atrasada do UC-02; fluxos de frequência e entrega ainda não documentados |
+| **RNF** | RNF-03, RNF-05, RNF-06; RNF-04 nas telas |
+| **UC / fluxo** | Extensão de atividade atrasada do UC-02; fluxos de frequência, atividade e entrega descritos na seção 5 |
 | **Entidades** | `Turma`, `Frequencia`, `Atividade`, `Entrega`, `IndicadorAcademico` |
 | **Drivers** | AD-01, AD-02, AD-04 |
 | **ADRs** | ADR-001, ADR-002, ADR-003 |
 | **Issues** | #15, #16, #17 |
-| **OPEN relacionados** | OPEN-001, OPEN-003, OPEN-010, OPEN-011 |
+| **OPEN relacionados** | OPEN-001, OPEN-003 e OPEN-010 (fechadas); OPEN-011 (fora do escopo) |
 
 ## 3. Escopo
 
-**Incluído:** registro e alteração de frequência; cadastro de atividade; marcação de entrega como Atrasada; atualização do indicador.
+**Incluído**
+- Registro e alteração da frequência (percentual de 0 a 100) de um estudante numa turma, com recálculo do indicador na mesma transação (RB-10).
+- Cadastro de atividade com descrição e prazo, na turma (e portanto na disciplina) do professor responsável.
+- Registro da entrega de um estudante pelo professor, com data (padrão: hoje), e desfazer de um registro feito por engano (OPEN-003).
+- Status de entrega derivado na leitura: No prazo, Pendente ou Atrasada (OPEN-010, RB-08), indicado ao estudante e ao professor (RF-09).
 
-**Fora do escopo:** quem registra a entrega e quando (OPEN-003); como a marcação é disparada (OPEN-010); histórico e evolução (OPEN-011).
+**Fora do escopo**
+- Histórico e evolução da frequência (OPEN-011, SPEC-007).
+- Envio de arquivo pelo estudante (sem RF).
+- Edição e exclusão de atividade (sem RF).
+- Alertas (SPEC-006): a atividade atrasada não entra na classificação Normal/Atenção/Risco (RB-09 usa só média e frequência).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-16 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Professor — Frequência | [prototipo.html#professor-frequencia](layout/prototipo.html#professor-frequencia) | [x] | [x] | Arthur | 2026-10-16 |
+| Professor — Atividades (lista e nova atividade) | [prototipo.html#professor-atividades](layout/prototipo.html#professor-atividades) | [x] | [x] | Arthur | 2026-10-16 |
+| Professor — Entregas de uma atividade | [prototipo.html#professor-atividade](layout/prototipo.html#professor-atividade) | [x] | [x] | Arthur | 2026-10-16 |
+| Estudante — Minhas atividades | [prototipo.html#estudante-atividades](layout/prototipo.html#estudante-atividades) | [x] | [x] | Arthur | 2026-10-16 |
+
+Checklist RNF: navegação consistente com menu do perfil e Sair (RNF-06); usável em computador, tablet e smartphone (RNF-04); status de entrega sempre com cor, símbolo e rótulo (RNF-06).
 
 ## 4. Dependências
 
@@ -631,54 +654,70 @@ SPEC-001, SPEC-002, SPEC-003.
 
 ## 5. Comportamento esperado
 
-**Pré-condições:** professor autenticado e responsável pela turma.
+**Pré-condições:** professor autenticado e responsável pela turma; estudante matriculado na turma.
 
 **Fluxo principal (frequência):**
-1. Professor registra ou altera a frequência de um estudante.
-2. Sistema atualiza o percentual e reflete a mudança no histórico acadêmico.
-3. Sistema recalcula o indicador (SPEC-003).
+1. Professor escolhe a turma e o estudante e informa o percentual de frequência.
+2. Sistema valida o valor (0 a 100) e grava a frequência vigente do estudante na turma.
+3. Na mesma transação, sistema recalcula o indicador (SPEC-003, RB-10).
 
-**Fluxo (atividade):** professor cadastra atividade com descrição, prazo e disciplina vinculada; sistema registra.
+**Fluxo (atividade):** professor cadastra atividade com descrição e prazo na turma escolhida; sistema registra.
 
-**Fluxo (atraso):** quando o prazo termina sem entrega registrada, sistema marca a entrega como Atrasada para aquele estudante e indica a condição a ele e ao professor.
+**Fluxo (entrega):**
+1. Professor abre a atividade e vê, para cada estudante da turma, o status da entrega.
+2. Professor registra a entrega de um estudante, com a data (padrão: hoje), ou desfaz um registro.
 
-**Exceções:** dados da atividade incompletos: sistema impede o cadastro (RF-08).
+**Status da entrega (OPEN-010, RB-08):** calculado na leitura, com o prazo valendo até o fim do dia (horário de Brasília):
+- entregue até o prazo → **No prazo**;
+- entregue depois do prazo → **Atrasada**;
+- sem entrega e prazo ainda não encerrado → **Pendente**;
+- sem entrega e prazo encerrado → **Atrasada**.
 
-**Pós-condições de sucesso:** frequência, atividade ou status de entrega atualizados e indicador recalculado.
+**Exceções:**
+- Dados da atividade incompletos: sistema impede o cadastro e indica o campo (RF-08).
+- Percentual fora de 0–100: sistema recusa e indica o campo.
+- Turma de outro professor ou estudante fora da turma: acesso negado, nada é gravado (RB-03).
+- Entrega já registrada para o estudante na atividade: sistema recusa o segundo registro (INV-005-03).
+
+**Pós-condições de sucesso:** frequência, atividade ou entrega gravadas; indicador recalculado quando a frequência muda.
 **Pós-condição de falha:** estado anterior preservado.
 
 ## 6. Regras e invariantes
 
 | ID | Invariante |
 |---|---|
-| INV-005-01 | Frequência abaixo de 75% leva a Risco (RB-05). |
+| INV-005-01 | Frequência abaixo de 75% leva a Risco (RB-05), pela regra única da SPEC-003. |
 | INV-005-02 | Atividade sem entrega após o prazo é Atrasada (RB-08). |
-| INV-005-03 | Cada atividade gera no máximo 1 entrega por estudante. |
-| INV-005-04 | Toda alteração de frequência recalcula o indicador (RB-10). |
-| INV-005-05 | Só o professor responsável pela turma registra frequência e atividades dela (RB-03). |
+| INV-005-03 | Cada atividade tem no máximo 1 entrega por estudante. |
+| INV-005-04 | Toda alteração de frequência recalcula o indicador na mesma transação (RB-10). |
+| INV-005-05 | Só o professor responsável pela turma registra frequência, atividades e entregas dela (RB-03). |
+| INV-005-06 | O status de entrega existe em um único lugar do código (domínio) e não é gravado no banco (OPEN-010). |
 
 ## 7. Modelo de domínio envolvido
 
-`Frequencia` (percentual, atualizadaEm), `Atividade` (descrição, prazo), `Entrega` (dataEntrega, status NoPrazo, Atrasada ou Pendente).
+`Frequencia` (percentual, atualizadaEm), `Atividade` (descrição, prazo; pertence a 1 turma), `Entrega` (dataEntrega; 1 por estudante e atividade; status derivado).
 
 ## 8. Impacto arquitetural
 
-A marcação de atraso depende do mecanismo escolhido em OPEN-010 (rotina agendada ou derivação na leitura). Até lá, não implementar essa parte.
+Status de entrega como função pura em `src/domain` (DA-02, DA-07), sem rotina agendada. Escrita de frequência e recálculo do indicador na mesma transação (AD-02). Escopo do professor e do estudante filtrado na própria query (ADR-003).
 
 ## 9. Contratos necessários
 
 | Operação | Entrada | Saída de sucesso | Erros |
 |---|---|---|---|
-| Registrar frequência | turma, estudante, percentual | frequência atualizada, indicador recalculado | valor inválido, sem permissão |
-| Cadastrar atividade | descrição, prazo, turma | atividade registrada | dados incompletos |
-| Marcar atraso | atividade, estudante | entrega Atrasada | entrega já registrada |
+| Registrar frequência | turma, estudante, percentual | frequência gravada, indicador recalculado | valor inválido, sem permissão |
+| Cadastrar atividade | turma, descrição, prazo | atividade registrada | dados incompletos, sem permissão |
+| Registrar entrega | atividade, estudante, data (opcional) | entrega registrada | entrega já registrada, sem permissão |
+| Desfazer entrega | entrega | entrega removida | sem permissão |
+| Consultar entregas | sessão | atividades do escopo com status por estudante | sem sessão |
 
 ## 10. RNFs aplicáveis
 
 | RNF | Como verificar |
 |---|---|
-| RNF-03 | Professor de outra turma é recusado |
-| RNF-05 | Estudante só vê as próprias entregas |
+| RNF-03 | Professor de outra turma é recusado em todas as escritas |
+| RNF-05 | Estudante só vê as próprias atividades e entregas |
+| RNF-04, RNF-06 | Telas aprovadas no protótipo, em computador e celular |
 
 ## 11. Critérios de aceitação
 
@@ -687,19 +726,24 @@ A marcação de atraso depende do mecanismo escolhido em OPEN-010 (rotina agenda
 | AC-005-01 | Professor responsável | Registra frequência de um estudante | Percentual atualizado e indicador recalculado |
 | AC-005-02 | Professor responsável | Cadastra atividade completa | Atividade registrada |
 | AC-005-03 | Professor responsável | Cadastra atividade sem prazo | Cadastro impedido |
-| AC-005-04 | Prazo encerrado e sem entrega | O sistema avalia a atividade | Entrega marcada Atrasada, visível ao estudante e ao professor |
-| AC-005-05 | Entrega registrada dentro do prazo | O sistema avalia a atividade | Entrega não é marcada Atrasada |
+| AC-005-04 | Prazo encerrado e sem entrega | O status é consultado | Entrega aparece Atrasada para o estudante e para o professor |
+| AC-005-05 | Entrega registrada dentro do prazo | O status é consultado | Entrega aparece No prazo, não Atrasada |
+| AC-005-06 | Entrega registrada depois do prazo | O status é consultado | Entrega aparece Atrasada |
+| AC-005-07 | Prazo ainda não encerrado e sem entrega | O status é consultado | Entrega aparece Pendente |
+| AC-005-08 | Professor de outra turma | Tenta registrar frequência, atividade ou entrega | Acesso negado e nada gravado |
+| AC-005-09 | Dois estudantes na mesma turma | Um deles consulta as atividades | Vê só o próprio status de entrega |
 
 ## 12. Casos de teste derivados
 
 1. Frequência de 74,9% leva a Risco, 75% não.
 2. Atividade incompleta é recusada.
-3. Marcação de atraso nos dois lados do prazo.
-4. Escopo do professor.
+3. Status de entrega nos dois lados do prazo, inclusive no último dia.
+4. Escopo do professor e do estudante.
+5. Segunda entrega para o mesmo estudante e atividade é recusada.
 
 ## 13. Questões em aberto
 
-OPEN-001, OPEN-003, OPEN-010, OPEN-011.
+Nenhuma. OPEN-003 e OPEN-010 fechadas em 2026-10-16; OPEN-011 continua aberta e fora do escopo desta Spec.
 
 ## 14. Definition of Done
 

@@ -50,6 +50,16 @@ O que não fazer: distorcer, girar, aplicar sombra, trocar as cores da linha, co
 | Atenção | `#B45309` | `#FEF3C7` | ▲ Atenção |
 | Risco | `#B91C1C` | `#FEE2E2` | ■ Risco |
 
+### Status de entrega de atividade (RB-08, OPEN-010)
+
+| Status | Texto | Fundo | Rótulo |
+|---|---|---|---|
+| No prazo | `#15803D` | `#DCFCE7` | ● No prazo |
+| Pendente | `#475569` | `#F1F5F9` | ○ Pendente |
+| Atrasada | `#B91C1C` | `#FEE2E2` | ■ Atrasada |
+
+Pendente é neutro (cinza) de propósito: o âmbar fica reservado para a situação Atenção.
+
 A cor nunca aparece sozinha: o selo sempre traz o símbolo e a palavra (RNF-06, acessibilidade para daltonismo). O âmbar e o vermelho são **reservados** para situação e para erro; não usar como cor de marca ou de botão comum.
 
 ### Mensagens do sistema

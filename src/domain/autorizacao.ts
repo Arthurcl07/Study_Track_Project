@@ -17,6 +17,10 @@ export const RECURSOS = {
   // SPEC-004 (OPEN-001, OPEN-017): cadastro de avaliação e lançamento/alteração de nota pelo professor;
   // a turma lecionada é conferida na própria query (ADR-003, RB-03).
   registroDesempenho: "registro-desempenho",
+  // SPEC-005 (OPEN-001, OPEN-003): frequência, atividades e entregas registradas pelo professor.
+  registroFrequenciaAtividades: "registro-frequencia-atividades",
+  // SPEC-005 / RF-09: consulta de atividades com status de entrega (Estudante: só a própria; RB-02).
+  consultaAtividades: "consulta-atividades",
 } as const;
 
 export type Recurso = (typeof RECURSOS)[keyof typeof RECURSOS];
@@ -30,6 +34,8 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "consulta-turmas": ["Estudante", "Professor", "Coordenador"],
   "consulta-indicadores": ["Estudante", "Professor", "Coordenador"],
   "registro-desempenho": ["Professor"],
+  "registro-frequencia-atividades": ["Professor"],
+  "consulta-atividades": ["Estudante", "Professor"],
 };
 
 export function podeAcessar(perfil: unknown, recurso: unknown): boolean {

@@ -22,7 +22,10 @@ Decisões completas em `docs/adr/`.
 
 Implementado até agora: SPEC-001 (autenticação, perfis e autorização) SPEC-002 (disciplinas, turmas, cadastro e matrícula de estudantes), SPEC-003 (cálculo da situação
 Normal/Atenção/Risco e indicador persistido, consultável em `/api/indicadores`) e SPEC-004 (cadastro de
-avaliações e lançamento/alteração de notas pelo professor, com recálculo da média e do indicador).
+avaliações e lançamento/alteração de notas pelo professor, com recálculo da média e do indicador) e SPEC-005
+(frequência, atividades e entregas: o professor registra frequência, cadastra atividades e registra as
+entregas; o status No prazo/Pendente/Atrasada é calculado na hora, e o estudante vê o próprio em
+**Minhas atividades**).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 

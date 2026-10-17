@@ -63,6 +63,7 @@
   .msg-erro { background: var(--erro-bg); color: var(--risco); } .msg-ok { background: var(--ok-bg); color: var(--normal); } .msg-info { background: var(--info-bg); color: var(--info); }
   .selo { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
   .s-normal { color: var(--normal); background: var(--normal-bg); } .s-atencao { color: var(--atencao); background: var(--atencao-bg); } .s-risco { color: var(--risco); background: var(--risco-bg); }
+  .s-pendente { color: #475569; background: #F1F5F9; }
   .etiqueta { display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--azul-suave); color: var(--azul-escuro); font-size: 12px; font-weight: 600; }
   .numero small { display: block; color: var(--mudo); font-size: 13px; } .numero strong { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
   .turma-card h3 { margin: 0; font-size: 16px; } .turma-card p { margin: 6px 0 0; color: var(--mudo); font-size: 14px; }
@@ -121,8 +122,8 @@ const logoInverso = (t = 22) => `<span style="display:inline-flex;align-items:ce
 const logoClaro = (t = 22) => `<span style="display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:${t}px;letter-spacing:-.3px">${MARCA_CLARA}<span><span style="color:#0F2A4A">Study</span><span style="color:#2563EB">Track</span></span></span>`;
 
 const MENUS = {
-  Estudante: [["inicio", "🏠", "Início"]],
-  Professor: [["inicio", "🏠", "Início"], ["notas", "📝", "Notas e avaliações"]],
+  Estudante: [["inicio", "🏠", "Início"], ["atividades", "🗓️", "Minhas atividades"]],
+  Professor: [["inicio", "🏠", "Início"], ["notas", "📝", "Notas e avaliações"], ["frequencia", "✅", "Frequência"], ["atividades", "🗓️", "Atividades"]],
   Coordenador: [["inicio", "🏠", "Início"], ["disciplinas", "📚", "Disciplinas"], ["turmas", "👥", "Turmas e estudantes"], ["area", "🔒", "Área da coordenação"]],
 };
 const USUARIOS = { Estudante: "Ana Souza", Professor: "Prof. Carlos Lima", Coordenador: "Marina Alves" };
@@ -137,6 +138,7 @@ function casca(perfil, ativo, conteudo) {
 }
 const cab = (titulo, sub = "", acao = "", migalha = "") =>
   `<div>${migalha ? `<div class="migalha">${migalha}</div>` : ""}</div><div class="cabecalho"><div><h1>${titulo}</h1>${sub ? `<p>${sub}</p>` : ""}</div>${acao}</div>`;
+const entrega = (s) => ({ NoPrazo: '<span class="selo s-normal">● No prazo</span>', Pendente: '<span class="selo s-pendente">○ Pendente</span>', Atrasada: '<span class="selo s-risco">■ Atrasada</span>' })[s];
 const selo = (s) => ({ Normal: '<span class="selo s-normal">● Normal</span>', Atencao: '<span class="selo s-atencao">▲ Atenção</span>', Risco: '<span class="selo s-risco">■ Risco</span>' })[s];
 const campo = (rot, tipo = "text", valor = "", erro = "") =>
   `<div><label class="rotulo">${rot}</label><input class="campo ${erro ? "invalido" : ""}" type="${tipo}" value="${valor}">${erro ? `<div class="erro-campo">${erro}</div>` : ""}</div>`;
@@ -236,6 +238,68 @@ const TELAS = {
 
   "coordenador-turma": ["SPEC-002 · Coordenador — Detalhe da turma", () => casca("Coordenador", "turmas", turmaDetalhe(false))],
   "cadastro-erro": ["SPEC-002 · Cadastro de estudante com campos pendentes", () => casca("Coordenador", "turmas", turmaDetalhe(true))],
+
+  "professor-frequencia": ["SPEC-005 · Professor — Frequência", () => casca("Professor", "frequencia", `
+    ${cab("Frequência", "Registre o percentual de frequência de cada estudante. A situação é recalculada na hora.")}
+    <div class="cartao" style="margin-bottom:16px"><div class="grade g2">${lista("Turma", ["Turma A · Modelagem de Software · 2026/2"], "Turma A · Modelagem de Software · 2026/2")}<div></div></div></div>
+    <div class="grade g-form">
+      <div class="cartao"><h2>Estudantes da turma (3)</h2>
+        <table class="tabela-resp"><thead><tr><th>Estudante</th><th class="num">Frequência</th><th>Situação</th><th></th></tr></thead><tbody>
+          <tr><td data-r="Estudante">Ana Souza</td><td data-r="Frequência" class="num">92%</td><td data-r="Situação">${selo("Normal")}</td><td><a class="link" href="#">Alterar</a></td></tr>
+          <tr class="selecionada"><td data-r="Estudante">Bruno Costa</td><td data-r="Frequência" class="num">78%</td><td data-r="Situação">${selo("Atencao")}</td><td><a class="link" href="#">Alterar</a></td></tr>
+          <tr><td data-r="Estudante">Carla Mendes</td><td data-r="Frequência" class="num">70%</td><td data-r="Situação">${selo("Risco")}</td><td><a class="link" href="#">Alterar</a></td></tr>
+        </tbody></table></div>
+      <div class="cartao"><h2>Frequência · Bruno Costa</h2><div class="pilha">
+        <p style="margin:0;color:var(--mudo);font-size:14px">Frequência atual: 78%. Abaixo de 75% a situação vira Risco.</p>
+        ${campo("Frequência (%)", "text", "74")}
+        <div class="msg msg-ok">Frequência registrada. Situação atualizada.</div>
+        <button class="btn btn-primario btn-bloco">Salvar frequência</button></div></div>
+    </div>`)],
+
+  "professor-atividades": ["SPEC-005 · Professor — Atividades", () => casca("Professor", "atividades", `
+    ${cab("Atividades", "Atividades da turma com prazo. Clique em uma atividade para registrar as entregas.")}
+    <div class="cartao" style="margin-bottom:16px"><div class="grade g2">${lista("Turma", ["Turma A · Modelagem de Software · 2026/2"], "Turma A · Modelagem de Software · 2026/2")}<div></div></div></div>
+    <div class="grade g-form">
+      <div class="cartao"><h2>Atividades da turma (3)</h2>
+        <table class="tabela-resp"><thead><tr><th>Atividade</th><th>Prazo</th><th class="num">Entregues</th><th class="num">Atrasadas</th></tr></thead><tbody>
+          <tr><td data-r="Atividade"><a class="link" href="#">Lista de exercícios 1</a></td><td data-r="Prazo">10/10/2026</td><td data-r="Entregues" class="num">2 de 3</td><td data-r="Atrasadas" class="num">1</td></tr>
+          <tr><td data-r="Atividade"><a class="link" href="#">Diagrama de classes</a></td><td data-r="Prazo">20/10/2026</td><td data-r="Entregues" class="num">1 de 3</td><td data-r="Atrasadas" class="num">0</td></tr>
+          <tr><td data-r="Atividade"><a class="link" href="#">Relatório final</a></td><td data-r="Prazo">25/11/2026</td><td data-r="Entregues" class="num">0 de 3</td><td data-r="Atrasadas" class="num">0</td></tr>
+        </tbody></table></div>
+      <div class="cartao"><h2>Nova atividade</h2><div class="pilha">${campo("Descrição")}${campo("Prazo", "date")}
+        <button class="btn btn-primario btn-bloco">Cadastrar atividade</button></div></div>
+    </div>`)],
+
+  "professor-atividade": ["SPEC-005 · Professor — Entregas de uma atividade", () => casca("Professor", "atividades", `
+    ${cab("Diagrama de classes", "Turma A · Modelagem de Software · prazo 20/10/2026 (até 23:59)", "", '<a href="#">Atividades</a> / Diagrama de classes')}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Entregas (1 de 3)</h2>
+        <table class="tabela-resp"><thead><tr><th>Estudante</th><th>Status</th><th>Entregue em</th><th></th></tr></thead><tbody>
+          <tr><td data-r="Estudante">Ana Souza</td><td data-r="Status">${entrega("NoPrazo")}</td><td data-r="Entregue em">18/10/2026</td><td><a class="link" href="#">Desfazer</a></td></tr>
+          <tr class="selecionada"><td data-r="Estudante">Bruno Costa</td><td data-r="Status">${entrega("Pendente")}</td><td data-r="Entregue em" style="color:var(--mudo)">—</td><td><a class="link" href="#">Registrar</a></td></tr>
+          <tr><td data-r="Estudante">Carla Mendes</td><td data-r="Status">${entrega("Pendente")}</td><td data-r="Entregue em" style="color:var(--mudo)">—</td><td><a class="link" href="#">Registrar</a></td></tr>
+        </tbody></table>
+        <p style="margin:14px 0 0;color:var(--mudo);font-size:13px">Sem entrega até o fim do prazo, o status vira ■ Atrasada automaticamente. Entregue depois do prazo também fica Atrasada.</p></div>
+      <div class="cartao"><h2>Registrar entrega · Bruno Costa</h2><div class="pilha">
+        ${campo("Data da entrega", "date", "2026-10-19")}
+        <div class="msg msg-ok">Entrega registrada: ● No prazo.</div>
+        <button class="btn btn-primario btn-bloco">Registrar entrega</button></div></div>
+    </div>`)],
+
+  "estudante-atividades": ["SPEC-005 · Estudante — Minhas atividades", () => casca("Estudante", "atividades", `
+    ${cab("Minhas atividades", "Prazos e situação das suas entregas em todas as turmas.")}
+    <div class="grade g3" style="margin-bottom:16px">
+      <div class="cartao numero"><small>Pendentes</small><strong>2</strong></div>
+      <div class="cartao numero"><small>Atrasadas</small><strong style="color:var(--risco)">1</strong></div>
+      <div class="cartao numero"><small>Entregues no prazo</small><strong style="color:var(--normal)">1</strong></div>
+    </div>
+    <div class="cartao"><h2>Atividades (4)</h2>
+      <table class="tabela-resp"><thead><tr><th>Atividade</th><th>Disciplina</th><th>Prazo</th><th>Status</th></tr></thead><tbody>
+        <tr><td data-r="Atividade">Lista de exercícios 1</td><td data-r="Disciplina">Modelagem de Software</td><td data-r="Prazo">10/10/2026</td><td data-r="Status">${entrega("Atrasada")}</td></tr>
+        <tr><td data-r="Atividade">Diagrama de classes</td><td data-r="Disciplina">Modelagem de Software</td><td data-r="Prazo">20/10/2026</td><td data-r="Status">${entrega("NoPrazo")}</td></tr>
+        <tr><td data-r="Atividade">Modelo ER</td><td data-r="Disciplina">Banco de Dados</td><td data-r="Prazo">28/10/2026</td><td data-r="Status">${entrega("Pendente")}</td></tr>
+        <tr><td data-r="Atividade">Relatório final</td><td data-r="Disciplina">Modelagem de Software</td><td data-r="Prazo">25/11/2026</td><td data-r="Status">${entrega("Pendente")}</td></tr>
+      </tbody></table></div>`)],
 
   "acesso-negado": ["SPEC-001 · Acesso negado", () => `<div class="simples"><div style="max-width:420px">
     <div style="margin-bottom:24px">${logoClaro(24)}</div><div style="font-size:40px">🔒</div><h1 style="margin:8px 0">Acesso negado</h1>
