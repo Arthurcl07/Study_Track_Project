@@ -8,7 +8,7 @@ export function listarContas(perfil?: Perfil) {
   return prisma.usuario.findMany({
     where: perfil ? { perfil } : {},
     select: CONTA,
-    orderBy: [{ perfil: "asc" }, { nome: "asc" }],
+    orderBy: [{ perfil: "desc" }, { nome: "asc" }], // Administrador, Coordenador, Professor, Estudante
   });
 }
 

@@ -50,11 +50,19 @@ Entrar como `coordenador@studytrack.test`.
 - **Turmas e estudantes**: cadastrar um estudante novo na Turma B (e tentar sem e-mail para ver a validação).
 - **Relatórios**: resumo das duas turmas; filtrar por situação Risco; **Exportar CSV** e abrir no Excel.
 
+## 4b. Administrador (2 min) — SPEC-010
+
+Entrar como `admin@studytrack.test`.
+- **Contas**: filtrar por perfil; criar uma conta de Professor e entrar com ela em outra janela anônima.
+- Desativar um estudante e mostrar que ele não entra mais (mensagem genérica); reativar.
+- Tentar desativar o Professor de Teste: recusado porque ele tem turmas. Como coordenador, trocar o professor da Turma B para Júlia Reis no detalhe da turma.
+- Tentar abrir `/relatorios` como administrador: Acesso negado (o admin não vê dados acadêmicos).
+
 ## 5. Qualidade (2 min)
 
 | Mostrar | Onde |
 |---|---|
-| 128 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
+| 142 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
 | CI verde em todo PR, obrigatória na `main` | aba Actions do GitHub; `.github/workflows/ci.yml` |
 | Verificação de cada Spec (testes + navegador, desktop e celular) | `docs/verificacao/` |
 | Segurança: escopo na própria consulta, hash de senha, JWT em cookie httpOnly | `docs/seguranca-ssdlc.md`, ADR-003 e ADR-004 |

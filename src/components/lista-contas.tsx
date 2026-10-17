@@ -36,7 +36,7 @@ export function ListaContas({ contas, perfil, usuarioId }: { contas: Conta[]; pe
         setErro(retorno.erro ?? "Não foi possível alterar a conta.");
         return;
       }
-      setAviso(conta.ativo ? `${conta.nome} foi desativada e não consegue mais entrar.` : `${conta.nome} foi reativada.`);
+      setAviso(conta.ativo ? `A conta de ${conta.nome} foi desativada e não entra mais no sistema.` : `A conta de ${conta.nome} foi reativada.`);
       router.refresh();
     } catch {
       setErro("Não foi possível alterar a conta. Tente novamente.");
@@ -75,8 +75,10 @@ export function ListaContas({ contas, perfil, usuarioId }: { contas: Conta[]; pe
             {contas.map((c) => (
               <tr key={c.id} className="border-t border-traco">
                 <td data-rotulo="Conta" className="py-3 pr-2">
-                  <span className="block font-medium">{c.nome}</span>
-                  <span className="block text-sm break-all text-mudo">{c.email}</span>
+                  <div className="min-w-0">
+                    <span className="block font-medium">{c.nome}</span>
+                    <span className="block text-sm break-all text-mudo">{c.email}</span>
+                  </div>
                 </td>
                 <td data-rotulo="Perfil" className="px-2 py-3"><Etiqueta>{c.perfil}</Etiqueta></td>
                 <td data-rotulo="Situação" className="px-2 py-3"><SeloConta ativo={c.ativo} /></td>

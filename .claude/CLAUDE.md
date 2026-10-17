@@ -13,7 +13,7 @@ Pré-requisitos: Node.js 24 LTS, PostgreSQL 17 em `localhost:5432`, `.env` criad
 
 - `npm install` — dependências + `prisma generate`.
 - `npx prisma migrate dev` — cria o banco e aplica as migrações (`prisma/migrations/`).
-- `npm run seed` — contas de teste, uma por perfil (credenciais no README), turma, avaliação e duas atividades de exemplo, e dados de demonstração fictícios (8 estudantes, segunda turma, entregas e um plano).
+- `npm run seed` — contas de teste, uma por perfil (credenciais no README), turma, avaliação e duas atividades de exemplo, e dados de demonstração fictícios (8 estudantes, segunda turma, entregas e um plano), além do administrador e de uma segunda professora.
 - `npm run dev` — aplicação em http://localhost:3000.
 - `npm test` — Vitest (`tests/`), usa o banco local e limpa os dados que cria.
 
@@ -31,7 +31,10 @@ tela só é implementada depois do layout `aprovado` (OPEN-020).
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 e SPEC-005 a SPEC-009 implementadas; SPEC-002 a SPEC-004 aguardam a revisão do PR para a `main`).
+- `src/` — código-fonte (SPEC-001 e SPEC-005 a SPEC-009 implementadas; SPEC-002 a SPEC-004 aguardam a revisão do PR para a `main`; SPEC-010 em implementação)
+  Perfil Administrador (SPEC-010) só tem o recurso de gestão de contas: nunca incluí-lo em recurso acadêmico
+  (RB-13). A guarda (`confirmarConta` em `src/server/auth/guardas.ts`) confere a cada requisição se a conta
+  continua ativa e com o mesmo perfil (RB-14)..
   Regras do plano de recuperação (só Risco, itens, progresso) em `src/domain/plano.ts`; consolidação e CSV
   do relatório em `src/domain/relatorio.ts`. O limite de 1 plano ativo por estudante e turma é um índice
   parcial escrito à mão na migração da SPEC-008: se `prisma migrate dev` propuser `DROP INDEX` dele, remover.

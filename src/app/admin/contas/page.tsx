@@ -18,7 +18,7 @@ export default async function Contas({ searchParams }: { searchParams: Promise<{
   return (
     <Casca sessao={sessao} ativo="contas">
       <CabecalhoPagina titulo="Contas" subtitulo="Crie contas, escolha o perfil de cada uma e controle quem pode entrar. Dados acadêmicos não aparecem aqui." />
-      <div className="grid items-start gap-5 lg:grid-cols-[1.6fr_1fr]">
+      <div className="grid items-start gap-5 xl:grid-cols-[1.6fr_1fr]">
         <Cartao>
           <ListaContas contas={contas} perfil={filtro} usuarioId={sessao.usuarioId} />
         </Cartao>
