@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudyTrack — Protótipo de layout</title>
+<style>
+  /* Tokens de docs/identidade-visual.md */
+  :root {
+    --marinho: #0F2A4A; --marinho-claro: #1E3A5F; --azul: #2563EB; --azul-escuro: #1D4ED8;
+    --azul-suave: #DBEAFE; --ceu: #93C5FD; --nevoa: #F5F7FB; --branco: #FFFFFF; --traco: #E2E8F0;
+    --texto: #0F172A; --mudo: #64748B;
+    --normal: #15803D; --normal-bg: #DCFCE7; --atencao: #B45309; --atencao-bg: #FEF3C7; --risco: #B91C1C; --risco-bg: #FEE2E2;
+    --ok-bg: #F0FDF4; --erro-bg: #FEF2F2; --info: #1D4ED8; --info-bg: #EFF6FF;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, "Segoe UI", system-ui, sans-serif; color: var(--texto); background: #E9EDF3; }
+  .controles { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    padding: 10px 16px; background: #fff; border-bottom: 1px solid var(--traco); font-size: 14px; }
+  .controles select, .controles button { font: inherit; padding: 6px 10px; border: 1px solid var(--traco); border-radius: 8px; background: #fff; cursor: pointer; }
+  .controles button[aria-pressed="true"] { background: var(--marinho); color: #fff; border-color: var(--marinho); }
+  .controles .nota { color: var(--mudo); margin-left: auto; }
+  .palco { display: flex; justify-content: center; padding: 24px 12px 48px; }
+  .moldura { width: 1200px; max-width: 100%; height: 760px; background: var(--nevoa); border-radius: 14px; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(15,23,42,.18); container-type: inline-size; position: relative; }
+  .moldura.celular { width: 390px; height: 800px; border: 10px solid #111; border-radius: 34px; }
+  .tela { height: 100%; overflow: auto; }
+
+  /* Casca autenticada */
+  .casca { display: grid; grid-template-columns: 248px 1fr; min-height: 100%; }
+  .lateral { background: var(--marinho); color: #fff; display: flex; flex-direction: column; padding: 20px 14px; gap: 6px; }
+  .lateral .logo { padding: 4px 8px 18px; }
+  .lateral a { color: #CBD5E1; text-decoration: none; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 15px; }
+  .lateral a:hover { background: var(--marinho-claro); color: #fff; }
+  .lateral a.ativo { background: var(--marinho-claro); color: #fff; box-shadow: inset 3px 0 0 var(--ceu); }
+  .lateral .usuario { margin-top: auto; border-top: 1px solid rgba(255,255,255,.12); padding: 14px 8px 0; font-size: 14px; }
+  .lateral .usuario small { display: block; color: var(--ceu); margin-top: 2px; }
+  .sair { margin-top: 12px; width: 100%; background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.3); border-radius: 10px; padding: 8px; font: inherit; cursor: pointer; }
+  .sair:hover { background: var(--marinho-claro); }
+  .topo { display: none; }
+  .conteudo { padding: 28px 32px; max-width: 1120px; width: 100%; }
+  .cabecalho h1 { margin: 0; font-size: 24px; font-weight: 650; }
+  .cabecalho p { margin: 6px 0 0; color: var(--mudo); }
+  .cabecalho { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+  .migalha { font-size: 13px; color: var(--mudo); margin-bottom: 6px; } .migalha a { color: var(--azul); text-decoration: none; }
+
+  /* Componentes */
+  .cartao { background: #fff; border: 1px solid var(--traco); border-radius: 16px; padding: 20px; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+  .cartao h2 { margin: 0 0 14px; font-size: 17px; font-weight: 650; }
+  .grade { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3, 1fr); } .g-form { grid-template-columns: 1.6fr 1fr; align-items: start; }
+  .rotulo { display: block; font-size: 14px; font-weight: 550; margin-bottom: 6px; }
+  .campo { width: 100%; font: inherit; padding: 10px 12px; border: 1px solid var(--traco); border-radius: 10px; background: #fff; }
+  .campo:focus { outline: none; border-color: var(--azul); box-shadow: 0 0 0 3px var(--azul-suave); }
+  .campo.invalido { border-color: var(--risco); }
+  .erro-campo { color: var(--risco); font-size: 13px; margin-top: 4px; }
+  .pilha > * + * { margin-top: 14px; }
+  .btn { font: inherit; font-weight: 600; border-radius: 10px; padding: 10px 16px; border: 1px solid transparent; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
+  .btn-primario { background: var(--azul); color: #fff; } .btn-primario:hover { background: var(--azul-escuro); }
+  .btn-secundario { background: #fff; border-color: var(--traco); color: var(--texto); }
+  .btn-bloco { width: 100%; }
+  .msg { border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+  .msg-erro { background: var(--erro-bg); color: var(--risco); } .msg-ok { background: var(--ok-bg); color: var(--normal); } .msg-info { background: var(--info-bg); color: var(--info); }
+  .selo { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+  .s-normal { color: var(--normal); background: var(--normal-bg); } .s-atencao { color: var(--atencao); background: var(--atencao-bg); } .s-risco { color: var(--risco); background: var(--risco-bg); }
+  .etiqueta { display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--azul-suave); color: var(--azul-escuro); font-size: 12px; font-weight: 600; }
+  .numero small { display: block; color: var(--mudo); font-size: 13px; } .numero strong { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .turma-card h3 { margin: 0; font-size: 16px; } .turma-card p { margin: 6px 0 0; color: var(--mudo); font-size: 14px; }
+  .turma-card .rodape { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--mudo); font-weight: 600; padding: 0 12px 10px; }
+  td { padding: 12px; border-top: 1px solid var(--traco); } td.num { font-variant-numeric: tabular-nums; text-align: right; } th.num { text-align: right; }
+  tr.selecionada td { background: var(--azul-suave); }
+  a.link { color: var(--azul); text-decoration: none; font-weight: 550; }
+  .vazio { text-align: center; padding: 28px 12px; color: var(--mudo); } .vazio .icone { font-size: 28px; }
+  .atalho { display: block; text-decoration: none; color: inherit; } .atalho:hover .cartao { border-color: var(--azul); }
+  .atalho .seta { color: var(--azul); font-weight: 600; font-size: 14px; margin-top: 10px; }
+
+  /* Login */
+  .login { display: grid; grid-template-columns: 1fr 1fr; min-height: 100%; }
+  .login .painel { background: var(--marinho); color: #fff; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; }
+  .login .painel h2 { font-size: 30px; line-height: 1.25; margin: 0 0 12px; font-weight: 650; }
+  .login .painel p { color: #CBD5E1; margin: 0; max-width: 380px; }
+  .login .lado { display: flex; align-items: center; justify-content: center; padding: 32px 20px; }
+  .login .caixa { width: 100%; max-width: 380px; }
+  .login .logo-claro { display: none; margin-bottom: 24px; }
+  .login h1 { margin: 0; font-size: 24px; } .login .sub { color: var(--mudo); margin: 6px 0 24px; }
+  .simples { display: flex; align-items: center; justify-content: center; min-height: 100%; padding: 24px; text-align: center; }
+
+  /* Celular (moldura estreita) */
+  @container (max-width: 720px) {
+    .casca { grid-template-columns: 1fr; }
+    .lateral { display: none; position: absolute; inset: 56px 0 0 0; z-index: 5; }
+    .casca.aberto .lateral { display: flex; }
+    .topo { display: flex; align-items: center; justify-content: space-between; background: var(--marinho); height: 56px; padding: 0 12px; position: sticky; top: 0; z-index: 6; }
+    .topo button { background: transparent; border: 0; color: #fff; font-size: 24px; cursor: pointer; }
+    .conteudo { padding: 18px 16px; }
+    .g2, .g3, .g-form { grid-template-columns: 1fr; }
+    .login { grid-template-columns: 1fr; } .login .painel { display: none; } .login .logo-claro { display: block; }
+    .tabela-resp thead { display: none; }
+    .tabela-resp tr { display: block; border-top: 1px solid var(--traco); padding: 10px 0; }
+    .tabela-resp td { display: flex; justify-content: space-between; border: 0; padding: 4px 4px; }
+    .tabela-resp td::before { content: attr(data-r); color: var(--mudo); font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="controles">
+  <label for="tela"><strong>Tela:</strong></label>
+  <select id="tela"></select>
+  <button id="desk" aria-pressed="true">Computador</button>
+  <button id="cel" aria-pressed="false">Celular</button>
+  <span class="nota">Protótipo de layout — dados fictícios. Fonte: docs/identidade-visual.md</span>
+</div>
+<div class="palco"><div class="moldura" id="moldura"><div class="tela" id="tela-conteudo"></div></div></div>
+
+<script>
+const MARCA = `<svg viewBox="0 0 64 64" width="36" height="36" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1E3A5F"/><polyline points="14,45 26,35 36,39 50,20" fill="none" stroke="#60A5FA" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="45" r="3.5" fill="#93C5FD"/><circle cx="26" cy="35" r="3.5" fill="#93C5FD"/><circle cx="36" cy="39" r="3.5" fill="#93C5FD"/><circle cx="50" cy="20" r="6" fill="#fff"/></svg>`;
+const MARCA_CLARA = MARCA.replace('#1E3A5F', '#0F2A4A');
+const logoInverso = (t = 22) => `<span style="display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:${t}px;letter-spacing:-.3px">${MARCA}<span><span style="color:#fff">Study</span><span style="color:#93C5FD">Track</span></span></span>`;
+const logoClaro = (t = 22) => `<span style="display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:${t}px;letter-spacing:-.3px">${MARCA_CLARA}<span><span style="color:#0F2A4A">Study</span><span style="color:#2563EB">Track</span></span></span>`;
+
+const MENUS = {
+  Estudante: [["inicio", "🏠", "Início"]],
+  Professor: [["inicio", "🏠", "Início"], ["notas", "📝", "Notas e avaliações"]],
+  Coordenador: [["inicio", "🏠", "Início"], ["disciplinas", "📚", "Disciplinas"], ["turmas", "👥", "Turmas e estudantes"], ["area", "🔒", "Área da coordenação"]],
+};
+const USUARIOS = { Estudante: "Ana Souza", Professor: "Prof. Carlos Lima", Coordenador: "Marina Alves" };
+
+function casca(perfil, ativo, conteudo) {
+  const itens = MENUS[perfil].map(([id, ic, rot]) => `<a href="#" class="${id === ativo ? "ativo" : ""}"><span>${ic}</span>${rot}</a>`).join("");
+  return `<div class="casca" id="casca">
+    <div class="topo">${logoInverso(18)}<button onclick="document.getElementById('casca').classList.toggle('aberto')" aria-label="Abrir menu">☰</button></div>
+    <nav class="lateral"><div class="logo">${logoInverso()}</div>${itens}
+      <div class="usuario"><strong>${USUARIOS[perfil]}</strong><small>${perfil}</small><button class="sair">Sair</button></div></nav>
+    <main class="conteudo">${conteudo}</main></div>`;
+}
+const cab = (titulo, sub = "", acao = "", migalha = "") =>
+  `<div>${migalha ? `<div class="migalha">${migalha}</div>` : ""}</div><div class="cabecalho"><div><h1>${titulo}</h1>${sub ? `<p>${sub}</p>` : ""}</div>${acao}</div>`;
+const selo = (s) => ({ Normal: '<span class="selo s-normal">● Normal</span>', Atencao: '<span class="selo s-atencao">▲ Atenção</span>', Risco: '<span class="selo s-risco">■ Risco</span>' })[s];
+const campo = (rot, tipo = "text", valor = "", erro = "") =>
+  `<div><label class="rotulo">${rot}</label><input class="campo ${erro ? "invalido" : ""}" type="${tipo}" value="${valor}">${erro ? `<div class="erro-campo">${erro}</div>` : ""}</div>`;
+const lista = (rot, opcoes, sel = "") => `<div><label class="rotulo">${rot}</label><select class="campo">${["Selecione...", ...opcoes].map((o) => `<option ${o === sel ? "selected" : ""}>${o}</option>`).join("")}</select></div>`;
+
+function login(comErro) {
+  return `<div class="login">
+    <section class="painel">${logoInverso(26)}
+      <div><h2>Acompanhamento acadêmico<br>em um só lugar.</h2><p>Notas, frequência e situação acadêmica de cada turma, com acesso de acordo com o seu perfil.</p></div>
+      <p style="font-size:13px">Estudante · Professor · Coordenação</p></section>
+    <section class="lado"><div class="caixa">
+      <div class="logo-claro">${logoClaro(24)}</div>
+      <h1>Entrar</h1><p class="sub">Use o e-mail e a senha cadastrados pela coordenação.</p>
+      <div class="pilha">${campo("E-mail", "email", comErro ? "ana.souza@studytrack.test" : "")}${campo("Senha", "password", comErro ? "••••••••" : "")}
+      ${comErro ? '<div class="msg msg-erro" role="alert">E-mail ou senha inválidos.</div>' : ""}
+      <button class="btn btn-primario btn-bloco">Entrar</button></div></div></section></div>`;
+}
+
+const TELAS = {
+  identidade: ["Identidade visual (amostra)", () => `<div class="conteudo" style="max-width:none">
+    ${cab("Identidade visual", "Amostra de docs/identidade-visual.md")}
+    <div class="grade g2">
+      <div class="cartao"><h2>Logotipo</h2><div class="pilha"><div>${logoClaro(28)}</div>
+        <div style="background:var(--marinho);padding:16px;border-radius:12px">${logoInverso(28)}</div><div>${MARCA_CLARA.replace('width="36" height="36"', 'width="56" height="56"')}</div></div></div>
+      <div class="cartao"><h2>Paleta</h2><div class="grade g3" style="font-size:13px">
+        ${[["Marinho", "#0F2A4A"], ["Marinho-claro", "#1E3A5F"], ["Azul", "#2563EB"], ["Azul-escuro", "#1D4ED8"], ["Azul-suave", "#DBEAFE"], ["Céu", "#93C5FD"], ["Névoa", "#F5F7FB"], ["Traço", "#E2E8F0"], ["Mudo", "#64748B"]]
+          .map(([n, h]) => `<div><div style="height:44px;border-radius:10px;background:${h};border:1px solid var(--traco)"></div><strong>${n}</strong><br><span style="color:var(--mudo)">${h}</span></div>`).join("")}</div></div>
+      <div class="cartao"><h2>Situação acadêmica (cor + símbolo + rótulo)</h2><div style="display:flex;gap:10px;flex-wrap:wrap">${selo("Normal")}${selo("Atencao")}${selo("Risco")}</div>
+        <div class="pilha" style="margin-top:16px"><div class="msg msg-ok">Nota lançada. Média e situação atualizadas.</div><div class="msg msg-erro">E-mail ou senha inválidos.</div><div class="msg msg-info">Cadastre uma disciplina antes de criar turmas.</div></div></div>
+      <div class="cartao"><h2>Componentes</h2><div class="pilha">${campo("Campo", "text", "Valor digitado")}${campo("Campo com erro", "text", "", "Informe o nome.")}
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primario">Botão primário</button><button class="btn btn-secundario">Secundário</button><span class="etiqueta">2026/2</span></div></div></div>
+    </div></div>`],
+
+  login: ["SPEC-001 · Login", () => login(false)],
+  "login-erro": ["SPEC-001 · Login com credencial inválida", () => login(true)],
+
+  "estudante-inicio": ["SPEC-002 · Estudante — Minhas turmas", () => casca("Estudante", "inicio", `
+    ${cab("Minhas turmas", "Turmas em que você está matriculada neste período.")}
+    <div class="grade g2">
+      ${[["Modelagem de Software", "Turma A", "Prof. Carlos Lima"], ["Banco de Dados", "Turma B", "Profa. Júlia Reis"]].map(([d, t, p]) =>
+        `<div class="cartao turma-card"><span class="etiqueta">2026/2</span><h3 style="margin-top:10px">${d}</h3><p>${t} · ${p}</p></div>`).join("")}
+    </div>
+`)],
+
+  "professor-inicio": ["SPEC-002 · Professor — Turmas que leciono", () => casca("Professor", "inicio", `
+    ${cab("Turmas que leciono", "Suas turmas neste período e os estudantes matriculados.", '<a class="btn btn-primario" href="#">📝 Lançar e alterar notas</a>')}
+    <div class="grade g2">
+      ${[["Modelagem de Software", "Turma A", 32], ["Engenharia de Requisitos", "Turma C", 28]].map(([d, t, n]) =>
+        `<div class="cartao turma-card"><span class="etiqueta">2026/2</span><h3 style="margin-top:10px">${d}</h3><p>${t}</p>
+         <div class="rodape"><span>👥 ${n} estudantes</span></div><p style="margin-top:6px">Ana Souza, Bruno Costa, Carla Mendes e mais ${n - 3}</p></div>`).join("")}
+    </div>`)],
+
+  "professor-notas": ["SPEC-004 · Professor — Notas e avaliações", () => casca("Professor", "notas", `
+    ${cab("Notas e avaliações", "Escolha a turma e a avaliação; clique no estudante para lançar ou alterar a nota.")}
+    <div class="cartao" style="margin-bottom:16px"><div class="grade g2">${lista("Turma", ["Turma A · Modelagem de Software · 2026/2"], "Turma A · Modelagem de Software · 2026/2")}${lista("Avaliação", ["Prova 1 (peso 2)", "Trabalho (peso 1)"], "Prova 1 (peso 2)")}</div></div>
+    <div class="grade g-form">
+      <div class="cartao"><h2>Prova 1 · peso 2 · 15/09/2026</h2>
+        <table class="tabela-resp"><thead><tr><th>Estudante</th><th class="num">Nota</th><th></th></tr></thead><tbody>
+          <tr><td data-r="Estudante">Ana Souza</td><td data-r="Nota" class="num">8,5</td><td><a class="link" href="#">Alterar</a></td></tr>
+          <tr class="selecionada"><td data-r="Estudante">Bruno Costa</td><td data-r="Nota" class="num" style="color:var(--mudo)">—</td><td><a class="link" href="#">Lançar</a></td></tr>
+          <tr><td data-r="Estudante">Carla Mendes</td><td data-r="Nota" class="num">4,0</td><td><a class="link" href="#">Alterar</a></td></tr>
+        </tbody></table></div>
+      <div class="pilha">
+        <div class="cartao"><h2>Lançar nota · Bruno Costa</h2><div class="pilha">${campo("Nota (0 a 10)", "text", "7,5")}
+          <div class="msg msg-ok">Nota lançada. Média e situação atualizadas.</div><button class="btn btn-primario btn-bloco">Lançar nota</button></div></div>
+        <div class="cartao"><h2>Nova avaliação nesta turma</h2><div class="pilha">${campo("Nome")}<div class="grade g2">${campo("Peso (maior que zero)")}${campo("Data", "date")}</div>
+          <button class="btn btn-secundario btn-bloco">Cadastrar avaliação</button></div></div>
+      </div>
+    </div>`)],
+
+  "coordenador-inicio": ["SPEC-002 · Coordenador — Início", () => casca("Coordenador", "inicio", `
+    ${cab("Olá, Marina", "Visão geral das turmas sob sua responsabilidade.")}
+    <div class="grade g3">
+      ${[["Disciplinas", 6, "Gerenciar disciplinas"], ["Turmas sob sua responsabilidade", 4, "Ver turmas"], ["Estudantes matriculados", 118, "Ver turmas"]].map(([r, n, a]) =>
+        `<a class="atalho" href="#"><div class="cartao numero"><small>${r}</small><strong>${n}</strong><div class="seta">${a} →</div></div></a>`).join("")}
+    </div>`)],
+
+  "coordenador-disciplinas": ["SPEC-002 · Coordenador — Disciplinas", () => casca("Coordenador", "disciplinas", `
+    ${cab("Disciplinas", "Disciplinas disponíveis para criar turmas.")}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Disciplinas cadastradas (3)</h2><table class="tabela-resp"><thead><tr><th>Nome</th><th class="num">Carga horária</th></tr></thead><tbody>
+        ${[["Banco de Dados", 80], ["Engenharia de Requisitos", 60], ["Modelagem de Software", 60]].map(([n, h]) => `<tr><td data-r="Nome">${n}</td><td data-r="Carga horária" class="num">${h} h</td></tr>`).join("")}
+      </tbody></table></div>
+      <div class="cartao"><h2>Nova disciplina</h2><div class="pilha">${campo("Nome")}${campo("Carga horária (horas)", "number")}<button class="btn btn-primario btn-bloco">Cadastrar disciplina</button></div></div>
+    </div>`)],
+
+  "coordenador-turmas": ["SPEC-002 · Coordenador — Turmas", () => casca("Coordenador", "turmas", `
+    ${cab("Turmas e estudantes", "Turmas sob sua responsabilidade. Quem cria a turma passa a ser o coordenador responsável.")}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Minhas turmas (2)</h2><table class="tabela-resp"><thead><tr><th>Turma</th><th>Disciplina</th><th>Professor</th><th class="num">Estudantes</th></tr></thead><tbody>
+        <tr><td data-r="Turma"><a class="link" href="#">Turma A</a> <span class="etiqueta">2026/2</span></td><td data-r="Disciplina">Modelagem de Software</td><td data-r="Professor">Carlos Lima</td><td data-r="Estudantes" class="num">32</td></tr>
+        <tr><td data-r="Turma"><a class="link" href="#">Turma C</a> <span class="etiqueta">2026/2</span></td><td data-r="Disciplina">Engenharia de Requisitos</td><td data-r="Professor">Carlos Lima</td><td data-r="Estudantes" class="num">28</td></tr>
+      </tbody></table></div>
+      <div class="cartao"><h2>Nova turma</h2><div class="pilha">${campo("Nome")}${campo("Período (ex.: 2026/2)")}${lista("Disciplina", ["Modelagem de Software", "Banco de Dados"])}${lista("Professor responsável", ["Carlos Lima", "Júlia Reis"])}
+        <button class="btn btn-primario btn-bloco">Cadastrar turma</button></div></div>
+    </div>`)],
+
+  "coordenador-turma": ["SPEC-002 · Coordenador — Detalhe da turma", () => casca("Coordenador", "turmas", turmaDetalhe(false))],
+  "cadastro-erro": ["SPEC-002 · Cadastro de estudante com campos pendentes", () => casca("Coordenador", "turmas", turmaDetalhe(true))],
+
+  "acesso-negado": ["SPEC-001 · Acesso negado", () => `<div class="simples"><div style="max-width:420px">
+    <div style="margin-bottom:24px">${logoClaro(24)}</div><div style="font-size:40px">🔒</div><h1 style="margin:8px 0">Acesso negado</h1>
+    <p style="color:var(--mudo)">Seu perfil não tem permissão para acessar esta página.</p><a class="btn btn-primario" href="#">Voltar ao meu painel</a></div></div>`],
+};
+
+function turmaDetalhe(comErro) {
+  return `${cab("Turma A · Modelagem de Software", "Período 2026/2 · Professor: Carlos Lima", "", '<a href="#">Turmas e estudantes</a> / Turma A')}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Estudantes matriculados (3)</h2><table class="tabela-resp"><thead><tr><th>Nome</th><th>E-mail</th></tr></thead><tbody>
+        ${[["Ana Souza", "ana.souza@studytrack.test"], ["Bruno Costa", "bruno.costa@studytrack.test"], ["Carla Mendes", "carla.mendes@studytrack.test"]].map(([n, e]) => `<tr><td data-r="Nome">${n}</td><td data-r="E-mail" style="color:var(--mudo)">${e}</td></tr>`).join("")}
+      </tbody></table></div>
+      <div class="pilha">
+        <div class="cartao"><h2>Cadastrar novo estudante</h2><div class="pilha">
+          ${campo("Nome", "text", "", comErro ? "Informe o nome." : "")}${campo("E-mail", "email", comErro ? "ana.souza@studytrack.test" : "")}${campo("Senha inicial (mínimo 8 caracteres)", "password", "", comErro ? "Informe a senha inicial." : "")}
+          ${comErro ? '<div class="msg msg-erro">Dados obrigatórios ausentes ou inválidos.</div>' : ""}
+          <button class="btn btn-primario btn-bloco">Cadastrar estudante</button></div></div>
+        <div class="cartao"><h2>Matricular estudante já cadastrado</h2><div class="pilha">${campo("E-mail do estudante", "email")}<button class="btn btn-secundario btn-bloco">Matricular</button></div></div>
+      </div>
+    </div>`;
+}
+
+const seletor = document.getElementById("tela"), alvo = document.getElementById("tela-conteudo"), moldura = document.getElementById("moldura");
+for (const [id, [rotulo]] of Object.entries(TELAS)) seletor.add(new Option(rotulo, id));
+function mostrar(id) { if (!TELAS[id]) id = "identidade"; seletor.value = id; alvo.innerHTML = TELAS[id][1](); alvo.scrollTop = 0; history.replaceState(null, "", "#" + id); }
+seletor.onchange = () => mostrar(seletor.value);
+function viewport(celular) { moldura.classList.toggle("celular", celular); document.getElementById("cel").setAttribute("aria-pressed", celular); document.getElementById("desk").setAttribute("aria-pressed", !celular); }
+document.getElementById("cel").onclick = () => viewport(true);
+document.getElementById("desk").onclick = () => viewport(false);
+mostrar(location.hash.slice(1));
+</script>
+</body>
+</html>

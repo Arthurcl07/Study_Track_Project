@@ -1,13 +1,13 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Casca } from "@/components/casca";
 import { FormularioApi } from "@/components/formulario-api";
-import { Painel } from "@/components/painel";
-import { Secao } from "@/components/secao";
+import { CabecalhoPagina, Cartao, EstadoVazio } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 import { buscarTurmaDoEscopo } from "@/server/dados/estrutura";
 
 // SPEC-002 / RF-03: estudantes da turma, cadastro de estudante e matrícula de estudante existente.
+// Layout aprovado em docs/layout/prototipo.html#coordenador-turma e #cadastro-erro.
 export default async function DetalheTurma({ params }: { params: Promise<{ id: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.cadastroAcademico);
   const { id } = await params;
@@ -15,42 +15,59 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
   if (!turma) notFound();
   const estudantes = turma.estudantes ?? [];
   return (
-    <Painel sessao={sessao}>
-      <Link href="/coordenador/turmas" className="text-sm text-indigo-700 underline">Voltar às turmas</Link>
-      <Secao titulo={turma.nome}>
-        <p className="text-slate-700">{turma.disciplina.nome} · {turma.periodo} · Professor: {turma.professor.nome}</p>
-      </Secao>
-      <Secao titulo={`Estudantes (${estudantes.length})`}>
-        {estudantes.length === 0 ? (
-          <p className="text-slate-600">Nenhum estudante matriculado.</p>
-        ) : (
-          <ul className="divide-y divide-slate-100">
-            {estudantes.map((e) => (
-              <li key={e.id} className="py-2">{e.nome} <span className="text-slate-500">· {e.email}</span></li>
-            ))}
-          </ul>
-        )}
-      </Secao>
-      <Secao titulo="Cadastrar novo estudante nesta turma">
-        <FormularioApi
-          url={`/api/turmas/${turma.id}/estudantes`}
-          textoBotao="Cadastrar estudante"
-          mensagemSucesso="Estudante cadastrado e matriculado."
-          campos={[
-            { nome: "nome", rotulo: "Nome" },
-            { nome: "email", rotulo: "E-mail", tipo: "email" },
-            { nome: "senha", rotulo: "Senha inicial (mínimo 8 caracteres)", tipo: "password" },
-          ]}
-        />
-      </Secao>
-      <Secao titulo="Matricular estudante já cadastrado">
-        <FormularioApi
-          url={`/api/turmas/${turma.id}/matriculas`}
-          textoBotao="Matricular"
-          mensagemSucesso="Estudante matriculado."
-          campos={[{ nome: "email", rotulo: "E-mail do estudante", tipo: "email" }]}
-        />
-      </Secao>
-    </Painel>
+    <Casca sessao={sessao} ativo="turmas">
+      <CabecalhoPagina
+        titulo={`${turma.nome} · ${turma.disciplina.nome}`}
+        subtitulo={`Período ${turma.periodo} · Professor: ${turma.professor.nome}`}
+        voltar={{ href: "/coordenador/turmas", rotulo: "Turmas e estudantes" }}
+      />
+      <div className="grid items-start gap-5 lg:grid-cols-[1.6fr_1fr]">
+        <Cartao titulo={`Estudantes matriculados (${estudantes.length})`}>
+          {estudantes.length === 0 ? (
+            <EstadoVazio>Nenhum estudante matriculado. Cadastre ou matricule ao lado.</EstadoVazio>
+          ) : (
+            <table className="tabela-responsiva w-full text-[15px]">
+              <thead>
+                <tr className="text-left text-xs font-semibold tracking-wide text-mudo uppercase">
+                  <th className="pb-2.5">Nome</th>
+                  <th className="pb-2.5">E-mail</th>
+                </tr>
+              </thead>
+              <tbody>
+                {estudantes.map((e) => (
+                  <tr key={e.id} className="border-t border-traco">
+                    <td data-rotulo="Nome" className="py-3 pr-2">{e.nome}</td>
+                    <td data-rotulo="E-mail" className="py-3 break-all text-mudo">{e.email}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </Cartao>
+        <div className="space-y-5">
+          <Cartao titulo="Cadastrar novo estudante">
+            <FormularioApi
+              url={`/api/turmas/${turma.id}/estudantes`}
+              textoBotao="Cadastrar estudante"
+              mensagemSucesso="Estudante cadastrado e matriculado."
+              campos={[
+                { nome: "nome", rotulo: "Nome" },
+                { nome: "email", rotulo: "E-mail", tipo: "email" },
+                { nome: "senha", rotulo: "Senha inicial (mínimo 8 caracteres)", tipo: "password" },
+              ]}
+            />
+          </Cartao>
+          <Cartao titulo="Matricular estudante já cadastrado">
+            <FormularioApi
+              url={`/api/turmas/${turma.id}/matriculas`}
+              textoBotao="Matricular"
+              mensagemSucesso="Estudante matriculado."
+              secundario
+              campos={[{ nome: "email", rotulo: "E-mail do estudante", tipo: "email" }]}
+            />
+          </Cartao>
+        </div>
+      </div>
+    </Casca>
   );
 }

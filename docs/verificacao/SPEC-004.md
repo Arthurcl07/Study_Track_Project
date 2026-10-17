@@ -68,16 +68,19 @@
 |---|---|---|
 | RNF-03 | AC-004-04, AC-004-07 e INV-004-02: professor de outra turma recusado no servidor (403); sem sessão, 401 | Aprovado |
 | RNF-05 | INV-004-02 e a tela `/professor/notas`, que só carrega turmas que o professor leciona | Aprovado |
-| RNF-04 | Manual: `/professor/notas` em viewport de celular (375×812) e desktop; lançar, alterar, valor inválido com mensagem de correção e cadastro de avaliação | Pendente — verificação manual |
+| RNF-04 | Manual: `/professor/notas` em viewport de celular (375×812) e desktop; lançar, alterar, valor inválido com mensagem de correção e cadastro de avaliação | Aprovado (manual) |
 
 ## Verificação manual
 
+**Data:** 2026-10-13 — **verificado por Arthur** (no navegador, com as contas do seed, em desktop e em viewport de celular)
+
 | Item | Resultado |
 |---|---|
-| Professor do seed lança nota na "Prova 1 (exemplo)" e o indicador do estudante aparece atualizado em `/api/indicadores` | Pendente — verificação manual |
-| Valor inválido (ex.: 11) mostra a mensagem de correção e não grava nada | Pendente — verificação manual |
-| Alterar a nota sobrescreve o valor | Pendente — verificação manual |
-| Cadastro de avaliação com peso 0 é recusado; com peso > 0 aparece na lista | Pendente — verificação manual |
+| Professor do seed lança nota na "Prova 1 (exemplo)" e o indicador do estudante aparece atualizado em `/api/indicadores` | Aprovado (nota 8, média 8) |
+| Valor inválido (ex.: 11) mostra a mensagem de correção e não grava nada | Aprovado |
+| Alterar a nota sobrescreve o valor | Aprovado (8 → 4, média 4) |
+| Cadastro de avaliação com peso 0 é recusado; com peso > 0 aparece na lista | Aprovado |
+| Tela `/professor/notas` utilizável em viewport de celular (RNF-04) | Aprovado |
 
 ## Limites conhecidos
 
@@ -87,5 +90,4 @@
 
 ## Pendências para fechar a Spec como `implementada`
 
-- Verificação manual da tela `/professor/notas` (RNF-04): a página carrega a turma, a avaliação e o estudante do seed; falta conferir lançar, alterar, valor inválido e cadastro de avaliação.
-- Verificação manual (RNF-04) e revisão do PR por um colega.
+- Revisão do PR por um colega (estrategia-testes.md, seção 5).

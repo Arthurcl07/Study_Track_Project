@@ -1,40 +1,53 @@
-import Link from "next/link";
+import { Casca } from "@/components/casca";
 import { FormularioApi } from "@/components/formulario-api";
-import { Painel } from "@/components/painel";
-import { Secao } from "@/components/secao";
+import { CabecalhoPagina, Cartao, EstadoVazio } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 import { listarDisciplinas } from "@/server/dados/estrutura";
 
 // SPEC-002 / RF-04: cadastro de disciplinas (Coordenador, OPEN-001).
+// Layout aprovado em docs/layout/prototipo.html#coordenador-disciplinas.
 export default async function Disciplinas() {
   const sessao = await exigirAcessoPagina(RECURSOS.cadastroAcademico);
   const disciplinas = await listarDisciplinas();
   return (
-    <Painel sessao={sessao}>
-      <Link href="/coordenador" className="text-sm text-indigo-700 underline">Voltar</Link>
-      <Secao titulo="Nova disciplina">
-        <FormularioApi
-          url="/api/disciplinas"
-          textoBotao="Cadastrar disciplina"
-          mensagemSucesso="Disciplina cadastrada."
-          campos={[
-            { nome: "nome", rotulo: "Nome" },
-            { nome: "cargaHoraria", rotulo: "Carga horária (horas)", tipo: "number" },
-          ]}
-        />
-      </Secao>
-      <Secao titulo={`Disciplinas (${disciplinas.length})`}>
-        {disciplinas.length === 0 ? (
-          <p className="text-slate-600">Nenhuma disciplina cadastrada.</p>
-        ) : (
-          <ul className="divide-y divide-slate-100">
-            {disciplinas.map((d) => (
-              <li key={d.id} className="py-2">{d.nome} <span className="text-slate-500">· {d.cargaHoraria} h</span></li>
-            ))}
-          </ul>
-        )}
-      </Secao>
-    </Painel>
+    <Casca sessao={sessao} ativo="disciplinas">
+      <CabecalhoPagina titulo="Disciplinas" subtitulo="Disciplinas disponíveis para criar turmas." />
+      <div className="grid items-start gap-5 lg:grid-cols-[1.6fr_1fr]">
+        <Cartao titulo={`Disciplinas cadastradas (${disciplinas.length})`}>
+          {disciplinas.length === 0 ? (
+            <EstadoVazio>Nenhuma disciplina cadastrada ainda.</EstadoVazio>
+          ) : (
+            <table className="tabela-responsiva w-full text-[15px]">
+              <thead>
+                <tr className="text-left text-xs font-semibold tracking-wide text-mudo uppercase">
+                  <th className="pb-2.5">Nome</th>
+                  <th className="pb-2.5 text-right">Carga horária</th>
+                </tr>
+              </thead>
+              <tbody>
+                {disciplinas.map((d) => (
+                  <tr key={d.id} className="border-t border-traco">
+                    <td data-rotulo="Nome" className="py-3 pr-2">{d.nome}</td>
+                    <td data-rotulo="Carga horária" className="py-3 text-right tabular-nums">{d.cargaHoraria} h</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </Cartao>
+        <Cartao titulo="Nova disciplina">
+          <FormularioApi
+            url="/api/disciplinas"
+            textoBotao="Cadastrar disciplina"
+            mensagemSucesso="Disciplina cadastrada."
+            campos={[
+              { nome: "nome", rotulo: "Nome" },
+              { nome: "cargaHoraria", rotulo: "Carga horária (horas)", tipo: "number" },
+            ]}
+          />
+        </Cartao>
+      </div>
+    </Casca>
   );
 }

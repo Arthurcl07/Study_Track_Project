@@ -19,7 +19,13 @@ Pré-requisitos: Node.js 24 LTS, PostgreSQL 17 em `localhost:5432`, `.env` criad
 
 Camadas: `src/domain` (regras puras, sem Next.js/Prisma), `src/server/dados` (Prisma),
 `src/server/auth` (serviços e guardas), `src/server/academico` (casos de uso de cadastro e de notas),
-`src/app` (páginas e Route Handlers finos).
+`src/app` (páginas e Route Handlers finos), `src/components` (casca com menu lateral e Sair, `ui.tsx`
+com as peças da identidade visual).
+
+Interface: seguir `docs/identidade-visual.md` (RNF-06) e o protótipo aprovado em `docs/layout/`.
+Usar os tokens do Tailwind definidos em `src/app/globals.css` (`bg-marinho`, `text-azul`, `text-mudo`...),
+nunca as cores padrão (`indigo-*`, `blue-*`). Toda página autenticada usa `<Casca>`. Spec nova com
+tela só é implementada depois do layout `aprovado` (OPEN-020).
 
 ## Onde está o quê
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de

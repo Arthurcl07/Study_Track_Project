@@ -1,4 +1,5 @@
-import { Painel } from "@/components/painel";
+import { Casca } from "@/components/casca";
+import { CabecalhoPagina, Cartao } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 
@@ -6,8 +7,14 @@ import { exigirAcessoPagina } from "@/server/auth/guardas";
 export default async function AreaCoordenacao() {
   const sessao = await exigirAcessoPagina(RECURSOS.areaCoordenacao);
   return (
-    <Painel sessao={sessao}>
-      <p className="text-slate-700">Área exclusiva da coordenação.</p>
-    </Painel>
+    <Casca sessao={sessao} ativo="area">
+      <CabecalhoPagina titulo="Área da coordenação" subtitulo="Função exclusiva do perfil Coordenador." />
+      <Cartao>
+        <p className="text-mudo">
+          Esta página só abre para Coordenadores. Estudantes e Professores que tentarem acessá-la, pela tela ou
+          pela API (<code className="text-texto">/api/coordenacao</code>), recebem acesso negado no servidor.
+        </p>
+      </Cartao>
+    </Casca>
   );
 }
