@@ -236,7 +236,7 @@ describe("SPEC-002 — cadastros e vínculos", () => {
 });
 
 describe("SPEC-002 — escopo das consultas", () => {
-  it("INV-002-06: cada perfil só vê as turmas do seu escopo; Estudante não recebe a lista de colegas", async () => {
+  it("RB-02 / RB-03 / RB-04 / INV-002-06: cada perfil só vê as turmas do seu escopo; Estudante não recebe a lista de colegas", async () => {
     const coordenador = await entrar("Coordenador");
     const outroCoordenador = await entrar("Coordenador");
     const professor = await entrar("Professor");

@@ -63,17 +63,17 @@ describe("SPEC-003 — classificação (função pura, sem banco)", () => {
     expect(classificarSituacao(10, 75)).toBe("Normal");
   });
 
-  it("INV-003-01: frequência abaixo de 75% é Risco independentemente da média", () => {
+  it("RB-05 / INV-003-01: frequência abaixo de 75% é Risco independentemente da média", () => {
     for (const media of [0, 5, 6, 10]) expect(classificarSituacao(media, 74.99)).toBe("Risco");
   });
 
-  it("INV-003-02 / INV-003-03: média abaixo de 5 é Risco; de 5 até antes de 6 é Atenção", () => {
+  it("RB-06 / RB-07 / INV-003-02 / INV-003-03: média abaixo de 5 é Risco; de 5 até antes de 6 é Atenção", () => {
     expect(classificarSituacao(4.999, 90)).toBe("Risco");
     expect(classificarSituacao(5, 90)).toBe("Atencao");
     expect(classificarSituacao(5.999, 90)).toBe("Atencao");
   });
 
-  it("INV-003-04: o resultado é sempre exatamente uma das três situações", () => {
+  it("RB-09 / INV-003-04: o resultado é sempre exatamente uma das três situações", () => {
     for (let media = 0; media <= 10; media += 0.25) {
       for (const frequencia of [0, 50, 74.9, 75, 100, null]) {
         expect(SITUACOES).toContain(classificarSituacao(media, frequencia));
@@ -123,7 +123,7 @@ describe("SPEC-003 — classificação (função pura, sem banco)", () => {
 });
 
 describe("SPEC-003 — indicador persistido (banco)", () => {
-  it("AC-003-07 / Caso 12.2: alterar nota recalcula o indicador e renova o instante de atualização", async () => {
+  it("RB-10 / AC-003-07 / Caso 12.2: alterar nota recalcula o indicador e renova o instante de atualização", async () => {
     const { estudante, turma } = await cenario();
     const prova = await avaliacao(turma.id, 1);
     const nota = await prisma.nota.create({ data: { avaliacaoId: prova.id, estudanteId: estudante.id, valor: 8 } });

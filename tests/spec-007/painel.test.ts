@@ -100,7 +100,7 @@ describe("SPEC-007 — painel do estudante", () => {
     expect(corpo).toEqual({ turmas: [], alertas: [], atividadesEmAtencao: [] });
   });
 
-  it("AC-007-05 / INV-007-01: cada estudante vê só os próprios dados", async () => {
+  it("AC-007-05 / INV-007-01 / INV-007-03: cada estudante vê só os próprios dados", async () => {
     const { a, b } = await cenario();
     const { corpo } = await painelDe(b);
     const texto = JSON.stringify(corpo);
@@ -108,6 +108,16 @@ describe("SPEC-007 — painel do estudante", () => {
     expect(corpo.turmas[0]).toMatchObject({ media: null, frequencia: null, situacao: null, evolucao: [] });
     expect(corpo.alertas).toEqual([]);
     expect(texto).not.toContain(a.id);
+  });
+
+  it("INV-007-02 / RB-10: depois de uma frequência nova, o painel mostra a situação do indicador recalculado", async () => {
+    const { a, turma } = await cenario();
+    expect((await painelDe(a)).corpo.turmas[0].situacao).toBe("Atencao");
+
+    await prisma.frequencia.update({ where: { estudanteId_turmaId: { estudanteId: a.id, turmaId: turma.id } }, data: { percentual: 60 } });
+    await recalcularIndicador(a.id, turma.id);
+
+    expect((await painelDe(a)).corpo.turmas[0]).toMatchObject({ frequencia: 60, situacao: "Risco" });
   });
 
   it("AC-007-06 / RNF-01: o painel responde em menos de 3 s com dados de amostra", async () => {

@@ -16,10 +16,10 @@ describe("SPEC-005 — status de entrega (OPEN-010, RB-08)", () => {
   const prazo = "2026-10-20";
 
   it.each([
-    ["AC-005-04: prazo encerrado e sem entrega", null, "2026-10-21", "Atrasada"],
+    ["RB-08 / AC-005-04 / INV-005-02: prazo encerrado e sem entrega", null, "2026-10-21", "Atrasada"],
     ["AC-005-05: entregue antes do prazo", "2026-10-18", "2026-10-25", "NoPrazo"],
     ["AC-005-05: entregue no último dia do prazo", "2026-10-20", "2026-10-25", "NoPrazo"],
-    ["AC-005-06: entregue depois do prazo", "2026-10-21", "2026-10-25", "Atrasada"],
+    ["RB-08 / AC-005-06: entregue depois do prazo", "2026-10-21", "2026-10-25", "Atrasada"],
     ["AC-005-07: prazo ainda não encerrado e sem entrega", null, "2026-10-19", "Pendente"],
     ["Caso 12.3: último dia do prazo, ainda sem entrega", null, "2026-10-20", "Pendente"],
   ] as const)("%s", (_caso, dataEntrega, hoje, esperado) => {

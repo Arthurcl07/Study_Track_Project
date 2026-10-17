@@ -103,6 +103,11 @@ em Risco aparece **Criar plano** (um item por linha). No plano, o professor marc
 Relatório da SPEC-009 (OPEN-005): entre como Professor ou Coordenador e abra **Relatórios**. Filtre por
 turma e situação e use **Exportar CSV** para baixar as mesmas linhas (separador `;`, abre no Excel).
 
+## Integração contínua
+
+Todo PR e todo push para `development` e `main` roda `.github/workflows/ci.yml`: um PostgreSQL 17
+descartável, as migrações, `tsc --noEmit` e `npm test` (OPEN-024).
+
 ## Documentação
 
 Toda a documentação do projeto está em `/docs`:
