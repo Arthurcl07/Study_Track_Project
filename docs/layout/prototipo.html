@@ -64,6 +64,9 @@
   .selo { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
   .s-normal { color: var(--normal); background: var(--normal-bg); } .s-atencao { color: var(--atencao); background: var(--atencao-bg); } .s-risco { color: var(--risco); background: var(--risco-bg); }
   .s-pendente { color: #475569; background: #F1F5F9; }
+  .barra { height: 8px; border-radius: 999px; background: var(--traco); overflow: hidden; } .barra span { display: block; height: 100%; background: var(--azul); border-radius: 999px; }
+  .item { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--traco); } .item input { width: 18px; height: 18px; accent-color: var(--azul); }
+  .contagem { display: flex; flex-wrap: wrap; gap: 8px; }
   .alerta { border-radius: 14px; padding: 14px 16px; border: 1px solid; display: flex; gap: 12px; align-items: flex-start; }
   .alerta strong { display: block; } .alerta p { margin: 4px 0 0; font-size: 14px; }
   .alerta-atencao { background: var(--atencao-bg); border-color: #FCD34D; color: #78350F; }
@@ -132,8 +135,8 @@ const logoClaro = (t = 22) => `<span style="display:inline-flex;align-items:cent
 
 const MENUS = {
   Estudante: [["inicio", "🏠", "Início"], ["atividades", "🗓️", "Minhas atividades"]],
-  Professor: [["inicio", "🏠", "Início"], ["notas", "📝", "Notas e avaliações"], ["frequencia", "✅", "Frequência"], ["atividades", "🗓️", "Atividades"]],
-  Coordenador: [["inicio", "🏠", "Início"], ["disciplinas", "📚", "Disciplinas"], ["turmas", "👥", "Turmas e estudantes"], ["area", "🔒", "Área da coordenação"]],
+  Professor: [["inicio", "🏠", "Início"], ["notas", "📝", "Notas e avaliações"], ["frequencia", "✅", "Frequência"], ["atividades", "🗓️", "Atividades"], ["relatorios", "📊", "Relatórios"]],
+  Coordenador: [["inicio", "🏠", "Início"], ["disciplinas", "📚", "Disciplinas"], ["turmas", "👥", "Turmas e estudantes"], ["relatorios", "📊", "Relatórios"], ["area", "🔒", "Área da coordenação"]],
 };
 const USUARIOS = { Estudante: "Ana Souza", Professor: "Prof. Carlos Lima", Coordenador: "Marina Alves" };
 
@@ -212,7 +215,7 @@ const TELAS = {
     <div class="grade g2">
       ${[["Modelagem de Software", "Turma A", 32], ["Engenharia de Requisitos", "Turma C", 28]].map(([d, t, n]) =>
         `<div class="cartao turma-card"><span class="etiqueta">2026/2</span><h3 style="margin-top:10px">${d}</h3><p>${t}</p>
-         <div class="rodape"><span>👥 ${n} estudantes</span></div><p style="margin-top:6px">Ana Souza, Bruno Costa, Carla Mendes e mais ${n - 3}</p></div>`).join("")}
+         <div class="rodape"><span>👥 ${n} estudantes</span><a class="link" href="#">Abrir turma →</a></div><p style="margin-top:6px">Ana Souza, Bruno Costa, Carla Mendes e mais ${n - 3}</p></div>`).join("")}
     </div>`)],
 
   "professor-notas": ["SPEC-004 · Professor — Notas e avaliações", () => casca("Professor", "notas", `
@@ -351,6 +354,62 @@ const TELAS = {
     ${cab("Olá, Ana", "Sua situação acadêmica em todas as turmas.")}
     <div class="cartao"><div class="vazio"><div class="icone">🎓</div><p style="font-weight:600;color:var(--texto);margin:8px 0 4px">Você ainda não está matriculado em nenhuma turma.</p>
     <p style="margin:0">Procure a coordenação do seu curso para fazer a matrícula.</p></div></div>`)],
+
+  "professor-turma": ["SPEC-008 · Professor — Dashboard da turma e criação de plano", () => casca("Professor", "inicio", `
+    ${cab("Turma A · Modelagem de Software", "Período 2026/2 · 3 estudantes", "", '<a href="#">Turmas que leciono</a> / Turma A')}
+    <div class="grade g3" style="margin-bottom:16px;grid-template-columns:repeat(4,1fr)">
+      <div class="cartao numero"><small>● Normal</small><strong style="color:var(--normal)">1</strong></div>
+      <div class="cartao numero"><small>▲ Atenção</small><strong style="color:var(--atencao)">1</strong></div>
+      <div class="cartao numero"><small>■ Risco</small><strong style="color:var(--risco)">1</strong></div>
+      <div class="cartao numero"><small>Sem dados</small><strong>0</strong></div>
+    </div>
+    <div class="grade g-form">
+      <div class="cartao"><h2>Estudantes da turma</h2>
+        <table class="tabela-resp"><thead><tr><th>Estudante</th><th class="num">Média</th><th class="num">Frequência</th><th>Situação</th><th>Plano</th></tr></thead><tbody>
+          <tr><td data-r="Estudante">Ana Souza</td><td data-r="Média" class="num">7,8</td><td data-r="Frequência" class="num">92%</td><td data-r="Situação">${selo("Normal")}</td><td data-r="Plano" style="color:var(--mudo)">—</td></tr>
+          <tr><td data-r="Estudante">Bruno Costa</td><td data-r="Média" class="num" style="color:var(--atencao);font-weight:600">5,4</td><td data-r="Frequência" class="num">82%</td><td data-r="Situação">${selo("Atencao")}</td><td data-r="Plano" style="color:var(--mudo)">—</td></tr>
+          <tr class="selecionada"><td data-r="Estudante">Carla Mendes</td><td data-r="Média" class="num">6,2</td><td data-r="Frequência" class="num" style="color:var(--risco);font-weight:600">70%</td><td data-r="Situação">${selo("Risco")}</td><td data-r="Plano"><a class="link" href="#">Criar plano</a></td></tr>
+        </tbody></table></div>
+      <div class="cartao"><h2>Novo plano · Carla Mendes</h2><div class="pilha">
+        <p style="margin:0;font-size:14px;color:var(--mudo)">Só estudantes em ■ Risco recebem plano de recuperação.</p>
+        <div><label class="rotulo">Itens do plano (um por linha)</label><textarea class="campo" rows="5">Refazer lista de exercícios 1
+Plantão de dúvidas com o professor
+Resumo do capítulo 3
+Simulado da prova substitutiva</textarea></div>
+        <button class="btn btn-primario btn-bloco">Criar plano de recuperação</button></div></div>
+    </div>`)],
+
+  "professor-plano": ["SPEC-008 · Professor — Plano de recuperação", () => casca("Professor", "inicio", `
+    ${cab("Plano de recuperação · Carla Mendes", "Turma A · Modelagem de Software · criado em 12/10/2026 · Ativo", '<button class="btn btn-secundario">Encerrar plano</button>', '<a href="#">Turma A</a> / Plano de Carla Mendes')}
+    <div class="msg msg-info" style="margin-bottom:16px">● Situação atual: Normal — a estudante saiu do Risco. Você pode encerrar o plano quando achar adequado.</div>
+    <div class="grade g-form">
+      <div class="cartao"><h2>Itens previstos (2 de 4 concluídos)</h2>
+        <label class="item"><input type="checkbox" checked> <span>Refazer lista de exercícios 1</span><small style="margin-left:auto;color:var(--mudo)">concluído em 13/10</small></label>
+        <label class="item"><input type="checkbox" checked> <span>Plantão de dúvidas com o professor</span><small style="margin-left:auto;color:var(--mudo)">concluído em 14/10</small></label>
+        <label class="item"><input type="checkbox"> <span>Resumo do capítulo 3</span></label>
+        <label class="item"><input type="checkbox"> <span>Simulado da prova substitutiva</span></label>
+      </div>
+      <div class="cartao"><h2>Progresso</h2>
+        <div class="numero"><strong>50%</strong></div><div class="barra" style="margin:10px 0 14px"><span style="width:50%"></span></div>
+        <p style="margin:0;font-size:14px;color:var(--mudo)">Progresso = itens concluídos ÷ itens previstos (RB-12).</p>
+        <div class="metricas" style="grid-template-columns:repeat(2,1fr)"><div><small>Média</small><strong>6,2</strong></div><div><small>Frequência</small><strong>78%</strong></div></div>
+      </div>
+    </div>`)],
+
+  "relatorio": ["SPEC-009 · Relatório acadêmico (coordenador)", () => casca("Coordenador", "relatorios", `
+    ${cab("Relatório acadêmico", "Turmas sob sua responsabilidade, com os indicadores atuais.", '<a class="btn btn-secundario" href="#">⬇ Exportar CSV</a>')}
+    <div class="cartao" style="margin-bottom:16px"><div class="grade g3">${lista("Turma", ["Todas", "Turma A · Modelagem de Software", "Turma C · Engenharia de Requisitos"], "Todas")}${lista("Situação", ["Todas", "Normal", "Atenção", "Risco", "Sem dados"], "Todas")}<div style="display:flex;align-items:flex-end"><button class="btn btn-primario btn-bloco">Aplicar filtros</button></div></div></div>
+    <div class="cartao" style="margin-bottom:16px"><h2>Resumo por turma</h2>
+      <table class="tabela-resp"><thead><tr><th>Turma</th><th class="num">Estudantes</th><th class="num">Média</th><th class="num">Frequência</th><th>Situações</th><th class="num">Entregas atrasadas</th></tr></thead><tbody>
+        <tr><td data-r="Turma">Turma A · Modelagem de Software</td><td data-r="Estudantes" class="num">32</td><td data-r="Média" class="num">6,9</td><td data-r="Frequência" class="num">84%</td><td data-r="Situações"><div class="contagem"><span class="selo s-normal">● 24</span><span class="selo s-atencao">▲ 5</span><span class="selo s-risco">■ 3</span></div></td><td data-r="Entregas atrasadas" class="num">7</td></tr>
+        <tr><td data-r="Turma">Turma C · Engenharia de Requisitos</td><td data-r="Estudantes" class="num">28</td><td data-r="Média" class="num">7,4</td><td data-r="Frequência" class="num">88%</td><td data-r="Situações"><div class="contagem"><span class="selo s-normal">● 25</span><span class="selo s-atencao">▲ 2</span><span class="selo s-risco">■ 1</span></div></td><td data-r="Entregas atrasadas" class="num">2</td></tr>
+      </tbody></table></div>
+    <div class="cartao"><h2>Estudantes (60)</h2>
+      <table class="tabela-resp"><thead><tr><th>Estudante</th><th>Turma</th><th class="num">Média</th><th class="num">Frequência</th><th>Situação</th><th class="num">Atrasadas</th></tr></thead><tbody>
+        <tr><td data-r="Estudante">Carla Mendes</td><td data-r="Turma">Turma A</td><td data-r="Média" class="num">6,2</td><td data-r="Frequência" class="num">70%</td><td data-r="Situação">${selo("Risco")}</td><td data-r="Atrasadas" class="num">2</td></tr>
+        <tr><td data-r="Estudante">Bruno Costa</td><td data-r="Turma">Turma A</td><td data-r="Média" class="num">5,4</td><td data-r="Frequência" class="num">82%</td><td data-r="Situação">${selo("Atencao")}</td><td data-r="Atrasadas" class="num">1</td></tr>
+        <tr><td data-r="Estudante">Ana Souza</td><td data-r="Turma">Turma A</td><td data-r="Média" class="num">7,8</td><td data-r="Frequência" class="num">92%</td><td data-r="Situação">${selo("Normal")}</td><td data-r="Atrasadas" class="num">0</td></tr>
+      </tbody></table></div>`)],
 
   "acesso-negado": ["SPEC-001 · Acesso negado", () => `<div class="simples"><div style="max-width:420px">
     <div style="margin-bottom:24px">${logoClaro(24)}</div><div style="font-size:40px">🔒</div><h1 style="margin:8px 0">Acesso negado</h1>

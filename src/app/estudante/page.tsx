@@ -2,18 +2,14 @@ import Link from "next/link";
 import { AvisoAlerta } from "@/components/alertas";
 import { Casca } from "@/components/casca";
 import { GraficoEvolucao } from "@/components/grafico-evolucao";
-import { CabecalhoPagina, Cartao, CLASSE_LINK, Etiqueta, formatarDataCurta, SeloEntrega, SeloSituacao } from "@/components/ui";
+import { CabecalhoPagina, Cartao, CLASSE_LINK, corDaFrequencia, corDaMedia, Etiqueta, formatarDataCurta, SeloEntrega, SeloSituacao } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
-import { FREQUENCIA_MINIMA, MEDIA_NORMAL, MEDIA_RISCO } from "@/domain/situacao-academica";
 import { consultarPainel } from "@/server/academico/painel";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 
 // SPEC-007 (RF-10, UC-02) e SPEC-006 (RF-12): painel acadêmico do estudante, só com os próprios dados.
 // Layout aprovado em docs/layout/prototipo.html#estudante-painel e #estudante-vazio.
 const numero = (v: number) => v.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
-// Só destaca o valor que está fora do limite; os limites vêm da regra única (DA-02).
-const corDaMedia = (m: number | null) => (m === null || m >= MEDIA_NORMAL ? "" : m < MEDIA_RISCO ? "text-risco" : "text-atencao");
-const corDaFrequencia = (f: number | null) => (f !== null && f < FREQUENCIA_MINIMA ? "text-risco" : "");
 
 export default async function PainelEstudante() {
   const sessao = await exigirAcessoPagina(RECURSOS.painelEstudante);

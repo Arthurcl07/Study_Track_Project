@@ -34,6 +34,9 @@ Marca, paleta e componentes: [`../identidade-visual.md`](../identidade-visual.md
 | Estudante — Painel acadêmico | SPEC-006, SPEC-007 | alertas no topo; por turma: média, frequência, situação e gráfico de evolução das notas; atividades atrasadas e pendentes |
 | Estudante — Painel sem turmas | SPEC-007 | estado vazio com orientação para procurar a coordenação |
 | Professor — Turmas que leciono (com alertas) | SPEC-006 | tabela "Alertas das minhas turmas" acima dos cartões de turma |
+| Professor — Dashboard da turma e criação de plano | SPEC-008 | contagem Normal/Atenção/Risco/sem dados; estudantes com média, frequência, situação e plano; novo plano para estudante em Risco |
+| Professor — Plano de recuperação | SPEC-008 | itens com marcar concluído; progresso; aviso quando o estudante saiu do Risco; encerrar plano |
+| Relatório acadêmico | SPEC-009 | filtros por turma e situação; resumo por turma; detalhe por estudante; exportar CSV |
 
 Em todas as telas autenticadas: menu lateral do perfil, nome e perfil do usuário e botão **Sair** (OPEN-019).
 
@@ -46,5 +49,6 @@ Em todas as telas autenticadas: menu lateral do perfil, nome e perfil do usuári
 | Telas das SPEC-001 a SPEC-004 | `aprovado` | Arthur | 2026-10-16 |
 | Telas da SPEC-005 (frequência, atividades e entregas) | `aprovado` | Arthur | 2026-10-16 |
 | Telas das SPEC-006 e SPEC-007 (alertas e painel do estudante) | `aprovado` | Arthur | 2026-10-16 |
+| Telas das SPEC-008 e SPEC-009 (dashboard da turma, plano e relatório) | `aprovado` | Arthur | 2026-10-16 |
 
 Ao aprovar: preencher esta tabela, a seção "Telas e evidência de layout" de cada Spec em `specs.md` e o campo "Aprovação humana" de `identidade-visual.md`.

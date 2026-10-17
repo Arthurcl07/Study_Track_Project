@@ -2,6 +2,7 @@
 // SPEC-001: Usuario. SPEC-002: Disciplina, Turma e matrícula (N:M).
 // SPEC-003: Avaliacao (estrutura), Nota, Frequencia e IndicadorAcademico.
 // SPEC-005: Atividade e Entrega (status da entrega é derivado na leitura, OPEN-010).
+// SPEC-008: PlanoRecuperacao e ItemPlano (OPEN-021; progresso derivado dos itens, RB-12).
 
 generator client {
   provider = "prisma-client-js"
@@ -27,13 +28,15 @@ model Usuario {
   senhaHash String
   perfil    Perfil
 
-  turmasLecionadas  Turma[]              @relation("ProfessorDaTurma")
-  turmasCoordenadas Turma[]              @relation("CoordenadorDaTurma")
-  matriculas        Matricula[]
-  notas             Nota[]
-  frequencias       Frequencia[]
-  indicadores       IndicadorAcademico[]
-  entregas          Entrega[]
+  turmasLecionadas    Turma[]              @relation("ProfessorDaTurma")
+  turmasCoordenadas   Turma[]              @relation("CoordenadorDaTurma")
+  matriculas          Matricula[]
+  notas               Nota[]
+  frequencias         Frequencia[]
+  indicadores         IndicadorAcademico[]
+  entregas            Entrega[]
+  planosComoEstudante PlanoRecuperacao[]   @relation("EstudanteDoPlano")
+  planosComoProfessor PlanoRecuperacao[]   @relation("ProfessorDoPlano")
 }
 
 model Disciplina {
@@ -61,6 +64,7 @@ model Turma {
   frequencias   Frequencia[]
   indicadores   IndicadorAcademico[]
   atividades    Atividade[]
+  planos        PlanoRecuperacao[]
 
   @@index([professorId])
   @@index([coordenadorId])
@@ -172,4 +176,41 @@ model Entrega {
 
   @@unique([atividadeId, estudanteId])
   @@index([estudanteId])
+}
+
+enum StatusPlano {
+  Ativo
+  Encerrado
+}
+
+// SPEC-008 / RB-11: plano de 1 estudante, 1 turma e exatamente 1 professor (o da turma).
+// INV-008-05: no máximo 1 plano Ativo por estudante e turma — índice único parcial na migração.
+model PlanoRecuperacao {
+  id          String      @id @default(uuid())
+  estudanteId String
+  estudante   Usuario     @relation("EstudanteDoPlano", fields: [estudanteId], references: [id], onDelete: Cascade)
+  turmaId     String
+  turma       Turma       @relation(fields: [turmaId], references: [id], onDelete: Cascade)
+  professorId String
+  professor   Usuario     @relation("ProfessorDoPlano", fields: [professorId], references: [id], onDelete: Cascade)
+  status      StatusPlano @default(Ativo)
+  criadoEm    DateTime    @default(now())
+  encerradoEm DateTime?
+  itens       ItemPlano[]
+
+  @@index([turmaId])
+  @@index([estudanteId])
+}
+
+// OPEN-021: item próprio do plano, marcado como concluído pelo professor (OPEN-003).
+model ItemPlano {
+  id          String           @id @default(uuid())
+  planoId     String
+  plano       PlanoRecuperacao @relation(fields: [planoId], references: [id], onDelete: Cascade)
+  descricao   String
+  ordem       Int
+  concluido   Boolean          @default(false)
+  concluidoEm DateTime?
+
+  @@index([planoId])
 }

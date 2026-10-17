@@ -1,5 +1,6 @@
 // Peças de interface da identidade visual (docs/identidade-visual.md, seção Componentes).
 import Link from "next/link";
+import { FREQUENCIA_MINIMA, MEDIA_NORMAL, MEDIA_RISCO } from "@/domain/situacao-academica";
 
 export const CLASSE_CAMPO =
   "mt-1.5 w-full rounded-[10px] border border-traco bg-white px-3 py-2.5 text-base text-texto placeholder:text-mudo focus:border-azul focus:outline-none focus:ring-3 focus:ring-azul-suave aria-invalid:border-risco";
@@ -101,6 +102,13 @@ export function SeloEntrega({ status }: { status: keyof typeof ENTREGAS }) {
   const s = ENTREGAS[status];
   return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[13px] font-semibold whitespace-nowrap ${s.classe}`}>{s.rotulo}</span>;
 }
+
+// Números em pt-BR com no máximo uma casa decimal ("6,2", "78").
+export const formatarNumero = (v: number) => v.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
+
+// Só destaca o valor que está fora do limite; os limites vêm da regra única (DA-02).
+export const corDaMedia = (m: number | null) => (m === null || m >= MEDIA_NORMAL ? "" : m < MEDIA_RISCO ? "text-risco" : "text-atencao");
+export const corDaFrequencia = (f: number | null) => (f !== null && f < FREQUENCIA_MINIMA ? "text-risco" : "");
 
 // "AAAA-MM-DD" → "DD/MM/AAAA" sem passar por fuso horário.
 export function formatarDataCurta(texto: string) {

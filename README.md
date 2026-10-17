@@ -26,7 +26,9 @@ avaliações e lançamento/alteração de notas pelo professor, com recálculo d
 (frequência, atividades e entregas: o professor registra frequência, cadastra atividades e registra as
 entregas; o status No prazo/Pendente/Atrasada é calculado na hora, e o estudante vê o próprio em
 **Minhas atividades**), SPEC-006 (alertas de Atenção e Risco na tela do estudante e do professor) e
-SPEC-007 (painel do estudante com média, frequência, situação, gráfico de evolução das notas e atividades).
+SPEC-007 (painel do estudante com média, frequência, situação, gráfico de evolução das notas e atividades),
+SPEC-008 (dashboard da turma do professor e plano de recuperação para estudantes em Risco) e SPEC-009
+(relatório acadêmico para Professor e Coordenador, em tela e em CSV).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 
@@ -92,6 +94,14 @@ Notas da SPEC-004 (OPEN-001, OPEN-017): entre como Professor e clique em **Lanç
 se o estudante já tiver nota naquela avaliação, o valor é sobrescrito. Na mesma tela o professor
 cadastra novas avaliações (nome, peso maior que zero e data) nas turmas que leciona. Pela API:
 `POST /api/notas`, `PATCH /api/notas/:id` e `POST /api/turmas/:id/avaliacoes`.
+
+Plano de recuperação da SPEC-008 (OPEN-003, OPEN-012, OPEN-021): entre como Professor e clique em
+**Abrir turma →**. O dashboard mostra quantos estudantes estão em Normal, Atenção e Risco; para quem está
+em Risco aparece **Criar plano** (um item por linha). No plano, o professor marca os itens concluídos
+(o progresso é concluídos ÷ previstos) e encerra o plano quando achar adequado.
+
+Relatório da SPEC-009 (OPEN-005): entre como Professor ou Coordenador e abra **Relatórios**. Filtre por
+turma e situação e use **Exportar CSV** para baixar as mesmas linhas (separador `;`, abre no Excel).
 
 ## Documentação
 

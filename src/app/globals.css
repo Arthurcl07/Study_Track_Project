@@ -55,6 +55,7 @@ body {
     content: attr(data-rotulo);
     color: var(--color-mudo);
     font-size: 0.8125rem;
+    font-weight: 400;
     text-align: left;
   }
 }

@@ -12,6 +12,8 @@ const CAMINHOS = {
   seta: "M5 12h14M13 6l6 6-6 6",
   calendario: "M4 6h16v14H4zM4 10h16M8 3v4M16 3v4",
   check: "M4 12.5 9 17.5 20 6.5",
+  grafico: "M4 20V10M10 20V4M16 20v-7M22 20H2",
+  download: "M12 4v11M7 10l5 5 5-5M5 20h14",
 } as const;
 
 export type NomeIcone = keyof typeof CAMINHOS;

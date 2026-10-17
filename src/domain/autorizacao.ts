@@ -23,6 +23,10 @@ export const RECURSOS = {
   consultaAtividades: "consulta-atividades",
   // SPEC-006 / RF-12: alertas só para o estudante e o professor responsável (INV-006-03).
   consultaAlertas: "consulta-alertas",
+  // SPEC-008 (RF-13, RF-14): dashboard da turma e plano de recuperação, só pelo professor responsável.
+  planoRecuperacao: "plano-recuperacao",
+  // SPEC-009 (RF-15): relatório para Professor (turmas que leciona) e Coordenador (turmas sob responsabilidade).
+  relatorios: "relatorios",
 } as const;
 
 export type Recurso = (typeof RECURSOS)[keyof typeof RECURSOS];
@@ -39,6 +43,8 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "registro-frequencia-atividades": ["Professor"],
   "consulta-atividades": ["Estudante", "Professor"],
   "consulta-alertas": ["Estudante", "Professor"],
+  "plano-recuperacao": ["Professor"],
+  relatorios: ["Professor", "Coordenador"],
 };
 
 export function podeAcessar(perfil: unknown, recurso: unknown): boolean {
