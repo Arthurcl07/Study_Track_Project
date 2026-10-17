@@ -32,7 +32,7 @@ const MENUS: Record<Perfil, Entrada[]> = {
 
 export function Casca({ sessao, ativo, children }: { sessao: Sessao; ativo: ItemMenu; children: React.ReactNode }) {
   return (
-    <div className="min-h-dvh md:grid md:grid-cols-[256px_1fr]">
+    <div className="min-h-dvh md:grid md:grid-cols-[256px_minmax(0,1fr)]">
       <NavegacaoCasca itens={MENUS[sessao.perfil]} ativo={ativo} nome={sessao.nome} perfil={sessao.perfil} />
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 sm:py-8">{children}</main>
     </div>

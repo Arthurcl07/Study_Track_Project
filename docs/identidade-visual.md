@@ -92,7 +92,7 @@ Contraste: Texto sobre Branco/Névoa e Branco sobre Marinho/Azul atendem leitura
 | Botão secundário | fundo Branco, borda Traço, texto Texto |
 | Campo | fundo Branco, borda Traço, foco com borda Azul e anel Azul-suave; rótulo sempre visível acima; erro em vermelho logo abaixo do campo (AC-002-02) |
 | Cartão | fundo Branco, borda Traço, raio 16 px, título do cartão no topo |
-| Tabela | cabeçalho em Mudo, maiúsculas pequenas; linhas com divisória Traço; no celular vira lista de cartões |
+| Tabela | cabeçalho em Mudo, maiúsculas pequenas; linhas com divisória Traço; no celular e no tablet (até 1023 px) vira lista de cartões |
 | Selo de situação | pílula com símbolo e rótulo (tabela acima) |
 | Estado vazio | ícone, frase curta e, quando houver, o próximo passo ("Cadastre uma disciplina antes") |
 | Indicador (número) | rótulo em Mudo acima, número grande em Texto |

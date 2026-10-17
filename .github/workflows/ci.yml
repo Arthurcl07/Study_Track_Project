@@ -57,3 +57,7 @@ jobs:
 
       - name: Testes (Vitest)
         run: npm test
+
+      # Garante que a aplicação compila em modo de produção (o mesmo `next build` de uma publicação).
+      - name: Build de produção
+        run: npm run build

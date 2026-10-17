@@ -33,8 +33,9 @@ body {
   @apply bg-nevoa font-sans text-texto antialiased;
 }
 
-/* Tabela que vira lista de cartões no celular (identidade-visual.md, componente Tabela). */
-@media (max-width: 640px) {
+/* Tabela que vira lista de cartões no celular e no tablet (identidade-visual.md, componente Tabela, RNF-04).
+   Até 1023 px: com o menu lateral, o tablet de 768 px deixa só 512 px para o conteúdo. */
+@media (max-width: 1023px) {
   .tabela-responsiva thead {
     display: none;
   }
