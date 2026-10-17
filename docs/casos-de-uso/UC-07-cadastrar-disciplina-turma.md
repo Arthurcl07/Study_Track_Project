@@ -11,6 +11,9 @@
 3. Sistema grava a turma e registra o coordenador que a criou como responsável por ela.
 4. Coordenador matricula estudantes na turma (UC-06).
 
+**Fluxo alternativo**
+- Trocar professor (RF-17, SPEC-010): coordenador responsável escolhe outro professor ativo; a turma e seus planos de recuperação ativos passam para ele.
+
 **Exceções**
 - Dado obrigatório ausente ou carga horária inválida: sistema impede o cadastro e indica o campo.
 - Professor informado não tem perfil Professor: sistema recusa a turma (INV-002-02).

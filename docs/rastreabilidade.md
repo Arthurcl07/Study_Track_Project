@@ -19,6 +19,8 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | RF-13 | Dashboard do professor | RB-03 | UC-10 | SPEC-008 | #21 | `tests/spec-008/` | SPEC-008-009.md |
 | RF-14 | Plano de recuperação | RB-11, RB-12 | UC-04 | SPEC-008 | #22 | `tests/spec-008/` | SPEC-008-009.md |
 | RF-15 | Relatórios | RB-04 | UC-05 | SPEC-009 | #2 | `tests/spec-009/` | SPEC-008-009.md |
+| RF-16 | Gestão de contas | RB-01, RB-13, RB-14 | UC-11 | SPEC-010 | — | `tests/spec-010/` | SPEC-010.md |
+| RF-17 | Troca do professor da turma | RB-03, RB-11 | UC-07 | SPEC-010 | — | `tests/spec-010/` | SPEC-010.md |
 
 ## Lacunas conhecidas
 
@@ -39,3 +41,4 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | SPEC-007 | Todas as de leitura acadêmica |
 | SPEC-008 | PlanoRecuperacao, ItemPlano, IndicadorAcademico (OPEN-021) |
 | SPEC-009 | Todas as de leitura acadêmica |
+| SPEC-010 | Usuario (perfil Administrador, ativo), Turma, PlanoRecuperacao |

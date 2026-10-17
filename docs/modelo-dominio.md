@@ -3,7 +3,7 @@
 
 ## Classes e responsabilidades
 
-- **Usuario** — id, nome, email, senhaHash, perfil {Estudante, Professor, Coordenador}. Representa qualquer pessoa que acessa o sistema; o atributo `perfil` define o papel (um usuário, não classes separadas).
+- **Usuario** — id, nome, email, senhaHash, perfil {Estudante, Professor, Coordenador, Administrador}, ativo. Representa qualquer pessoa que acessa o sistema; o atributo `perfil` define o papel (um usuário, não classes separadas). `ativo` (padrão: sim) é alterado só pelo Administrador (RB-14, OPEN-025); conta inativa não entra no sistema, mas seus dados permanecem.
 - **Turma** — id, nome, período.
 - **Disciplina** — id, nome, cargaHoraria.
 - **Avaliacao** — id, nome/tipo, peso, data.
@@ -41,6 +41,7 @@ classDiagram
       +email
       +senhaHash
       +perfil
+      +ativo
     }
     class Turma {
       +id

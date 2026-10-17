@@ -5,7 +5,7 @@ import type { Sessao } from "@/server/auth/token";
 import type { NomeIcone } from "./icones";
 import { NavegacaoCasca } from "./navegacao-casca";
 
-export type ItemMenu = "inicio" | "notas" | "frequencia" | "atividades" | "relatorios" | "disciplinas" | "turmas" | "area";
+export type ItemMenu = "inicio" | "notas" | "frequencia" | "atividades" | "relatorios" | "disciplinas" | "turmas" | "area" | "contas";
 
 type Entrada = { id: ItemMenu; rotulo: string; href: string; icone: NomeIcone };
 
@@ -28,6 +28,8 @@ const MENUS: Record<Perfil, Entrada[]> = {
     { id: "relatorios", rotulo: "Relatórios", href: "/relatorios", icone: "grafico" },
     { id: "area", rotulo: "Área da coordenação", href: "/coordenador/area", icone: "cadeado" },
   ],
+  // SPEC-010 / RB-13: o Administrador só gerencia contas.
+  Administrador: [{ id: "contas", rotulo: "Contas", href: "/admin/contas", icone: "pessoas" }],
 };
 
 export function Casca({ sessao, ativo, children }: { sessao: Sessao; ativo: ItemMenu; children: React.ReactNode }) {

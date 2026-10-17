@@ -15,6 +15,8 @@ const CONTAS_DE_TESTE: { nome: string; email: string; perfil: Perfil }[] = [
   { nome: "Estudante de Teste", email: "estudante@studytrack.test", perfil: "Estudante" },
   { nome: "Professor de Teste", email: "professor@studytrack.test", perfil: "Professor" },
   { nome: "Coordenador de Teste", email: "coordenador@studytrack.test", perfil: "Coordenador" },
+  // SPEC-010 (OPEN-025): primeiro administrador; só gerencia contas.
+  { nome: "Admin de Teste", email: "admin@studytrack.test", perfil: "Administrador" },
 ];
 
 const DISCIPLINA_EXEMPLO = { nome: "Modelagem de Software (exemplo)", cargaHoraria: 60 };
@@ -114,6 +116,9 @@ async function dadosDeDemonstracao(base: {
   coordenadorId: string;
   hoje: string;
 }) {
+  // Segundo professor, para demonstrar a troca do professor da turma (SPEC-010, RF-17).
+  await salvarConta({ nome: "Júlia Reis", email: "julia.reis@studytrack.test", senha: SENHA_DE_TESTE, perfil: "Professor" });
+
   const ids = {} as Record<NomeDemo, string>;
   for (const estudante of ESTUDANTES_DEMO) {
     ids[estudante.nome] = (await salvarConta({ ...estudante, senha: SENHA_DE_TESTE, perfil: "Estudante" })).id;
