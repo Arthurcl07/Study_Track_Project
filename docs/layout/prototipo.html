@@ -456,6 +456,7 @@ function turmaDetalhe(comErro) {
           ${comErro ? '<div class="msg msg-erro">Dados obrigatórios ausentes ou inválidos.</div>' : ""}
           <button class="btn btn-primario btn-bloco">Cadastrar estudante</button></div></div>
         <div class="cartao"><h2>Matricular estudante já cadastrado</h2><div class="pilha">${campo("E-mail do estudante", "email")}<button class="btn btn-secundario btn-bloco">Matricular</button></div></div>
+        <div class="cartao"><h2>Professor responsável</h2><div class="pilha"><p style="margin:0;font-size:14px;color:var(--mudo)">Os planos de recuperação ativos da turma passam para o novo professor.</p>${lista("Novo professor", ["Júlia Reis"], "")}<button class="btn btn-secundario btn-bloco">Trocar professor</button></div></div>
       </div>
     </div>`;
 }

@@ -56,6 +56,10 @@
 - WHEN um administrador desativa uma conta, o sistema SHALL impedir novos acessos e encerrar o acesso em andamento dessa conta, sem apagar seus dados.
 - IF houver dado obrigatório ausente ou e-mail já cadastrado, THEN o sistema SHALL impedir o cadastro e indicar o campo.
 
+## RF-17 — Troca do professor da turma (incluído em 2026-10-17, OPEN-025)
+- WHEN o coordenador responsável pela turma escolhe outro professor ativo para ela, o sistema SHALL tornar esse professor o responsável pela turma e pelos planos de recuperação ativos da turma.
+- IF o usuário escolhido não tiver perfil Professor ou estiver desativado, THEN o sistema SHALL impedir a troca.
+
 ---
 
 
