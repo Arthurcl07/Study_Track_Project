@@ -13,7 +13,7 @@ Pré-requisitos: Node.js 24 LTS, PostgreSQL 17 em `localhost:5432`, `.env` criad
 
 - `npm install` — dependências + `prisma generate`.
 - `npx prisma migrate dev` — cria o banco e aplica as migrações (`prisma/migrations/`).
-- `npm run seed` — contas de teste, uma por perfil (credenciais no README), turma, avaliação e duas atividades de exemplo.
+- `npm run seed` — contas de teste, uma por perfil (credenciais no README), turma, avaliação e duas atividades de exemplo, e dados de demonstração fictícios (8 estudantes, segunda turma, entregas e um plano).
 - `npm run dev` — aplicação em http://localhost:3000.
 - `npm test` — Vitest (`tests/`), usa o banco local e limpa os dados que cria.
 
