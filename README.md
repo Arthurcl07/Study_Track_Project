@@ -115,7 +115,7 @@ turma e situação e use **Exportar CSV** para baixar as mesmas linhas (separado
 ## Integração contínua
 
 Todo PR e todo push para `development` e `main` roda `.github/workflows/ci.yml`: um PostgreSQL 17
-descartável, as migrações, `tsc --noEmit` e `npm test` (OPEN-024).
+descartável, as migrações, `tsc --noEmit`, `npm test` e o build de produção (`npm run build`) (OPEN-024).
 
 ## Documentação
 

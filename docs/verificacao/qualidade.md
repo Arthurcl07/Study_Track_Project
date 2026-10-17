@@ -71,7 +71,9 @@ Todas bem abaixo de 3 s. Picos isolados de 1,8 a 2,2 s apareceram só quando out
 
 ## 6. Usabilidade (RNF-04, RNF-06)
 
-Telas conferidas no navegador no desktop e no celular (375 px), registradas em `layout.md`, `SPEC-001.md`, `SPEC-002.md`, `SPEC-004.md`, `SPEC-005.md` e `SPEC-008-009.md`; as telas das SPEC-008 e 009 também em largura intermediária (≈700 px). Sem rolagem horizontal nas páginas verificadas. O tablet não teve verificação separada.
+Telas conferidas no navegador no desktop e no celular (375 px), registradas em `layout.md`, `SPEC-001.md`, `SPEC-002.md`, `SPEC-004.md`, `SPEC-005.md` e `SPEC-008-009.md`; as telas das SPEC-008 e 009 também em largura intermediária (≈700 px). Sem rolagem horizontal nas páginas verificadas.
+
+**Tablet (768 × 1024, verificado em 2026-10-17):** as tabelas estouravam a largura em `/relatorios` (890 px) e `/professor` (786 px), porque o menu lateral deixa só 512 px para o conteúdo e as tabelas só viravam cartões abaixo de 640 px. Corrigido: tabelas viram lista de cartões até 1023 px e a coluna de conteúdo não cresce além da tela (`minmax(0,1fr)` na casca). Conferidas sem rolagem horizontal em 768 px e em 1024 px: todas as páginas do Professor, do Coordenador e do Estudante, inclusive a do plano.
 
 ## 7. Dependências (`npm audit`, 2026-10-16)
 
