@@ -35,6 +35,7 @@ Legenda de status da Spec:
 | Layout das SPEC-006 e SPEC-007 (alertas e painel do estudante) | `aprovado` (Arthur) | 2026-10-16 |
 | SPEC-008 e SPEC-009 aprovadas, com OPEN-005, OPEN-012 e OPEN-021 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
 | Layout das SPEC-008 e SPEC-009 (dashboard da turma, plano e relatório) | `aprovado` (Arthur) | 2026-10-16 |
+| SPEC-005 a SPEC-009 marcadas como `implementadas`: testes e verificação em `docs/verificacao/`, PRs #43 a #46 aprovados por Luiz Eduardo e integrados em `development` | `implementada` | 2026-10-17 |
 
 ---
 
@@ -46,13 +47,13 @@ Legenda de status da Spec:
 | 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `em implementação` |
 | 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `em implementação` |
 | 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
-| 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
-| 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `em implementação` |
-| 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `em implementação` |
-| 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `em implementação` |
-| 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `em implementação` |
+| 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `implementada` |
+| 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `implementada` |
+| 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `implementada` |
+| 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `implementada` |
+| 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `implementada` |
 
-Todas as Specs têm texto completo abaixo. A SPEC-001 está `implementada` e as SPEC-002 e SPEC-003 foram aprovadas em 2026-10-09 (hoje `em implementação`); as demais estão `especificadas` e aguardam aprovação humana antes de qualquer código.
+Todas as Specs têm texto completo abaixo. SPEC-001 e SPEC-005 a SPEC-009 estão `implementadas`: critérios, invariantes e testes atendidos (`docs/verificacao/`) e PR revisado por um colega. SPEC-002 a SPEC-004 têm código, testes e verificação completos, mas os PRs #39 a #41 entraram sem revisão; passam a `implementada` quando o PR de `development` para `main` for revisado.
 
 ---
 
@@ -600,7 +601,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-005 — Frequência, atividades e entregas atrasadas
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -757,7 +758,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-006 — Alertas de atenção e risco
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -882,7 +883,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-007 — Dashboard acadêmico do estudante
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -1017,7 +1018,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-008 — Dashboard do professor e plano de recuperação
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -1163,7 +1164,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-009 — Relatórios acadêmicos autorizados
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 

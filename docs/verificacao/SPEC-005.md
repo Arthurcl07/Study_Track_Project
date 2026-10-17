@@ -62,4 +62,4 @@
 | Estudante — minhas atividades: contadores (1 pendente, 1 atrasada) e selos corretos | Aprovado | Aprovado |
 | Professor — frequência: tabela com frequência e selo de situação | Aprovado | Aprovado |
 
-**Falta a conferência humana** e a revisão do PR por um colega antes de marcar a Spec como `implementada`.
+**Revisão:** PR aprovado por Luiz Eduardo (#43) e integrado em `development` em 2026-10-17. Spec marcada como `implementada`.
