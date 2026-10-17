@@ -40,11 +40,11 @@ export function TabelaAlertasProfessor({ alertas }: { alertas: Alerta[] }) {
       <table className="tabela-responsiva w-full text-[15px]">
         <thead>
           <tr className="text-left text-xs font-semibold tracking-wide text-mudo uppercase">
-            <th className="pb-2.5">Situação</th>
-            <th className="pb-2.5">Estudante</th>
-            <th className="pb-2.5">Turma</th>
-            <th className="pb-2.5 text-right">Média</th>
-            <th className="pb-2.5 text-right">Frequência</th>
+            <th className="pr-2 pb-2.5">Situação</th>
+            <th className="pr-2 pb-2.5">Estudante</th>
+            <th className="pr-2 pb-2.5">Turma</th>
+            <th className="pb-2.5 pl-4 text-right">Média</th>
+            <th className="pb-2.5 pl-4 text-right">Frequência</th>
           </tr>
         </thead>
         <tbody>
@@ -56,10 +56,10 @@ export function TabelaAlertasProfessor({ alertas }: { alertas: Alerta[] }) {
                 <td data-rotulo="Situação" className="py-3 pr-2"><SeloSituacao situacao={a.nivel} /></td>
                 <td data-rotulo="Estudante" className="py-3 pr-2">{a.estudante.nome}</td>
                 <td data-rotulo="Turma" className="py-3 pr-2">{a.turma.nome} · {a.turma.disciplina}</td>
-                <td data-rotulo="Média" className={`py-3 text-right tabular-nums ${mediaBaixa ? `font-semibold ${a.media! < MEDIA_RISCO ? "text-risco" : "text-atencao"}` : ""}`}>
+                <td data-rotulo="Média" className={`py-3 pl-4 text-right tabular-nums ${mediaBaixa ? `font-semibold ${a.media! < MEDIA_RISCO ? "text-risco" : "text-atencao"}` : ""}`}>
                   {a.media === null ? "—" : formatarNumero(a.media)}
                 </td>
-                <td data-rotulo="Frequência" className={`py-3 text-right tabular-nums ${frequenciaBaixa ? "font-semibold text-risco" : ""}`}>
+                <td data-rotulo="Frequência" className={`py-3 pl-4 text-right tabular-nums ${frequenciaBaixa ? "font-semibold text-risco" : ""}`}>
                   {a.frequencia === null ? "—" : `${formatarNumero(a.frequencia)}%`}
                 </td>
               </tr>

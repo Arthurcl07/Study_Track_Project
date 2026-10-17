@@ -5,7 +5,7 @@ import type { Sessao } from "@/server/auth/token";
 import type { NomeIcone } from "./icones";
 import { NavegacaoCasca } from "./navegacao-casca";
 
-export type ItemMenu = "inicio" | "notas" | "frequencia" | "atividades" | "relatorios" | "disciplinas" | "turmas" | "area";
+export type ItemMenu = "inicio" | "notas" | "frequencia" | "atividades" | "relatorios" | "disciplinas" | "turmas" | "area" | "contas";
 
 type Entrada = { id: ItemMenu; rotulo: string; href: string; icone: NomeIcone };
 
@@ -28,11 +28,13 @@ const MENUS: Record<Perfil, Entrada[]> = {
     { id: "relatorios", rotulo: "Relatórios", href: "/relatorios", icone: "grafico" },
     { id: "area", rotulo: "Área da coordenação", href: "/coordenador/area", icone: "cadeado" },
   ],
+  // SPEC-010 / RB-13: o Administrador só gerencia contas.
+  Administrador: [{ id: "contas", rotulo: "Contas", href: "/admin/contas", icone: "pessoas" }],
 };
 
 export function Casca({ sessao, ativo, children }: { sessao: Sessao; ativo: ItemMenu; children: React.ReactNode }) {
   return (
-    <div className="min-h-dvh md:grid md:grid-cols-[256px_1fr]">
+    <div className="min-h-dvh md:grid md:grid-cols-[256px_minmax(0,1fr)]">
       <NavegacaoCasca itens={MENUS[sessao.perfil]} ativo={ativo} nome={sessao.nome} perfil={sessao.perfil} />
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 sm:py-8">{children}</main>
     </div>

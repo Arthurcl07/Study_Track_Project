@@ -4,9 +4,10 @@ import { FormularioApi } from "@/components/formulario-api";
 import { CabecalhoPagina, Cartao, EstadoVazio } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
-import { buscarTurmaDoEscopo } from "@/server/dados/estrutura";
+import { buscarTurmaDoEscopo, listarProfessores } from "@/server/dados/estrutura";
 
 // SPEC-002 / RF-03: estudantes da turma, cadastro de estudante e matrícula de estudante existente.
+// SPEC-010 / RF-17: troca do professor responsável (só professores ativos aparecem).
 // Layout aprovado em docs/layout/prototipo.html#coordenador-turma e #cadastro-erro.
 export default async function DetalheTurma({ params }: { params: Promise<{ id: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.cadastroAcademico);
@@ -14,6 +15,7 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
   const turma = await buscarTurmaDoEscopo(sessao, id);
   if (!turma) notFound();
   const estudantes = turma.estudantes ?? [];
+  const outrosProfessores = (await listarProfessores()).filter((p) => p.id !== turma.professor.id);
   return (
     <Casca sessao={sessao} ativo="turmas">
       <CabecalhoPagina
@@ -65,6 +67,22 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
               secundario
               campos={[{ nome: "email", rotulo: "E-mail do estudante", tipo: "email" }]}
             />
+          </Cartao>
+          <Cartao titulo="Professor responsável">
+            <p className="mb-3 text-sm text-mudo">
+              Hoje: <strong className="font-medium text-texto">{turma.professor.nome}</strong>. Os planos de recuperação ativos da turma passam para o novo professor.
+            </p>
+            {outrosProfessores.length === 0 ? (
+              <p className="text-sm text-mudo">Não há outro professor ativo para assumir a turma.</p>
+            ) : (
+              <FormularioApi
+                url={`/api/turmas/${turma.id}/professor`}
+                textoBotao="Trocar professor"
+                mensagemSucesso="Professor da turma trocado."
+                secundario
+                campos={[{ nome: "professorId", rotulo: "Novo professor", tipo: "select", opcoes: outrosProfessores.map((p) => ({ valor: p.id, rotulo: p.nome })) }]}
+              />
+            )}
           </Cartao>
         </div>
       </div>

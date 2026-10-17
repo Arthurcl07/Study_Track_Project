@@ -36,6 +36,8 @@ Legenda de status da Spec:
 | SPEC-008 e SPEC-009 aprovadas, com OPEN-005, OPEN-012 e OPEN-021 fechadas (decisão humana, Arthur); layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-16 |
 | Layout das SPEC-008 e SPEC-009 (dashboard da turma, plano e relatório) | `aprovado` (Arthur) | 2026-10-16 |
 | SPEC-005 a SPEC-009 marcadas como `implementadas`: testes e verificação em `docs/verificacao/`, PRs #43 a #46 aprovados por Luiz Eduardo e integrados em `development` | `implementada` | 2026-10-17 |
+| SPEC-010 (Administrador e gestão de contas) incluída e aprovada, com OPEN-025 fechada (decisão humana, Arthur); novo RF-16, RB-13 e RB-14, RB-01 com 4 perfis; layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-17 |
+| Layout da SPEC-010 (contas) `aprovado` e escopo ampliado com a troca do professor da turma (RF-17), por decisão de Arthur | `aprovada` | 2026-10-17 |
 
 ---
 
@@ -52,6 +54,7 @@ Legenda de status da Spec:
 | 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `implementada` |
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `implementada` |
 | 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `implementada` |
+| 10 | SPEC-010 | Administrador e gestão de contas | SPEC-001, SPEC-002 | `em implementação` |
 
 Todas as Specs têm texto completo abaixo. SPEC-001 e SPEC-005 a SPEC-009 estão `implementadas`: critérios, invariantes e testes atendidos (`docs/verificacao/`) e PR revisado por um colega. SPEC-002 a SPEC-004 têm código, testes e verificação completos, mas os PRs #39 a #41 entraram sem revisão; passam a `implementada` quando o PR de `development` para `main` for revisado.
 
@@ -117,7 +120,7 @@ Nenhuma (é a primeira Spec da ordem). Estabelece a base de identidade usada por
 
 ## 5. Comportamento esperado
 
-**Pré-condições:** usuário possui cadastro ativo.
+**Pré-condições:** usuário cadastrado com conta ativa (RB-14, OPEN-025).
 
 **Fluxo principal:**
 1. Usuário informa e-mail e senha.
@@ -174,7 +177,7 @@ Mecanismo de sessão: JWT assinado no servidor, entregue em cookie httpOnly (ADR
 
 | ID | Dado | Quando | Então |
 |---|---|---|---|
-| AC-001-01 | Usuário com cadastro ativo e perfil Estudante | Submete e-mail e senha corretos | Sistema cria a sessão e redireciona ao painel do Estudante |
+| AC-001-01 | Usuário cadastrado com perfil Estudante | Submete e-mail e senha corretos | Sistema cria a sessão e redireciona ao painel do Estudante |
 | AC-001-02 | Usuário tentando autenticar-se | A senha informada está incorreta | Sistema recusa o acesso e não cria sessão |
 | AC-001-03 | Usuário autenticado com perfil Estudante | Tenta acessar função exclusiva de Coordenador | Sistema nega o acesso |
 | AC-001-04 | Qualquer cadastro de usuário | Registro é inspecionado no banco | O valor armazenado é um hash, nunca a senha original |
@@ -190,7 +193,7 @@ Mecanismo de sessão: JWT assinado no servidor, entregue em cookie httpOnly (ADR
 
 OPEN-013 (fechada): sem cadastro público nesta versão. O mecanismo de autenticação foi decidido em ADR-004 (JWT em cookie httpOnly), fechando o OPEN-006.
 
-Levantadas na implementação (decisão provisória do humano, 2026-10-09): OPEN-014 (cadastro ativo sem atributo no modelo) e OPEN-015 (duração da sessão: 8 h).
+Levantadas na implementação e fechadas por Arthur em 2026-10-17: OPEN-014 (substituída pelo OPEN-025: conta ativa/inativa, desativação na SPEC-010) e OPEN-015 (sessão de 8 h, com saída manual pelo botão Sair, OPEN-019).
 
 ## 14. Definition of Done
 
@@ -1295,3 +1298,160 @@ Nenhuma. OPEN-005 fechada em 2026-10-16.
 
 Padrão da SPEC-001 (seção 14).
 
+---
+
+# SPEC-010 — Administrador e gestão de contas
+
+**Status:** `em implementação`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-010 |
+| **Nome** | Administrador e gestão de contas |
+| **Objetivo** | Permitir que um administrador crie contas escolhendo o perfil, consulte as contas e desative ou reative o acesso de uma conta; e permitir que o coordenador troque o professor de uma turma. |
+| **Valor** | Contas de Professor e Coordenador deixam de depender do seed, e o acesso de quem saiu da instituição pode ser cortado sem apagar dados acadêmicos. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-16, RF-17 (e RF-01, RF-02 para login e autorização) |
+| **RB** | RB-01, RB-13, RB-14 |
+| **RNF** | RNF-02, RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-11 Gerenciar contas; UC-07 (troca de professor) |
+| **Entidades** | `Usuario` (perfil Administrador, atributo `ativo`), `Turma`, `PlanoRecuperacao` |
+| **Drivers** | AD-01, AD-04, AD-06 |
+| **ADRs** | ADR-001, ADR-002, ADR-003, ADR-004 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-025 (fechada); substitui a decisão do OPEN-014 |
+
+## 3. Escopo
+
+**Incluído**
+- Perfil Administrador (RB-01), com menu próprio e página inicial em "Contas".
+- Criar conta com nome, e-mail, senha inicial (mínimo 8 caracteres, OPEN-009) e perfil, inclusive Administrador.
+- Listar contas (nome, e-mail, perfil, ativa ou não) com filtro por perfil.
+- Desativar e reativar conta (RB-14): login recusado com a mesma mensagem genérica de credencial inválida (SPEC-001) e sessão em andamento negada na próxima requisição.
+- Conta de administrador de teste criada pelo seed (`admin@studytrack.test`, OPEN-013).
+- Troca do professor da turma pelo coordenador responsável (RF-17), levando os planos ativos da turma para o novo professor; só professores ativos aparecem para escolha (também no cadastro de turma).
+
+**Fora do escopo**
+- Acesso do administrador a dados acadêmicos (RB-13).
+- Trocar o perfil de uma conta existente, editar nome ou e-mail, redefinir senha e excluir conta (sem RF).
+- Cadastro público ou autocadastro (OPEN-013).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-17 por Arthur (a troca de professor entrou na mesma aprovação, no detalhe da turma já aprovado na SPEC-002). Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Administrador — Contas (lista, filtro, nova conta, desativar/reativar) | [prototipo.html#admin-contas](layout/prototipo.html#admin-contas) | [x] | [x] | Arthur | 2026-10-17 |
+| Administrador — Contas com erros (campos e desativação recusada) | [prototipo.html#admin-contas-erro](layout/prototipo.html#admin-contas-erro) | [x] | [x] | Arthur | 2026-10-17 |
+| Coordenador — Detalhe da turma com troca de professor | [prototipo.html#coordenador-turma](layout/prototipo.html#coordenador-turma) | [x] | [x] | Arthur | 2026-10-17 |
+
+Checklist RNF: situação da conta com cor, símbolo e rótulo (RNF-06); usável em computador, tablet e celular (RNF-04).
+
+## 4. Dependências
+
+SPEC-001 (autenticação, guardas e casca) e SPEC-002 (cadastro de estudante, validação de dados de conta).
+
+## 5. Comportamento esperado
+
+**Pré-condições:** administrador autenticado com conta ativa.
+
+**Fluxo principal (criar conta):**
+1. Administrador abre "Contas".
+2. Informa nome, e-mail, senha inicial e perfil.
+3. Sistema valida os dados, grava a senha com hash (RNF-02) e cria a conta ativa com exatamente o perfil escolhido (RB-01).
+4. A conta aparece na lista.
+
+**Alternativo (consultar):** administrador filtra a lista por perfil.
+
+**Alternativo (desativar):** administrador desativa uma conta; o login dela passa a ser recusado e uma sessão aberta dessa conta perde o acesso na próxima requisição (RB-14). Os dados da conta (notas, matrículas, turmas) continuam no sistema.
+
+**Alternativo (reativar):** administrador reativa a conta e ela volta a entrar normalmente.
+
+**Alternativo (trocar professor, RF-17):** no detalhe da turma, o coordenador responsável escolhe outro professor ativo; a turma e seus planos de recuperação ativos passam para ele. Depois disso, o professor anterior pode ser desativado se não tiver outras turmas.
+
+**Exceções:**
+- Dado obrigatório ausente, e-mail inválido ou senha curta: sistema impede o cadastro e indica o campo.
+- E-mail já cadastrado: sistema recusa.
+- Administrador tenta desativar a si mesmo: sistema impede (RB-14).
+- Professor responsável por ao menos uma turma: sistema impede a desativação e explica o motivo (RB-14).
+- Usuário de outro perfil acessa a gestão de contas, ou administrador acessa dado acadêmico: acesso negado (RB-13, RNF-03).
+- Troca para usuário que não é Professor ou está desativado, ou turma de outro coordenador: troca impedida.
+
+**Pós-condições de sucesso:** conta criada com 1 perfil, ou conta com `ativo` alterado.
+**Pós-condição de falha:** nenhuma conta criada ou alterada.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-010-01 | Toda conta tem exatamente 1 perfil dentre Estudante, Professor, Coordenador e Administrador (RB-01). |
+| INV-010-02 | Só o Administrador cria, lista, desativa e reativa contas (RNF-03). |
+| INV-010-03 | O Administrador não acessa dados acadêmicos (RB-13). |
+| INV-010-04 | Conta inativa não faz login nem usa sessão já emitida (RB-14). |
+| INV-010-05 | Desativar não apaga nem esconde dados acadêmicos da conta. |
+| INV-010-06 | O administrador não desativa a própria conta, e professor responsável por turma não é desativado (RB-14). |
+| INV-010-07 | Depois da troca, a turma e seus planos ativos têm como professor o novo professor, que é ativo e tem perfil Professor (RF-17, INV-008-02). |
+
+## 7. Modelo de domínio envolvido
+
+`Usuario` com `perfil` incluindo Administrador e `ativo` (padrão: sim). Nenhuma entidade nova.
+
+## 8. Impacto arquitetural
+
+Migração: valor `Administrador` no enum de perfil e coluna `ativo` com padrão verdadeiro (contas existentes continuam ativas). Regras de desativação como funções puras em `src/domain` (DA-07). A guarda de páginas e de API passa a conferir no banco, pelo id da sessão, se a conta continua ativa (uma consulta por requisição). A matriz de recursos (`autorizacao.ts`) ganha o recurso de gestão de contas só para Administrador, e nenhum recurso acadêmico inclui Administrador (nega por padrão, ADR-003).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| Criar conta | nome, e-mail, senha inicial, perfil | conta ativa criada | dado inválido, e-mail já cadastrado, sem permissão |
+| Listar contas | filtro de perfil (opcional) | contas com nome, e-mail, perfil e ativo | sem permissão |
+| Desativar conta | conta | conta inativa | própria conta, professor com turma, sem permissão |
+| Reativar conta | conta | conta ativa | sem permissão |
+| Trocar professor da turma | turma, novo professor | turma com o novo professor e planos ativos transferidos | não é Professor, desativado, turma fora do escopo |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-02 | Senha da conta criada guardada com hash |
+| RNF-03, RNF-05 | Só Administrador usa a gestão de contas; Administrador não lê dados acadêmicos |
+| RNF-04, RNF-06 | Telas aprovadas no protótipo, em computador, tablet e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-010-01 | Administrador | Cria conta com dados válidos e perfil Professor | Conta ativa criada com perfil Professor, senha com hash, e consegue entrar |
+| AC-010-02 | Administrador | Tenta criar conta sem e-mail ou com e-mail já cadastrado | Cadastro impedido, campo indicado, nada gravado |
+| AC-010-03 | Administrador | Filtra a lista por Coordenador | Só contas de Coordenador aparecem |
+| AC-010-04 | Conta de estudante ativa e logada | Administrador desativa a conta | Próxima requisição é negada e novo login é recusado com mensagem genérica |
+| AC-010-05 | Conta desativada | Administrador reativa | Conta volta a entrar; notas e matrículas continuam lá |
+| AC-010-06 | Administrador | Tenta desativar a própria conta ou um professor com turma | Desativação impedida com mensagem explicativa |
+| AC-010-07 | Professor, Coordenador ou Estudante | Acessa a gestão de contas | Acesso negado |
+| AC-010-08 | Administrador | Acessa dados acadêmicos (turmas, notas, relatórios) | Acesso negado |
+| AC-010-09 | Turma com plano ativo | Coordenador responsável troca o professor | Turma e plano ativo passam ao novo professor; o anterior deixa de ver a turma |
+| AC-010-10 | Coordenador | Tenta trocar para um usuário desativado ou que não é Professor, ou em turma de outro coordenador | Troca impedida |
+
+## 12. Casos de teste derivados
+
+1. Regras de desativação (própria conta, professor com turma, demais).
+2. Criação com cada perfil e validação de campos.
+3. Sessão de conta desativada negada nas guardas de página e de API.
+4. Matriz de autorização: Administrador sem recurso acadêmico; demais perfis sem gestão de contas.
+5. Troca de professor com transferência dos planos ativos, e desativação liberada depois da troca.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-025 fechada; a troca de professor (RF-17) resolve a desativação de professor com turma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).

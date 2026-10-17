@@ -63,8 +63,9 @@ describe("SPEC-001 — autorização", () => {
     expect(podeAcessar("Coordenador", RECURSOS.areaCoordenacao)).toBe(true);
   });
 
-  it("RB-01 / INV-001-01: todo usuário tem exatamente um perfil dentre Estudante, Professor ou Coordenador", async () => {
-    expect(PERFIS).toEqual(["Estudante", "Professor", "Coordenador"]);
+  // RB-01 passou a 4 perfis com o Administrador (SPEC-010, OPEN-025, 2026-10-17).
+  it("RB-01 / INV-001-01 / INV-010-01: todo usuário tem exatamente um perfil dentre Estudante, Professor, Coordenador ou Administrador", async () => {
+    expect(PERFIS).toEqual(["Estudante", "Professor", "Coordenador", "Administrador"]);
     expect(ehPerfilValido("Admin")).toBe(false);
 
     const hash = await gerarHashSenha("x");
