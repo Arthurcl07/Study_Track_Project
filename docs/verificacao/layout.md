@@ -30,4 +30,4 @@ Nenhuma regra de negócio, rota de dados ou consulta mudou: as telas usam as mes
 | Coordenador — turmas em tabela + formulário de nova turma | Aprovado | — |
 | Sair apaga a sessão: depois de sair, abrir `/professor` leva ao login | Aprovado | Aprovado |
 
-**Falta a conferência humana** (roteiro do README) antes do PR para a `main`.
+**Revisão:** PR #42 aprovado por Luiz Eduardo e integrado em `development` em 2026-10-17.
