@@ -39,6 +39,7 @@ Legenda de status da Spec:
 | SPEC-010 (Administrador e gestão de contas) incluída e aprovada, com OPEN-025 fechada (decisão humana, Arthur); novo RF-16, RB-13 e RB-14, RB-01 com 4 perfis; layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-17 |
 | Layout da SPEC-010 (contas) `aprovado` e escopo ampliado com a troca do professor da turma (RF-17), por decisão de Arthur | `aprovada` | 2026-10-17 |
 | SPEC-002, SPEC-003, SPEC-004 e SPEC-010 marcadas como `implementadas`: PRs #48 e #53 (`development` → `main`) aprovados por Luiz Eduardo | `implementada` | 2026-10-19 |
+| SPEC-011 a SPEC-014 incluídas e aprovadas, com OPEN-026 a OPEN-029 fechadas (decisão humana, Arthur); RF-18 a RF-21, RB-15 e RB-16; layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-19 |
 
 ---
 
@@ -56,6 +57,10 @@ Legenda de status da Spec:
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `implementada` |
 | 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `implementada` |
 | 10 | SPEC-010 | Administrador e gestão de contas | SPEC-001, SPEC-002 | `implementada` |
+| 11 | SPEC-011 | Senha própria e troca no primeiro acesso | SPEC-001, SPEC-010 | `aprovada` |
+| 12 | SPEC-012 | Plano de recuperação visível ao estudante | SPEC-007, SPEC-008 | `aprovada` |
+| 13 | SPEC-013 | Histórico de notas | SPEC-004 | `aprovada` |
+| 14 | SPEC-014 | Painel do coordenador | SPEC-009 | `aprovada` |
 
 Todas as Specs têm texto completo abaixo. As SPEC-001 a SPEC-010 estão `implementadas`: critérios, invariantes e testes atendidos (`docs/verificacao/`) e PR revisado por um colega (SPEC-002 a 004 e 010 pela revisão de Luiz Eduardo nos PRs #48 e #53, de `development` para `main`).
 
@@ -1452,6 +1457,492 @@ Migração: valor `Administrador` no enum de perfil e coluna `ativo` com padrão
 ## 13. Questões em aberto
 
 Nenhuma. OPEN-025 fechada; a troca de professor (RF-17) resolve a desativação de professor com turma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-011 — Senha própria e troca no primeiro acesso
+
+**Status:** `aprovada` (layout pendente de aprovação, OPEN-020)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-011 |
+| **Nome** | Senha própria e troca no primeiro acesso |
+| **Objetivo** | Garantir que a senha definida por outra pessoa seja provisória e permitir que qualquer usuário troque a própria senha. |
+| **Valor** | Quem criou a conta deixa de conhecer a senha de uso; fecha uma falha de segurança das contas criadas pela tela. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-18 |
+| **RB** | RB-15 |
+| **RNF** | RNF-02, RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-12 Definir ou alterar senha |
+| **Entidades** | `Usuario` (atributo `trocarSenha`) |
+| **ADRs** | ADR-003, ADR-004 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-026 |
+
+## 3. Escopo
+
+**Incluído**
+- Contas criadas pelo administrador (SPEC-010) ou pelo coordenador (cadastro de estudante, SPEC-002) nascem com `trocarSenha`.
+- Com `trocarSenha`, toda página leva à tela "Defina sua senha" e toda API responde 403, exceto definir a senha e sair.
+- "Alterar minha senha" no menu de todos os perfis: senha atual, nova e confirmação.
+
+**Fora do escopo**
+- Recuperação de senha por e-mail (sem infraestrutura de envio).
+- Administrador redefinir a senha de outra pessoa.
+- Contas do seed (não são obrigadas a trocar, OPEN-026).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout pendente de aprovação. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Primeiro acesso — Defina sua senha | [prototipo.html#primeiro-acesso](layout/prototipo.html#primeiro-acesso) | [ ] | [ ] | — | — |
+| Alterar minha senha (todos os perfis) | [prototipo.html#minha-senha](layout/prototipo.html#minha-senha) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-001 (login, guardas) e SPEC-010 (contas, `confirmarConta`).
+
+## 5. Comportamento esperado
+
+**Pré-condições:** usuário autenticado com conta ativa.
+
+**Fluxo principal:**
+1. Usuário com conta criada pela tela entra com a senha inicial.
+2. Sistema leva à tela "Defina sua senha".
+3. Usuário informa a senha atual, a nova e a confirmação.
+4. Sistema valida, grava o novo hash, desmarca `trocarSenha` e leva ao painel do perfil.
+
+**Alternativo (alterar):** qualquer usuário abre "Alterar minha senha" no menu e troca pelo mesmo formulário.
+
+**Exceções:**
+- Senha atual errada, nova com menos de 8 caracteres, igual à atual ou confirmação diferente: troca impedida e campo indicado.
+- Com `trocarSenha`, qualquer outra página ou API: redireciona para "Defina sua senha" (página) ou 403 (API).
+
+**Pós-condições:** senha substituída (só o hash é gravado) e `trocarSenha` falso.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-011-01 | Conta criada pela tela começa com `trocarSenha` verdadeiro; conta do seed, falso. |
+| INV-011-02 | Com `trocarSenha`, só definir a senha e sair são permitidos (RB-15). |
+| INV-011-03 | A nova senha tem 8+ caracteres e é diferente da atual (RB-15). |
+| INV-011-04 | A senha nunca é gravada em texto puro (RNF-02). |
+
+## 7. Modelo de domínio envolvido
+
+`Usuario.trocarSenha` (padrão: falso).
+
+## 8. Impacto arquitetural
+
+Migração com a coluna. Regras de validação puras em `src/domain`. A guarda (`confirmarConta`) passa a conhecer `trocarSenha` e bloqueia o resto. Rota `POST /api/auth/senha` usa a sessão do próprio usuário.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| Definir/alterar senha | senha atual, nova, confirmação | senha trocada, `trocarSenha` falso | senha atual errada, nova inválida, confirmação diferente, sem sessão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-02 | Hash novo diferente do anterior; senha nunca em texto |
+| RNF-03 | Com `trocarSenha`, páginas e APIs bloqueadas |
+| RNF-04, RNF-06 | Telas aprovadas no protótipo, em computador e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-011-01 | Conta criada pelo administrador | A pessoa entra pela primeira vez | Vai para "Defina sua senha" e as APIs respondem 403 até trocar |
+| AC-011-02 | Conta com `trocarSenha` | Define senha nova válida | Entra no painel; a senha antiga deixa de funcionar |
+| AC-011-03 | Usuário autenticado | Informa a senha atual errada | Troca impedida, campo indicado |
+| AC-011-04 | Usuário autenticado | Nova senha curta, igual à atual ou com confirmação diferente | Troca impedida, campo indicado |
+| AC-011-05 | Conta do seed | Entra | Vai direto ao painel, sem troca obrigatória |
+
+## 12. Casos de teste derivados
+
+1. Validação da nova senha.
+2. Bloqueio de páginas e APIs com `trocarSenha`.
+3. Troca bem-sucedida e login com a senha nova.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-026 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-012 — Plano de recuperação visível ao estudante
+
+**Status:** `aprovada` (layout pendente de aprovação, OPEN-020)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-012 |
+| **Nome** | Plano de recuperação visível ao estudante |
+| **Objetivo** | Mostrar ao estudante os próprios planos de recuperação, só para leitura. |
+| **Valor** | O estudante sabe o que precisa fazer para sair do Risco e acompanha o progresso. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-19 (e RF-14) |
+| **RB** | RB-02, RB-12 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-02 Consultar situação acadêmica (extensão: plano) |
+| **Entidades** | `PlanoRecuperacao`, `ItemPlano` |
+| **ADRs** | ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-027 |
+
+## 3. Escopo
+
+**Incluído**
+- Seção "Plano de recuperação" no painel do estudante: plano ativo de cada turma com itens, concluídos e progresso.
+- Planos encerrados num histórico recolhido.
+
+**Fora do escopo**
+- Estudante marcar itens (continua com o professor, OPEN-003).
+- Comentários ou mensagens no plano (sem RF).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout pendente de aprovação. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Estudante — Painel com plano de recuperação | [prototipo.html#estudante-plano](layout/prototipo.html#estudante-plano) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-007 (painel) e SPEC-008 (plano).
+
+## 5. Comportamento esperado
+
+**Pré-condições:** estudante autenticado.
+
+**Fluxo principal:**
+1. Estudante abre o painel.
+2. Sistema mostra, para cada turma em que ele tem plano ativo, os itens, quais estão concluídos e o progresso (RB-12).
+3. Planos encerrados aparecem recolhidos, com a data de encerramento.
+
+
+
+**Exceções:**
+- Estudante sem plano: a seção não aparece.
+
+**Pós-condições:** nenhuma alteração de dados (consulta).
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-012-01 | O estudante vê só os próprios planos (RB-02). |
+| INV-012-02 | O progresso mostrado é o mesmo calculado para o professor (RB-12). |
+| INV-012-03 | O estudante não altera plano nem itens. |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+Consulta filtrada pelo estudante da sessão dentro da query (ADR-003); progresso por `progressoDoPlano` (regra única).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| Consultar meus planos | sessão do estudante | planos ativos e encerrados com itens e progresso | sem sessão, outro perfil |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03, RNF-05 | Outro estudante nunca vê o plano |
+| RNF-04, RNF-06 | Tela aprovada no protótipo |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-012-01 | Estudante com plano ativo de 4 itens, 1 concluído | Abre o painel | Vê os 4 itens, 1 marcado, progresso 25% |
+| AC-012-02 | Estudante com plano encerrado | Abre o painel | Vê o plano no histórico, com a data de encerramento |
+| AC-012-03 | Outro estudante da mesma turma | Abre o painel | Não vê o plano do colega |
+| AC-012-04 | Estudante | Tenta marcar item pela API | Acesso negado |
+
+## 12. Casos de teste derivados
+
+1. Escopo do estudante.
+2. Progresso igual ao do professor.
+3. Escrita negada.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-027 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-013 — Histórico de notas
+
+**Status:** `aprovada` (layout pendente de aprovação, OPEN-020)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-013 |
+| **Nome** | Histórico de notas |
+| **Objetivo** | Registrar cada lançamento e alteração de nota e permitir que coordenador e professor consultem esse histórico. |
+| **Valor** | Transparência em contestação de nota: sempre se sabe quem mudou, quando e de quanto para quanto. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-20 |
+| **RB** | RB-03, RB-04, RB-16 |
+| **RNF** | RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-03 Registrar nota (inclui registrar histórico); UC-13 Consultar histórico de notas |
+| **Entidades** | `HistoricoNota`, `Nota` |
+| **ADRs** | ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-028 |
+
+## 3. Escopo
+
+**Incluído**
+- Registro na mesma transação do lançamento e da alteração de nota (SPEC-004).
+- Tela "Histórico de notas" para Coordenador (turmas sob responsabilidade) e Professor (turmas que leciona), com filtro por turma.
+
+**Fora do escopo**
+- Histórico para o estudante (OPEN-028).
+- Editar ou apagar registros (RB-16).
+- Histórico de frequência (sem RF).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout pendente de aprovação. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Histórico de notas (coordenador e professor) | [prototipo.html#historico-notas](layout/prototipo.html#historico-notas) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-004 (notas) e SPEC-009 (escopo de turmas por perfil).
+
+## 5. Comportamento esperado
+
+**Pré-condições:** coordenador ou professor autenticado.
+
+**Fluxo principal:**
+1. Professor lança ou altera uma nota (SPEC-004).
+2. Na mesma transação, sistema grava o registro com autor, data e hora, valor anterior (vazio no lançamento) e valor novo.
+3. Coordenador ou professor abre "Histórico de notas" e escolhe a turma.
+4. Sistema lista os registros da turma, do mais recente para o mais antigo.
+
+
+
+**Exceções:**
+- Turma fora do escopo: acesso negado.
+- Estudante ou administrador: acesso negado.
+
+**Pós-condições:** registro gravado junto com a nota; se a nota falhar, nenhum registro fica (transação).
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-013-01 | Todo lançamento e toda alteração geram exatamente 1 registro, na mesma transação (RB-16). |
+| INV-013-02 | Não existe operação para editar ou apagar registro (RB-16). |
+| INV-013-03 | Coordenador só vê turmas sob sua responsabilidade; professor só as que leciona (RB-03, RB-04). |
+
+## 7. Modelo de domínio envolvido
+
+`HistoricoNota` (valorAnterior, valorNovo, registradoEm; avaliação, estudante e autor).
+
+## 8. Impacto arquitetural
+
+Migração com a tabela e FKs. Escrita dentro da transação existente de `registrarNota` e `alterarNota`. Consulta com o escopo da turma na própria query (ADR-003).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| Consultar histórico | turma (opcional) | registros da turma no escopo | turma fora do escopo, perfil sem permissão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03, RNF-05 | Escopo por perfil na consulta |
+| RNF-04, RNF-06 | Tela aprovada no protótipo |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-013-01 | Professor lança nota 6 e depois altera para 8 | Coordenador consulta o histórico da turma | Vê 2 registros: — → 6 e 6 → 8, com autor e data |
+| AC-013-02 | Lançamento de nota com valor inválido | A operação falha | Nenhum registro é gravado |
+| AC-013-03 | Coordenador de outra turma | Consulta o histórico | Acesso negado |
+| AC-013-04 | Professor responsável | Consulta o histórico da turma que leciona | Vê os registros |
+| AC-013-05 | Estudante ou administrador | Consulta o histórico | Acesso negado |
+
+## 12. Casos de teste derivados
+
+1. Registro na mesma transação.
+2. Escopo por perfil.
+3. Ausência de rotas de alteração.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-028 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-014 — Painel do coordenador
+
+**Status:** `aprovada` (layout pendente de aprovação, OPEN-020)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-014 |
+| **Nome** | Painel do coordenador |
+| **Objetivo** | Dar ao coordenador uma visão comparativa das turmas sob sua responsabilidade. |
+| **Valor** | Identificar rapidamente as turmas com mais estudantes em Risco e mais atrasos. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-21 |
+| **RB** | RB-04, RB-09 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | Painel do coordenador |
+| **Entidades** | `IndicadorAcademico`, `Turma`, `Atividade`, `Entrega` (leitura) |
+| **ADRs** | ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-029 |
+
+## 3. Escopo
+
+**Incluído**
+- Totais: disciplinas, turmas, estudantes e estudantes em Risco.
+- Distribuição Normal/Atenção/Risco/Sem dados por turma (barra empilhada).
+- Média e frequência média por turma, com as linhas de 5,0, 6,0 e 75%.
+- Turmas que pedem atenção (mais Risco, mais entregas atrasadas), com link para o relatório filtrado.
+
+**Fora do escopo**
+- Filtros por período e exportação (já existem no relatório, SPEC-009).
+- Gráficos para professor ou estudante.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout pendente de aprovação. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Coordenador — Painel com gráficos | [prototipo.html#coordenador-painel](layout/prototipo.html#coordenador-painel) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-009 (consolidação do relatório).
+
+## 5. Comportamento esperado
+
+**Pré-condições:** coordenador autenticado.
+
+**Fluxo principal:**
+1. Coordenador abre o Início.
+2. Sistema consolida as turmas sob sua responsabilidade com a mesma regra do relatório (SPEC-009).
+3. Sistema mostra totais, distribuição, média e frequência por turma e as turmas que pedem atenção.
+
+
+
+**Exceções:**
+- Coordenador sem turmas: estado vazio com atalho para cadastrar turma.
+
+**Pós-condições:** nenhuma alteração de dados (consulta).
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-014-01 | Os números são os mesmos do relatório para as mesmas turmas (RB-10). |
+| INV-014-02 | Só turmas sob responsabilidade do coordenador (RB-04). |
+| INV-014-03 | Situações sempre com cor, símbolo e rótulo (RNF-06). |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+Reaproveita `gerarRelatorio` e `consolidarTurma` (SPEC-009); ordenação de "turmas que pedem atenção" como função pura em `src/domain`. Gráficos em SVG no servidor, como o gráfico de evolução (SPEC-007).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| Consultar painel | sessão do coordenador | totais, distribuição, médias e ranking | sem permissão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Painel em até 3 s com os dados de demonstração |
+| RNF-04, RNF-06 | Tela aprovada no protótipo |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-014-01 | Coordenador com 2 turmas | Abre o Início | Vê os totais, inclusive estudantes em Risco, e um gráfico por turma |
+| AC-014-02 | Turma com 3 estudantes em Risco e outra com 1 | Abre o Início | A turma com 3 aparece primeiro em "Turmas que pedem atenção" |
+| AC-014-03 | Mesmas turmas | Compara com o relatório | Contagens e médias iguais |
+| AC-014-04 | Coordenador de outra turma | Abre o Início | Não vê turmas que não são suas |
+
+## 12. Casos de teste derivados
+
+1. Ordenação das turmas que pedem atenção.
+2. Mesmos números do relatório.
+3. Escopo do coordenador.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-029 fechada.
 
 ## 14. Definition of Done
 

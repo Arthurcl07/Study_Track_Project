@@ -60,6 +60,21 @@
 - WHEN o coordenador responsável pela turma escolhe outro professor ativo para ela, o sistema SHALL tornar esse professor o responsável pela turma e pelos planos de recuperação ativos da turma.
 - IF o usuário escolhido não tiver perfil Professor ou estiver desativado, THEN o sistema SHALL impedir a troca.
 
+## RF-18 — Senha própria (incluído em 2026-10-19, OPEN-026)
+- WHEN um usuário com conta criada pela tela entra pela primeira vez, o sistema SHALL exigir que ele defina uma senha nova antes de usar qualquer outra função.
+- WHEN um usuário autenticado informa a senha atual e uma senha nova válida, o sistema SHALL substituir a senha.
+- IF a senha atual estiver errada, a nova tiver menos de 8 caracteres, for igual à atual ou não coincidir com a confirmação, THEN o sistema SHALL impedir a troca e indicar o campo.
+
+## RF-19 — Plano de recuperação visível ao estudante (incluído em 2026-10-19, OPEN-027)
+- WHEN um estudante acessa o seu painel, o sistema SHALL mostrar os próprios planos de recuperação (ativo e encerrados), com os itens, quais estão concluídos e o progresso, sem permitir alteração.
+
+## RF-20 — Histórico de notas (incluído em 2026-10-19, OPEN-028)
+- WHEN uma nota é lançada ou alterada, o sistema SHALL registrar quem fez, quando, o valor anterior (se houver) e o valor novo.
+- WHEN um coordenador ou professor consulta o histórico de notas, o sistema SHALL mostrar apenas os registros das turmas do seu escopo.
+
+## RF-21 — Painel do coordenador (incluído em 2026-10-19, OPEN-029)
+- WHEN um coordenador acessa o seu painel, o sistema SHALL apresentar, para as turmas sob sua responsabilidade, a distribuição das situações, a média e a frequência média de cada turma e as turmas com mais estudantes em Risco e mais entregas atrasadas.
+
 ---
 
 
