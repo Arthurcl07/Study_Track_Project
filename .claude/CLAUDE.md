@@ -31,7 +31,10 @@ tela só é implementada depois do layout `aprovado` (OPEN-020).
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 a SPEC-010 implementadas)
+- `src/` — código-fonte (SPEC-001 a SPEC-010 implementadas; SPEC-011 a SPEC-014 em implementação)
+  Senha provisória (SPEC-011, RB-15): `trocarSenha` bloqueia páginas (vão para `/definir-senha`) e APIs (403)
+  na própria guarda; só `/api/auth/senha` e o logout aceitam essa conta. O histórico de notas (SPEC-013, RB-16)
+  é gravado dentro da transação de `registrarNota`/`alterarNota` e não tem rota de escrita.
   Perfil Administrador (SPEC-010) só tem o recurso de gestão de contas: nunca incluí-lo em recurso acadêmico
   (RB-13). A guarda (`confirmarConta` em `src/server/auth/guardas.ts`) confere a cada requisição se a conta
   continua ativa e com o mesmo perfil (RB-14).

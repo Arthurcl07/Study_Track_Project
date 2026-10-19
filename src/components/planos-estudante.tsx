@@ -14,7 +14,7 @@ function PlanoAtivo({ plano }: { plano: PlanoDoEstudante }) {
           <h2 className="text-[17px] font-semibold">Seu plano de recuperação</h2>
           <p className="mt-1 text-sm text-mudo">{plano.disciplina} · Prof. {plano.professor} · criado em {data(plano.criadoEm)}</p>
         </div>
-        <div className="text-right">
+        <div className="ml-auto text-right">
           <strong className="block text-2xl font-bold tabular-nums">{percentual}%</strong>
           <span className="text-sm text-mudo">{concluidos} de {total} concluídos</span>
         </div>

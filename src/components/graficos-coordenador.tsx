@@ -21,7 +21,7 @@ export function SituacaoPorTurma({ turmas }: { turmas: Turma[] }) {
       {turmas.map((t) => (
         <div key={t.id}>
           <div className="mb-1 flex justify-between gap-3 text-sm">
-            <span className="truncate">{t.rotulo}</span>
+            <span className="min-w-0 truncate">{t.rotulo}</span>
             <span className="shrink-0 text-mudo">{t.estudantes} estudante(s)</span>
           </div>
           {t.estudantes === 0 ? (
@@ -73,7 +73,7 @@ export function MediaFrequenciaPorTurma({ turmas }: { turmas: Turma[] }) {
   ];
   return (
     <div>
-      <svg viewBox={`0 0 ${LARGURA} ${ALTURA}`} width="100%" role="img" aria-label="Média e frequência média por turma">
+      <svg viewBox={`0 0 ${LARGURA} ${ALTURA}`} width="100%" className="mx-auto block max-w-[480px]" role="img" aria-label="Média e frequência média por turma">
         {linhas.map((l) => (
           <g key={l.rotulo}>
             <line x1={ESQUERDA} x2={LARGURA - 4} y1={l.y} y2={l.y} stroke={l.cor} strokeDasharray="4 4" />
