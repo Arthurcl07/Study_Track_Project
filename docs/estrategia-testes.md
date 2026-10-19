@@ -28,8 +28,9 @@
 | SPEC-007 | AC-007-01 a 07 | Integração + ponta a ponta manual (OPEN-023) |
 | SPEC-008 | AC-008-01 a 07 | Unitário + integração |
 | SPEC-009 | AC-009-01 a 07 | Unitário + integração |
+| SPEC-010 | AC-010-01 a 10 | Unitário + integração |
 
-Situação em 2026-10-16: todos os AC, INV e RB têm teste com o identificador no nome (128 testes). Detalhe em `docs/verificacao/qualidade.md`.
+Situação em 2026-10-17: todos os AC, INV e RB têm teste com o identificador no nome (142 testes). Detalhe em `docs/verificacao/qualidade.md`.
 
 ## 4. Atributos de qualidade (ISO/IEC 25010) e onde são verificados
 

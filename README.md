@@ -27,8 +27,9 @@ avaliações e lançamento/alteração de notas pelo professor, com recálculo d
 entregas; o status No prazo/Pendente/Atrasada é calculado na hora, e o estudante vê o próprio em
 **Minhas atividades**), SPEC-006 (alertas de Atenção e Risco na tela do estudante e do professor) e
 SPEC-007 (painel do estudante com média, frequência, situação, gráfico de evolução das notas e atividades),
-SPEC-008 (dashboard da turma do professor e plano de recuperação para estudantes em Risco) e SPEC-009
-(relatório acadêmico para Professor e Coordenador, em tela e em CSV).
+SPEC-008 (dashboard da turma do professor e plano de recuperação para estudantes em Risco), SPEC-009
+(relatório acadêmico para Professor e Coordenador, em tela e em CSV) e SPEC-010 (perfil Administrador, que cria,
+desativa e reativa contas, e troca do professor da turma pelo coordenador).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 
@@ -72,15 +73,30 @@ Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 
 Não há cadastro público (OPEN-013). O seed (`prisma/seed.ts`) cria uma conta por perfil, todas
 com a senha `StudyTrack@2026`, uma "Turma de exemplo" com o Professor, o Coordenador (responsável)
-e o Estudante matriculado, e uma avaliação "Prova 1 (exemplo)" (peso 1) nessa turma, ainda sem nota:
+e o Estudante matriculado, e uma avaliação "Prova 1 (exemplo)" (peso 1) nessa turma, ainda sem nota
+para o Estudante de Teste:
 
 | Perfil | E-mail |
 |---|---|
 | Estudante | `estudante@studytrack.test` |
 | Professor | `professor@studytrack.test` |
 | Coordenador | `coordenador@studytrack.test` |
+| Administrador | `admin@studytrack.test` |
 
 São credenciais fictícias para desenvolvimento; nunca use em produção.
+
+**Dados de demonstração.** O seed também cria 8 estudantes fictícios (Ana Souza, Bruno Costa, Carla
+Mendes, Diego Lima, Elisa Rocha, Felipe Alves, Gabriela Nunes e Henrique Dias), com e-mail
+`nome.sobrenome@studytrack.test` e a mesma senha, distribuídos em Normal, Atenção, Risco e sem dados;
+uma segunda turma ("Turma B (exemplo)"); entregas no prazo e atrasadas; e um plano de recuperação da Carla
+com 2 de 4 itens concluídos. Elisa Rocha fica em Risco sem plano, para demonstrar a criação pela tela.
+A situação de cada um sai do cálculo do sistema (`recalcularIndicador`), não é gravada à mão.
+Roteiro de apresentação: `docs/roteiro-apresentacao.md`.
+
+Gestão de contas da SPEC-010 (OPEN-025): entre como `admin@studytrack.test` e use **Contas** para criar
+contas de qualquer perfil e desativar ou reativar o acesso. O administrador não vê dados acadêmicos.
+Para trocar o professor de uma turma (por exemplo, para a professora Júlia Reis, `julia.reis@studytrack.test`),
+entre como coordenador e abra a turma em **Turmas e estudantes**.
 
 Para ver a negação de acesso, entre como Estudante e abra `/coordenador/area` (página) ou
 `/api/coordenacao` (API) — ambas exclusivas de Coordenador.
@@ -106,7 +122,7 @@ turma e situação e use **Exportar CSV** para baixar as mesmas linhas (separado
 ## Integração contínua
 
 Todo PR e todo push para `development` e `main` roda `.github/workflows/ci.yml`: um PostgreSQL 17
-descartável, as migrações, `tsc --noEmit` e `npm test` (OPEN-024).
+descartável, as migrações, `tsc --noEmit`, `npm test` e o build de produção (`npm run build`) (OPEN-024).
 
 ## Documentação
 

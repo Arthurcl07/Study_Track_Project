@@ -10,7 +10,7 @@ Ferramenta de agente do grupo: **Claude Code** (configuração em `.claude/`).
 | 2. Permissões da ferramenta | `.claude/settings.json` nega leitura de `.env` e comandos destrutivos (`git push --force`, `rm -rf`) | Ativa. É uma lista de bloqueio, não um hook programável |
 | 2b. Hook de ferramenta | Programa externo que decide allow/ask/deny antes de cada ação | Não configurado |
 | 3. Git hook local | Bloqueio antes do commit | Não será criado (OPEN-024): a CI faz a checagem |
-| 4. Revisão e CI | Ruleset `mainprotect` no GitHub: exige PR, bloqueia force push e exclusão da `main`. CI em `.github/workflows/ci.yml` (tipos e testes em todo PR) | Ativa: revisão exigida e CI rodando; falta marcar o check da CI como obrigatório no ruleset |
+| 4. Revisão e CI | Ruleset `mainprotect` no GitHub: exige PR, bloqueia force push e exclusão da `main`. CI em `.github/workflows/ci.yml` (tipos, testes e build de produção em todo PR) | Ativa: revisão exigida e CI rodando; falta marcar o check da CI como obrigatório no ruleset |
 
 Limitações assumidas: instrução não é mecanismo de segurança (o modelo pode ignorá-la), então a camada 2 e a camada 4 são as que de fato bloqueiam. A política deve ser testada: peça ao agente para ler `.env` ou fazer `git push --force` e confirme que a ação é negada.
 

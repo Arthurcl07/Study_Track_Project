@@ -3,9 +3,9 @@
 # Regras de Negócio — StudyTrack
 
 RB-01 — Perfis de usuário
-Descrição: O sistema opera com três perfis: Estudante, Professor e Coordenador. Todo usuário cadastrado possui exatamente um perfil.
-Cláusula EARS: O sistema SHALL atribuir a cada usuário cadastrado exatamente um perfil dentre: Estudante, Professor ou Coordenador.
-Aplicada por: RF-02, RF-03.
+Descrição: O sistema opera com quatro perfis: Estudante, Professor, Coordenador e Administrador (Administrador incluído em 2026-10-17, OPEN-025). Todo usuário cadastrado possui exatamente um perfil.
+Cláusula EARS: O sistema SHALL atribuir a cada usuário cadastrado exatamente um perfil dentre: Estudante, Professor, Coordenador ou Administrador.
+Aplicada por: RF-02, RF-03, RF-16.
 
 RB-02 — Acesso do estudante
 Descrição: Um estudante visualiza apenas os próprios dados acadêmicos.
@@ -66,6 +66,19 @@ RB-12 — Progresso do plano
 Descrição: O progresso de um plano de recuperação é a proporção de atividades do plano concluídas em relação ao total previsto.
 Cláusula EARS: O sistema SHALL calcular o progresso de um plano de recuperação como a proporção de atividades concluídas em relação ao total de atividades previstas no plano.
 Aplicada por: RF-14.
+
+RB-13 — Acesso do administrador
+Descrição: O administrador gerencia contas e não acessa dados acadêmicos (privilégio mínimo, RNF-05).
+Cláusula EARS: WHEN um administrador solicitar dados acadêmicos (notas, frequência, turmas, indicadores, planos ou relatórios), o sistema SHALL negar o acesso.
+Aplicada por: RF-02, RF-16.
+
+RB-14 — Conta desativada
+Descrição: Conta desativada não acessa o sistema, mas seus dados continuam guardados e a conta pode ser reativada.
+Cláusula EARS:
+  IF uma conta estiver desativada, THEN o sistema SHALL recusar o login e as requisições feitas com uma sessão dessa conta.
+  IF o administrador tentar desativar a própria conta, THEN o sistema SHALL impedir a desativação.
+  IF o professor responsável por ao menos uma turma for desativado, THEN o sistema SHALL impedir a desativação.
+Aplicada por: RF-01, RF-16.
 
 
 ## Resumo das regras

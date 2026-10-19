@@ -18,6 +18,8 @@ enum Perfil {
   Estudante
   Professor
   Coordenador
+  // SPEC-010 / OPEN-025: só gestão de contas, sem acesso a dados acadêmicos (RB-13).
+  Administrador
 }
 
 model Usuario {
@@ -27,6 +29,8 @@ model Usuario {
   // INV-001-02: somente o hash bcrypt é armazenado, nunca a senha em texto puro (RNF-02).
   senhaHash String
   perfil    Perfil
+  // SPEC-010 / RB-14: conta inativa não entra nem usa sessão já emitida; os dados permanecem.
+  ativo     Boolean @default(true)
 
   turmasLecionadas    Turma[]              @relation("ProfessorDaTurma")
   turmasCoordenadas   Turma[]              @relation("CoordenadorDaTurma")

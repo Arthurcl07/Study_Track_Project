@@ -14,8 +14,8 @@ export async function autenticar(email: string, senha: string): Promise<Sessao |
     await conferirSenha(senha, await hashDeReferencia);
     return null;
   }
-  // OPEN-014: o modelo não tem atributo de cadastro ativo; todo usuário existente é tratado como ativo.
   const senhaConfere = await conferirSenha(senha, usuario.senhaHash);
-  if (!senhaConfere) return null;
+  // RB-14 (SPEC-010): conta desativada recebe a mesma resposta genérica de credencial inválida.
+  if (!senhaConfere || !usuario.ativo) return null;
   return { usuarioId: usuario.id, nome: usuario.nome, perfil: usuario.perfil };
 }

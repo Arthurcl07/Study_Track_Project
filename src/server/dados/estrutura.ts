@@ -85,16 +85,27 @@ export function buscarDisciplina(id: string) {
   return prisma.disciplina.findUnique({ where: { id }, select: { id: true } });
 }
 
+// Só professores ativos podem receber turma (SPEC-010, RF-17, INV-010-07).
 export function listarProfessores() {
   return prisma.usuario.findMany({
-    where: { perfil: "Professor" },
+    where: { perfil: "Professor", ativo: true },
     select: { id: true, nome: true },
     orderBy: { nome: "asc" },
   });
 }
 
 export function buscarProfessor(id: string) {
-  return prisma.usuario.findFirst({ where: { id, perfil: "Professor" }, select: { id: true } });
+  return prisma.usuario.findFirst({ where: { id, perfil: "Professor", ativo: true }, select: { id: true } });
+}
+
+// RF-17 / INV-010-07: a turma e seus planos de recuperação ATIVOS passam ao novo professor na mesma
+// transação (INV-008-02); planos encerrados mantêm o professor que os conduziu.
+export function trocarProfessorDaTurma(turmaId: string, professorId: string) {
+  return prisma.$transaction(async (tx) => {
+    const turma = await tx.turma.update({ where: { id: turmaId }, data: { professorId }, select: RESUMO_TURMA });
+    await tx.planoRecuperacao.updateMany({ where: { turmaId, status: "Ativo" }, data: { professorId } });
+    return turma;
+  });
 }
 
 // O coordenador que cria a turma passa a ser o responsável por ela (OPEN-001).

@@ -2,6 +2,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { podeAcessar, type Recurso } from "@/domain/autorizacao";
+import { situacaoDaConta } from "@/server/dados/contas";
 import { NOME_COOKIE_SESSAO, verificarSessao, type Sessao } from "./token";
 
 function lerCookie(cabecalho: string | null, nome: string): string | undefined {
@@ -13,13 +14,21 @@ function lerCookie(cabecalho: string | null, nome: string): string | undefined {
   return undefined;
 }
 
-export function sessaoDaRequisicao(requisicao: Request): Promise<Sessao | null> {
-  return verificarSessao(lerCookie(requisicao.headers.get("cookie"), NOME_COOKIE_SESSAO));
+// RB-14 / INV-010-04 (SPEC-010): o JWT só vale se a conta ainda existe, está ativa e tem o mesmo perfil.
+// Assim, desativar uma conta corta na próxima requisição uma sessão que já tinha sido emitida.
+async function confirmarConta(sessao: Sessao | null): Promise<Sessao | null> {
+  if (!sessao) return null;
+  const conta = await situacaoDaConta(sessao.usuarioId);
+  return conta && conta.ativo && conta.perfil === sessao.perfil ? sessao : null;
+}
+
+export async function sessaoDaRequisicao(requisicao: Request): Promise<Sessao | null> {
+  return confirmarConta(await verificarSessao(lerCookie(requisicao.headers.get("cookie"), NOME_COOKIE_SESSAO)));
 }
 
 export async function sessaoDaPagina(): Promise<Sessao | null> {
   const armazenamento = await cookies();
-  return verificarSessao(armazenamento.get(NOME_COOKIE_SESSAO)?.value);
+  return confirmarConta(await verificarSessao(armazenamento.get(NOME_COOKIE_SESSAO)?.value));
 }
 
 // Para Route Handlers: 401 sem sessão válida, 403 com perfil sem permissão.
