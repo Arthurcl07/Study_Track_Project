@@ -11,3 +11,6 @@ coverage/
 # Next.js
 next-env.d.ts
 *.tsbuildinfo
+
+# Gerado automaticamente pelo Next.js 16 ao rodar `next dev` (aviso para ferramentas de IA); não faz parte do projeto.
+AGENTS.md
