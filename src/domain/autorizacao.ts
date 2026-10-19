@@ -30,6 +30,8 @@ export const RECURSOS = {
   // SPEC-010 (RF-16): gestão de contas, só pelo Administrador. Nenhum recurso acadêmico inclui o
   // Administrador (RB-13, INV-010-03): ele cai no "nega por padrão" de todos os outros.
   gestaoContas: "gestao-contas",
+  // SPEC-013 (RF-20): histórico de notas para Professor (turmas que leciona) e Coordenador (sob responsabilidade).
+  historicoNotas: "historico-notas",
 } as const;
 
 export type Recurso = (typeof RECURSOS)[keyof typeof RECURSOS];
@@ -49,6 +51,7 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "plano-recuperacao": ["Professor"],
   relatorios: ["Professor", "Coordenador"],
   "gestao-contas": ["Administrador"],
+  "historico-notas": ["Professor", "Coordenador"],
 };
 
 export function podeAcessar(perfil: unknown, recurso: unknown): boolean {

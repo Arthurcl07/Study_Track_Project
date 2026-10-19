@@ -23,24 +23,28 @@ enum Perfil {
 }
 
 model Usuario {
-  id        String @id @default(uuid())
-  nome      String
-  email     String @unique
+  id          String  @id @default(uuid())
+  nome        String
+  email       String  @unique
   // INV-001-02: somente o hash bcrypt é armazenado, nunca a senha em texto puro (RNF-02).
-  senhaHash String
-  perfil    Perfil
+  senhaHash   String
+  perfil      Perfil
   // SPEC-010 / RB-14: conta inativa não entra nem usa sessão já emitida; os dados permanecem.
-  ativo     Boolean @default(true)
+  ativo       Boolean @default(true)
+  // SPEC-011 / RB-15: conta criada pela tela usa senha provisória até o dono definir a própria.
+  trocarSenha Boolean @default(false)
 
-  turmasLecionadas    Turma[]              @relation("ProfessorDaTurma")
-  turmasCoordenadas   Turma[]              @relation("CoordenadorDaTurma")
-  matriculas          Matricula[]
-  notas               Nota[]
-  frequencias         Frequencia[]
-  indicadores         IndicadorAcademico[]
-  entregas            Entrega[]
-  planosComoEstudante PlanoRecuperacao[]   @relation("EstudanteDoPlano")
-  planosComoProfessor PlanoRecuperacao[]   @relation("ProfessorDoPlano")
+  turmasLecionadas       Turma[]              @relation("ProfessorDaTurma")
+  turmasCoordenadas      Turma[]              @relation("CoordenadorDaTurma")
+  matriculas             Matricula[]
+  notas                  Nota[]
+  frequencias            Frequencia[]
+  indicadores            IndicadorAcademico[]
+  entregas               Entrega[]
+  historicoComoEstudante HistoricoNota[]      @relation("EstudanteDoHistorico")
+  historicoComoAutor     HistoricoNota[]      @relation("AutorDoHistorico")
+  planosComoEstudante    PlanoRecuperacao[]   @relation("EstudanteDoPlano")
+  planosComoProfessor    PlanoRecuperacao[]   @relation("ProfessorDoPlano")
 }
 
 model Disciplina {
@@ -94,14 +98,15 @@ enum Situacao {
 
 // Estrutura usada pelo cálculo da média (OPEN-002). O cadastro de avaliações é da SPEC-004.
 model Avaliacao {
-  id      String   @id @default(uuid())
-  turmaId String
-  turma   Turma    @relation(fields: [turmaId], references: [id], onDelete: Cascade)
-  nome    String
+  id        String          @id @default(uuid())
+  turmaId   String
+  turma     Turma           @relation(fields: [turmaId], references: [id], onDelete: Cascade)
+  nome      String
   // Peso maior que zero (OPEN-002); garantido também por CHECK na migração.
-  peso    Float
-  data    DateTime
-  notas   Nota[]
+  peso      Float
+  data      DateTime
+  notas     Nota[]
+  historico HistoricoNota[]
 
   @@index([turmaId])
 }
@@ -217,4 +222,23 @@ model ItemPlano {
   concluidoEm DateTime?
 
   @@index([planoId])
+}
+
+// SPEC-013 / RB-16 (OPEN-028): um registro por lançamento ou alteração de nota, gravado na mesma
+// transação da nota. Não há operação de edição nem de exclusão pela aplicação.
+model HistoricoNota {
+  id            String    @id @default(uuid())
+  avaliacaoId   String
+  avaliacao     Avaliacao @relation(fields: [avaliacaoId], references: [id], onDelete: Cascade)
+  estudanteId   String
+  estudante     Usuario   @relation("EstudanteDoHistorico", fields: [estudanteId], references: [id], onDelete: Cascade)
+  autorId       String
+  autor         Usuario   @relation("AutorDoHistorico", fields: [autorId], references: [id], onDelete: Cascade)
+  // Vazio no lançamento; no lançamento e na alteração, de 0 a 10 (OPEN-002).
+  valorAnterior Float?
+  valorNovo     Float
+  registradoEm  DateTime  @default(now())
+
+  @@index([avaliacaoId])
+  @@index([estudanteId])
 }

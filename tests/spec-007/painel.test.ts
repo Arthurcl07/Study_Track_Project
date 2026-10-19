@@ -97,7 +97,8 @@ describe("SPEC-007 — painel do estudante", () => {
   it("AC-007-04: estudante sem turmas recebe painel vazio", async () => {
     const sozinho = await criarUsuarioDeTeste("Estudante");
     const { corpo } = await painelDe(sozinho);
-    expect(corpo).toEqual({ turmas: [], alertas: [], atividadesEmAtencao: [] });
+    // A SPEC-012 acrescentou a lista de planos ao painel; sem turmas, também vem vazia.
+    expect(corpo).toEqual({ turmas: [], alertas: [], planos: [], atividadesEmAtencao: [] });
   });
 
   it("AC-007-05 / INV-007-01 / INV-007-03: cada estudante vê só os próprios dados", async () => {

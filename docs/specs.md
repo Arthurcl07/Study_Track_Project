@@ -40,6 +40,7 @@ Legenda de status da Spec:
 | Layout da SPEC-010 (contas) `aprovado` e escopo ampliado com a troca do professor da turma (RF-17), por decisão de Arthur | `aprovada` | 2026-10-17 |
 | SPEC-002, SPEC-003, SPEC-004 e SPEC-010 marcadas como `implementadas`: PRs #48 e #53 (`development` → `main`) aprovados por Luiz Eduardo | `implementada` | 2026-10-19 |
 | SPEC-011 a SPEC-014 incluídas e aprovadas, com OPEN-026 a OPEN-029 fechadas (decisão humana, Arthur); RF-18 a RF-21, RB-15 e RB-16; layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-19 |
+| Layout das SPEC-011 a SPEC-014 (senha, plano do estudante, histórico de notas, painel do coordenador) | `aprovado` (Arthur) | 2026-10-19 |
 
 ---
 
@@ -57,10 +58,10 @@ Legenda de status da Spec:
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `implementada` |
 | 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `implementada` |
 | 10 | SPEC-010 | Administrador e gestão de contas | SPEC-001, SPEC-002 | `implementada` |
-| 11 | SPEC-011 | Senha própria e troca no primeiro acesso | SPEC-001, SPEC-010 | `aprovada` |
-| 12 | SPEC-012 | Plano de recuperação visível ao estudante | SPEC-007, SPEC-008 | `aprovada` |
-| 13 | SPEC-013 | Histórico de notas | SPEC-004 | `aprovada` |
-| 14 | SPEC-014 | Painel do coordenador | SPEC-009 | `aprovada` |
+| 11 | SPEC-011 | Senha própria e troca no primeiro acesso | SPEC-001, SPEC-010 | `em implementação` |
+| 12 | SPEC-012 | Plano de recuperação visível ao estudante | SPEC-007, SPEC-008 | `em implementação` |
+| 13 | SPEC-013 | Histórico de notas | SPEC-004 | `em implementação` |
+| 14 | SPEC-014 | Painel do coordenador | SPEC-009 | `em implementação` |
 
 Todas as Specs têm texto completo abaixo. As SPEC-001 a SPEC-010 estão `implementadas`: critérios, invariantes e testes atendidos (`docs/verificacao/`) e PR revisado por um colega (SPEC-002 a 004 e 010 pela revisão de Luiz Eduardo nos PRs #48 e #53, de `development` para `main`).
 
@@ -1466,7 +1467,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-011 — Senha própria e troca no primeiro acesso
 
-**Status:** `aprovada` (layout pendente de aprovação, OPEN-020)
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -1504,12 +1505,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout pendente de aprovação. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-19 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Primeiro acesso — Defina sua senha | [prototipo.html#primeiro-acesso](layout/prototipo.html#primeiro-acesso) | [ ] | [ ] | — | — |
-| Alterar minha senha (todos os perfis) | [prototipo.html#minha-senha](layout/prototipo.html#minha-senha) | [ ] | [ ] | — | — |
+| Primeiro acesso — Defina sua senha | [prototipo.html#primeiro-acesso](layout/prototipo.html#primeiro-acesso) | [x] | [x] | Arthur | 2026-10-19 |
+| Alterar minha senha (todos os perfis) | [prototipo.html#minha-senha](layout/prototipo.html#minha-senha) | [x] | [x] | Arthur | 2026-10-19 |
 
 ## 4. Dependências
 
@@ -1592,7 +1593,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-012 — Plano de recuperação visível ao estudante
 
-**Status:** `aprovada` (layout pendente de aprovação, OPEN-020)
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -1628,11 +1629,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout pendente de aprovação. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-19 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Estudante — Painel com plano de recuperação | [prototipo.html#estudante-plano](layout/prototipo.html#estudante-plano) | [ ] | [ ] | — | — |
+| Estudante — Painel com plano de recuperação | [prototipo.html#estudante-plano](layout/prototipo.html#estudante-plano) | [x] | [x] | Arthur | 2026-10-19 |
 
 ## 4. Dependências
 
@@ -1710,7 +1711,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-013 — Histórico de notas
 
-**Status:** `aprovada` (layout pendente de aprovação, OPEN-020)
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -1747,11 +1748,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout pendente de aprovação. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-19 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Histórico de notas (coordenador e professor) | [prototipo.html#historico-notas](layout/prototipo.html#historico-notas) | [ ] | [ ] | — | — |
+| Histórico de notas (coordenador e professor) | [prototipo.html#historico-notas](layout/prototipo.html#historico-notas) | [x] | [x] | Arthur | 2026-10-19 |
 
 ## 4. Dependências
 
@@ -1832,7 +1833,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-014 — Painel do coordenador
 
-**Status:** `aprovada` (layout pendente de aprovação, OPEN-020)
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -1870,11 +1871,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout pendente de aprovação. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-19 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Coordenador — Painel com gráficos | [prototipo.html#coordenador-painel](layout/prototipo.html#coordenador-painel) | [ ] | [ ] | — | — |
+| Coordenador — Painel com gráficos | [prototipo.html#coordenador-painel](layout/prototipo.html#coordenador-painel) | [x] | [x] | Arthur | 2026-10-19 |
 
 ## 4. Dependências
 
