@@ -1,7 +1,7 @@
 # Verificação — SPEC-002 (Estrutura acadêmica e vínculos de turma)
 
 **Data:** 2026-10-09
-**Status da Spec:** `em implementação`
+**Status da Spec:** `implementada`
 **Comando:** `npm test` (Vitest 3.2.7, PostgreSQL 17 local)
 **Resultado geral:** 3 arquivos, 27 testes aprovados, 0 pendentes, 0 falhas (15 deles em `tests/spec-002/estrutura.test.ts`).
 **Outras checagens:** `tsc --noEmit` sem erros; `next build` concluído.
@@ -48,7 +48,7 @@
 
 ## Verificação manual
 
-**Data:** 2026-10-09 — feita pelo agente no navegador (servidor local, contas do seed). **Falta a conferência humana.**
+**Data:** 2026-10-09 — feita pelo agente no navegador (servidor local, contas do seed). Revisão: PR #48 (`development` → `main`) aprovado por Luiz Eduardo em 2026-10-19.
 
 | Item | Resultado |
 |---|---|

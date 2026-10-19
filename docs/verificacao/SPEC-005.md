@@ -1,7 +1,7 @@
 # Verificação — SPEC-005 (Frequência, atividades e entregas atrasadas)
 
 **Data:** 2026-10-16
-**Status da Spec:** `em implementação`
+**Status da Spec:** `implementada`
 **Comando:** `npm test` (Vitest 3.2.7, PostgreSQL 17 local)
 **Resultado geral:** 8 arquivos, **88 testes aprovados**, 0 pendentes, 0 falhas (24 deles em `tests/spec-005/`).
 **Outras checagens:** `tsc --noEmit` sem erros no código (o cache `.next/dev/types` foi corrompido por um desligamento brusco do PC e é regenerado pelo Next.js); telas renderizadas no servidor de desenvolvimento.

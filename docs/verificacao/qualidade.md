@@ -115,4 +115,4 @@ Os três estão em ferramentas de desenvolvimento (CLI de migração e framework
 | Item | Registro |
 |---|---|
 | Teste isolado da camada 2 (`settings.json` negando `.env`) sem a instrução da camada 1 | Continua pendente; precisa ser feito por um humano, porque o agente não deve tentar ler `.env` |
-| Revisão dos PRs #39 a #41 (SPEC-002 a SPEC-004), que entraram sem revisão | No PR de `development` para `main` |
+| Revisão dos PRs #39 a #41 (SPEC-002 a SPEC-004), que entraram sem revisão | Feita: PRs #48 e #53 aprovados por Luiz Eduardo em 2026-10-19 |
