@@ -38,6 +38,7 @@ Legenda de status da Spec:
 | SPEC-005 a SPEC-009 marcadas como `implementadas`: testes e verificação em `docs/verificacao/`, PRs #43 a #46 aprovados por Luiz Eduardo e integrados em `development` | `implementada` | 2026-10-17 |
 | SPEC-010 (Administrador e gestão de contas) incluída e aprovada, com OPEN-025 fechada (decisão humana, Arthur); novo RF-16, RB-13 e RB-14, RB-01 com 4 perfis; layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-17 |
 | Layout da SPEC-010 (contas) `aprovado` e escopo ampliado com a troca do professor da turma (RF-17), por decisão de Arthur | `aprovada` | 2026-10-17 |
+| SPEC-002, SPEC-003, SPEC-004 e SPEC-010 marcadas como `implementadas`: PRs #48 e #53 (`development` → `main`) aprovados por Luiz Eduardo | `implementada` | 2026-10-19 |
 
 ---
 
@@ -46,17 +47,17 @@ Legenda de status da Spec:
 | Ordem | ID | Nome | Dependências | Status |
 |---|---|---|---|---|
 | 1 | SPEC-001 | Autenticação, perfis e autorização por escopo | — | `implementada` |
-| 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `em implementação` |
-| 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `em implementação` |
-| 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `em implementação` |
+| 2 | SPEC-002 | Estrutura acadêmica e vínculos de turma | SPEC-001 | `implementada` |
+| 3 | SPEC-003 | Cálculo da situação acadêmica e indicador persistido | SPEC-002 | `implementada` |
+| 4 | SPEC-004 | Registro de avaliações, notas e médias | SPEC-001, SPEC-002, SPEC-003 | `implementada` |
 | 5 | SPEC-005 | Frequência, atividades e entregas atrasadas | SPEC-001, SPEC-002, SPEC-003 | `implementada` |
 | 6 | SPEC-006 | Alertas de atenção e risco | SPEC-001, SPEC-003, SPEC-004, SPEC-005 | `implementada` |
 | 7 | SPEC-007 | Dashboard acadêmico do estudante | SPEC-001…SPEC-006 | `implementada` |
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `implementada` |
 | 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `implementada` |
-| 10 | SPEC-010 | Administrador e gestão de contas | SPEC-001, SPEC-002 | `em implementação` |
+| 10 | SPEC-010 | Administrador e gestão de contas | SPEC-001, SPEC-002 | `implementada` |
 
-Todas as Specs têm texto completo abaixo. SPEC-001 e SPEC-005 a SPEC-009 estão `implementadas`: critérios, invariantes e testes atendidos (`docs/verificacao/`) e PR revisado por um colega. SPEC-002 a SPEC-004 têm código, testes e verificação completos, mas os PRs #39 a #41 entraram sem revisão; passam a `implementada` quando o PR de `development` para `main` for revisado.
+Todas as Specs têm texto completo abaixo. As SPEC-001 a SPEC-010 estão `implementadas`: critérios, invariantes e testes atendidos (`docs/verificacao/`) e PR revisado por um colega (SPEC-002 a 004 e 010 pela revisão de Luiz Eduardo nos PRs #48 e #53, de `development` para `main`).
 
 ---
 
@@ -203,7 +204,7 @@ Critérios AC-001-* implementados; INV-001-* preservados; testes da seção 12 a
 
 # SPEC-002 — Estrutura acadêmica e vínculos de turma
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -348,7 +349,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-003 — Cálculo da situação acadêmica e indicador persistido
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -477,7 +478,7 @@ Padrão da SPEC-001 (seção 14), mais teste de limites da tabela 12.1.
 
 # SPEC-004 — Registro de avaliações, notas e médias
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -1302,7 +1303,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-010 — Administrador e gestão de contas
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 

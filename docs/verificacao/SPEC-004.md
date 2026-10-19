@@ -1,7 +1,7 @@
 # Verificação — SPEC-004 (Registro de avaliações, notas e médias)
 
 **Data:** 2026-10-13
-**Status da Spec:** `em implementação`
+**Status da Spec:** `implementada`
 **Comando:** `npm test` (Vitest 3.2.7, PostgreSQL 17 local)
 **Resultado geral:** suíte completa com 5 arquivos e 63 testes aprovados, 0 falhas (15 da SPEC-004). `npx prisma migrate dev`: nenhuma migração pendente (OPEN-016). `npm run seed`: avaliação de exemplo criada. `npx tsc --noEmit`: sem erros.
 
