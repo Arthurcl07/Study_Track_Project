@@ -5,6 +5,8 @@ de demonstração do seed, e por fim a evidência de qualidade.
 
 ## Antes de começar
 
+O jeito mais simples: dois cliques em `Iniciar StudyTrack.bat` (opção 2, modo apresentação). Logins em `CONTAS-DE-TESTE.txt`. Pelo terminal:
+
 ```bash
 npm run seed
 ```

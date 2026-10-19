@@ -7,6 +7,7 @@ import { recalcularIndicador } from "../src/server/academico/indicador";
 import { salvarConta } from "../src/server/auth/contas";
 import { paraData } from "../src/server/dados/atividades";
 import { prisma } from "../src/server/dados/prisma";
+import { simularInstituicao } from "./simulacao";
 import type { Perfil } from "../src/domain/perfil";
 
 const SENHA_DE_TESTE = "StudyTrack@2026";
@@ -70,6 +71,9 @@ async function main() {
   }
 
   await dadosDeDemonstracao({ turma, disciplinaId: disciplina.id, avaliacaoId: avaliacao.id, professorId: professor.id, coordenadorId: coordenador.id, hoje });
+
+  // Instituição simulada (6 disciplinas, 6 turmas, ~50 estudantes) para a apresentação: prisma/simulacao.ts.
+  await simularInstituicao({ senha: SENHA_DE_TESTE, coordenadorTesteId: coordenador.id, professorTesteId: professor.id, estudanteTesteId: estudante.id, hoje });
 }
 
 // Dados de demonstração (fictícios): estudantes em Normal, Atenção, Risco e sem dados, para os
