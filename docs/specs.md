@@ -41,6 +41,7 @@ Legenda de status da Spec:
 | SPEC-002, SPEC-003, SPEC-004 e SPEC-010 marcadas como `implementadas`: PRs #48 e #53 (`development` → `main`) aprovados por Luiz Eduardo | `implementada` | 2026-10-19 |
 | SPEC-011 a SPEC-014 incluídas e aprovadas, com OPEN-026 a OPEN-029 fechadas (decisão humana, Arthur); RF-18 a RF-21, RB-15 e RB-16; layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-19 |
 | Layout das SPEC-011 a SPEC-014 (senha, plano do estudante, histórico de notas, painel do coordenador) | `aprovado` (Arthur) | 2026-10-19 |
+| SPEC-011 a SPEC-014 marcadas como `implementadas`, condicionadas à aprovação do PR de `development` para `main` que leva este status (cobre os PRs #56 a #60) | `implementada` | 2026-10-19 |
 
 ---
 
@@ -58,12 +59,12 @@ Legenda de status da Spec:
 | 8 | SPEC-008 | Dashboard do professor e plano de recuperação | SPEC-001…SPEC-006 | `implementada` |
 | 9 | SPEC-009 | Relatórios acadêmicos autorizados | SPEC-001…SPEC-008 | `implementada` |
 | 10 | SPEC-010 | Administrador e gestão de contas | SPEC-001, SPEC-002 | `implementada` |
-| 11 | SPEC-011 | Senha própria e troca no primeiro acesso | SPEC-001, SPEC-010 | `em implementação` |
-| 12 | SPEC-012 | Plano de recuperação visível ao estudante | SPEC-007, SPEC-008 | `em implementação` |
-| 13 | SPEC-013 | Histórico de notas | SPEC-004 | `em implementação` |
-| 14 | SPEC-014 | Painel do coordenador | SPEC-009 | `em implementação` |
+| 11 | SPEC-011 | Senha própria e troca no primeiro acesso | SPEC-001, SPEC-010 | `implementada` |
+| 12 | SPEC-012 | Plano de recuperação visível ao estudante | SPEC-007, SPEC-008 | `implementada` |
+| 13 | SPEC-013 | Histórico de notas | SPEC-004 | `implementada` |
+| 14 | SPEC-014 | Painel do coordenador | SPEC-009 | `implementada` |
 
-Todas as Specs têm texto completo abaixo. As SPEC-001 a SPEC-010 estão `implementadas`: critérios, invariantes e testes atendidos (`docs/verificacao/`) e PR revisado por um colega (SPEC-002 a 004 e 010 pela revisão de Luiz Eduardo nos PRs #48 e #53, de `development` para `main`).
+Todas as Specs têm texto completo abaixo. As SPEC-001 a SPEC-014 estão `implementadas` (SPEC-011 a 014 pela revisão do PR de `development` para `main` que traz este status): critérios, invariantes e testes atendidos (`docs/verificacao/`) e PR revisado por um colega (SPEC-002 a 004 e 010 pela revisão de Luiz Eduardo nos PRs #48 e #53, de `development` para `main`).
 
 ---
 
@@ -1467,7 +1468,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-011 — Senha própria e troca no primeiro acesso
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -1593,7 +1594,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-012 — Plano de recuperação visível ao estudante
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -1711,7 +1712,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-013 — Histórico de notas
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -1833,7 +1834,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-014 — Painel do coordenador
 
-**Status:** `em implementação`
+**Status:** `implementada`
 
 ## 1. Identificação
 
