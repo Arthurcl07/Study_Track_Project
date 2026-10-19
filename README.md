@@ -85,9 +85,9 @@ Para desligar, feche a janela preta. Todos os logins estão em **`CONTAS-DE-TEST
 ### Contas de teste (somente ambiente local)
 
 Não há cadastro público (OPEN-013). O seed (`prisma/seed.ts`) cria uma conta por perfil, todas
-com a senha `StudyTrack@2026`, uma "Turma de exemplo" com o Professor, o Coordenador (responsável)
-e o Estudante matriculado, e uma avaliação "Prova 1 (exemplo)" (peso 1) nessa turma, ainda sem nota
-para o Estudante de Teste:
+com a senha `StudyTrack@2026`, a "Turma MS-A" (Modelagem de Software) com o professor Carlos Lima, a coordenadora Marina Alves
+(responsável) e o estudante João Pereira matriculado, e uma avaliação "Prova 1" (peso 1) nessa turma, ainda
+sem nota para o João:
 
 | Perfil | E-mail |
 |---|---|
@@ -101,7 +101,7 @@ São credenciais fictícias para desenvolvimento; nunca use em produção.
 **Dados de demonstração.** O seed também cria 8 estudantes fictícios (Ana Souza, Bruno Costa, Carla
 Mendes, Diego Lima, Elisa Rocha, Felipe Alves, Gabriela Nunes e Henrique Dias), com e-mail
 `nome.sobrenome@studytrack.test` e a mesma senha, distribuídos em Normal, Atenção, Risco e sem dados;
-uma segunda turma ("Turma B (exemplo)"); entregas no prazo e atrasadas; e um plano de recuperação da Carla
+uma segunda turma ("Turma ER-B", Engenharia de Requisitos); entregas no prazo e atrasadas; e um plano de recuperação da Carla
 com 2 de 4 itens concluídos. Elisa Rocha fica em Risco sem plano, para demonstrar a criação pela tela.
 A situação de cada um sai do cálculo do sistema (`recalcularIndicador`), não é gravada à mão.
 Roteiro de apresentação: `docs/roteiro-apresentacao.md`.
