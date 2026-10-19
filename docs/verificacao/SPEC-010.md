@@ -1,7 +1,7 @@
 # Verificação — SPEC-010 (Administrador, gestão de contas e troca do professor da turma)
 
 **Data:** 2026-10-17
-**Status da Spec:** `em implementação`
+**Status da Spec:** `implementada`
 **Comando:** `npm test` (Vitest 3.2.7, PostgreSQL 17 local)
 **Resultado geral:** 13 arquivos, **142 testes aprovados**, 0 falhas (13 em `tests/spec-010/`).
 **Outras checagens:** `tsc --noEmit` sem erros; telas conferidas no servidor de desenvolvimento no desktop, no tablet (768 px) e no celular (375 px).
@@ -54,4 +54,4 @@
 | Sem rolagem horizontal em 375 px e 768 px | Aprovado |
 | Ajustes feitos na verificação: ordem da lista; duas colunas só a partir de 1280 px; nome e e-mail juntos no cartão do celular; texto do aviso de desativação | Corrigidos |
 
-**Falta a conferência humana** e a revisão do PR por um colega antes de marcar a Spec como `implementada`.
+**Revisão:** PR #53 (`development` → `main`) aprovado por Luiz Eduardo em 2026-10-19. Spec marcada como `implementada`.

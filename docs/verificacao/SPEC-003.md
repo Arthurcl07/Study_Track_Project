@@ -1,7 +1,7 @@
 # Verificação — SPEC-003 (Cálculo da situação acadêmica e indicador persistido)
 
 **Data:** 2026-10-09
-**Status da Spec:** `em implementação`
+**Status da Spec:** `implementada`
 **Comando:** `npm test` (Vitest 3.2.7, PostgreSQL 17 local)
 **Resultado geral:** 4 arquivos, 48 testes aprovados, 0 pendentes, 0 falhas (21 deles em `tests/spec-003/indicador.test.ts`).
 **Outras checagens:** `tsc --noEmit` sem erros; `next build` concluído.
