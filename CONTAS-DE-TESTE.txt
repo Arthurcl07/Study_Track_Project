@@ -1,0 +1,103 @@
+﻿STUDYTRACK — CONTAS DE TESTE (somente ambiente local)
+========================================================
+
+SENHA DE TODAS AS CONTAS:  StudyTrack@2026
+
+Endereço: http://localhost:3000  (abra pelo arquivo "Iniciar StudyTrack.bat")
+Para trocar de usuário: botão "Sair" no rodapé do menu lateral.
+Dados fictícios, criados pelo seed (npm run seed). Nunca use em produção.
+
+--------------------------------------------------------
+CONTAS PRINCIPAIS (use estas na apresentação)
+--------------------------------------------------------
+Administrador   admin@studytrack.test         -> Contas (criar, desativar, reativar)
+Coordenador     coordenador@studytrack.test   -> painel com gráficos, relatórios, histórico
+Professor       professor@studytrack.test     -> turmas, notas, frequência, atividades, planos
+Estudante       carla.mendes@studytrack.test  -> painel em Risco com plano de recuperação
+Estudante       estudante@studytrack.test     -> painel com 3 turmas (Normal e Risco)
+Estudante       ana.souza@studytrack.test     -> painel com tudo em Normal
+
+--------------------------------------------------------
+COORDENADORES
+--------------------------------------------------------
+Coordenador de Teste   coordenador@studytrack.test          turmas: Turma BD-A, Turma ES-A, Turma ED-B, Turma SO-B, Turma de exemplo, Turma B (exemplo)
+Paula Martins          paula.martins@studytrack.test        turmas: Turma RC-A, Turma CAL-C
+
+--------------------------------------------------------
+PROFESSORES
+--------------------------------------------------------
+Fernanda Lopes         fernanda.lopes@studytrack.test       turmas: Turma ED-B
+Júlia Reis             julia.reis@studytrack.test           turmas: Turma BD-A
+Marcos Andrade         marcos.andrade@studytrack.test       turmas: Turma ES-A
+Patrícia Gomes         patricia.gomes@studytrack.test       turmas: Turma CAL-C
+Professor de Teste     professor@studytrack.test            turmas: Turma SO-B, Turma de exemplo, Turma B (exemplo)
+Ricardo Nunes          ricardo.nunes@studytrack.test        turmas: Turma RC-A
+
+--------------------------------------------------------
+ESTUDANTES (59)  — situação atual em cada turma
+--------------------------------------------------------
+Amanda Pinto           amanda.pinto@studytrack.test           Turma ES-A (Risco)
+Amanda Teixeira        amanda.teixeira@studytrack.test        Turma RC-A (Normal), Turma CAL-C (Normal)
+Ana Souza              ana.souza@studytrack.test              Turma B (exemplo) (Normal), Turma de exemplo (Normal)
+André Cardoso          andre.cardoso@studytrack.test          Turma ED-B (Risco)
+André Ferreira         andre.ferreira@studytrack.test         Turma CAL-C (Normal)
+Beatriz Carvalho       beatriz.carvalho@studytrack.test       Turma BD-A (Risco), Turma CAL-C (Risco)
+Beatriz Vieira         beatriz.vieira@studytrack.test         Turma ED-B (Normal), Turma SO-B (Normal)
+Bruno Costa            bruno.costa@studytrack.test            Turma de exemplo (Atenção), Turma B (exemplo) (Normal)
+Caio Cardoso           caio.cardoso@studytrack.test           Turma RC-A (Normal), Turma CAL-C (Normal)
+Caio Correia           caio.correia@studytrack.test           Turma ES-A (Risco), Turma ED-B (Risco)
+Camila Araújo          camila.araujo@studytrack.test          Turma SO-B (Atenção), Turma RC-A (Risco)
+Camila Freitas         camila.freitas@studytrack.test         Turma BD-A (Normal)
+Carla Mendes           carla.mendes@studytrack.test           Turma de exemplo (Risco)
+Daniel Ferreira        daniel.ferreira@studytrack.test        Turma ED-B (Normal), Turma SO-B (Normal)
+Daniel Pereira         daniel.pereira@studytrack.test         Turma CAL-C (Risco)
+Diego Lima             diego.lima@studytrack.test             Turma de exemplo (Normal)
+Eduardo Correia        eduardo.correia@studytrack.test        Turma RC-A (Atenção), Turma CAL-C (Normal)
+Eduardo Oliveira       eduardo.oliveira@studytrack.test       Turma ES-A (Risco), Turma ED-B (Risco)
+Elisa Rocha            elisa.rocha@studytrack.test            Turma de exemplo (Risco), Turma B (exemplo) (Atenção)
+Estudante de Teste     estudante@studytrack.test              Turma de exemplo (Risco), Turma BD-A (Normal), Turma SO-B (Risco)
+Felipe Alves           felipe.alves@studytrack.test           Turma de exemplo (Normal)
+Fernanda Barbosa       fernanda.barbosa@studytrack.test       Turma ES-A (Normal), Turma ED-B (Normal)
+Fernanda Carvalho      fernanda.carvalho@studytrack.test      Turma RC-A (Normal), Turma CAL-C (Normal)
+Gabriela Nunes         gabriela.nunes@studytrack.test         Turma de exemplo (Atenção)
+Gustavo Cardoso        gustavo.cardoso@studytrack.test        Turma BD-A (Risco)
+Gustavo Ferreira       gustavo.ferreira@studytrack.test       Turma ED-B (Normal), Turma SO-B (Normal)
+Henrique Dias          henrique.dias@studytrack.test          Turma B (exemplo) (Risco)
+Isabela Almeida        isabela.almeida@studytrack.test        Turma BD-A (Normal), Turma ES-A (Atenção)
+Isabela Santos         isabela.santos@studytrack.test         Turma SO-B (Normal), Turma RC-A (Normal)
+Juliana Almeida        juliana.almeida@studytrack.test        Turma SO-B (Normal), Turma RC-A (Normal)
+Juliana Araújo         juliana.araujo@studytrack.test         Turma BD-A (Normal), Turma ES-A (Normal)
+Larissa Freitas        larissa.freitas@studytrack.test        Turma SO-B (Risco)
+Larissa Vieira         larissa.vieira@studytrack.test         Turma BD-A (Atenção)
+Leonardo Martins       leonardo.martins@studytrack.test       Turma ES-A (Risco)
+Leonardo Ribeiro       leonardo.ribeiro@studytrack.test       Turma RC-A (Normal)
+Letícia Pinto          leticia.pinto@studytrack.test          Turma RC-A (Risco)
+Letícia Santos         leticia.santos@studytrack.test         Turma BD-A (Normal), Turma ES-A (Normal)
+Lucas Correia          lucas.correia@studytrack.test          Turma ED-B (Normal), Turma SO-B (Normal)
+Lucas Oliveira         lucas.oliveira@studytrack.test         Turma BD-A (Normal), Turma CAL-C (Normal)
+Mariana Barbosa        mariana.barbosa@studytrack.test        Turma BD-A (Normal), Turma CAL-C (Normal)
+Mariana Carvalho       mariana.carvalho@studytrack.test       Turma SO-B (Normal), Turma ED-B (Normal)
+Matheus Monteiro       matheus.monteiro@studytrack.test       Turma BD-A (Normal), Turma ES-A (Normal)
+Matheus Moreira        matheus.moreira@studytrack.test        Turma SO-B (Normal), Turma RC-A (Normal)
+Natália Barbosa        natalia.barbosa@studytrack.test        Turma RC-A (Risco), Turma CAL-C (Risco)
+Natália Teixeira       natalia.teixeira@studytrack.test       Turma ES-A (Normal), Turma ED-B (Normal)
+Pedro Cardoso          pedro.cardoso@studytrack.test          Turma ED-B (Normal), Turma SO-B (Normal)
+Pedro Correia          pedro.correia@studytrack.test          Turma CAL-C (Normal), Turma BD-A (Normal)
+Rafael Ferreira        rafael.ferreira@studytrack.test        Turma BD-A (Risco)
+Rafael Pereira         rafael.pereira@studytrack.test         Turma SO-B (Risco)
+Rodrigo Oliveira       rodrigo.oliveira@studytrack.test       Turma RC-A (Risco), Turma CAL-C (Risco)
+Rodrigo Ribeiro        rodrigo.ribeiro@studytrack.test        Turma ES-A (Risco), Turma ED-B (Risco)
+Sofia Freitas          sofia.freitas@studytrack.test          Turma CAL-C (Normal)
+Sofia Vieira           sofia.vieira@studytrack.test           Turma ED-B (Risco)
+Thiago Monteiro        thiago.monteiro@studytrack.test        Turma SO-B (Atenção), Turma RC-A (Atenção)
+Thiago Pereira         thiago.pereira@studytrack.test         Turma BD-A (Normal), Turma ES-A (Normal)
+Vinícius Martins       vinicius.martins@studytrack.test       Turma SO-B (Atenção), Turma RC-A (Normal)
+Vinícius Moreira       vinicius.moreira@studytrack.test       Turma BD-A (Risco), Turma ES-A (Risco)
+Vitória Carvalho       vitoria.carvalho@studytrack.test       Turma ES-A (Normal), Turma ED-B (Normal)
+Vitória Vieira         vitoria.vieira@studytrack.test         Turma CAL-C (Risco)
+
+Observações:
+- Contas criadas pela tela (pelo admin ou pelo coordenador) pedem uma senha nova no primeiro acesso.
+  As contas acima, criadas pelo seed, não pedem.
+- A situação de cada estudante muda conforme notas e frequência forem lançadas na apresentação.
+  Para voltar aos valores originais: rode o seed de novo (o .bat oferece essa opção).
