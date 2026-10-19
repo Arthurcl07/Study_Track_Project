@@ -1,6 +1,22 @@
-# Verificação de qualidade e segurança — SPEC-001 a SPEC-010
+# Verificação de qualidade e segurança — SPEC-001 a SPEC-014
 
-**Data:** 2026-10-16 (SPEC-001 a 009); **reverificada em 2026-10-17** com a SPEC-010 (ver seção 0).
+**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0) e em **2026-10-19** com as SPEC-011 a 014 (seção 00).
+
+## 00. Reverificação de 2026-10-19 (depois das SPEC-011 a SPEC-014)
+
+| Verificação | Resultado |
+|---|---|
+| Testes | 17 arquivos, **163 testes aprovados**; CI com tipos, testes e build de produção verde (PRs #56 e #57) |
+| Critérios AC (SPEC-001 a 014) | **87** na documentação, 87 com teste |
+| Invariantes INV | **64**, todos com teste (INV-014-03, de interface, testado pela definição das faixas do gráfico) |
+| Regras RB-01 a RB-16 | 16, todas com teste (RB-15 em `spec-011/senha`, RB-16 em `spec-013/historico`) |
+| Guardas — exceções novas, intencionais | `POST /api/auth/senha`, `/definir-senha` e `/minha-senha` usam `contaDaRequisicao`/`contaDaPagina` em vez de `autorizarApi`/`exigirAcessoPagina`, porque precisam aceitar a conta com senha provisória (RB-15); continuam exigindo sessão válida, conta ativa e mesmo perfil. Todas as outras rotas e páginas passam pela guarda, que bloqueia a senha provisória |
+| Senha (RNF-02) | troca exige a senha atual; só o hash novo é gravado; mensagem genérica no login |
+| Histórico (RB-16) | gravado na mesma transação da nota; a rota só tem GET (teste confere); CHECK de 0 a 10 no banco |
+| Escopo (ADR-003) | histórico e painel do coordenador filtram a turma dentro da query; plano do estudante filtrado pelo estudante da sessão |
+| Logs | nenhum em `src/` |
+| Dependências (`npm audit`) | sem mudança: os mesmos alertas do CLI do Prisma e do Vitest, risco aceito (OPEN-022) |
+
 
 ## 0. Reverificação de 2026-10-17 (depois da SPEC-010)
 
