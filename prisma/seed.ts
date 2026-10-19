@@ -7,23 +7,25 @@ import { recalcularIndicador } from "../src/server/academico/indicador";
 import { salvarConta } from "../src/server/auth/contas";
 import { paraData } from "../src/server/dados/atividades";
 import { prisma } from "../src/server/dados/prisma";
+import { simularInstituicao } from "./simulacao";
 import type { Perfil } from "../src/domain/perfil";
 
 const SENHA_DE_TESTE = "StudyTrack@2026";
 
 const CONTAS_DE_TESTE: { nome: string; email: string; perfil: Perfil }[] = [
-  { nome: "Estudante de Teste", email: "estudante@studytrack.test", perfil: "Estudante" },
-  { nome: "Professor de Teste", email: "professor@studytrack.test", perfil: "Professor" },
-  { nome: "Coordenador de Teste", email: "coordenador@studytrack.test", perfil: "Coordenador" },
+  { nome: "João Pereira", email: "estudante@studytrack.test", perfil: "Estudante" },
+  { nome: "Carlos Lima", email: "professor@studytrack.test", perfil: "Professor" },
+  { nome: "Marina Alves", email: "coordenador@studytrack.test", perfil: "Coordenador" },
   // SPEC-010 (OPEN-025): primeiro administrador; só gerencia contas.
-  { nome: "Admin de Teste", email: "admin@studytrack.test", perfil: "Administrador" },
+  { nome: "Renata Duarte", email: "admin@studytrack.test", perfil: "Administrador" },
 ];
 
-const DISCIPLINA_EXEMPLO = { nome: "Modelagem de Software (exemplo)", cargaHoraria: 60 };
-const TURMA_EXEMPLO = { nome: "Turma de exemplo", periodo: "2026/2" };
-const AVALIACAO_EXEMPLO = { nome: "Prova 1 (exemplo)", peso: 1, data: new Date("2026-09-15T00:00:00Z") };
+const DISCIPLINA_EXEMPLO = { nome: "Modelagem de Software", cargaHoraria: 60 };
+const TURMA_EXEMPLO = { nome: "Turma MS-A", periodo: "2026/2" };
+const AVALIACAO_EXEMPLO = { nome: "Prova 1", peso: 1, data: new Date("2026-09-15T00:00:00Z") };
 
 async function main() {
+  await renomearNomesAntigos();
   const contas: Partial<Record<Perfil, { id: string }>> = {};
   for (const conta of CONTAS_DE_TESTE) {
     contas[conta.perfil] = await salvarConta({ ...conta, senha: SENHA_DE_TESTE });
@@ -46,7 +48,7 @@ async function main() {
     update: {},
     create: { estudanteId: estudante.id, turmaId: turma.id },
   });
-  console.log(`Turma de exemplo pronta: ${turma.nome} (${disciplina.nome})`);
+  console.log(`Turma pronta: ${turma.nome} (${disciplina.nome})`);
 
   // Idempotente: só cria a avaliação de exemplo se a turma ainda não tiver uma com esse nome.
   const avaliacao =
@@ -58,8 +60,8 @@ async function main() {
   // os status Atrasada e Pendente. Idempotente pela descrição dentro da turma.
   const hoje = hojeEmBrasilia();
   const atividadesExemplo = [
-    { descricao: "Lista de exercícios 1 (exemplo)", prazo: somarDias(hoje, -3) },
-    { descricao: "Trabalho final (exemplo)", prazo: somarDias(hoje, 14) },
+    { descricao: "Lista de exercícios 1", prazo: somarDias(hoje, -3) },
+    { descricao: "Trabalho final", prazo: somarDias(hoje, 14) },
   ];
   for (const exemplo of atividadesExemplo) {
     const existente = await prisma.atividade.findFirst({ where: { descricao: exemplo.descricao, turmaId: turma.id } });
@@ -70,6 +72,9 @@ async function main() {
   }
 
   await dadosDeDemonstracao({ turma, disciplinaId: disciplina.id, avaliacaoId: avaliacao.id, professorId: professor.id, coordenadorId: coordenador.id, hoje });
+
+  // Instituição simulada (6 disciplinas, 6 turmas, ~50 estudantes) para a apresentação: prisma/simulacao.ts.
+  await simularInstituicao({ senha: SENHA_DE_TESTE, coordenadorTesteId: coordenador.id, professorTesteId: professor.id, estudanteTesteId: estudante.id, hoje });
 }
 
 // Dados de demonstração (fictícios): estudantes em Normal, Atenção, Risco e sem dados, para os
@@ -124,29 +129,29 @@ async function dadosDeDemonstracao(base: {
     ids[estudante.nome] = (await salvarConta({ ...estudante, senha: SENHA_DE_TESTE, perfil: "Estudante" })).id;
   }
 
-  // Turma de exemplo: a Prova 1 do seed e mais um trabalho.
+  // Turma MS-A: a Prova 1 do seed e mais um trabalho.
   const trabalho =
-    (await prisma.avaliacao.findFirst({ where: { nome: "Trabalho 1 (exemplo)", turmaId: base.turma.id } })) ??
-    (await prisma.avaliacao.create({ data: { turmaId: base.turma.id, nome: "Trabalho 1 (exemplo)", peso: 1, data: new Date("2026-10-05T00:00:00Z") } }));
+    (await prisma.avaliacao.findFirst({ where: { nome: "Trabalho 1", turmaId: base.turma.id } })) ??
+    (await prisma.avaliacao.create({ data: { turmaId: base.turma.id, nome: "Trabalho 1", peso: 1, data: new Date("2026-10-05T00:00:00Z") } }));
   await registrarDesempenho(base.turma.id, [base.avaliacaoId, trabalho.id], TURMA_A, ids, base.professorId);
 
   // Segunda turma, para o relatório do coordenador ter mais de uma turma.
   const disciplinaB =
-    (await prisma.disciplina.findFirst({ where: { nome: "Engenharia de Requisitos (exemplo)" } })) ??
-    (await prisma.disciplina.create({ data: { nome: "Engenharia de Requisitos (exemplo)", cargaHoraria: 40 } }));
+    (await prisma.disciplina.findFirst({ where: { nome: "Engenharia de Requisitos" } })) ??
+    (await prisma.disciplina.create({ data: { nome: "Engenharia de Requisitos", cargaHoraria: 40 } }));
   const turmaB =
-    (await prisma.turma.findFirst({ where: { nome: "Turma B (exemplo)", coordenadorId: base.coordenadorId } })) ??
+    (await prisma.turma.findFirst({ where: { nome: "Turma ER-B", coordenadorId: base.coordenadorId } })) ??
     (await prisma.turma.create({
-      data: { nome: "Turma B (exemplo)", periodo: "2026/2", disciplinaId: disciplinaB.id, professorId: base.professorId, coordenadorId: base.coordenadorId },
+      data: { nome: "Turma ER-B", periodo: "2026/2", disciplinaId: disciplinaB.id, professorId: base.professorId, coordenadorId: base.coordenadorId },
     }));
   const provaB =
-    (await prisma.avaliacao.findFirst({ where: { nome: "Prova 1 (exemplo)", turmaId: turmaB.id } })) ??
-    (await prisma.avaliacao.create({ data: { turmaId: turmaB.id, nome: "Prova 1 (exemplo)", peso: 1, data: new Date("2026-09-20T00:00:00Z") } }));
+    (await prisma.avaliacao.findFirst({ where: { nome: "Prova 1", turmaId: turmaB.id } })) ??
+    (await prisma.avaliacao.create({ data: { turmaId: turmaB.id, nome: "Prova 1", peso: 1, data: new Date("2026-09-20T00:00:00Z") } }));
   await registrarDesempenho(turmaB.id, [provaB.id], TURMA_B, ids, base.professorId);
-  console.log("Turma B de exemplo pronta: Engenharia de Requisitos (exemplo)");
+  console.log("Turma ER-B pronta: Engenharia de Requisitos");
 
   // Entregas da lista vencida: três no prazo e uma depois do prazo; os demais ficam Atrasada (OPEN-010).
-  const lista = await prisma.atividade.findFirst({ where: { descricao: "Lista de exercícios 1 (exemplo)", turmaId: base.turma.id } });
+  const lista = await prisma.atividade.findFirst({ where: { descricao: "Lista de exercícios 1", turmaId: base.turma.id } });
   if (lista) {
     const noPrazo = somarDias(base.hoje, -4);
     const entregas: [NomeDemo, string][] = [["Ana Souza", noPrazo], ["Diego Lima", noPrazo], ["Felipe Alves", noPrazo], ["Carla Mendes", somarDias(base.hoje, -1)]];
@@ -213,6 +218,23 @@ function somarDias(base: string, dias: number) {
   const data = paraData(base);
   data.setUTCDate(data.getUTCDate() + dias);
   return data.toISOString().slice(0, 10);
+}
+
+// Bancos criados antes de 2026-10-19 tinham nomes provisórios ("de Teste", "(exemplo)"). Renomeia no lugar,
+// antes do resto do seed, para nada ser duplicado. Contas são atualizadas pelo e-mail em salvarConta.
+async function renomearNomesAntigos() {
+  const disciplinas: [string, string][] = [["Modelagem de Software (exemplo)", "Modelagem de Software"], ["Engenharia de Requisitos (exemplo)", "Engenharia de Requisitos"]];
+  for (const [antigo, novo] of disciplinas) {
+    if (!(await prisma.disciplina.findFirst({ where: { nome: novo } }))) await prisma.disciplina.updateMany({ where: { nome: antigo }, data: { nome: novo } });
+  }
+  await prisma.turma.updateMany({ where: { nome: "Turma de exemplo" }, data: { nome: "Turma MS-A" } });
+  await prisma.turma.updateMany({ where: { nome: "Turma B (exemplo)" }, data: { nome: "Turma ER-B" } });
+  for (const [antigo, novo] of [["Prova 1 (exemplo)", "Prova 1"], ["Trabalho 1 (exemplo)", "Trabalho 1"]]) {
+    await prisma.avaliacao.updateMany({ where: { nome: antigo }, data: { nome: novo } });
+  }
+  for (const [antigo, novo] of [["Lista de exercícios 1 (exemplo)", "Lista de exercícios 1"], ["Trabalho final (exemplo)", "Trabalho final"]]) {
+    await prisma.atividade.updateMany({ where: { descricao: antigo }, data: { descricao: novo } });
+  }
 }
 
 main()

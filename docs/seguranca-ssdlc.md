@@ -60,3 +60,12 @@ Detalhe em `docs/verificacao/qualidade.md`.
 | Logs sem senha, hash ou token | Aprovado (não há logs em `src/`) |
 | Auditoria de dependências (`npm audit`) | 3 alertas em ferramentas de desenvolvimento (`prisma` CLI e `vitest`), com correção só em versão major: risco aceito por ora (OPEN-022) |
 | Camadas 3 (hook local) e 4 (CI) | CI criada; hook local dispensado (OPEN-024) |
+
+## 6. Registro de verificação da aplicação (2026-10-19, SPEC-011 a SPEC-014)
+
+| Risco (OWASP) | Mitigação nova | Evidência |
+|---|---|---|
+| Falhas de autenticação: senha definida por terceiros | Senha provisória obrigatoriamente trocada no primeiro acesso; troca pede a senha atual (RB-15) | `tests/spec-011/senha.test.ts` |
+| Controle de acesso quebrado | Conta com senha provisória bloqueada em todas as páginas e APIs, na guarda | AC-011-01 |
+| Falhas de registro e monitoramento | Histórico imutável de lançamento e alteração de nota, com autor e data (RB-16) | `tests/spec-013/historico.test.ts` |
+| Exposição de dados | Plano visível só ao próprio estudante; histórico e painel no escopo do perfil | AC-012-03, AC-013-03, AC-014-04 |

@@ -5,6 +5,8 @@ de demonstração do seed, e por fim a evidência de qualidade.
 
 ## Antes de começar
 
+O jeito mais simples: dois cliques em `Iniciar StudyTrack.bat` (opção 2, modo apresentação). Logins em `CONTAS-DE-TESTE.txt`. Pelo terminal:
+
 ```bash
 npm run seed
 ```
@@ -29,7 +31,7 @@ Para trocar de perfil, use **Sair** no menu lateral.
 ## 2. Estudante (3 min) — SPEC-006 e SPEC-007
 
 Entrar como `elisa.rocha@studytrack.test`.
-- Alerta de Risco no topo do painel (média 4 na Turma de exemplo) e Atenção na Turma B.
+- Alerta de Risco no topo do painel (média 4 na Turma MS-A) e Atenção na Turma ER-B.
 - Média, frequência e situação por turma, com gráfico de evolução das notas.
 - **Minhas atividades**: a lista vencida aparece como ■ Atrasada; o trabalho final, ○ Pendente.
 - Opcional: abrir `/coordenador/area` para mostrar a tela de **Acesso negado** (RNF-03).
@@ -42,7 +44,7 @@ Entrar como `carla.mendes@studytrack.test`: o painel mostra "Seu plano de recupe
 
 Entrar como `professor@studytrack.test`.
 1. **Início**: tabela "Alertas das minhas turmas" com Risco antes de Atenção.
-2. **Abrir turma →** na Turma de exemplo: contadores ● 3 · ▲ 2 · ■ 3 · Sem dados 1.
+2. **Abrir turma →** na Turma MS-A: contadores ● 3 · ▲ 2 · ■ 3 · Sem dados 1.
 3. Carla Mendes está em Risco pela frequência (70%) mesmo com média 6,2 (RB-05). **Ver plano (50%)**: marcar um item e ver o progresso subir para 75% (RB-12).
 4. Voltar e clicar em **Criar plano** na Elisa Rocha; criar sem itens para mostrar a validação, depois com itens.
 5. **Notas e avaliações**: lançar nota 8 para Bruno Costa na Prova 1 (alterar a nota existente) e voltar à turma: a situação dele muda na hora (RB-10).
@@ -53,7 +55,7 @@ Entrar como `professor@studytrack.test`.
 Entrar como `coordenador@studytrack.test`.
 - **Início**: painel com totais, situação por turma, média e frequência por turma e turmas que pedem atenção (SPEC-014).
 - **Histórico de notas**: depois do passo 5 do professor, a alteração da nota do Bruno aparece com quem fez e quando (SPEC-013).
-- **Turmas e estudantes**: cadastrar um estudante novo na Turma B (e tentar sem e-mail para ver a validação).
+- **Turmas e estudantes**: cadastrar um estudante novo na Turma ER-B (e tentar sem e-mail para ver a validação).
 - **Relatórios**: resumo das duas turmas; filtrar por situação Risco; **Exportar CSV** e abrir no Excel.
 
 ## 4b. Administrador (2 min) — SPEC-010
@@ -61,7 +63,7 @@ Entrar como `coordenador@studytrack.test`.
 Entrar como `admin@studytrack.test`.
 - **Contas**: filtrar por perfil; criar uma conta de Professor e entrar com ela em outra janela anônima.
 - Desativar um estudante e mostrar que ele não entra mais (mensagem genérica); reativar.
-- Tentar desativar o Professor de Teste: recusado porque ele tem turmas. Como coordenador, trocar o professor da Turma B para Júlia Reis no detalhe da turma.
+- Tentar desativar o professor Carlos Lima: recusado porque ele tem turmas. Como coordenador, trocar o professor da Turma ER-B para Júlia Reis no detalhe da turma.
 - Tentar abrir `/relatorios` como administrador: Acesso negado (o admin não vê dados acadêmicos).
 - A conta criada pelo admin, ao entrar, cai em **Defina sua senha** e só usa o sistema depois de trocar (SPEC-011).
 
