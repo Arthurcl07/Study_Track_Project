@@ -34,7 +34,7 @@ export function avaliacaoParaLancamento(
 export function notaDoProfessor(professorId: string, notaId: string) {
   return prisma.nota.findFirst({
     where: { id: notaId, avaliacao: { turma: { professorId } } },
-    select: { id: true, estudanteId: true, avaliacao: { select: { turmaId: true } } },
+    select: { id: true, estudanteId: true, avaliacaoId: true, valor: true, avaliacao: { select: { turmaId: true } } },
   });
 }
 
@@ -46,6 +46,15 @@ export function inserirNota(dados: { avaliacaoId: string; estudanteId: string; v
 
 export function atualizarValorNota(notaId: string, valor: number, db: ClienteBanco) {
   return db.nota.update({ where: { id: notaId }, data: { valor }, select: NOTA_REGISTRADA });
+}
+
+// SPEC-013 / RB-16: registro de histórico, sempre na mesma transação da nota. Só existe inserção:
+// a aplicação não tem operação para editar nem apagar registros.
+export function registrarHistorico(
+  dados: { avaliacaoId: string; estudanteId: string; autorId: string; valorAnterior: number | null; valorNovo: number },
+  db: ClienteBanco,
+) {
+  return db.historicoNota.create({ data: dados, select: { id: true } });
 }
 
 export function executarEmTransacao<T>(operacao: (tx: ClienteBanco) => Promise<T>): Promise<T> {

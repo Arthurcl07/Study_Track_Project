@@ -80,6 +80,20 @@ Cláusula EARS:
   IF o professor responsável por ao menos uma turma for desativado, THEN o sistema SHALL impedir a desativação.
 Aplicada por: RF-01, RF-16.
 
+RB-15 — Senha inicial provisória
+Descrição: A senha definida por outra pessoa ao criar a conta é provisória; o dono da conta define a própria senha no primeiro acesso.
+Cláusula EARS:
+  IF a conta tiver sido criada pela tela por um administrador ou coordenador e o dono ainda não tiver definido a própria senha, THEN o sistema SHALL negar todas as funções, exceto definir a nova senha e sair.
+  WHEN o usuário definir a nova senha, o sistema SHALL exigir no mínimo 8 caracteres e que ela seja diferente da senha atual.
+Aplicada por: RF-18.
+
+RB-16 — Histórico de notas imutável
+Descrição: Todo lançamento e toda alteração de nota ficam registrados e o registro não pode ser editado nem apagado pelos usuários.
+Cláusula EARS:
+  WHEN uma nota for lançada ou alterada, o sistema SHALL gravar, na mesma operação, um registro com autor, data e hora, valor anterior e valor novo.
+  O sistema SHALL NOT oferecer alteração nem exclusão de registros do histórico.
+Aplicada por: RF-20.
+
 
 ## Resumo das regras
 

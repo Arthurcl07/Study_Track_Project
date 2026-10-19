@@ -66,6 +66,15 @@ export function NavegacaoCasca({ itens, ativo, nome, perfil }: { itens: Item[]; 
         <div className="mt-auto border-t border-white/15 px-2 pt-4 text-sm">
           <p className="font-semibold">{nome}</p>
           <p className="mt-0.5 text-ceu">{perfil}</p>
+          {/* SPEC-011 / RF-18: todo perfil pode trocar a própria senha. */}
+          <Link
+            href="/minha-senha"
+            aria-current={ativo === "senha" ? "page" : undefined}
+            className="mt-2 inline-flex items-center gap-1.5 text-ceu hover:text-white hover:underline"
+          >
+            <Icone nome="cadeado" className="h-3.5 w-3.5" />
+            Alterar minha senha
+          </Link>
           <button
             type="button"
             onClick={sair}

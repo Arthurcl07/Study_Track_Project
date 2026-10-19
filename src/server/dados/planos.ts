@@ -91,3 +91,20 @@ export function encerrarPlano(planoId: string) {
     select: { id: true, status: true, encerradoEm: true },
   });
 }
+
+// SPEC-012 / RF-19: planos do próprio estudante, filtrados pelo estudante da sessão na query (ADR-003, RB-02).
+export function planosDoEstudante(estudanteId: string) {
+  return prisma.planoRecuperacao.findMany({
+    where: { estudanteId },
+    select: {
+      id: true,
+      status: true,
+      criadoEm: true,
+      encerradoEm: true,
+      turma: { select: { nome: true, disciplina: { select: { nome: true } } } },
+      professor: { select: { nome: true } },
+      itens: { select: { id: true, descricao: true, concluido: true }, orderBy: { ordem: "asc" } },
+    },
+    orderBy: { criadoEm: "desc" },
+  });
+}

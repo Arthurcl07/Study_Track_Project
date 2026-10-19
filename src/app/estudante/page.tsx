@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AvisoAlerta } from "@/components/alertas";
 import { Casca } from "@/components/casca";
 import { GraficoEvolucao } from "@/components/grafico-evolucao";
+import { PlanosDoEstudante } from "@/components/planos-estudante";
 import { CabecalhoPagina, Cartao, CLASSE_LINK, corDaFrequencia, corDaMedia, Etiqueta, formatarDataCurta, SeloEntrega, SeloSituacao } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { consultarPainel } from "@/server/academico/painel";
@@ -43,6 +44,9 @@ export default async function PainelEstudante() {
           {painel.alertas.map((a) => <AvisoAlerta key={a.turma.id} alerta={a} />)}
         </div>
       )}
+
+      {/* SPEC-012 / RF-19: planos de recuperação do próprio estudante, só leitura. */}
+      <PlanosDoEstudante planos={painel.planos} />
 
       <div className="grid gap-5 lg:grid-cols-2">
         {painel.turmas.map((t) => (

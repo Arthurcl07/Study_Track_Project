@@ -38,6 +38,18 @@ export function consolidarTurma(linhas: readonly LinhaEstudante[]): ResumoTurma 
   };
 }
 
+// SPEC-014 / RF-21: turmas que pedem atenção no painel do coordenador. Entra quem tem estudante em Risco
+// ou entrega atrasada; ordena por Risco, depois por atrasadas, depois pelo nome (desempate estável).
+export function turmasQuePedemAtencao<T extends { rotulo: string; contagem: Record<SituacaoRelatorio, number>; entregasAtrasadas: number }>(
+  resumo: readonly T[],
+  limite = 5,
+): T[] {
+  return resumo
+    .filter((r) => r.contagem.Risco > 0 || r.entregasAtrasadas > 0)
+    .sort((a, b) => b.contagem.Risco - a.contagem.Risco || b.entregasAtrasadas - a.entregasAtrasadas || a.rotulo.localeCompare(b.rotulo, "pt-BR"))
+    .slice(0, limite);
+}
+
 export function ehSituacaoRelatorio(valor: unknown): valor is SituacaoRelatorio {
   return typeof valor === "string" && (SITUACOES_RELATORIO as readonly string[]).includes(valor);
 }

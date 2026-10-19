@@ -21,6 +21,10 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | RF-15 | Relatórios | RB-04 | UC-05 | SPEC-009 | #2 | `tests/spec-009/` | SPEC-008-009.md |
 | RF-16 | Gestão de contas | RB-01, RB-13, RB-14 | UC-11 | SPEC-010 | — | `tests/spec-010/` | SPEC-010.md |
 | RF-17 | Troca do professor da turma | RB-03, RB-11 | UC-07 | SPEC-010 | — | `tests/spec-010/` | SPEC-010.md |
+| RF-18 | Senha própria | RB-15 | UC-12 | SPEC-011 | — | `tests/spec-011/` | SPEC-011-014.md |
+| RF-19 | Plano visível ao estudante | RB-02, RB-12 | UC-02 | SPEC-012 | — | `tests/spec-012/` | SPEC-011-014.md |
+| RF-20 | Histórico de notas | RB-03, RB-04, RB-16 | UC-03, UC-13 | SPEC-013 | — | `tests/spec-013/` | SPEC-011-014.md |
+| RF-21 | Painel do coordenador | RB-04, RB-09 | — | SPEC-014 | — | `tests/spec-014/` | SPEC-011-014.md |
 
 ## Lacunas conhecidas
 
@@ -42,3 +46,7 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | SPEC-008 | PlanoRecuperacao, ItemPlano, IndicadorAcademico (OPEN-021) |
 | SPEC-009 | Todas as de leitura acadêmica |
 | SPEC-010 | Usuario (perfil Administrador, ativo), Turma, PlanoRecuperacao |
+| SPEC-011 | Usuario (trocarSenha) |
+| SPEC-012 | PlanoRecuperacao, ItemPlano |
+| SPEC-013 | HistoricoNota, Nota |
+| SPEC-014 | IndicadorAcademico, Turma, Atividade, Entrega (leitura) |

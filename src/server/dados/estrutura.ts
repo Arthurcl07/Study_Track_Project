@@ -120,7 +120,8 @@ export function criarEstudanteMatriculado(
 ) {
   return prisma.$transaction(async (tx) => {
     const estudante = await tx.usuario.create({
-      data: { ...dados, perfil: "Estudante" },
+      // RB-15 (SPEC-011): a senha inicial informada pelo coordenador é provisória.
+      data: { ...dados, perfil: "Estudante", trocarSenha: true },
       select: { id: true, nome: true, email: true },
     });
     await tx.matricula.create({ data: { estudanteId: estudante.id, turmaId } });
