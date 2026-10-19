@@ -46,7 +46,7 @@ const PROFESSORES = [
 
 const SEGUNDA_COORDENADORA = { nome: "Paula Martins", email: "paula.martins@studytrack.test" };
 
-// professor: índice em PROFESSORES ou "teste" (Professor de Teste); coordenador: "teste" ou "paula".
+// professor: índice em PROFESSORES ou "teste" (Carlos Lima, professor@); coordenador: "teste" (Marina Alves, coordenador@) ou "paula".
 const TURMAS = [
   { disciplina: "Banco de Dados", carga: 80, nome: "Turma BD-A", professor: 0, coordenador: "teste" },
   { disciplina: "Engenharia de Software", carga: 80, nome: "Turma ES-A", professor: 1, coordenador: "teste" },
@@ -85,7 +85,7 @@ export async function simularInstituicao(base: { senha: string; coordenadorTeste
     const sorteio = aleatorio();
     estudantes.push({ id: conta.id, nome, perfil: sorteio < 0.6 ? "bom" : sorteio < 0.85 ? "medio" : "fraco", faltoso: aleatorio() < 0.12 });
   }
-  const estudanteTeste: Estudante = { id: base.estudanteTesteId, nome: "Estudante de Teste", perfil: "medio", faltoso: false };
+  const estudanteTeste: Estudante = { id: base.estudanteTesteId, nome: "João Pereira", perfil: "medio", faltoso: false };
 
   let resumo = { turmas: 0, matriculas: 0, notas: 0, planos: 0 };
   for (const [indice, def] of TURMAS.entries()) {
