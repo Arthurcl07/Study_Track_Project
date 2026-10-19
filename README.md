@@ -29,7 +29,9 @@ entregas; o status No prazo/Pendente/Atrasada é calculado na hora, e o estudant
 SPEC-007 (painel do estudante com média, frequência, situação, gráfico de evolução das notas e atividades),
 SPEC-008 (dashboard da turma do professor e plano de recuperação para estudantes em Risco), SPEC-009
 (relatório acadêmico para Professor e Coordenador, em tela e em CSV) e SPEC-010 (perfil Administrador, que cria,
-desativa e reativa contas, e troca do professor da turma pelo coordenador).
+desativa e reativa contas, e troca do professor da turma pelo coordenador). Também: senha própria com troca
+obrigatória no primeiro acesso de contas criadas pela tela (SPEC-011), plano de recuperação visível ao
+estudante (SPEC-012), histórico de notas (SPEC-013) e painel do coordenador com gráficos (SPEC-014).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 
@@ -97,6 +99,10 @@ Gestão de contas da SPEC-010 (OPEN-025): entre como `admin@studytrack.test` e u
 contas de qualquer perfil e desativar ou reativar o acesso. O administrador não vê dados acadêmicos.
 Para trocar o professor de uma turma (por exemplo, para a professora Júlia Reis, `julia.reis@studytrack.test`),
 entre como coordenador e abra a turma em **Turmas e estudantes**.
+
+Senha (SPEC-011): contas criadas pelo admin ou pelo coordenador pedem uma senha nova no primeiro acesso;
+qualquer pessoa troca a sua em **Alterar minha senha**, no rodapé do menu. As contas de teste do seed não são
+obrigadas a trocar. Histórico de notas (SPEC-013): professor e coordenador, no menu **Histórico de notas**.
 
 Para ver a negação de acesso, entre como Estudante e abra `/coordenador/area` (página) ou
 `/api/coordenacao` (API) — ambas exclusivas de Coordenador.

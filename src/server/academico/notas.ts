@@ -41,6 +41,8 @@ export async function registrarNota(entrada: Record<string, unknown>, professorI
     return sucesso(
       await dados.executarEmTransacao(async (tx) => {
         const nota = await dados.inserirNota({ avaliacaoId: avaliacao.id, estudanteId: alvo.estudanteId, valor: validacao.dados }, tx);
+        // RB-16 (SPEC-013): lançamento registrado no histórico, sem valor anterior.
+        await dados.registrarHistorico({ avaliacaoId: avaliacao.id, estudanteId: alvo.estudanteId, autorId: professorId, valorAnterior: null, valorNovo: validacao.dados }, tx);
         const indicador = await recalcularIndicador(alvo.estudanteId, avaliacao.turmaId, tx);
         return { nota, indicador: { media: indicador.media, situacao: indicador.situacao } };
       }),
@@ -65,6 +67,8 @@ export async function alterarNota(notaId: string, entrada: Record<string, unknow
   return sucesso(
     await dados.executarEmTransacao(async (tx) => {
       const atualizada = await dados.atualizarValorNota(nota.id, validacao.dados, tx);
+      // RB-16 (SPEC-013): alteração registrada com o valor anterior e o novo.
+      await dados.registrarHistorico({ avaliacaoId: nota.avaliacaoId, estudanteId: nota.estudanteId, autorId: professorId, valorAnterior: nota.valor, valorNovo: validacao.dados }, tx);
       const indicador = await recalcularIndicador(nota.estudanteId, nota.avaliacao.turmaId, tx);
       return { nota: atualizada, indicador: { media: indicador.media, situacao: indicador.situacao } };
     }),

@@ -6,6 +6,8 @@ import type { Situacao } from "@/domain/situacao-academica";
 import type { Sessao } from "@/server/auth/token";
 import { indicadoresEmAlertaDoEscopo } from "@/server/dados/indicadores";
 import { turmasDoPainel } from "@/server/dados/painel";
+import { planosDoEstudante } from "@/server/dados/planos";
+import { progressoDoPlano, type Progresso } from "@/domain/plano";
 import { consultarAtividades } from "./atividades";
 
 export type Alerta = {
@@ -51,20 +53,35 @@ export type TurmaDoPainel = {
   evolucao: PontoEvolucao[];
 };
 
+export type PlanoDoEstudante = {
+  id: string;
+  status: "Ativo" | "Encerrado";
+  disciplina: string;
+  turma: string;
+  professor: string;
+  criadoEm: string;
+  encerradoEm: string | null;
+  itens: { id: string; descricao: string; concluido: boolean }[];
+  progresso: Progresso;
+};
+
 export type Painel = {
   turmas: TurmaDoPainel[];
   alertas: Alerta[];
+  // SPEC-012 / RF-19: só leitura; o progresso usa a mesma regra do professor (RB-12).
+  planos: PlanoDoEstudante[];
   atividadesEmAtencao: { id: string; descricao: string; disciplina: string; prazo: string; status: StatusEntrega }[];
 };
 
 // Contrato "Consultar painel" (RF-10): só para o próprio estudante (INV-007-01).
 export async function consultarPainel(sessao: Sessao): Promise<Painel> {
-  if (sessao.perfil !== "Estudante") return { turmas: [], alertas: [], atividadesEmAtencao: [] };
+  if (sessao.perfil !== "Estudante") return { turmas: [], alertas: [], planos: [], atividadesEmAtencao: [] };
 
-  const [turmas, alertas, atividades] = await Promise.all([
+  const [turmas, alertas, atividades, planos] = await Promise.all([
     turmasDoPainel(sessao.usuarioId),
     consultarAlertas(sessao),
     consultarAtividades(sessao),
+    planosDoEstudante(sessao.usuarioId),
   ]);
 
   return {
@@ -90,6 +107,17 @@ export async function consultarPainel(sessao: Sessao): Promise<Painel> {
       };
     }),
     alertas,
+    planos: planos.map((p) => ({
+      id: p.id,
+      status: p.status,
+      disciplina: p.turma.disciplina.nome,
+      turma: p.turma.nome,
+      professor: p.professor.nome,
+      criadoEm: p.criadoEm.toISOString(),
+      encerradoEm: p.encerradoEm ? p.encerradoEm.toISOString() : null,
+      itens: p.itens,
+      progresso: progressoDoPlano(p.itens),
+    })),
     atividadesEmAtencao: atividades
       .map((a) => ({ id: a.id, descricao: a.descricao, disciplina: a.turma.disciplina, prazo: a.prazo, status: a.entregas[0]!.status }))
       .filter((a) => a.status !== "NoPrazo")

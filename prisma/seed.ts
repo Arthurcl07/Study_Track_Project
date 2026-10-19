@@ -128,7 +128,7 @@ async function dadosDeDemonstracao(base: {
   const trabalho =
     (await prisma.avaliacao.findFirst({ where: { nome: "Trabalho 1 (exemplo)", turmaId: base.turma.id } })) ??
     (await prisma.avaliacao.create({ data: { turmaId: base.turma.id, nome: "Trabalho 1 (exemplo)", peso: 1, data: new Date("2026-10-05T00:00:00Z") } }));
-  await registrarDesempenho(base.turma.id, [base.avaliacaoId, trabalho.id], TURMA_A, ids);
+  await registrarDesempenho(base.turma.id, [base.avaliacaoId, trabalho.id], TURMA_A, ids, base.professorId);
 
   // Segunda turma, para o relatório do coordenador ter mais de uma turma.
   const disciplinaB =
@@ -142,7 +142,7 @@ async function dadosDeDemonstracao(base: {
   const provaB =
     (await prisma.avaliacao.findFirst({ where: { nome: "Prova 1 (exemplo)", turmaId: turmaB.id } })) ??
     (await prisma.avaliacao.create({ data: { turmaId: turmaB.id, nome: "Prova 1 (exemplo)", peso: 1, data: new Date("2026-09-20T00:00:00Z") } }));
-  await registrarDesempenho(turmaB.id, [provaB.id], TURMA_B, ids);
+  await registrarDesempenho(turmaB.id, [provaB.id], TURMA_B, ids, base.professorId);
   console.log("Turma B de exemplo pronta: Engenharia de Requisitos (exemplo)");
 
   // Entregas da lista vencida: três no prazo e uma depois do prazo; os demais ficam Atrasada (OPEN-010).
@@ -176,12 +176,17 @@ async function dadosDeDemonstracao(base: {
   console.log(`Dados de demonstração prontos: ${ESTUDANTES_DEMO.length} estudantes fictícios (senha ${SENHA_DE_TESTE})`);
 }
 
-async function registrarDesempenho(turmaId: string, avaliacoes: string[], tabela: Partial<Record<NomeDemo, Desempenho>>, ids: Record<NomeDemo, string>) {
+async function registrarDesempenho(turmaId: string, avaliacoes: string[], tabela: Partial<Record<NomeDemo, Desempenho>>, ids: Record<NomeDemo, string>, professorId: string) {
   for (const [nome, desempenho] of Object.entries(tabela) as [NomeDemo, Desempenho][]) {
     const estudanteId = ids[nome];
     await prisma.matricula.upsert({ where: { estudanteId_turmaId: { estudanteId, turmaId } }, update: {}, create: { estudanteId, turmaId } });
     for (const [i, valor] of desempenho.notas.entries()) {
       if (valor === null) continue;
+      // SPEC-013: nota nova do seed ganha o registro de lançamento no histórico (só na primeira vez).
+      const existia = await prisma.nota.findUnique({ where: { avaliacaoId_estudanteId: { avaliacaoId: avaliacoes[i], estudanteId } }, select: { id: true } });
+      if (!existia) {
+        await prisma.historicoNota.create({ data: { avaliacaoId: avaliacoes[i], estudanteId, autorId: professorId, valorAnterior: null, valorNovo: valor } });
+      }
       await prisma.nota.upsert({
         where: { avaliacaoId_estudanteId: { avaliacaoId: avaliacoes[i], estudanteId } },
         update: { valor },

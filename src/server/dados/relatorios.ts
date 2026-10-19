@@ -24,3 +24,13 @@ export function turmasDoRelatorio(sessao: Sessao) {
     orderBy: [{ periodo: "desc" }, { nome: "asc" }],
   });
 }
+
+// SPEC-014: estudantes distintos em Risco nas turmas sob responsabilidade do coordenador (RB-04).
+export async function estudantesEmRiscoDoCoordenador(coordenadorId: string) {
+  const linhas = await prisma.indicadorAcademico.findMany({
+    where: { situacao: "Risco", turma: { coordenadorId } },
+    distinct: ["estudanteId"],
+    select: { estudanteId: true },
+  });
+  return linhas.length;
+}

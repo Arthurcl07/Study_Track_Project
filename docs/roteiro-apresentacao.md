@@ -34,6 +34,10 @@ Entrar como `elisa.rocha@studytrack.test`.
 - **Minhas atividades**: a lista vencida aparece como ■ Atrasada; o trabalho final, ○ Pendente.
 - Opcional: abrir `/coordenador/area` para mostrar a tela de **Acesso negado** (RNF-03).
 
+## 2b. Estudante com plano (1 min) — SPEC-012
+
+Entrar como `carla.mendes@studytrack.test`: o painel mostra "Seu plano de recuperação" com 50% e os itens marcados pelo professor.
+
 ## 3. Professor (5 min) — SPEC-004, SPEC-005 e SPEC-008
 
 Entrar como `professor@studytrack.test`.
@@ -47,6 +51,8 @@ Entrar como `professor@studytrack.test`.
 ## 4. Coordenador (3 min) — SPEC-002 e SPEC-009
 
 Entrar como `coordenador@studytrack.test`.
+- **Início**: painel com totais, situação por turma, média e frequência por turma e turmas que pedem atenção (SPEC-014).
+- **Histórico de notas**: depois do passo 5 do professor, a alteração da nota do Bruno aparece com quem fez e quando (SPEC-013).
 - **Turmas e estudantes**: cadastrar um estudante novo na Turma B (e tentar sem e-mail para ver a validação).
 - **Relatórios**: resumo das duas turmas; filtrar por situação Risco; **Exportar CSV** e abrir no Excel.
 
@@ -57,12 +63,13 @@ Entrar como `admin@studytrack.test`.
 - Desativar um estudante e mostrar que ele não entra mais (mensagem genérica); reativar.
 - Tentar desativar o Professor de Teste: recusado porque ele tem turmas. Como coordenador, trocar o professor da Turma B para Júlia Reis no detalhe da turma.
 - Tentar abrir `/relatorios` como administrador: Acesso negado (o admin não vê dados acadêmicos).
+- A conta criada pelo admin, ao entrar, cai em **Defina sua senha** e só usa o sistema depois de trocar (SPEC-011).
 
 ## 5. Qualidade (2 min)
 
 | Mostrar | Onde |
 |---|---|
-| 142 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
+| 163 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
 | CI verde em todo PR, obrigatória na `main` | aba Actions do GitHub; `.github/workflows/ci.yml` |
 | Verificação de cada Spec (testes + navegador, desktop e celular) | `docs/verificacao/` |
 | Segurança: escopo na própria consulta, hash de senha, JWT em cookie httpOnly | `docs/seguranca-ssdlc.md`, ADR-003 e ADR-004 |

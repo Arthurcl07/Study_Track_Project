@@ -5,7 +5,7 @@ import type { Sessao } from "@/server/auth/token";
 import type { NomeIcone } from "./icones";
 import { NavegacaoCasca } from "./navegacao-casca";
 
-export type ItemMenu = "inicio" | "notas" | "frequencia" | "atividades" | "relatorios" | "disciplinas" | "turmas" | "area" | "contas";
+export type ItemMenu = "inicio" | "notas" | "frequencia" | "atividades" | "relatorios" | "disciplinas" | "turmas" | "area" | "contas" | "senha" | "historico";
 
 type Entrada = { id: ItemMenu; rotulo: string; href: string; icone: NomeIcone };
 
@@ -20,12 +20,14 @@ const MENUS: Record<Perfil, Entrada[]> = {
     { id: "frequencia", rotulo: "Frequência", href: "/professor/frequencia", icone: "check" },
     { id: "atividades", rotulo: "Atividades", href: "/professor/atividades", icone: "calendario" },
     { id: "relatorios", rotulo: "Relatórios", href: "/relatorios", icone: "grafico" },
+    { id: "historico", rotulo: "Histórico de notas", href: "/historico-notas", icone: "relogio" },
   ],
   Coordenador: [
     { id: "inicio", rotulo: "Início", href: "/coordenador", icone: "inicio" },
     { id: "disciplinas", rotulo: "Disciplinas", href: "/coordenador/disciplinas", icone: "livro" },
     { id: "turmas", rotulo: "Turmas e estudantes", href: "/coordenador/turmas", icone: "pessoas" },
     { id: "relatorios", rotulo: "Relatórios", href: "/relatorios", icone: "grafico" },
+    { id: "historico", rotulo: "Histórico de notas", href: "/historico-notas", icone: "relogio" },
     { id: "area", rotulo: "Área da coordenação", href: "/coordenador/area", icone: "cadeado" },
   ],
   // SPEC-010 / RB-13: o Administrador só gerencia contas.

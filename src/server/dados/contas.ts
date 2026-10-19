@@ -12,8 +12,9 @@ export function listarContas(perfil?: Perfil) {
   });
 }
 
+// RB-15 (SPEC-011): conta criada pela tela começa com senha provisória.
 export function criarConta(dados: { nome: string; email: string; senhaHash: string; perfil: Perfil }) {
-  return prisma.usuario.create({ data: dados, select: CONTA });
+  return prisma.usuario.create({ data: { ...dados, trocarSenha: true }, select: CONTA });
 }
 
 export async function contaParaDesativar(id: string) {
@@ -30,5 +31,14 @@ export function definirAtivo(id: string, ativo: boolean) {
 
 // RB-14: a guarda confere a cada requisição se a conta da sessão continua existindo, ativa e com o mesmo perfil.
 export function situacaoDaConta(id: string) {
-  return prisma.usuario.findUnique({ where: { id }, select: { ativo: true, perfil: true } });
+  return prisma.usuario.findUnique({ where: { id }, select: { ativo: true, perfil: true, trocarSenha: true } });
+}
+
+// SPEC-011: hash atual para conferir a senha atual, e gravação da nova (só o hash, RNF-02).
+export function hashDaConta(id: string) {
+  return prisma.usuario.findUnique({ where: { id }, select: { senhaHash: true } });
+}
+
+export function gravarNovaSenha(id: string, senhaHash: string) {
+  return prisma.usuario.update({ where: { id }, data: { senhaHash, trocarSenha: false }, select: { id: true } });
 }
