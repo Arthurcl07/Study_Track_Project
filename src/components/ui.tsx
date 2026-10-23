@@ -54,6 +54,25 @@ export function CabecalhoPagina({ titulo, subtitulo, acao, voltar }: {
   );
 }
 
+// SPEC-016: cartão de número dos dashboards (rótulo, valor, detalhe opcional e atalho opcional).
+export function CartaoNumero({ rotulo, valor, cor = "", detalhe, href }: {
+  rotulo: string;
+  valor: React.ReactNode;
+  cor?: string;
+  detalhe?: React.ReactNode;
+  href?: string;
+}) {
+  const conteudo = (
+    <>
+      <span className="text-sm text-mudo">{rotulo}</span>
+      <strong className={`mt-1 block text-[26px] leading-tight font-bold tabular-nums ${cor}`}>{valor}</strong>
+      {detalhe && <span className="mt-0.5 block text-xs text-mudo">{detalhe}</span>}
+    </>
+  );
+  const classe = "block rounded-2xl border border-traco bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.06)]";
+  return href ? <Link href={href} className={`${classe} transition-colors hover:border-azul`}>{conteudo}</Link> : <div className={classe}>{conteudo}</div>;
+}
+
 export function Etiqueta({ children }: { children: React.ReactNode }) {
   return <span className="inline-block rounded-full bg-azul-suave px-2.5 py-0.5 text-xs font-semibold text-azul-escuro">{children}</span>;
 }

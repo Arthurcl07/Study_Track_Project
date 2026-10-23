@@ -1,11 +1,13 @@
 // Gráficos do painel do coordenador (SPEC-014, RF-21). Desenhados no servidor, sem biblioteca externa,
 // como o gráfico de evolução (SPEC-007). Situações sempre com cor, símbolo e rótulo (RNF-06); os limites
 // 5,0, 6,0 e 75% vêm da regra única (DA-02). Layout aprovado em docs/layout/prototipo.html#coordenador-painel.
-import type { ResumoTurma } from "@/domain/relatorio";
+// SPEC-016: os mesmos gráficos servem aos dashboards (situação por curso; média e frequência por disciplina).
+import type { SituacaoRelatorio } from "@/domain/relatorio";
 import { FREQUENCIA_MINIMA, MEDIA_NORMAL, MEDIA_RISCO, NOTA_MAXIMA } from "@/domain/situacao-academica";
 import { formatarNumero as numero } from "./ui";
 
-type Turma = { id: string; rotulo: string } & ResumoTurma;
+type ItemSituacao = { id: string; rotulo: string; estudantes: number; contagem: Record<SituacaoRelatorio, number> };
+type ItemMediaFrequencia = { id: string; rotulo: string; mediaTurma: number | null; frequenciaMedia: number | null };
 
 // INV-014-03 / RNF-06: cada faixa tem cor, símbolo e rótulo; exportado para o teste.
 export const FAIXAS = [
@@ -15,14 +17,14 @@ export const FAIXAS = [
   { chave: "SemDados", simbolo: "–", rotulo: "Sem dados", barra: "bg-slate-400", selo: "bg-slate-100 text-slate-600" },
 ] as const;
 
-export function SituacaoPorTurma({ turmas }: { turmas: Turma[] }) {
+export function SituacaoPorTurma({ turmas, unidade = "estudante(s)" }: { turmas: ItemSituacao[]; unidade?: string }) {
   return (
     <div className="space-y-4">
       {turmas.map((t) => (
         <div key={t.id}>
           <div className="mb-1 flex justify-between gap-3 text-sm">
             <span className="min-w-0 truncate">{t.rotulo}</span>
-            <span className="shrink-0 text-mudo">{t.estudantes} estudante(s)</span>
+            <span className="shrink-0 text-mudo">{t.estudantes} {unidade}</span>
           </div>
           {t.estudantes === 0 ? (
             <div className="h-[22px] rounded-lg bg-traco" />
@@ -63,7 +65,7 @@ const ESQUERDA = 36;
 const altura = (fracao: number) => fracao * (BASE - TOPO);
 const umaCasa = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 1 });
 
-export function MediaFrequenciaPorTurma({ turmas }: { turmas: Turma[] }) {
+export function MediaFrequenciaPorTurma({ turmas, descricao = "Média e frequência média por turma" }: { turmas: ItemMediaFrequencia[]; descricao?: string }) {
   const passo = (LARGURA - ESQUERDA - 8) / Math.max(turmas.length, 1);
   const larguraBarra = Math.min(22, passo / 2.6);
   // Com muitas turmas o espaço por turma diminui: nomes encurtados e números menores, sem sobreposição.
@@ -77,7 +79,7 @@ export function MediaFrequenciaPorTurma({ turmas }: { turmas: Turma[] }) {
   ];
   return (
     <div>
-      <svg viewBox={`0 0 ${LARGURA} ${ALTURA}`} width="100%" className="mx-auto block max-w-[480px]" role="img" aria-label="Média e frequência média por turma">
+      <svg viewBox={`0 0 ${LARGURA} ${ALTURA}`} width="100%" className="mx-auto block max-w-[480px]" role="img" aria-label={descricao}>
         {linhas.map((l) => (
           <g key={l.rotulo}>
             <line x1={ESQUERDA} x2={LARGURA - 4} y1={l.y} y2={l.y} stroke={l.cor} strokeDasharray="4 4" />
