@@ -20,9 +20,9 @@ const resumo = (rotulo: string, risco: number, atrasadas: number) => ({
 });
 
 // Turma do coordenador com `risco` estudantes em Risco (frequência 60%) e `normais` em Normal.
-async function turma(coordenadorId: string, professorId: string, nome: string, risco: number, normais: number, estudantesRisco: { id: string }[] = []) {
+async function turma(cursoId: string, professorId: string, nome: string, risco: number, normais: number, estudantesRisco: { id: string }[] = []) {
   const disciplina = await prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 60 } });
-  const t = await prisma.turma.create({ data: { nome, periodo: "2026/2", disciplinaId: disciplina.id, professorId, coordenadorId } });
+  const t = await prisma.turma.create({ data: { nome, periodo: "2026/2", disciplinaId: disciplina.id, professorId, cursoId } });
   const emRisco = [...estudantesRisco];
   while (emRisco.length < risco) emRisco.push(await criarUsuarioDeTeste("Estudante"));
   for (const [i, e] of [...emRisco, ...(await Promise.all(Array.from({ length: normais }, () => criarUsuarioDeTeste("Estudante"))))].entries()) {
@@ -55,9 +55,9 @@ describe("SPEC-014 — painel do coordenador", () => {
   it("AC-014-01 / AC-014-02: totais com estudantes em Risco (sem contar duas vezes) e a turma com mais Risco primeiro", async () => {
     const coordenador = await criarUsuarioDeTeste("Coordenador");
     const professor = await criarUsuarioDeTeste("Professor");
-    const x = await turma(coordenador.id, professor.id, "Turma X", 3, 1);
+    const x = await turma(coordenador.cursoId, professor.id, "Turma X", 3, 1);
     // Um dos estudantes em Risco da X também está em Risco na Y: conta uma vez só.
-    await turma(coordenador.id, professor.id, "Turma Y", 1, 2, [x.emRisco[0]]);
+    await turma(coordenador.cursoId, professor.id, "Turma Y", 1, 2, [x.emRisco[0]]);
     const sessao: Sessao = { usuarioId: coordenador.id, nome: coordenador.nome, perfil: "Coordenador" };
 
     const painel = await consultarPainelCoordenador(sessao);
@@ -69,7 +69,7 @@ describe("SPEC-014 — painel do coordenador", () => {
   it("AC-014-03 / INV-014-01: os números por turma são os mesmos do relatório", async () => {
     const coordenador = await criarUsuarioDeTeste("Coordenador");
     const professor = await criarUsuarioDeTeste("Professor");
-    await turma(coordenador.id, professor.id, "Turma Z", 2, 3);
+    await turma(coordenador.cursoId, professor.id, "Turma Z", 2, 3);
     const sessao: Sessao = { usuarioId: coordenador.id, nome: coordenador.nome, perfil: "Coordenador" };
 
     const painel = await consultarPainelCoordenador(sessao);
@@ -83,7 +83,7 @@ describe("SPEC-014 — painel do coordenador", () => {
     const dono = await criarUsuarioDeTeste("Coordenador");
     const outro = await criarUsuarioDeTeste("Coordenador");
     const professor = await criarUsuarioDeTeste("Professor");
-    await turma(dono.id, professor.id, "Turma W", 1, 1);
+    await turma(dono.cursoId, professor.id, "Turma W", 1, 1);
 
     const painel = await consultarPainelCoordenador({ usuarioId: outro.id, nome: outro.nome, perfil: "Coordenador" });
 

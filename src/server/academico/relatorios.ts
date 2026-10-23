@@ -8,16 +8,22 @@ import { deData } from "@/server/dados/atividades";
 import { turmasDoRelatorio } from "@/server/dados/relatorios";
 
 export type Relatorio = {
+  // SPEC-015: cursos das turmas do escopo, para o filtro de curso do coordenador com mais de um curso.
+  cursosDisponiveis: { id: string; nome: string }[];
   turmasDisponiveis: { id: string; rotulo: string }[];
   resumo: ({ id: string; rotulo: string } & ResumoTurma)[];
   linhas: LinhaEstudante[];
 };
 
-export type FiltrosRelatorio = { turma?: string | null; situacao?: string | null };
+export type FiltrosRelatorio = { turma?: string | null; situacao?: string | null; curso?: string | null };
 
 export async function gerarRelatorio(sessao: Sessao, filtros: FiltrosRelatorio, hoje = hojeEmBrasilia()):
   Promise<{ ok: true; relatorio: Relatorio } | { ok: false; motivo: "fora-do-escopo" }> {
-  const turmas = await turmasDoRelatorio(sessao);
+  const todas = await turmasDoRelatorio(sessao);
+  const cursosDisponiveis = [...new Map(todas.map((t) => [t.curso.id, t.curso])).values()].sort((a, b) => a.nome.localeCompare(b.nome));
+  // AC-015-15: curso pedido fora do escopo é bloqueado, como a turma (AC-009-03).
+  if (filtros.curso && !cursosDisponiveis.some((c) => c.id === filtros.curso)) return { ok: false, motivo: "fora-do-escopo" };
+  const turmas = filtros.curso ? todas.filter((t) => t.curso.id === filtros.curso) : todas;
   const turmasDisponiveis = turmas.map((t) => ({ id: t.id, rotulo: `${t.nome} · ${t.disciplina.nome}` }));
 
   // AC-009-03: turma pedida fora do escopo é bloqueada (não só escondida).
@@ -48,5 +54,5 @@ export async function gerarRelatorio(sessao: Sessao, filtros: FiltrosRelatorio, 
     resumo.push({ id: t.id, rotulo, ...consolidarTurma(daTurma) });
     linhas.push(...daTurma.filter((l) => !situacao || l.situacao === situacao));
   }
-  return { ok: true, relatorio: { turmasDisponiveis, resumo, linhas } };
+  return { ok: true, relatorio: { cursosDisponiveis, turmasDisponiveis, resumo, linhas } };
 }

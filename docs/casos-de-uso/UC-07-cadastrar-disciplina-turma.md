@@ -7,8 +7,8 @@
 
 **Fluxo principal**
 1. Coordenador cadastra uma disciplina com nome e carga horária (inteiro maior que zero, OPEN-009).
-2. Coordenador cadastra uma turma com nome, período, disciplina e professor responsável.
-3. Sistema grava a turma e registra o coordenador que a criou como responsável por ela.
+2. Coordenador cadastra uma turma com nome, período, curso (um dos que coordena), disciplina da grade desse curso e professor responsável (SPEC-015).
+3. Sistema grava a turma no curso escolhido; ela fica sob a responsabilidade do coordenador do curso (RB-04, RB-18).
 4. Coordenador matricula estudantes na turma (UC-06).
 
 **Fluxo alternativo**
@@ -17,7 +17,8 @@
 **Exceções**
 - Dado obrigatório ausente ou carga horária inválida: sistema impede o cadastro e indica o campo.
 - Professor informado não tem perfil Professor: sistema recusa a turma (INV-002-02).
+- Disciplina fora da grade do curso escolhido: sistema recusa a turma (RB-18).
 - Usuário sem perfil Coordenador: acesso negado (RNF-03).
 
 **Pós-condições**: turma pertence a exatamente 1 disciplina e 1 professor, sob a responsabilidade do coordenador.
-**Regras aplicadas**: RB-03, RB-04 (escopo das turmas).
+**Regras aplicadas**: RB-03, RB-04 (escopo das turmas), RB-18.

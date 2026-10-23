@@ -5,7 +5,7 @@ import { nivelDoAlerta } from "@/domain/alertas";
 import { GET as alertasApi } from "@/app/api/alertas/route";
 import { recalcularIndicador } from "@/server/academico/indicador";
 import { prisma } from "@/server/dados/prisma";
-import { PREFIXO_DISCIPLINA_TESTE, criarUsuarioDeTeste, entrarComo, removerUsuariosDeTeste, requisicaoComSessao } from "../apoio";
+import { PREFIXO_DISCIPLINA_TESTE, criarUsuarioDeTeste, entrarComo, removerUsuariosDeTeste, requisicaoComSessao, cursoPadraoDeTeste } from "../apoio";
 
 afterAll(async () => {
   await removerUsuariosDeTeste();
@@ -20,7 +20,7 @@ async function cenario(notaA: number, freqA: number, notaB = 8, freqB = 90) {
   const a = await criarUsuarioDeTeste("Estudante");
   const b = await criarUsuarioDeTeste("Estudante");
   const disciplina = await prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 60 } });
-  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id } });
+  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, cursoId: await cursoPadraoDeTeste() } });
   const avaliacao = await prisma.avaliacao.create({ data: { turmaId: turma.id, nome: "Prova 1", peso: 1, data: new Date("2026-09-15") } });
   for (const [estudante, nota, freq] of [[a, notaA, freqA], [b, notaB, freqB]] as const) {
     await prisma.matricula.create({ data: { estudanteId: estudante.id, turmaId: turma.id } });

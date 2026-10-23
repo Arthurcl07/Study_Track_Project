@@ -5,7 +5,7 @@ import { consolidarTurma, ehSituacaoRelatorio, gerarCsv, type LinhaEstudante } f
 import { GET as relatorioApi } from "@/app/api/relatorios/route";
 import { recalcularIndicador } from "@/server/academico/indicador";
 import { prisma } from "@/server/dados/prisma";
-import { PREFIXO_DISCIPLINA_TESTE, criarUsuarioDeTeste, entrarComo, removerUsuariosDeTeste, requisicaoComSessao } from "../apoio";
+import { PREFIXO_DISCIPLINA_TESTE, criarUsuarioDeTeste, entrarComo, removerUsuariosDeTeste, requisicaoComSessao, cursoPadraoDeTeste } from "../apoio";
 
 afterAll(async () => {
   await removerUsuariosDeTeste();
@@ -17,7 +17,7 @@ const linha = (parcial: Partial<LinhaEstudante>): LinhaEstudante => ({
 });
 
 // Turma com três estudantes (Normal, Atenção, Risco) e uma atividade vencida entregue só pelo primeiro.
-async function cenario(coordenadorId?: string) {
+async function cenario(cursoId?: string) {
   const professor = await criarUsuarioDeTeste("Professor");
   // Nomes distintos para identificar as linhas do relatório.
   const estudantes = [];
@@ -27,7 +27,7 @@ async function cenario(coordenadorId?: string) {
     estudantes.push({ ...criado, nome });
   }
   const disciplina = await prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 60 } });
-  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, coordenadorId } });
+  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, cursoId: cursoId ?? (await cursoPadraoDeTeste()) } });
   const avaliacao = await prisma.avaliacao.create({ data: { turmaId: turma.id, nome: "Prova 1", peso: 1, data: new Date("2026-09-15") } });
   const atividade = await prisma.atividade.create({ data: { turmaId: turma.id, descricao: "Lista 1", prazo: new Date("2026-01-10") } });
   for (const [i, [nota, freq]] of ([[8, 90], [5.5, 90], [8, 70]] as const).entries()) {
@@ -109,7 +109,7 @@ describe("SPEC-009 — relatório com escopo", () => {
 
   it("RB-04 / AC-009-02 / INV-009-02: coordenador obtém só as turmas sob sua responsabilidade", async () => {
     const coordenador = await criarUsuarioDeTeste("Coordenador");
-    const minha = await cenario(coordenador.id);
+    const minha = await cenario(coordenador.cursoId);
     const alheia = await cenario();
 
     const { status, corpo } = await relatorio(coordenador);
