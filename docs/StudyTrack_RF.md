@@ -75,6 +75,22 @@
 ## RF-21 — Painel do coordenador (incluído em 2026-10-19, OPEN-029)
 - WHEN um coordenador acessa o seu painel, o sistema SHALL apresentar, para as turmas sob sua responsabilidade, a distribuição das situações, a média e a frequência média de cada turma e as turmas com mais estudantes em Risco e mais entregas atrasadas.
 
+## RF-22 — Cursos (incluído em 2026-10-22, OPEN-030, OPEN-034)
+- WHEN um administrador cadastra um curso com nome e coordenador, o sistema SHALL criar o curso com esse coordenador.
+- WHEN um administrador escolhe outro coordenador para um curso, o sistema SHALL tornar esse usuário o coordenador do curso.
+- IF o nome estiver ausente, já existir curso com o mesmo nome, ou o usuário escolhido não tiver perfil Coordenador ou estiver desativado, THEN o sistema SHALL impedir a operação e indicar o campo.
+
+## RF-23 — Grade do curso (incluído em 2026-10-22, OPEN-031, OPEN-033)
+- WHEN um coordenador cadastra uma disciplina em um curso que coordena, o sistema SHALL criar a disciplina na grade desse curso.
+- WHEN um coordenador adiciona uma disciplina já existente à grade de um curso que coordena, o sistema SHALL incluir a disciplina na grade sem duplicá-la.
+- WHEN um coordenador cadastra uma turma, o sistema SHALL vinculá-la a exatamente 1 curso que ele coordena e a uma disciplina da grade desse curso.
+
+## RF-24 — Dashboard inicial por perfil (incluído em 2026-10-22, OPEN-035)
+- WHEN um usuário autenticado entra no sistema, o sistema SHALL abrir o dashboard do seu perfil, com os principais indicadores e gráficos do seu escopo, e manter as demais funções no menu lateral.
+
+## RF-25 — Dashboard do administrador (incluído em 2026-10-22, OPEN-034)
+- WHEN um administrador acessa o seu dashboard, o sistema SHALL apresentar as contas por perfil, ativas e desativadas, as contas aguardando a troca da senha provisória, as contas criadas recentemente e, por curso, o coordenador e o número de disciplinas, turmas e estudantes, sem nenhum dado acadêmico.
+
 ---
 
 

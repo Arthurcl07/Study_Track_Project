@@ -42,6 +42,7 @@ Legenda de status da Spec:
 | SPEC-011 a SPEC-014 incluídas e aprovadas, com OPEN-026 a OPEN-029 fechadas (decisão humana, Arthur); RF-18 a RF-21, RB-15 e RB-16; layout pendente de aprovação (OPEN-020) | `aprovada` | 2026-10-19 |
 | Layout das SPEC-011 a SPEC-014 (senha, plano do estudante, histórico de notas, painel do coordenador) | `aprovado` (Arthur) | 2026-10-19 |
 | SPEC-011 a SPEC-014 marcadas como `implementadas`, condicionadas à aprovação do PR de `development` para `main` que leva este status (cobre os PRs #56 a #60) | `implementada` | 2026-10-19 |
+| SPEC-015 e SPEC-016 incluídas a pedido de Arthur, com OPEN-030 a OPEN-034 e OPEN-036 fechadas (decisão humana, Arthur); RF-22 a RF-25, RB-17 a RB-19 e ajustes em RB-04, RB-13 e RB-14; texto das Specs, OPEN-035 e layout aguardando aprovação | `especificada` | 2026-10-22 |
 
 ---
 
@@ -63,6 +64,8 @@ Legenda de status da Spec:
 | 12 | SPEC-012 | Plano de recuperação visível ao estudante | SPEC-007, SPEC-008 | `implementada` |
 | 13 | SPEC-013 | Histórico de notas | SPEC-004 | `implementada` |
 | 14 | SPEC-014 | Painel do coordenador | SPEC-009 | `implementada` |
+| 15 | SPEC-015 | Cursos e coordenação por curso | SPEC-002, SPEC-009, SPEC-010 | `especificada` |
+| 16 | SPEC-016 | Dashboards por perfil | SPEC-006…SPEC-009, SPEC-012, SPEC-014, SPEC-015 | `especificada` |
 
 Todas as Specs têm texto completo abaixo. As SPEC-001 a SPEC-014 estão `implementadas` (SPEC-011 a 014 pela revisão do PR de `development` para `main` que traz este status): critérios, invariantes e testes atendidos (`docs/verificacao/`) e PR revisado por um colega (SPEC-002 a 004 e 010 pela revisão de Luiz Eduardo nos PRs #48 e #53, de `development` para `main`).
 
@@ -1945,6 +1948,327 @@ Reaproveita `gerarRelatorio` e `consolidarTurma` (SPEC-009); ordenação de "tur
 ## 13. Questões em aberto
 
 Nenhuma. OPEN-029 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-015 — Cursos e coordenação por curso
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-015 |
+| **Nome** | Cursos e coordenação por curso |
+| **Objetivo** | Organizar disciplinas, turmas e estudantes por curso, cada curso com o seu coordenador, permitindo disciplinas compartilhadas entre cursos. |
+| **Valor** | A instituição pode ter vários cursos (ex.: Eng. da Computação, Eng. Elétrica, Publicidade e Propaganda) e cada coordenador cuida só dos seus, sem ver os dados dos outros. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-03, RF-04, RF-16, RF-22, RF-23 |
+| **RB** | RB-04, RB-13, RB-14, RB-17, RB-18, RB-19 |
+| **RNF** | RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-14 Gerenciar cursos; UC-15 Montar a grade do curso; UC-06 e UC-07 (com curso); UC-11 (curso do estudante) |
+| **Entidades** | `Curso` (nova), grade Curso–Disciplina (N:M, nova), `Turma` (curso), `Usuario` (curso do estudante) |
+| **ADRs** | ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-030, OPEN-031, OPEN-032, OPEN-033, OPEN-034, OPEN-036 |
+
+## 3. Escopo
+
+**Incluído**
+- Entidade `Curso` (nome único) com exatamente 1 coordenador; grade N:M entre curso e disciplina; turma com exatamente 1 curso; estudante com exatamente 1 curso.
+- Administrador: tela **Cursos** — lista (nome, coordenador, número de disciplinas, turmas e estudantes), cadastro (nome e coordenador) e troca do coordenador. Conta de Estudante criada em **Contas** exige o curso. Coordenador de curso não pode ser desativado.
+- Coordenador: o escopo passa a ser **as turmas dos cursos que coordena** (substitui o coordenador gravado em cada turma). **Disciplinas** por curso: cadastrar nova no curso e adicionar disciplina já existente à grade. **Nova turma** com curso (quando coordena mais de um) e disciplina da grade desse curso. Cadastro de estudante na turma: o estudante fica no curso da turma. Matrícula só de estudante do mesmo curso.
+- Relatório, histórico de notas e painel do coordenador com o novo escopo; filtro **Curso** no relatório quando o coordenador tem mais de um curso.
+- Professor: sem mudança de escopo (turmas que leciona, de qualquer curso); as telas mostram o curso da turma.
+- Estudante: o painel mostra o nome do curso.
+- Migração que preserva os dados existentes e seed com os 6 cursos do OPEN-036.
+
+**Fora do escopo**
+- Excluir curso, tirar disciplina da grade, apagar disciplina (sem RF).
+- Troca de curso do estudante (OPEN-032).
+- Turma compartilhada entre cursos (OPEN-031).
+- Matriz curricular por semestre, pré-requisitos, vagas (sem RF).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Administrador — Cursos | [prototipo.html#admin-cursos](layout/prototipo.html#admin-cursos) | [ ] | [ ] | — | — |
+| Administrador — Nova conta de estudante com curso | [prototipo.html#admin-contas-curso](layout/prototipo.html#admin-contas-curso) | [ ] | [ ] | — | — |
+| Coordenador — Disciplinas por curso | [prototipo.html#coordenador-grade](layout/prototipo.html#coordenador-grade) | [ ] | [ ] | — | — |
+| Coordenador — Turmas com curso | [prototipo.html#coordenador-turmas-curso](layout/prototipo.html#coordenador-turmas-curso) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-002 (estrutura acadêmica), SPEC-009 (escopo do relatório), SPEC-010 (administrador e contas).
+
+## 5. Comportamento esperado
+
+**Pré-condições:** administrador ou coordenador autenticado.
+
+**Fluxo principal:**
+1. Administrador cria o curso com nome e coordenador (conta ativa com perfil Coordenador).
+2. Coordenador abre **Disciplinas**, escolhe o curso e cadastra disciplinas ou adiciona à grade uma disciplina já existente em outro curso.
+3. Coordenador cadastra a turma escolhendo curso, disciplina da grade desse curso e professor.
+4. Coordenador cadastra estudantes na turma (ficam no curso da turma) ou matricula estudantes do mesmo curso.
+5. Relatório, histórico e painel do coordenador mostram só as turmas dos cursos que ele coordena.
+
+**Fluxos alternativos:**
+- Administrador troca o coordenador de um curso: a partir da próxima requisição o novo coordenador vê as turmas do curso e o anterior não.
+- Administrador cria conta de Estudante em **Contas**: escolhe o curso.
+
+**Exceções:**
+- Nome de curso ausente ou repetido; coordenador sem perfil Coordenador ou desativado: operação recusada com o campo indicado.
+- Turma com disciplina fora da grade do curso: recusada (RB-18).
+- Matrícula de estudante de outro curso: recusada (RB-19).
+- Coordenador acessando curso, turma ou grade de curso que não coordena: acesso negado (RB-04).
+- Desativar o coordenador de um curso: impedido (RB-14).
+- Estudante, professor ou coordenador abrindo **Cursos**: acesso negado.
+
+**Pós-condições:** cada curso com 1 coordenador; cada turma em 1 curso; cada estudante em 1 curso.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-015-01 | Cada curso tem exatamente 1 coordenador, com perfil Coordenador e ativo no momento da escolha (RB-17). |
+| INV-015-02 | Não existem dois cursos com o mesmo nome. |
+| INV-015-03 | Cada turma pertence a exatamente 1 curso e a sua disciplina está na grade desse curso (RB-18). |
+| INV-015-04 | Uma disciplina aparece no máximo uma vez na grade de cada curso e pode estar na grade de vários cursos (OPEN-031). |
+| INV-015-05 | Todo estudante pertence a exatamente 1 curso; os outros perfis não têm curso (RB-19). |
+| INV-015-06 | Só há matrícula de estudante em turma do seu curso (RB-19). |
+| INV-015-07 | O coordenador só vê e altera turmas, grade e estudantes dos cursos que coordena, com o filtro dentro da própria consulta (RB-04, ADR-003). |
+| INV-015-08 | O administrador gerencia cursos sem acessar dados acadêmicos (RB-13). |
+| INV-015-09 | O coordenador de ao menos um curso não pode ser desativado (RB-14). |
+
+## 7. Modelo de domínio envolvido
+
+`Curso` (id, nome; coordenador). Grade `CursoDisciplina` (curso, disciplina; chave composta). `Turma` ganha o curso e perde o coordenador gravado. `Usuario` ganha o curso, preenchido só para Estudante. Ver [`modelo-dominio.md`](modelo-dominio.md).
+
+## 8. Impacto arquitetural
+
+- Migração: tabelas `Curso` e `CursoDisciplina`; `Turma.cursoId` obrigatório (FK, `Restrict`) no lugar de `Turma.coordenadorId`; `Usuario.cursoId` com CHECK (preenchido se e somente se o perfil for Estudante). A migração preenche os dados existentes: cada coordenador com turmas ganha um curso provisório com essas turmas e as disciplinas delas na grade, e cada estudante recebe o curso da sua primeira matrícula. O seed organiza os 6 cursos (OPEN-036).
+- Escopo do coordenador reescrito em um só lugar (`src/server/dados`): `turma: { curso: { coordenadorId } }`, usado pelo relatório, histórico, painel e cadastros (ADR-003).
+- Validações novas como funções puras em `src/domain` (disciplina na grade, curso do estudante igual ao da turma), com um teste por RB (DA-07).
+- Recurso novo `cursos` só para o Administrador em `src/domain/autorizacao.ts`; o administrador continua fora dos recursos acadêmicos.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| Listar cursos | sessão do administrador | cursos com coordenador e totais | sem permissão |
+| Cadastrar curso | nome, coordenador | curso criado | nome ausente ou repetido, coordenador inválido, sem permissão |
+| Trocar coordenador | curso, coordenador | curso atualizado | coordenador inválido, curso inexistente, sem permissão |
+| Cadastrar disciplina | curso, nome, carga horária | disciplina na grade do curso | dado inválido, curso fora do escopo |
+| Adicionar disciplina à grade | curso, disciplina | disciplina na grade | já está na grade, curso fora do escopo |
+| Cadastrar turma | curso, nome, período, disciplina, professor | turma criada | disciplina fora da grade, curso fora do escopo, dado inválido |
+| Matricular estudante | turma, e-mail | matrícula criada | estudante de outro curso, turma fora do escopo |
+| Criar conta de Estudante (admin) | nome, e-mail, senha, perfil, curso | conta criada | curso ausente ou inexistente, demais erros da SPEC-010 |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03, RNF-05 | Escopo por curso na própria consulta; administrador sem dados acadêmicos |
+| RNF-04, RNF-06 | Telas aprovadas no protótipo, desktop e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-015-01 | Administrador e a coordenadora ativa Paula | Cria o curso "Engenharia Elétrica" com Paula | O curso aparece na lista com Paula como coordenadora |
+| AC-015-02 | Já existe "Engenharia Elétrica" | Administrador cria outro curso com o mesmo nome, ou sem nome | Cadastro recusado, com o campo indicado |
+| AC-015-03 | Um professor e um coordenador desativado | Administrador escolhe um deles como coordenador | Operação recusada |
+| AC-015-04 | Paula coordena Eng. Elétrica | Administrador troca para Marina | Marina vê as turmas de Eng. Elétrica e Paula recebe acesso negado nelas |
+| AC-015-05 | Marina coordena Eng. da Computação | Cadastra a disciplina "Arquitetura de Computadores" nesse curso | A disciplina aparece só na grade de Eng. da Computação |
+| AC-015-06 | Cálculo I está na grade de Eng. da Computação | Paula adiciona Cálculo I à grade de Eng. Elétrica, e tenta adicionar de novo | A mesma disciplina fica nas duas grades; a segunda tentativa avisa e não duplica |
+| AC-015-07 | Disciplina fora da grade de Eng. Elétrica | Paula cria turma de Eng. Elétrica com ela | Turma recusada |
+| AC-015-08 | Marina coordena 2 cursos | Cria turma escolhendo Ciência da Computação | A turma fica nesse curso; o coordenador de outro curso não a vê |
+| AC-015-09 | Turma de Publicidade e Propaganda | Marina abre a turma ou a grade desse curso | Acesso negado |
+| AC-015-10 | Turma de Eng. da Computação | Marina cadastra um estudante novo nela | O estudante pertence a Eng. da Computação |
+| AC-015-11 | Estudante de Publicidade e Propaganda | Marina tenta matriculá-lo numa turma de Eng. da Computação | Matrícula recusada |
+| AC-015-12 | Administrador em Contas | Cria conta de Estudante sem curso; depois com curso | A primeira é recusada com o campo indicado; a segunda é criada no curso |
+| AC-015-13 | Paula coordena Eng. Elétrica | Administrador tenta desativá-la | Desativação impedida, com a explicação |
+| AC-015-14 | Administrador | Abre Cursos; tenta abrir o relatório | Vê só nome, coordenador e totais; o relatório continua negado |
+| AC-015-15 | Marina coordena 2 cursos | Abre o relatório e o histórico de notas | Só turmas dos seus cursos; o relatório filtra por curso |
+| AC-015-16 | Professor com turmas em 2 cursos | Abre as suas turmas | Vê as turmas dos 2 cursos, com o curso indicado |
+| AC-015-17 | Estudante, professor ou coordenador | Abre Cursos | Acesso negado |
+
+## 12. Casos de teste derivados
+
+1. Regras puras: disciplina na grade (RB-18), curso do estudante igual ao da turma (RB-19), coordenador válido (RB-17).
+2. Cadastro e troca de coordenador pelo administrador; nome único; desativação bloqueada.
+3. Grade: criar e adicionar existente sem duplicar.
+4. Escopo do coordenador por curso em turmas, relatório, histórico e painel; troca de coordenador muda o escopo.
+5. Matrícula e cadastro de estudante com curso; conta de estudante pelo administrador exige curso.
+6. Negação por perfil na tela e na API de cursos.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-030 a OPEN-034 e OPEN-036 fechadas.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-016 — Dashboards por perfil
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-016 |
+| **Nome** | Dashboards por perfil |
+| **Objetivo** | Todo perfil entra direto num dashboard com os números e gráficos que mais importam para ele; as demais funções ficam no menu lateral. |
+| **Valor** | Em poucos segundos cada pessoa sabe o que precisa de atenção: o estudante, a própria situação; o professor, as turmas e os alunos em risco; o coordenador, os cursos; o administrador, as contas. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-10, RF-12, RF-13, RF-19, RF-21, RF-24, RF-25 |
+| **RB** | RB-02, RB-03, RB-04, RB-08, RB-09, RB-12, RB-13 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-16 Consultar o dashboard inicial |
+| **Entidades** | `Usuario` (`criadaEm`, novo), leitura de `IndicadorAcademico`, `Turma`, `Curso`, `Atividade`, `Entrega`, `PlanoRecuperacao` |
+| **ADRs** | ADR-001, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-034, OPEN-035 |
+
+## 3. Escopo
+
+**Incluído**
+- Depois do login (e em `/`), cada perfil abre o seu dashboard: Estudante `/estudante`, Professor `/professor`, Coordenador `/coordenador`, Administrador `/admin` (novo; antes abria em Contas). O item do menu passa a se chamar **Dashboard**.
+- **Estudante:** curso no cabeçalho; cartões com média geral, frequência geral, turmas em Atenção ou Risco e atividades pendentes ou atrasadas; alertas (SPEC-006); plano de recuperação (SPEC-012); gráfico **média e frequência por disciplina** com as linhas de 5,0, 6,0 e 75%; **próximos prazos** (7 dias); cartões das turmas com a evolução das notas e atividades que pedem atenção (SPEC-007).
+- **Professor:** cartões com turmas, estudantes, estudantes em Risco, entregas atrasadas e planos ativos; alertas (SPEC-006); **situação por turma**; **média e frequência por turma**; **próximos prazos** das atividades das suas turmas com entregas registradas; **planos de recuperação ativos** com progresso; atalhos para as turmas.
+- **Coordenador:** filtro por curso (quando coordena mais de um); cartões com cursos, disciplinas, turmas, estudantes, estudantes em Risco e planos ativos; **situação por curso**; os gráficos e a tabela da SPEC-014 por turma.
+- **Administrador:** cartões com contas ativas, desativadas, aguardando a troca da senha provisória e cursos; gráfico **contas por perfil**; tabela **cursos** (coordenador, disciplinas, turmas, estudantes); **contas criadas recentemente** (as 5 últimas); atalhos para Contas e Cursos. Nenhum dado acadêmico (RB-13).
+- `Usuario.criadaEm` (data de criação da conta), preenchido para as contas existentes na migração.
+
+**Fora do escopo**
+- Dashboards configuráveis, exportar gráficos, filtros por período (sem RF).
+- Notificações por e-mail ou push (OPEN-004).
+- Gravar qualquer número do dashboard: tudo é calculado na leitura (OPEN-035).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Estudante — Dashboard | [prototipo.html#dash-estudante](layout/prototipo.html#dash-estudante) | [ ] | [ ] | — | — |
+| Professor — Dashboard | [prototipo.html#dash-professor](layout/prototipo.html#dash-professor) | [ ] | [ ] | — | — |
+| Coordenador — Dashboard | [prototipo.html#dash-coordenador](layout/prototipo.html#dash-coordenador) | [ ] | [ ] | — | — |
+| Administrador — Dashboard | [prototipo.html#dash-admin](layout/prototipo.html#dash-admin) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-006, SPEC-007, SPEC-008, SPEC-009, SPEC-012, SPEC-014 e SPEC-015 (escopo por curso).
+
+## 5. Comportamento esperado
+
+**Pré-condições:** usuário autenticado, conta ativa e senha própria definida (RB-14, RB-15).
+
+**Fluxo principal:**
+1. Usuário entra no sistema.
+2. Sistema redireciona para o dashboard do perfil.
+3. Sistema calcula na hora, só com os dados do escopo do usuário, os cartões, gráficos e listas do perfil.
+4. Usuário segue pelos atalhos ou pelo menu lateral.
+
+**Fluxos alternativos:**
+- Coordenador escolhe um curso no filtro: o dashboard mostra só as turmas desse curso.
+
+**Exceções:**
+- Sem dados no escopo: estado vazio com orientação (estudante sem turma, professor sem turma, coordenador sem curso).
+- Filtro com curso que o coordenador não coordena: ignorado; mostra só os cursos dele.
+- Perfil abrindo o dashboard de outro perfil: acesso negado.
+
+**Pós-condições:** nenhuma alteração de dados (consulta).
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-016-01 | Cada dashboard só usa dados do escopo do perfil, filtrados na própria consulta (RB-02, RB-03, RB-04, ADR-003). |
+| INV-016-02 | Os números por turma do professor e do coordenador são os mesmos do relatório (SPEC-009, INV-014-01). |
+| INV-016-03 | Média geral do estudante = média simples das médias das turmas com nota; frequência geral = média simples das frequências registradas; sem nenhum valor, mostra "—" (OPEN-035). |
+| INV-016-04 | Próximos prazos = atividades com prazo de hoje até 7 dias depois (horário de Brasília) ainda sem entrega do estudante (OPEN-035, OPEN-010). |
+| INV-016-05 | O dashboard do administrador não contém nota, frequência, situação, plano nem relatório (RB-13). |
+| INV-016-06 | Nada do dashboard é gravado; tudo é derivado na leitura (OPEN-035). |
+| INV-016-07 | Situações sempre com cor, símbolo e rótulo (RNF-06). |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova. `Usuario` ganha `criadaEm`.
+
+## 8. Impacto arquitetural
+
+- Cálculos novos (média geral, frequência geral, próximos prazos, contagem de contas por perfil) como funções puras em `src/domain/dashboard.ts`, com um teste por invariante.
+- Consultas por perfil em `src/server/academico/` reaproveitando `consultarPainel` (SPEC-007), `consultarAlertas` (SPEC-006), `gerarRelatorio`/`consolidarTurma` (SPEC-009) e `consultarPainelCoordenador` (SPEC-014).
+- Gráficos em SVG gerados no servidor, como os da SPEC-007 e da SPEC-014 (sem biblioteca nova).
+- Migração: coluna `Usuario.criadaEm` com padrão `now()`.
+- Redirecionamento do login e de `/` para `/admin` no caso do administrador; recurso `painelAdministrador` em `src/domain/autorizacao.ts`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| Consultar dashboard do estudante | sessão | cartões, alertas, planos, gráficos, prazos, turmas | sem permissão |
+| Consultar dashboard do professor | sessão | cartões, alertas, gráficos por turma, prazos, planos | sem permissão |
+| Consultar dashboard do coordenador | sessão, curso (opcional) | cartões, situação por curso, gráficos por turma, turmas que pedem atenção | sem permissão |
+| Consultar dashboard do administrador | sessão | contagens de contas, cursos com totais, contas recentes | sem permissão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Cada dashboard em até 3 s com os dados de demonstração |
+| RNF-03, RNF-05 | Escopo por perfil na consulta; administrador sem dados acadêmicos |
+| RNF-04, RNF-06 | Telas aprovadas no protótipo, desktop e celular, sem rolagem horizontal |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-016-01 | Uma conta de cada perfil | Entra no sistema | Cai direto no dashboard do próprio perfil |
+| AC-016-02 | Estudante com médias 7,0 e 5,0 e uma turma ainda sem nota | Abre o dashboard | Média geral 6,0 |
+| AC-016-03 | Atividades sem entrega com prazo em 3 dias e em 10 dias, e uma já entregue com prazo em 2 dias | Estudante abre o dashboard | Só a de 3 dias aparece em Próximos prazos |
+| AC-016-04 | Dois estudantes | Um abre o dashboard | Não vê nenhum dado do outro |
+| AC-016-05 | Professor com 2 turmas | Abre o dashboard | Cartões e gráficos por turma iguais ao relatório; planos ativos com progresso |
+| AC-016-06 | Turma de outro professor | Professor abre o dashboard | A turma não aparece |
+| AC-016-07 | Coordenador com 2 cursos | Filtra por um curso; depois tenta filtrar por curso de outro coordenador | Só as turmas do curso escolhido; no segundo caso, só os próprios cursos |
+| AC-016-08 | Coordenador com 2 cursos | Abre o dashboard sem filtro | Vê a situação por curso dos 2 cursos |
+| AC-016-09 | Administrador | Abre o dashboard | Contagens por perfil e ativas/desativadas iguais às da lista de contas; cursos com totais; nenhuma nota, frequência ou situação |
+| AC-016-10 | Administrador acaba de criar uma conta | Abre o dashboard | A conta aparece primeiro em Contas criadas recentemente |
+| AC-016-11 | Professor sem turmas e coordenador sem cursos | Abrem o dashboard | Estado vazio com orientação |
+| AC-016-12 | Qualquer perfil | Abre o dashboard em 390 px de largura | Tudo legível, sem rolagem horizontal |
+
+## 12. Casos de teste derivados
+
+1. Funções puras: média geral, frequência geral, próximos prazos, contas por perfil.
+2. Redirecionamento após login por perfil.
+3. Escopo de cada dashboard e mesmos números do relatório.
+4. Filtro por curso do coordenador.
+5. Dashboard do administrador sem dados acadêmicos.
+
+## 13. Questões em aberto
+
+OPEN-035 aguarda a aprovação de Arthur junto com o protótipo.
 
 ## 14. Definition of Done
 

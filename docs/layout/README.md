@@ -37,6 +37,14 @@ Marca, paleta e componentes: [`../identidade-visual.md`](../identidade-visual.md
 | Professor — Dashboard da turma e criação de plano | SPEC-008 | contagem Normal/Atenção/Risco/sem dados; estudantes com média, frequência, situação e plano; novo plano para estudante em Risco |
 | Professor — Plano de recuperação | SPEC-008 | itens com marcar concluído; progresso; aviso quando o estudante saiu do Risco; encerrar plano |
 | Relatório acadêmico | SPEC-009 | filtros por turma e situação; resumo por turma; detalhe por estudante; exportar CSV |
+| Administrador — Cursos | SPEC-015 | cursos com coordenador e totais; novo curso; trocar coordenador |
+| Administrador — Nova conta de estudante com curso | SPEC-015 | campo Curso obrigatório quando o perfil é Estudante; aviso ao desativar coordenador de curso |
+| Coordenador — Disciplinas por curso | SPEC-015 | curso no topo; grade do curso; nova disciplina; adicionar disciplina de outro curso |
+| Coordenador — Turmas com curso | SPEC-015 | turmas com a coluna Curso; nova turma escolhendo curso e disciplina da grade |
+| Estudante — Dashboard | SPEC-016 | curso; cartões; alertas; plano; média e frequência por disciplina; próximos prazos; turmas |
+| Professor — Dashboard | SPEC-016 | cartões; alertas; situação, média e frequência por turma; próximos prazos; planos ativos |
+| Coordenador — Dashboard | SPEC-016 | filtro por curso; cartões; situação por curso; gráficos por turma; turmas que pedem atenção |
+| Administrador — Dashboard | SPEC-016 | cartões de contas; contas por perfil; cursos com totais; contas recentes; sem dados acadêmicos |
 
 Em todas as telas autenticadas: menu lateral do perfil, nome e perfil do usuário e botão **Sair** (OPEN-019).
 
@@ -52,5 +60,6 @@ Em todas as telas autenticadas: menu lateral do perfil, nome e perfil do usuári
 | Telas das SPEC-008 e SPEC-009 (dashboard da turma, plano e relatório) | `aprovado` | Arthur | 2026-10-16 |
 | Telas da SPEC-010 (administrador: contas) — `#admin-contas`, `#admin-contas-erro`; troca de professor em `#coordenador-turma` | `aprovado` | Arthur | 2026-10-17 |
 | Telas das SPEC-011 a SPEC-014 — `#primeiro-acesso`, `#minha-senha`, `#estudante-plano`, `#historico-notas`, `#coordenador-painel` | `aprovado` | Arthur | 2026-10-19 |
+| Telas das SPEC-015 e SPEC-016 — `#admin-cursos`, `#admin-contas-curso`, `#coordenador-grade`, `#coordenador-turmas-curso`, `#dash-estudante`, `#dash-professor`, `#dash-coordenador`, `#dash-admin` | `pendente` | — | — |
 
 Ao aprovar: preencher esta tabela, a seção "Telas e evidência de layout" de cada Spec em `specs.md` e o campo "Aprovação humana" de `identidade-visual.md`.
