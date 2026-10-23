@@ -19,7 +19,8 @@ export function ListaTurmas({ turmas, vazio, linkTurma }: { turmas: Turmas; vazi
     <ul className="grid gap-4 sm:grid-cols-2">
       {turmas.map((t) => (
         <li key={t.id} className="rounded-2xl border border-traco bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
-          <Etiqueta>{t.periodo}</Etiqueta>
+          {/* SPEC-015 (AC-015-16): o curso da turma, já que o professor pode lecionar em vários cursos. */}
+          <div className="flex flex-wrap gap-1.5"><Etiqueta>{t.curso.nome}</Etiqueta><Etiqueta>{t.periodo}</Etiqueta></div>
           <h3 className="mt-2.5 font-semibold">{t.disciplina.nome}</h3>
           <p className="mt-1 text-sm text-mudo">{t.nome} · Professor: {t.professor.nome}</p>
           {t.estudantes && (

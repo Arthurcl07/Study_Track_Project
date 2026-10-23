@@ -2,13 +2,15 @@
 // da mesma consolidação do relatório (SPEC-009, INV-014-01), no escopo do coordenador (RB-04, ADR-003).
 import { turmasQuePedemAtencao } from "@/domain/relatorio";
 import type { Sessao } from "@/server/auth/token";
-import { listarDisciplinas, listarTurmasDoEscopo } from "@/server/dados/estrutura";
+import { cursosDoCoordenador, disciplinasDosCursos, listarTurmasDoEscopo } from "@/server/dados/estrutura";
 import { estudantesEmRiscoDoCoordenador } from "@/server/dados/relatorios";
 import { gerarRelatorio } from "./relatorios";
 
 export async function consultarPainelCoordenador(sessao: Sessao) {
+  const cursos = await cursosDoCoordenador(sessao.usuarioId);
   const [disciplinas, turmas, relatorio, emRisco] = await Promise.all([
-    listarDisciplinas(),
+    // SPEC-015: só as disciplinas da grade dos cursos que ele coordena.
+    disciplinasDosCursos(cursos.map((c) => c.id)),
     listarTurmasDoEscopo(sessao),
     gerarRelatorio(sessao, {}),
     estudantesEmRiscoDoCoordenador(sessao.usuarioId),

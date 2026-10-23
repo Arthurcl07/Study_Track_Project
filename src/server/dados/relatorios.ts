@@ -6,7 +6,7 @@ import { prisma } from "./prisma";
 
 function filtroTurmasDoRelatorio(sessao: Sessao): Prisma.TurmaWhereInput {
   if (sessao.perfil === "Professor") return { professorId: sessao.usuarioId };
-  if (sessao.perfil === "Coordenador") return { coordenadorId: sessao.usuarioId };
+  if (sessao.perfil === "Coordenador") return { curso: { coordenadorId: sessao.usuarioId } };
   return { id: { in: [] } };
 }
 
@@ -17,6 +17,7 @@ export function turmasDoRelatorio(sessao: Sessao) {
       id: true,
       nome: true,
       disciplina: { select: { nome: true } },
+      curso: { select: { id: true, nome: true } },
       matriculas: { select: { estudante: { select: { id: true, nome: true } } }, orderBy: { estudante: { nome: "asc" } } },
       indicadores: { select: { estudanteId: true, media: true, frequenciaAtual: true, situacao: true } },
       atividades: { select: { prazo: true, entregas: { select: { estudanteId: true, dataEntrega: true } } } },
@@ -26,9 +27,10 @@ export function turmasDoRelatorio(sessao: Sessao) {
 }
 
 // SPEC-014: estudantes distintos em Risco nas turmas sob responsabilidade do coordenador (RB-04).
-export async function estudantesEmRiscoDoCoordenador(coordenadorId: string) {
+// SPEC-016: opcionalmente só nos cursos informados (filtro do dashboard, já recortado ao escopo).
+export async function estudantesEmRiscoDoCoordenador(coordenadorId: string, cursoIds?: string[]) {
   const linhas = await prisma.indicadorAcademico.findMany({
-    where: { situacao: "Risco", turma: { coordenadorId } },
+    where: { situacao: "Risco", turma: { curso: { coordenadorId }, ...(cursoIds ? { cursoId: { in: cursoIds } } : {}) } },
     distinct: ["estudanteId"],
     select: { estudanteId: true },
   });

@@ -4,6 +4,7 @@ import { motivoParaNaoDesativar, validarNovaConta } from "@/domain/contas";
 import { ehPerfilValido } from "@/domain/perfil";
 import { gerarHashSenha } from "@/server/auth/senha";
 import * as dados from "@/server/dados/contas";
+import { buscarCurso } from "@/server/dados/cursos";
 import { emailJaCadastrado } from "@/server/dados/estrutura";
 import type { Resultado } from "./cadastros";
 
@@ -20,6 +21,10 @@ export async function criarConta(entrada: Record<string, unknown>) {
   const { senha, ...resto } = validacao.dados;
   const emailEmUso = { ok: false, falha: { tipo: "invalido", erros: { email: "Já existe uma conta com este e-mail." } } } as const;
   if (await emailJaCadastrado(resto.email)) return emailEmUso;
+  // AC-015-12: o curso do estudante precisa existir.
+  if (resto.cursoId && !(await buscarCurso(resto.cursoId))) {
+    return { ok: false, falha: { tipo: "invalido", erros: { cursoId: "Curso inexistente." } } } as const;
+  }
   try {
     return sucesso(await dados.criarConta({ ...resto, senhaHash: await gerarHashSenha(senha) }));
   } catch (erro) {
@@ -29,7 +34,8 @@ export async function criarConta(entrada: Record<string, unknown>) {
   }
 }
 
-// RB-14 / INV-010-06: não desativa a si mesmo nem professor responsável por turma. Nada é apagado (INV-010-05).
+// RB-14 / INV-010-06 / INV-015-09: não desativa a si mesmo, professor responsável por turma nem coordenador de curso.
+// Nada é apagado (INV-010-05).
 export async function desativarConta(contaId: string, administradorId: string) {
   const alvo = await dados.contaParaDesativar(contaId);
   if (!alvo) return { ok: false, falha: { tipo: "nao-encontrado", erro: "Conta não encontrada." } } as const;

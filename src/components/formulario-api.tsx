@@ -8,9 +8,17 @@ import { CLASSE_BOTAO_PRIMARIO, CLASSE_BOTAO_SECUNDARIO, CLASSE_CAMPO, CLASSE_RO
 export type Campo = {
   nome: string;
   rotulo: string;
-  tipo?: "text" | "email" | "password" | "number" | "select";
-  opcoes?: { valor: string; rotulo: string }[];
+  tipo?: "text" | "email" | "password" | "number" | "select" | "hidden";
+  // Valor inicial (obrigatório no campo oculto).
+  valor?: string;
+  // grupo: com filtradoPor, a opção só aparece quando o outro campo tem esse valor (SPEC-015: disciplinas do curso).
+  opcoes?: { valor: string; rotulo: string; grupo?: string }[];
+  filtradoPor?: string;
+  // Campo só aparece (e só é enviado) quando outro campo tem o valor indicado (SPEC-015: curso do Estudante).
+  mostrarSe?: { campo: string; valor: string };
 };
+
+const valoresIniciais = (campos: Campo[]) => Object.fromEntries(campos.map((c) => [c.nome, c.valor ?? ""]));
 
 export function FormularioApi({
   url,
@@ -30,6 +38,7 @@ export function FormularioApi({
   const [errosCampo, setErrosCampo] = useState<Record<string, string>>({});
   const [sucesso, setSucesso] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [valores, setValores] = useState<Record<string, string>>(() => valoresIniciais(campos));
 
   async function enviar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
@@ -52,6 +61,7 @@ export function FormularioApi({
         return;
       }
       formulario.reset();
+      setValores(valoresIniciais(campos));
       setSucesso(mensagemSucesso);
       router.refresh();
     } catch {
@@ -66,13 +76,27 @@ export function FormularioApi({
       {campos.map((campo) => {
         const id = `${url}-${campo.nome}`;
         const invalido = Boolean(errosCampo[campo.nome]);
+        if (campo.mostrarSe && valores[campo.mostrarSe.campo] !== campo.mostrarSe.valor) return null;
+        if (campo.tipo === "hidden") return <input key={campo.nome} type="hidden" name={campo.nome} value={campo.valor ?? ""} />;
+        const opcoes = campo.filtradoPor ? campo.opcoes?.filter((o) => o.grupo === valores[campo.filtradoPor!]) : campo.opcoes;
         return (
           <div key={campo.nome}>
             <label htmlFor={id} className={CLASSE_ROTULO}>{campo.rotulo}</label>
             {campo.tipo === "select" ? (
-              <select id={id} name={campo.nome} defaultValue="" aria-invalid={invalido} className={CLASSE_CAMPO}>
-                <option value="">Selecione...</option>
-                {campo.opcoes?.map((opcao) => (
+              <select
+                id={id}
+                name={campo.nome}
+                value={valores[campo.nome] ?? ""}
+                onChange={(e) => {
+                  // Trocar o curso limpa a disciplina escolhida, que dependia dele.
+                  const dependentes = Object.fromEntries(campos.filter((c) => c.filtradoPor === campo.nome).map((c) => [c.nome, ""]));
+                  setValores((v) => ({ ...v, ...dependentes, [campo.nome]: e.target.value }));
+                }}
+                aria-invalid={invalido}
+                className={CLASSE_CAMPO}
+              >
+                <option value="">{campo.filtradoPor && !valores[campo.filtradoPor] ? "Escolha antes o curso" : "Selecione..."}</option>
+                {opcoes?.map((opcao) => (
                   <option key={opcao.valor} value={opcao.valor}>{opcao.rotulo}</option>
                 ))}
               </select>

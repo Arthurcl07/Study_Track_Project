@@ -34,30 +34,34 @@ function Situacao({ situacao }: { situacao: SituacaoRelatorio }) {
   return <SeloSituacao situacao={situacao} />;
 }
 
-export default async function Relatorios({ searchParams }: { searchParams: Promise<{ turma?: string; situacao?: string }> }) {
+export default async function Relatorios({ searchParams }: { searchParams: Promise<{ turma?: string; situacao?: string; curso?: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.relatorios);
   const filtros = await searchParams;
   const turma = filtros.turma || "";
+  const curso = filtros.curso || "";
   const situacao = ehSituacaoRelatorio(filtros.situacao) ? filtros.situacao : "";
-  const resultado = await gerarRelatorio(sessao, { turma: turma || null, situacao: situacao || null });
+  const resultado = await gerarRelatorio(sessao, { turma: turma || null, situacao: situacao || null, curso: curso || null });
 
   const subtitulo =
     sessao.perfil === "Coordenador"
-      ? "Turmas sob sua responsabilidade, com os indicadores atuais."
+      ? "Turmas dos cursos que você coordena, com os indicadores atuais."
       : "Turmas que você leciona, com os indicadores atuais.";
 
   if (!resultado.ok) {
     return (
       <Casca sessao={sessao} ativo="relatorios">
         <CabecalhoPagina titulo="Relatório acadêmico" subtitulo={subtitulo} />
-        <Mensagem tipo="erro">Acesso negado: esta turma não está no seu escopo.</Mensagem>
+        <Mensagem tipo="erro">Acesso negado: esta turma ou este curso não está no seu escopo.</Mensagem>
         <Link href="/relatorios" className={`mt-4 ${CLASSE_BOTAO_SECUNDARIO}`}>Ver todas as minhas turmas</Link>
       </Casca>
     );
   }
 
-  const { turmasDisponiveis, resumo, linhas } = resultado.relatorio;
+  const { cursosDisponiveis, turmasDisponiveis, resumo, linhas } = resultado.relatorio;
+  // SPEC-015 (AC-015-15): filtro de curso só para o coordenador com mais de um curso.
+  const filtrarCurso = sessao.perfil === "Coordenador" && cursosDisponiveis.length > 1;
   const consulta = new URLSearchParams();
+  if (curso) consulta.set("curso", curso);
   if (turma) consulta.set("turma", turma);
   if (situacao) consulta.set("situacao", situacao);
   consulta.set("formato", "csv");
@@ -81,7 +85,16 @@ export default async function Relatorios({ searchParams }: { searchParams: Promi
       ) : (
         <div className="space-y-5">
           <Cartao>
-            <form method="get" className="grid gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+            <form method="get" className={`grid gap-4 sm:items-end ${filtrarCurso ? "sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto]" : "sm:grid-cols-[1fr_1fr_auto]"}`}>
+              {filtrarCurso && (
+                <div>
+                  <label htmlFor="curso" className={CLASSE_ROTULO}>Curso</label>
+                  <select id="curso" name="curso" defaultValue={curso} className={CLASSE_CAMPO}>
+                    <option value="">Todos</option>
+                    {cursosDisponiveis.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+                  </select>
+                </div>
+              )}
               <div>
                 <label htmlFor="turma" className={CLASSE_ROTULO}>Turma</label>
                 <select id="turma" name="turma" defaultValue={turma} className={CLASSE_CAMPO}>

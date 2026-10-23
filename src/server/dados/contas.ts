@@ -2,7 +2,7 @@
 import type { Perfil } from "@/domain/perfil";
 import { prisma } from "./prisma";
 
-const CONTA = { id: true, nome: true, email: true, perfil: true, ativo: true } as const;
+const CONTA = { id: true, nome: true, email: true, perfil: true, ativo: true, curso: { select: { nome: true } } } as const;
 
 export function listarContas(perfil?: Perfil) {
   return prisma.usuario.findMany({
@@ -13,16 +13,19 @@ export function listarContas(perfil?: Perfil) {
 }
 
 // RB-15 (SPEC-011): conta criada pela tela começa com senha provisória.
-export function criarConta(dados: { nome: string; email: string; senhaHash: string; perfil: Perfil }) {
+// SPEC-015 / RB-19: o curso só é gravado para Estudante (CHECK na migração, INV-015-05).
+export function criarConta(dados: { nome: string; email: string; senhaHash: string; perfil: Perfil; cursoId: string | null }) {
   return prisma.usuario.create({ data: { ...dados, trocarSenha: true }, select: CONTA });
 }
 
 export async function contaParaDesativar(id: string) {
   const conta = await prisma.usuario.findUnique({
     where: { id },
-    select: { id: true, nome: true, _count: { select: { turmasLecionadas: true } } },
+    select: { id: true, nome: true, _count: { select: { turmasLecionadas: true, cursosCoordenados: true } } },
   });
-  return conta ? { id: conta.id, nome: conta.nome, turmasComoProfessor: conta._count.turmasLecionadas } : null;
+  return conta
+    ? { id: conta.id, nome: conta.nome, turmasComoProfessor: conta._count.turmasLecionadas, cursosCoordenados: conta._count.cursosCoordenados }
+    : null;
 }
 
 export function definirAtivo(id: string, ativo: boolean) {
