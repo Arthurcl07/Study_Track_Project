@@ -43,6 +43,8 @@ Legenda de status da Spec:
 | Layout das SPEC-011 a SPEC-014 (senha, plano do estudante, histórico de notas, painel do coordenador) | `aprovado` (Arthur) | 2026-10-19 |
 | SPEC-011 a SPEC-014 marcadas como `implementadas`, condicionadas à aprovação do PR de `development` para `main` que leva este status (cobre os PRs #56 a #60) | `implementada` | 2026-10-19 |
 | SPEC-015 e SPEC-016 incluídas a pedido de Arthur, com OPEN-030 a OPEN-034 e OPEN-036 fechadas (decisão humana, Arthur); RF-22 a RF-25, RB-17 a RB-19 e ajustes em RB-04, RB-13 e RB-14; texto das Specs, OPEN-035 e layout aguardando aprovação | `especificada` | 2026-10-22 |
+| SPEC-015 e SPEC-016 aprovadas, com OPEN-035 fechada (decisão humana, Arthur) | `aprovada` | 2026-10-22 |
+| Layout das SPEC-015 e SPEC-016 (cursos, grade, turmas com curso e os 4 dashboards) | `aprovado` (Arthur) | 2026-10-22 |
 
 ---
 
@@ -64,8 +66,8 @@ Legenda de status da Spec:
 | 12 | SPEC-012 | Plano de recuperação visível ao estudante | SPEC-007, SPEC-008 | `implementada` |
 | 13 | SPEC-013 | Histórico de notas | SPEC-004 | `implementada` |
 | 14 | SPEC-014 | Painel do coordenador | SPEC-009 | `implementada` |
-| 15 | SPEC-015 | Cursos e coordenação por curso | SPEC-002, SPEC-009, SPEC-010 | `especificada` |
-| 16 | SPEC-016 | Dashboards por perfil | SPEC-006…SPEC-009, SPEC-012, SPEC-014, SPEC-015 | `especificada` |
+| 15 | SPEC-015 | Cursos e coordenação por curso | SPEC-002, SPEC-009, SPEC-010 | `em implementação` |
+| 16 | SPEC-016 | Dashboards por perfil | SPEC-006…SPEC-009, SPEC-012, SPEC-014, SPEC-015 | `em implementação` |
 
 Todas as Specs têm texto completo abaixo. As SPEC-001 a SPEC-014 estão `implementadas` (SPEC-011 a 014 pela revisão do PR de `development` para `main` que traz este status): critérios, invariantes e testes atendidos (`docs/verificacao/`) e PR revisado por um colega (SPEC-002 a 004 e 010 pela revisão de Luiz Eduardo nos PRs #48 e #53, de `development` para `main`).
 
@@ -1957,7 +1959,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-015 — Cursos e coordenação por curso
 
-**Status:** `especificada`
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -2000,14 +2002,14 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-22 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Administrador — Cursos | [prototipo.html#admin-cursos](layout/prototipo.html#admin-cursos) | [ ] | [ ] | — | — |
-| Administrador — Nova conta de estudante com curso | [prototipo.html#admin-contas-curso](layout/prototipo.html#admin-contas-curso) | [ ] | [ ] | — | — |
-| Coordenador — Disciplinas por curso | [prototipo.html#coordenador-grade](layout/prototipo.html#coordenador-grade) | [ ] | [ ] | — | — |
-| Coordenador — Turmas com curso | [prototipo.html#coordenador-turmas-curso](layout/prototipo.html#coordenador-turmas-curso) | [ ] | [ ] | — | — |
+| Administrador — Cursos | [prototipo.html#admin-cursos](layout/prototipo.html#admin-cursos) | [x] | [x] | Arthur | 2026-10-22 |
+| Administrador — Nova conta de estudante com curso | [prototipo.html#admin-contas-curso](layout/prototipo.html#admin-contas-curso) | [x] | [x] | Arthur | 2026-10-22 |
+| Coordenador — Disciplinas por curso | [prototipo.html#coordenador-grade](layout/prototipo.html#coordenador-grade) | [x] | [x] | Arthur | 2026-10-22 |
+| Coordenador — Turmas com curso | [prototipo.html#coordenador-turmas-curso](layout/prototipo.html#coordenador-turmas-curso) | [x] | [x] | Arthur | 2026-10-22 |
 
 ## 4. Dependências
 
@@ -2126,7 +2128,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-016 — Dashboards por perfil
 
-**Status:** `especificada`
+**Status:** `em implementação`
 
 ## 1. Identificação
 
@@ -2167,14 +2169,14 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-10-22 por Arthur. Marca, cores e componentes: [`identidade-visual.md`](identidade-visual.md) (RNF-06). Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Estudante — Dashboard | [prototipo.html#dash-estudante](layout/prototipo.html#dash-estudante) | [ ] | [ ] | — | — |
-| Professor — Dashboard | [prototipo.html#dash-professor](layout/prototipo.html#dash-professor) | [ ] | [ ] | — | — |
-| Coordenador — Dashboard | [prototipo.html#dash-coordenador](layout/prototipo.html#dash-coordenador) | [ ] | [ ] | — | — |
-| Administrador — Dashboard | [prototipo.html#dash-admin](layout/prototipo.html#dash-admin) | [ ] | [ ] | — | — |
+| Estudante — Dashboard | [prototipo.html#dash-estudante](layout/prototipo.html#dash-estudante) | [x] | [x] | Arthur | 2026-10-22 |
+| Professor — Dashboard | [prototipo.html#dash-professor](layout/prototipo.html#dash-professor) | [x] | [x] | Arthur | 2026-10-22 |
+| Coordenador — Dashboard | [prototipo.html#dash-coordenador](layout/prototipo.html#dash-coordenador) | [x] | [x] | Arthur | 2026-10-22 |
+| Administrador — Dashboard | [prototipo.html#dash-admin](layout/prototipo.html#dash-admin) | [x] | [x] | Arthur | 2026-10-22 |
 
 ## 4. Dependências
 
@@ -2268,7 +2270,7 @@ Sem entidade nova. `Usuario` ganha `criadaEm`.
 
 ## 13. Questões em aberto
 
-OPEN-035 aguarda a aprovação de Arthur junto com o protótipo.
+Nenhuma. OPEN-034 e OPEN-035 fechadas.
 
 ## 14. Definition of Done
 

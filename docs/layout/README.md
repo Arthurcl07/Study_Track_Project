@@ -60,6 +60,6 @@ Em todas as telas autenticadas: menu lateral do perfil, nome e perfil do usuári
 | Telas das SPEC-008 e SPEC-009 (dashboard da turma, plano e relatório) | `aprovado` | Arthur | 2026-10-16 |
 | Telas da SPEC-010 (administrador: contas) — `#admin-contas`, `#admin-contas-erro`; troca de professor em `#coordenador-turma` | `aprovado` | Arthur | 2026-10-17 |
 | Telas das SPEC-011 a SPEC-014 — `#primeiro-acesso`, `#minha-senha`, `#estudante-plano`, `#historico-notas`, `#coordenador-painel` | `aprovado` | Arthur | 2026-10-19 |
-| Telas das SPEC-015 e SPEC-016 — `#admin-cursos`, `#admin-contas-curso`, `#coordenador-grade`, `#coordenador-turmas-curso`, `#dash-estudante`, `#dash-professor`, `#dash-coordenador`, `#dash-admin` | `pendente` | — | — |
+| Telas das SPEC-015 e SPEC-016 — `#admin-cursos`, `#admin-contas-curso`, `#coordenador-grade`, `#coordenador-turmas-curso`, `#dash-estudante`, `#dash-professor`, `#dash-coordenador`, `#dash-admin` | `aprovado` | Arthur | 2026-10-22 |
 
 Ao aprovar: preencher esta tabela, a seção "Telas e evidência de layout" de cada Spec em `specs.md` e o campo "Aprovação humana" de `identidade-visual.md`.
