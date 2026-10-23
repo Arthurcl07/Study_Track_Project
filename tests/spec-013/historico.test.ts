@@ -24,7 +24,7 @@ async function cenario() {
   const coordenador = await criarUsuarioDeTeste("Coordenador");
   const estudante = await criarUsuarioDeTeste("Estudante");
   const disciplina = await prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 60 } });
-  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, coordenadorId: coordenador.id } });
+  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, cursoId: coordenador.cursoId } });
   await prisma.matricula.create({ data: { estudanteId: estudante.id, turmaId: turma.id } });
   const avaliacao = await prisma.avaliacao.create({ data: { turmaId: turma.id, nome: "Prova 1", peso: 1, data: new Date("2026-09-15") } });
   return { professor, coordenador, estudante, turma, avaliacao, tokenProfessor: await entrarComo(professor.email, professor.senha) };
