@@ -8,7 +8,7 @@ import { useState } from "react";
 import { PERFIS, type Perfil } from "@/domain/perfil";
 import { CLASSE_CAMPO, CLASSE_ROTULO, EstadoVazio, Etiqueta, Mensagem } from "./ui";
 
-export type Conta = { id: string; nome: string; email: string; perfil: Perfil; ativo: boolean };
+export type Conta = { id: string; nome: string; email: string; perfil: Perfil; ativo: boolean; curso: { nome: string } | null };
 
 function SeloConta({ ativo }: { ativo: boolean }) {
   const classe = ativo ? "bg-normal-fundo text-normal" : "bg-slate-100 text-slate-600";
@@ -80,7 +80,11 @@ export function ListaContas({ contas, perfil, usuarioId }: { contas: Conta[]; pe
                     <span className="block text-sm break-all text-mudo">{c.email}</span>
                   </div>
                 </td>
-                <td data-rotulo="Perfil" className="px-2 py-3"><Etiqueta>{c.perfil}</Etiqueta></td>
+                <td data-rotulo="Perfil" className="px-2 py-3">
+                  <Etiqueta>{c.perfil}</Etiqueta>
+                  {/* SPEC-015: o curso do estudante (RB-19). */}
+                  {c.curso && <span className="mt-1 block text-xs text-mudo">{c.curso.nome}</span>}
+                </td>
                 <td data-rotulo="Situação" className="px-2 py-3"><SeloConta ativo={c.ativo} /></td>
                 <td data-rotulo="Ação" className="py-3 pl-2 text-right">
                   {c.id === usuarioId ? (

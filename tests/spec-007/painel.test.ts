@@ -7,7 +7,7 @@ import { GET as painelApi } from "@/app/api/painel/route";
 import { recalcularIndicador } from "@/server/academico/indicador";
 import { paraData } from "@/server/dados/atividades";
 import { prisma } from "@/server/dados/prisma";
-import { PREFIXO_DISCIPLINA_TESTE, criarUsuarioDeTeste, entrarComo, removerUsuariosDeTeste, requisicaoComSessao } from "../apoio";
+import { PREFIXO_DISCIPLINA_TESTE, criarUsuarioDeTeste, entrarComo, removerUsuariosDeTeste, requisicaoComSessao, cursoPadraoDeTeste } from "../apoio";
 
 afterAll(async () => {
   await removerUsuariosDeTeste();
@@ -28,7 +28,7 @@ async function cenario() {
   const a = await criarUsuarioDeTeste("Estudante");
   const b = await criarUsuarioDeTeste("Estudante");
   const disciplina = await prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 60 } });
-  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id } });
+  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, cursoId: await cursoPadraoDeTeste() } });
   await prisma.matricula.createMany({ data: [a, b].map((e) => ({ estudanteId: e.id, turmaId: turma.id })) });
 
   const avaliacoes = [["Trabalho", "2026-10-30", 6], ["Prova 1", "2026-09-15", 4], ["Prova 2", "2026-10-10", 5.5]] as const;

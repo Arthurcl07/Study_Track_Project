@@ -7,7 +7,7 @@ import { recalcularIndicador } from "../src/server/academico/indicador";
 import { salvarConta } from "../src/server/auth/contas";
 import { paraData } from "../src/server/dados/atividades";
 import { prisma } from "../src/server/dados/prisma";
-import { simularInstituicao } from "./simulacao";
+import { alinharMatriculasAoCurso, garantirTurma, prepararCursos, simularInstituicao } from "./simulacao";
 import type { Perfil } from "../src/domain/perfil";
 
 const SENHA_DE_TESTE = "StudyTrack@2026";
@@ -27,28 +27,28 @@ const AVALIACAO_EXEMPLO = { nome: "Prova 1", peso: 1, data: new Date("2026-09-15
 async function main() {
   await renomearNomesAntigos();
   const contas: Partial<Record<Perfil, { id: string }>> = {};
-  for (const conta of CONTAS_DE_TESTE) {
+  // O estudante de teste vem depois dos cursos (SPEC-015: todo estudante tem curso, RB-19).
+  for (const conta of CONTAS_DE_TESTE.filter((c) => c.perfil !== "Estudante")) {
     contas[conta.perfil] = await salvarConta({ ...conta, senha: SENHA_DE_TESTE });
     console.log(`Conta de teste pronta: ${conta.email} (${conta.perfil})`);
   }
-  const { Estudante: estudante, Professor: professor, Coordenador: coordenador } = contas;
-  if (!estudante || !professor || !coordenador) throw new Error("Contas de teste incompletas.");
+  const { Professor: professor, Coordenador: coordenador } = contas;
+  if (!professor || !coordenador) throw new Error("Contas de teste incompletas.");
+
+  // SPEC-015 / OPEN-036: os 6 cursos; Marina Alves (coordenador@) coordena Eng. da Computação e Ciência da Computação.
+  const cursos = await prepararCursos({ senha: SENHA_DE_TESTE, coordenadorTesteId: coordenador.id });
+  const contaEstudante = CONTAS_DE_TESTE.find((c) => c.perfil === "Estudante")!;
+  const estudante = await salvarConta({ ...contaEstudante, senha: SENHA_DE_TESTE, cursoId: cursos.ECO });
+  console.log(`Conta de teste pronta: ${contaEstudante.email} (Estudante, Engenharia da Computação)`);
 
   // Idempotente: reutiliza disciplina e turma de exemplo se já existirem.
-  const disciplina =
-    (await prisma.disciplina.findFirst({ where: { nome: DISCIPLINA_EXEMPLO.nome } })) ??
-    (await prisma.disciplina.create({ data: DISCIPLINA_EXEMPLO }));
-  const turma =
-    (await prisma.turma.findFirst({ where: { nome: TURMA_EXEMPLO.nome, coordenadorId: coordenador.id } })) ??
-    (await prisma.turma.create({
-      data: { ...TURMA_EXEMPLO, disciplinaId: disciplina.id, professorId: professor.id, coordenadorId: coordenador.id },
-    }));
+  const turma = await garantirTurma({ ...TURMA_EXEMPLO, disciplina: DISCIPLINA_EXEMPLO.nome, cursoId: cursos.ECO, professorId: professor.id });
   await prisma.matricula.upsert({
     where: { estudanteId_turmaId: { estudanteId: estudante.id, turmaId: turma.id } },
     update: {},
     create: { estudanteId: estudante.id, turmaId: turma.id },
   });
-  console.log(`Turma pronta: ${turma.nome} (${disciplina.nome})`);
+  console.log(`Turma pronta: ${turma.nome} (${DISCIPLINA_EXEMPLO.nome})`);
 
   // Idempotente: só cria a avaliação de exemplo se a turma ainda não tiver uma com esse nome.
   const avaliacao =
@@ -71,10 +71,11 @@ async function main() {
     console.log(`Atividade de exemplo pronta: ${exemplo.descricao}`);
   }
 
-  await dadosDeDemonstracao({ turma, disciplinaId: disciplina.id, avaliacaoId: avaliacao.id, professorId: professor.id, coordenadorId: coordenador.id, hoje });
+  await dadosDeDemonstracao({ turma, avaliacaoId: avaliacao.id, professorId: professor.id, cursoId: cursos.ECO, hoje });
 
-  // Instituição simulada (6 disciplinas, 6 turmas, ~50 estudantes) para a apresentação: prisma/simulacao.ts.
-  await simularInstituicao({ senha: SENHA_DE_TESTE, coordenadorTesteId: coordenador.id, professorTesteId: professor.id, estudanteTesteId: estudante.id, hoje });
+  // Instituição simulada (6 cursos, 15 turmas, ~70 estudantes) para a apresentação: prisma/simulacao.ts.
+  await simularInstituicao({ senha: SENHA_DE_TESTE, cursos, professorTesteId: professor.id, estudanteTesteId: estudante.id, hoje });
+  await alinharMatriculasAoCurso();
 }
 
 // Dados de demonstração (fictícios): estudantes em Normal, Atenção, Risco e sem dados, para os
@@ -115,10 +116,9 @@ const TURMA_B: Partial<Record<NomeDemo, Desempenho>> = {
 
 async function dadosDeDemonstracao(base: {
   turma: { id: string };
-  disciplinaId: string;
   avaliacaoId: string;
   professorId: string;
-  coordenadorId: string;
+  cursoId: string;
   hoje: string;
 }) {
   // Segundo professor, para demonstrar a troca do professor da turma (SPEC-010, RF-17).
@@ -126,7 +126,7 @@ async function dadosDeDemonstracao(base: {
 
   const ids = {} as Record<NomeDemo, string>;
   for (const estudante of ESTUDANTES_DEMO) {
-    ids[estudante.nome] = (await salvarConta({ ...estudante, senha: SENHA_DE_TESTE, perfil: "Estudante" })).id;
+    ids[estudante.nome] = (await salvarConta({ ...estudante, senha: SENHA_DE_TESTE, perfil: "Estudante", cursoId: base.cursoId })).id;
   }
 
   // Turma MS-A: a Prova 1 do seed e mais um trabalho.
@@ -135,15 +135,8 @@ async function dadosDeDemonstracao(base: {
     (await prisma.avaliacao.create({ data: { turmaId: base.turma.id, nome: "Trabalho 1", peso: 1, data: new Date("2026-10-05T00:00:00Z") } }));
   await registrarDesempenho(base.turma.id, [base.avaliacaoId, trabalho.id], TURMA_A, ids, base.professorId);
 
-  // Segunda turma, para o relatório do coordenador ter mais de uma turma.
-  const disciplinaB =
-    (await prisma.disciplina.findFirst({ where: { nome: "Engenharia de Requisitos" } })) ??
-    (await prisma.disciplina.create({ data: { nome: "Engenharia de Requisitos", cargaHoraria: 40 } }));
-  const turmaB =
-    (await prisma.turma.findFirst({ where: { nome: "Turma ER-B", coordenadorId: base.coordenadorId } })) ??
-    (await prisma.turma.create({
-      data: { nome: "Turma ER-B", periodo: "2026/2", disciplinaId: disciplinaB.id, professorId: base.professorId, coordenadorId: base.coordenadorId },
-    }));
+  // Segunda turma, para o relatório do coordenador ter mais de uma turma (Eng. da Computação).
+  const turmaB = await garantirTurma({ nome: "Turma ER-B", disciplina: "Engenharia de Requisitos", cursoId: base.cursoId, professorId: base.professorId });
   const provaB =
     (await prisma.avaliacao.findFirst({ where: { nome: "Prova 1", turmaId: turmaB.id } })) ??
     (await prisma.avaliacao.create({ data: { turmaId: turmaB.id, nome: "Prova 1", peso: 1, data: new Date("2026-09-20T00:00:00Z") } }));
@@ -229,6 +222,8 @@ async function renomearNomesAntigos() {
   }
   await prisma.turma.updateMany({ where: { nome: "Turma de exemplo" }, data: { nome: "Turma MS-A" } });
   await prisma.turma.updateMany({ where: { nome: "Turma B (exemplo)" }, data: { nome: "Turma ER-B" } });
+  // SPEC-015 / OPEN-036: a turma de Cálculo I de Paula Martins passou a ser de Engenharia Elétrica.
+  await prisma.turma.updateMany({ where: { nome: "Turma CAL-C" }, data: { nome: "Turma CAL-ELE" } });
   for (const [antigo, novo] of [["Prova 1 (exemplo)", "Prova 1"], ["Trabalho 1 (exemplo)", "Trabalho 1"]]) {
     await prisma.avaliacao.updateMany({ where: { nome: antigo }, data: { nome: novo } });
   }

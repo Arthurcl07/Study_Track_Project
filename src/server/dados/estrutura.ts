@@ -6,10 +6,11 @@ import type { Sessao } from "@/server/auth/token";
 import { prisma } from "./prisma";
 
 // Filtro de escopo por perfil. Perfil sem regra recebe um filtro que não casa com nada.
+// SPEC-015 / RB-04: as turmas do coordenador são as dos cursos que ele coordena (INV-015-07).
 export function filtroTurmasDoEscopo(sessao: Sessao): Prisma.TurmaWhereInput {
   switch (sessao.perfil) {
     case "Coordenador":
-      return { coordenadorId: sessao.usuarioId };
+      return { curso: { coordenadorId: sessao.usuarioId } };
     case "Professor":
       return { professorId: sessao.usuarioId };
     case "Estudante":
@@ -25,6 +26,7 @@ const RESUMO_TURMA = {
   periodo: true,
   disciplina: { select: { id: true, nome: true, cargaHoraria: true } },
   professor: { select: { id: true, nome: true } },
+  curso: { select: { id: true, nome: true } },
 } satisfies Prisma.TurmaSelect;
 
 const ESTUDANTES_DA_TURMA = {
@@ -69,16 +71,52 @@ export async function buscarTurmaDoEscopo(sessao: Sessao, turmaId: string): Prom
   return turma ? formatarTurma(turma) : null;
 }
 
+// SPEC-015: a turma está sob a responsabilidade do coordenador quando o curso dela é dele (RB-04).
 export function turmaSobResponsabilidade(coordenadorId: string, turmaId: string) {
-  return prisma.turma.findFirst({ where: { id: turmaId, coordenadorId }, select: { id: true } });
+  return prisma.turma.findFirst({ where: { id: turmaId, curso: { coordenadorId } }, select: { id: true, cursoId: true } });
 }
 
-export function criarDisciplina(dados: DadosDisciplina) {
-  return prisma.disciplina.create({ data: dados });
+// SPEC-015 / OPEN-030: cursos que o coordenador coordena (o escopo dele).
+export function cursosDoCoordenador(coordenadorId: string) {
+  return prisma.curso.findMany({ where: { coordenadorId }, select: { id: true, nome: true }, orderBy: { nome: "asc" } });
 }
 
-export function listarDisciplinas() {
-  return prisma.disciplina.findMany({ orderBy: { nome: "asc" } });
+// RF-23 / OPEN-033: a disciplina nova já nasce na grade do curso escolhido.
+export function criarDisciplina(dados: DadosDisciplina, cursoId: string) {
+  return prisma.disciplina.create({ data: { ...dados, cursos: { create: { cursoId } } } });
+}
+
+// Disciplinas da grade dos cursos informados, com todos os cursos em que cada uma está (OPEN-031).
+export function disciplinasDosCursos(cursoIds: string[]) {
+  return prisma.disciplina.findMany({
+    where: { cursos: { some: { cursoId: { in: cursoIds } } } },
+    select: {
+      id: true,
+      nome: true,
+      cargaHoraria: true,
+      cursos: { select: { curso: { select: { id: true, nome: true } } }, orderBy: { curso: { nome: "asc" } } },
+    },
+    orderBy: { nome: "asc" },
+  });
+}
+
+// Disciplinas que ainda não estão na grade do curso, para "Adicionar disciplina de outro curso".
+export function disciplinasForaDaGrade(cursoId: string) {
+  return prisma.disciplina.findMany({
+    where: { cursos: { none: { cursoId } } },
+    select: { id: true, nome: true, cursos: { select: { curso: { select: { nome: true } } }, orderBy: { curso: { nome: "asc" } } } },
+    orderBy: { nome: "asc" },
+  });
+}
+
+export async function gradeDoCurso(cursoId: string) {
+  const linhas = await prisma.cursoDisciplina.findMany({ where: { cursoId }, select: { disciplinaId: true } });
+  return linhas.map((l) => l.disciplinaId);
+}
+
+// INV-015-04: a chave composta (curso, disciplina) impede duplicar a disciplina na grade.
+export function adicionarDisciplinaAGrade(cursoId: string, disciplinaId: string) {
+  return prisma.cursoDisciplina.create({ data: { cursoId, disciplinaId }, select: { cursoId: true, disciplinaId: true } });
 }
 
 export function buscarDisciplina(id: string) {
@@ -108,20 +146,22 @@ export function trocarProfessorDaTurma(turmaId: string, professorId: string) {
   });
 }
 
-// O coordenador que cria a turma passa a ser o responsável por ela (OPEN-001).
-export function criarTurma(dados: DadosTurma, coordenadorId: string) {
-  return prisma.turma.create({ data: { ...dados, coordenadorId }, select: RESUMO_TURMA });
+// SPEC-015 / RB-18: a turma é de exatamente 1 curso; o coordenador responsável é o do curso.
+export function criarTurma(dados: DadosTurma, cursoId: string) {
+  return prisma.turma.create({ data: { ...dados, cursoId }, select: RESUMO_TURMA });
 }
 
 // Cria o estudante e a matrícula na mesma transação: nada é persistido parcialmente (INV-002-05).
+// SPEC-015 / RB-19: o estudante pertence ao curso da turma.
 export function criarEstudanteMatriculado(
   dados: { nome: string; email: string; senhaHash: string },
-  turmaId: string,
+  turma: { id: string; cursoId: string },
 ) {
+  const turmaId = turma.id;
   return prisma.$transaction(async (tx) => {
     const estudante = await tx.usuario.create({
       // RB-15 (SPEC-011): a senha inicial informada pelo coordenador é provisória.
-      data: { ...dados, perfil: "Estudante", trocarSenha: true },
+      data: { ...dados, perfil: "Estudante", trocarSenha: true, cursoId: turma.cursoId },
       select: { id: true, nome: true, email: true },
     });
     await tx.matricula.create({ data: { estudanteId: estudante.id, turmaId } });
@@ -132,7 +172,7 @@ export function criarEstudanteMatriculado(
 export function buscarEstudantePorEmail(email: string) {
   return prisma.usuario.findFirst({
     where: { email: email.trim().toLowerCase(), perfil: "Estudante" },
-    select: { id: true, nome: true, email: true },
+    select: { id: true, nome: true, email: true, cursoId: true },
   });
 }
 

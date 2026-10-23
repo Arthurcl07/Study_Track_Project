@@ -15,6 +15,7 @@ const CAMINHOS = {
   grafico: "M4 20V10M10 20V4M16 20v-7M22 20H2",
   download: "M12 4v11M7 10l5 5 5-5M5 20h14",
   relogio: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M12 7v5l3 2",
+  capelo: "M2 9.5 12 5l10 4.5-10 4.5zM6 11.5V16c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.5M22 9.5V15",
 } as const;
 
 export type NomeIcone = keyof typeof CAMINHOS;

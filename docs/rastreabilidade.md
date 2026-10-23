@@ -25,6 +25,10 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | RF-19 | Plano visível ao estudante | RB-02, RB-12 | UC-02 | SPEC-012 | — | `tests/spec-012/` | SPEC-011-014.md |
 | RF-20 | Histórico de notas | RB-03, RB-04, RB-16 | UC-03, UC-13 | SPEC-013 | — | `tests/spec-013/` | SPEC-011-014.md |
 | RF-21 | Painel do coordenador | RB-04, RB-09 | — | SPEC-014 | — | `tests/spec-014/` | SPEC-011-014.md |
+| RF-22 | Cursos | RB-13, RB-14, RB-17 | UC-14 | SPEC-015 | — | `tests/spec-015/` | SPEC-015-016.md |
+| RF-23 | Grade do curso | RB-04, RB-18 | UC-15, UC-07 | SPEC-015 | — | `tests/spec-015/` | SPEC-015-016.md |
+| RF-24 | Dashboard inicial por perfil | RB-02, RB-03, RB-04, RB-09 | UC-16 | SPEC-016 | — | `tests/spec-016/` | SPEC-015-016.md |
+| RF-25 | Dashboard do administrador | RB-13 | UC-16 | SPEC-016 | — | `tests/spec-016/` | SPEC-015-016.md |
 
 ## Lacunas conhecidas
 
@@ -50,3 +54,5 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | SPEC-012 | PlanoRecuperacao, ItemPlano |
 | SPEC-013 | HistoricoNota, Nota |
 | SPEC-014 | IndicadorAcademico, Turma, Atividade, Entrega (leitura) |
+| SPEC-015 | Curso, CursoDisciplina, Turma (curso), Usuario (curso do estudante) |
+| SPEC-016 | Usuario (criadaEm); leitura de IndicadorAcademico, Turma, Curso, Atividade, Entrega, PlanoRecuperacao |

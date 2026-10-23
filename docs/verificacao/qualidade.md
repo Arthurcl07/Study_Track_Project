@@ -1,6 +1,21 @@
-# Verificação de qualidade e segurança — SPEC-001 a SPEC-014
+# Verificação de qualidade e segurança — SPEC-001 a SPEC-016
 
-**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0) e em **2026-10-19** com as SPEC-011 a 014 (seção 00).
+**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) e em **2026-10-22** com as SPEC-015 e 016 (seção 000).
+
+## 000. Reverificação de 2026-10-22 (depois das SPEC-015 e SPEC-016)
+
+| Verificação | Resultado |
+|---|---|
+| Testes | 19 arquivos, **201 testes aprovados** (`npm test`); `tsc --noEmit` sem erros |
+| Critérios AC (SPEC-001 a 016) | **116** na documentação; 115 com teste e o AC-016-12 (layout em 375 px) verificado no navegador (OPEN-023) |
+| Invariantes INV | **80**, todos com teste |
+| Regras RB-01 a RB-19 | 19, todas com teste (RB-17 a RB-19 em `spec-015/cursos`) |
+| Guardas | as rotas novas (`/api/cursos`, `/api/cursos/:id/coordenador`, `/api/cursos/:id/disciplinas`) usam `autorizarApi`; as páginas novas (`/admin`, `/admin/cursos`) usam `exigirAcessoPagina` |
+| Privilégio mínimo (RB-13) | o Administrador só tem `gestao-contas`, `gestao-cursos` e `painel-administrador`; o teste percorre todos os recursos; o dashboard dele não traz chave acadêmica |
+| Escopo (ADR-003) | o coordenador é filtrado por `turma.curso.coordenadorId` dentro de cada consulta (estrutura, indicadores, relatório, histórico, painel); troca de coordenação vale na hora (teste) |
+| Integridade (ADR-002) | FKs `Restrict` de turma e estudante para curso; chave composta na grade; CHECK "curso se e somente se Estudante" |
+| Logs | nenhum em `src/` |
+| Dependências | sem dependência nova; o `next dev` mostrou um aviso de vulnerabilidade do Next.js 16.4.0, registrado para decisão humana (não atualizado nesta entrega) |
 
 ## 00. Reverificação de 2026-10-19 (depois das SPEC-011 a SPEC-014)
 
@@ -63,7 +78,10 @@ Ajustes feitos nesta verificação:
 | RB-11 | `spec-008/plano` › INV-008-01 / RB-11 |
 | RB-12 | `spec-008/plano` › RB-12 / INV-008-03 |
 | RB-13 | `spec-010/contas` › RB-13 / INV-010-02 / INV-010-03; AC-010-08 |
-| RB-14 | `spec-010/contas` › RB-14 / INV-010-06; AC-010-04 a AC-010-06 |
+| RB-14 | `spec-010/contas` › RB-14 / INV-010-06; AC-010-04 a AC-010-06; `spec-015/cursos` › AC-015-13 / INV-015-09 |
+| RB-17 | `spec-015/cursos` › RB-17 / INV-015-01; AC-015-03 |
+| RB-18 | `spec-015/cursos` › RB-18 / INV-015-03; AC-015-07 |
+| RB-19 | `spec-015/cursos` › RB-19 / INV-015-06; AC-015-11; AC-015-12 / INV-015-05 |
 
 ## 2. Controle de acesso (RNF-03, RNF-05, ADR-003)
 
