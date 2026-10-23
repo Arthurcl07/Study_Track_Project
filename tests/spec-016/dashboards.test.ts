@@ -1,6 +1,7 @@
 // SPEC-016 — dashboards por perfil: cálculos (unitário) e consultas com escopo (integração).
 import { randomUUID } from "node:crypto";
 import { afterAll, describe, expect, it } from "vitest";
+import { FAIXAS } from "@/components/graficos-coordenador";
 import { hojeEmBrasilia } from "@/domain/atividades";
 import { painelDoPerfil, podeAcessar, RECURSOS } from "@/domain/autorizacao";
 import { contarContas, dentroDosProximosDias, frequenciaGeral, mediaGeral, proximosPrazos, riscoSemPlano, situacaoPorCurso, somarDias } from "@/domain/dashboard";
@@ -92,6 +93,16 @@ describe("SPEC-016 — cálculos dos dashboards (sem banco)", () => {
       { id: "cc", rotulo: "Ciência da Computação", estudantes: 2, contagem: contagem(2, 0, 0) },
       { id: "eco", rotulo: "Eng. da Computação", estudantes: 5, contagem: contagem(1, 1, 2, 1) },
     ]);
+  });
+
+  it("INV-016-07 / RNF-06: os gráficos de situação dos dashboards usam cor, símbolo e rótulo em toda faixa", () => {
+    expect(FAIXAS.map((f) => f.chave)).toEqual(["Normal", "Atencao", "Risco", "SemDados"]);
+    for (const f of FAIXAS) {
+      expect(f.simbolo).not.toBe("");
+      expect(f.rotulo).not.toBe("");
+      expect(f.barra).toMatch(/^bg-/);
+    }
+    expect(new Set(FAIXAS.map((f) => f.simbolo)).size).toBe(FAIXAS.length);
   });
 
   it("INV-016-05: o dashboard do administrador é só dele; os outros perfis não o acessam", () => {
