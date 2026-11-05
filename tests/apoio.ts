@@ -8,25 +8,49 @@ import { POST as login } from "@/app/api/auth/login/route";
 
 const DOMINIO_TESTE = "@vitest.studytrack.test";
 
-export async function criarUsuarioDeTeste(perfil: Perfil) {
+export const PREFIXO_DISCIPLINA_TESTE = "vitest-";
+
+// SPEC-015: todo coordenador de teste coordena um curso próprio (a menos que se peça semCurso), e todo estudante
+// de teste é de um curso (RB-19): o informado ou um curso padrão de teste, compartilhado no arquivo de testes.
+export async function criarUsuarioDeTeste(perfil: Perfil, opcoes: { cursoId?: string; semCurso?: boolean } = {}) {
   const senha = `senha-${randomUUID()}`;
+  const cursoDoEstudante = perfil === "Estudante" ? (opcoes.cursoId ?? (await cursoPadraoDeTeste())) : null;
   const usuario = await salvarConta({
     nome: `Teste ${perfil}`,
     email: `${perfil.toLowerCase()}-${randomUUID()}${DOMINIO_TESTE}`,
     senha,
     perfil,
+    cursoId: cursoDoEstudante,
   });
-  return { ...usuario, senha };
+  const cursoId = perfil === "Coordenador" && !opcoes.semCurso ? await criarCursoDeTeste(usuario.id) : cursoDoEstudante;
+  return { ...usuario, senha, cursoId: cursoId ?? "" };
 }
 
-export const PREFIXO_DISCIPLINA_TESTE = "vitest-";
+export async function criarCursoDeTeste(coordenadorId: string) {
+  const curso = await prisma.curso.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}curso-${randomUUID()}`, coordenadorId } });
+  return curso.id;
+}
 
-// Remove turmas (e matrículas, em cascata) ligadas a usuários de teste, disciplinas de teste e os usuários.
+let cursoPadrao: Promise<string> | null = null;
+export function cursoPadraoDeTeste() {
+  cursoPadrao ??= (async () => {
+    const coordenador = await salvarConta({ nome: "Teste Coordenador padrão", email: emailDeTeste("coordenador-padrao"), senha: `senha-${randomUUID()}`, perfil: "Coordenador" });
+    return criarCursoDeTeste(coordenador.id);
+  })();
+  return cursoPadrao;
+}
+
+// Remove turmas (e matrículas, em cascata) ligadas a usuários ou cursos de teste, os estudantes de teste, os cursos
+// e disciplinas de teste e os demais usuários de teste, nessa ordem (as chaves do curso são Restrict).
 export async function removerUsuariosDeTeste() {
   const deTeste = { email: { endsWith: DOMINIO_TESTE } };
-  await prisma.turma.deleteMany({ where: { OR: [{ professor: deTeste }, { coordenador: deTeste }] } });
+  const cursoDeTeste = { OR: [{ nome: { startsWith: PREFIXO_DISCIPLINA_TESTE } }, { coordenador: deTeste }] };
+  await prisma.turma.deleteMany({ where: { OR: [{ professor: deTeste }, { curso: cursoDeTeste }] } });
+  await prisma.usuario.deleteMany({ where: { ...deTeste, perfil: "Estudante" } });
+  await prisma.curso.deleteMany({ where: cursoDeTeste });
   await prisma.disciplina.deleteMany({ where: { nome: { startsWith: PREFIXO_DISCIPLINA_TESTE } } });
   await prisma.usuario.deleteMany({ where: deTeste });
+  cursoPadrao = null;
 }
 
 export function emailDeTeste(prefixo: string) {

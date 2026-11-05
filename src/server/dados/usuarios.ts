@@ -18,11 +18,12 @@ export async function buscarUsuarioPorEmail(email: string): Promise<(UsuarioComH
   return prisma.usuario.findUnique({ where: { email: normalizarEmail(email) } });
 }
 
-export async function salvarUsuario(dados: Omit<UsuarioComHash, "id">): Promise<UsuarioComHash> {
+export async function salvarUsuario(dados: Omit<UsuarioComHash, "id"> & { cursoId?: string | null }): Promise<UsuarioComHash> {
   const email = normalizarEmail(dados.email);
+  const cursoId = dados.perfil === "Estudante" ? (dados.cursoId ?? null) : null;
   return prisma.usuario.upsert({
     where: { email },
-    update: { nome: dados.nome, senhaHash: dados.senhaHash, perfil: dados.perfil },
-    create: { ...dados, email },
+    update: { nome: dados.nome, senhaHash: dados.senhaHash, perfil: dados.perfil, cursoId },
+    create: { ...dados, email, cursoId },
   });
 }

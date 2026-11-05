@@ -1,26 +1,31 @@
 import Link from "next/link";
 import { AvisoAlerta } from "@/components/alertas";
 import { Casca } from "@/components/casca";
+import { ListaPrazos } from "@/components/dashboard";
 import { GraficoEvolucao } from "@/components/grafico-evolucao";
+import { MediaFrequenciaPorTurma } from "@/components/graficos-coordenador";
 import { PlanosDoEstudante } from "@/components/planos-estudante";
-import { CabecalhoPagina, Cartao, CLASSE_LINK, corDaFrequencia, corDaMedia, Etiqueta, formatarDataCurta, SeloEntrega, SeloSituacao } from "@/components/ui";
+import {
+  CabecalhoPagina, Cartao, CartaoNumero, CLASSE_LINK, corDaFrequencia, corDaMedia, Etiqueta, formatarDataCurta, formatarNumero as numero,
+  SeloEntrega, SeloSituacao,
+} from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
-import { consultarPainel } from "@/server/academico/painel";
+import { consultarDashboardEstudante } from "@/server/academico/dashboard";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 
-// SPEC-007 (RF-10, UC-02) e SPEC-006 (RF-12): painel acadêmico do estudante, só com os próprios dados.
-// Layout aprovado em docs/layout/prototipo.html#estudante-painel e #estudante-vazio.
-const numero = (v: number) => v.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
-
-export default async function PainelEstudante() {
+// SPEC-016 (RF-24, UC-16): dashboard do estudante, só com os próprios dados (RB-02). Reúne o painel da SPEC-007
+// (turmas, evolução e atividades), os alertas (SPEC-006) e o plano (SPEC-012), com o curso (SPEC-015), a média e a
+// frequência gerais e os próximos prazos (OPEN-035). Layout aprovado em docs/layout/prototipo.html#dash-estudante.
+export default async function DashboardEstudante() {
   const sessao = await exigirAcessoPagina(RECURSOS.painelEstudante);
-  const painel = await consultarPainel(sessao);
+  const painel = await consultarDashboardEstudante(sessao);
   const primeiroNome = sessao.nome.split(" ")[0];
+  const subtitulo = painel.curso ? `${painel.curso} · sua situação acadêmica, atualizada a cada nota, frequência e entrega.` : "Sua situação acadêmica em todas as turmas.";
 
   if (painel.turmas.length === 0) {
     return (
       <Casca sessao={sessao} ativo="inicio">
-        <CabecalhoPagina titulo={`Olá, ${primeiroNome}`} subtitulo="Sua situação acadêmica em todas as turmas." />
+        <CabecalhoPagina titulo={`Olá, ${primeiroNome}`} subtitulo={subtitulo} />
         <Cartao>
           <div className="px-4 py-8 text-center">
             <p className="text-3xl" aria-hidden="true">🎓</p>
@@ -32,12 +37,50 @@ export default async function PainelEstudante() {
     );
   }
 
+  const { resumo } = painel;
+  const comNota = painel.turmas.filter((t) => t.media !== null).length;
   return (
     <Casca sessao={sessao} ativo="inicio">
-      <CabecalhoPagina
-        titulo={`Olá, ${primeiroNome}`}
-        subtitulo="Sua situação acadêmica em todas as turmas, atualizada a cada nota e frequência lançada."
-      />
+      <CabecalhoPagina titulo={`Olá, ${primeiroNome}`} subtitulo={subtitulo} />
+
+      <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <CartaoNumero
+          rotulo="Média geral"
+          valor={resumo.mediaGeral === null ? "—" : numero(resumo.mediaGeral)}
+          cor={corDaMedia(resumo.mediaGeral)}
+          detalhe={comNota === 0 ? "nenhuma nota ainda" : `média das ${comNota} turma(s) com nota`}
+        />
+        <CartaoNumero
+          rotulo="Frequência geral"
+          valor={resumo.frequenciaGeral === null ? "—" : `${numero(resumo.frequenciaGeral)}%`}
+          cor={corDaFrequencia(resumo.frequenciaGeral)}
+          detalhe="abaixo de 75% é Risco"
+        />
+        <CartaoNumero
+          rotulo="Situação nas turmas"
+          valor={
+            resumo.turmasEmRisco + resumo.turmasEmAtencao === 0 ? (
+              <span className="text-normal">● Normal</span>
+            ) : (
+              <span className="flex flex-wrap gap-x-3">
+                {resumo.turmasEmRisco > 0 && <span className="text-risco">■ {resumo.turmasEmRisco}</span>}
+                {resumo.turmasEmAtencao > 0 && <span className="text-atencao">▲ {resumo.turmasEmAtencao}</span>}
+              </span>
+            )
+          }
+          detalhe={`${resumo.turmasEmRisco} em Risco, ${resumo.turmasEmAtencao} em Atenção`}
+        />
+        <CartaoNumero
+          rotulo="Atividades"
+          valor={resumo.pendentes + resumo.atrasadas}
+          detalhe={
+            <>
+              <span className={resumo.atrasadas > 0 ? "font-semibold text-risco" : ""}>{resumo.atrasadas} atrasada(s)</span> · {resumo.pendentes} pendente(s)
+            </>
+          }
+          href="/estudante/atividades"
+        />
+      </div>
 
       {painel.alertas.length > 0 && (
         <div className="mb-5 space-y-3">
@@ -45,9 +88,27 @@ export default async function PainelEstudante() {
         </div>
       )}
 
+      <div className="mb-5 grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
+        <Cartao titulo="Média e frequência por disciplina">
+          <MediaFrequenciaPorTurma
+            descricao="Média e frequência por disciplina"
+            turmas={painel.turmas.map((t) => ({ id: t.id, rotulo: t.disciplina, mediaTurma: t.media, frequenciaMedia: t.frequencia }))}
+          />
+        </Cartao>
+        <Cartao titulo="Próximos prazos" acao={<span className="text-[13px] text-mudo">próximos 7 dias</span>}>
+          <ListaPrazos
+            hoje={painel.hoje}
+            vazio="Nenhuma entrega pendente nos próximos 7 dias. 👏"
+            itens={painel.proximosPrazos.map((a) => ({ id: a.id, titulo: a.descricao, detalhe: a.disciplina, prazo: a.prazo }))}
+          />
+          <Link href="/estudante/atividades" className={`mt-3 inline-block ${CLASSE_LINK}`}>Ver todas as minhas atividades →</Link>
+        </Cartao>
+      </div>
+
       {/* SPEC-012 / RF-19: planos de recuperação do próprio estudante, só leitura. */}
       <PlanosDoEstudante planos={painel.planos} />
 
+      <h2 className="mt-2 mb-3 text-[17px] font-semibold">Minhas turmas</h2>
       <div className="grid gap-5 lg:grid-cols-2">
         {painel.turmas.map((t) => (
           <section
@@ -63,7 +124,7 @@ export default async function PainelEstudante() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <Etiqueta>{t.periodo}</Etiqueta>
-                <h2 className="mt-2 font-semibold">{t.disciplina}</h2>
+                <h3 className="mt-2 font-semibold">{t.disciplina}</h3>
                 <p className="mt-0.5 text-sm text-mudo">{t.nome} · Prof. {t.professor}</p>
               </div>
               {t.situacao ? <SeloSituacao situacao={t.situacao} /> : <span className="text-sm text-mudo">Sem dados ainda</span>}
@@ -111,7 +172,6 @@ export default async function PainelEstudante() {
             </tbody>
           </table>
         )}
-        <Link href="/estudante/atividades" className={`mt-3 inline-block ${CLASSE_LINK}`}>Ver todas as minhas atividades →</Link>
       </Cartao>
     </Casca>
   );

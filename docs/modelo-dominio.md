@@ -3,8 +3,9 @@
 
 ## Classes e responsabilidades
 
-- **Usuario** — id, nome, email, senhaHash, perfil {Estudante, Professor, Coordenador, Administrador}, ativo. Representa qualquer pessoa que acessa o sistema; o atributo `perfil` define o papel (um usuário, não classes separadas). `ativo` (padrão: sim) é alterado só pelo Administrador (RB-14, OPEN-025); conta inativa não entra no sistema, mas seus dados permanecem. `trocarSenha` (padrão: não) marca conta criada pela tela que ainda não definiu a própria senha (RB-15, OPEN-026).
-- **Turma** — id, nome, período.
+- **Usuario** — id, nome, email, senhaHash, perfil {Estudante, Professor, Coordenador, Administrador}, ativo. Representa qualquer pessoa que acessa o sistema; o atributo `perfil` define o papel (um usuário, não classes separadas). `ativo` (padrão: sim) é alterado só pelo Administrador (RB-14, OPEN-025); conta inativa não entra no sistema, mas seus dados permanecem. `trocarSenha` (padrão: não) marca conta criada pela tela que ainda não definiu a própria senha (RB-15, OPEN-026). `criadaEm` registra quando a conta foi criada (dashboard do administrador, OPEN-034).
+- **Curso** — id, nome (único). Organiza a grade de disciplinas, as turmas e os estudantes; tem exatamente 1 coordenador (RB-17, OPEN-030).
+- **Turma** — id, nome, período. Pertence a exatamente 1 Curso (RB-18, OPEN-031).
 - **Disciplina** — id, nome, cargaHoraria.
 - **Avaliacao** — id, nome/tipo, peso, data.
 - **Nota** — id, valor, dataRegistro.
@@ -29,7 +30,10 @@
 - Uma Atividade gera de 0 a N Entregas (uma por estudante); cada Entrega refere-se a exatamente 1 Atividade e 1 Estudante.
 - Um Estudante possui, por Turma, exatamente 1 Indicador Acadêmico vigente (RB-09, RB-10).
 - Um Estudante em Risco pode ter de 0 a N Planos de Recuperação (RB-11), no máximo 1 Ativo por Turma; cada Plano pertence a exatamente 1 Turma, é responsabilidade de exatamente 1 Professor (o da turma) e contém de 1 a N Itens previstos (RB-12, OPEN-021).
-- Um Usuario (Coordenador) é responsável por 0 a N Turmas; cada Turma pode ter, opcionalmente, 1 Coordenador responsável.
+- Um Usuario (Coordenador) coordena de 0 a N Cursos; cada Curso tem exatamente 1 Coordenador (RB-17, OPEN-030). As turmas sob responsabilidade do coordenador são as turmas dos cursos que ele coordena (substitui o vínculo direto entre coordenador e turma).
+- Um Curso tem de 0 a N Disciplinas na grade e uma Disciplina faz parte de 1 a N Cursos (N:M, OPEN-031, OPEN-033).
+- Um Curso possui de 0 a N Turmas; cada Turma pertence a exatamente 1 Curso, e a Disciplina da Turma faz parte da grade desse Curso (RB-18).
+- Um Curso possui de 0 a N Estudantes; cada Usuario com perfil Estudante pertence a exatamente 1 Curso e só se matricula em Turmas desse Curso (RB-19, OPEN-032).
 - Uma Avaliação acumula de 0 a N registros de HistoricoNota; cada registro refere-se a exatamente 1 Avaliação, 1 Estudante e 1 Usuario autor (OPEN-028).
 
 
@@ -45,6 +49,11 @@ classDiagram
       +perfil
       +ativo
       +trocarSenha
+      +criadaEm
+    }
+    class Curso {
+      +id
+      +nome
     }
     class Turma {
       +id
@@ -119,5 +128,8 @@ classDiagram
     }
     PlanoRecuperacao "1" --> "1..*" ItemPlano : preve
     Turma "1" --> "0..*" PlanoRecuperacao
-    Usuario "1" --> "0..*" Turma : responsavel (Coordenador)
+    Usuario "1" --> "0..*" Curso : coordena (Coordenador)
+    Curso "0..*" -- "1..*" Disciplina : grade
+    Curso "1" --> "0..*" Turma : oferece
+    Curso "1" --> "0..*" Usuario : pertence (Estudante)
 ```

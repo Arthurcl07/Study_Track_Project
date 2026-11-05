@@ -3,6 +3,8 @@
 // SPEC-003: Avaliacao (estrutura), Nota, Frequencia e IndicadorAcademico.
 // SPEC-005: Atividade e Entrega (status da entrega é derivado na leitura, OPEN-010).
 // SPEC-008: PlanoRecuperacao e ItemPlano (OPEN-021; progresso derivado dos itens, RB-12).
+// SPEC-015: Curso, grade Curso–Disciplina (N:M), turma e estudante de um curso (OPEN-030 a OPEN-033).
+// SPEC-016: Usuario.criadaEm (dashboard do administrador, RF-25).
 
 generator client {
   provider = "prisma-client-js"
@@ -33,9 +35,14 @@ model Usuario {
   ativo       Boolean @default(true)
   // SPEC-011 / RB-15: conta criada pela tela usa senha provisória até o dono definir a própria.
   trocarSenha Boolean @default(false)
+  // SPEC-016 / RF-25: data de criação da conta (contas criadas recentemente no dashboard do administrador).
+  criadaEm    DateTime @default(now())
+  // SPEC-015 / RB-19 (INV-015-05): preenchido se e somente se o perfil for Estudante (CHECK na migração).
+  cursoId     String?
+  curso       Curso?  @relation("EstudanteDoCurso", fields: [cursoId], references: [id], onDelete: Restrict)
 
   turmasLecionadas       Turma[]              @relation("ProfessorDaTurma")
-  turmasCoordenadas      Turma[]              @relation("CoordenadorDaTurma")
+  cursosCoordenados      Curso[]              @relation("CoordenadorDoCurso")
   matriculas             Matricula[]
   notas                  Nota[]
   frequencias            Frequencia[]
@@ -45,6 +52,34 @@ model Usuario {
   historicoComoAutor     HistoricoNota[]      @relation("AutorDoHistorico")
   planosComoEstudante    PlanoRecuperacao[]   @relation("EstudanteDoPlano")
   planosComoProfessor    PlanoRecuperacao[]   @relation("ProfessorDoPlano")
+
+  @@index([cursoId])
+}
+
+// SPEC-015 / RB-17 (INV-015-01, INV-015-02): nome único e exatamente 1 coordenador; um coordenador
+// pode coordenar vários cursos (OPEN-030).
+model Curso {
+  id            String            @id @default(uuid())
+  nome          String            @unique
+  coordenadorId String
+  coordenador   Usuario           @relation("CoordenadorDoCurso", fields: [coordenadorId], references: [id], onDelete: Restrict)
+  grade         CursoDisciplina[]
+  turmas        Turma[]
+  estudantes    Usuario[]         @relation("EstudanteDoCurso")
+
+  @@index([coordenadorId])
+}
+
+// SPEC-015 / OPEN-031 (INV-015-04): grade do curso — a disciplina aparece no máximo 1 vez por curso
+// e pode estar em vários cursos.
+model CursoDisciplina {
+  cursoId      String
+  curso        Curso      @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  disciplinaId String
+  disciplina   Disciplina @relation(fields: [disciplinaId], references: [id], onDelete: Cascade)
+
+  @@id([cursoId, disciplinaId])
+  @@index([disciplinaId])
 }
 
 model Disciplina {
@@ -53,10 +88,12 @@ model Disciplina {
   // Inteiro maior que zero (OPEN-009); garantido também por CHECK na migração.
   cargaHoraria Int
   turmas       Turma[]
+  cursos       CursoDisciplina[]
 }
 
 // INV-002-02: toda turma tem exatamente 1 disciplina e 1 professor responsável.
-// INV-002-03: de 0 a 1 coordenador responsável.
+// SPEC-015 / RB-18 (INV-015-03): exatamente 1 curso, cuja grade contém a disciplina da turma. O coordenador
+// responsável é o do curso (substitui o coordenador gravado na turma, OPEN-030).
 model Turma {
   id            String               @id @default(uuid())
   nome          String
@@ -65,8 +102,8 @@ model Turma {
   disciplina    Disciplina           @relation(fields: [disciplinaId], references: [id], onDelete: Restrict)
   professorId   String
   professor     Usuario              @relation("ProfessorDaTurma", fields: [professorId], references: [id], onDelete: Restrict)
-  coordenadorId String?
-  coordenador   Usuario?             @relation("CoordenadorDaTurma", fields: [coordenadorId], references: [id], onDelete: SetNull)
+  cursoId       String
+  curso         Curso                @relation(fields: [cursoId], references: [id], onDelete: Restrict)
   matriculas    Matricula[]
   avaliacoes    Avaliacao[]
   frequencias   Frequencia[]
@@ -75,7 +112,7 @@ model Turma {
   planos        PlanoRecuperacao[]
 
   @@index([professorId])
-  @@index([coordenadorId])
+  @@index([cursoId])
 }
 
 // INV-002-04: matrícula N:M entre estudantes e turmas, sem duplicidade.

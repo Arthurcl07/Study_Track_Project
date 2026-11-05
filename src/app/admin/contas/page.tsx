@@ -5,15 +5,16 @@ import { CabecalhoPagina, Cartao } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { PERFIS, ehPerfilValido } from "@/domain/perfil";
 import { listarContas } from "@/server/academico/contas";
+import { listarCursosResumidos } from "@/server/dados/cursos";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 
 // SPEC-010 / RF-16 (UC-11): contas do sistema, só para o Administrador. Não mostra dados acadêmicos (RB-13).
-// Layout aprovado em docs/layout/prototipo.html#admin-contas e #admin-contas-erro.
+// Layout aprovado em docs/layout/prototipo.html#admin-contas, #admin-contas-erro e #admin-contas-curso (SPEC-015).
 export default async function Contas({ searchParams }: { searchParams: Promise<{ perfil?: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.gestaoContas);
   const { perfil } = await searchParams;
   const filtro = ehPerfilValido(perfil) ? perfil : "";
-  const contas = await listarContas(filtro || undefined);
+  const [contas, cursos] = await Promise.all([listarContas(filtro || undefined), listarCursosResumidos()]);
 
   return (
     <Casca sessao={sessao} ativo="contas">
@@ -32,6 +33,14 @@ export default async function Contas({ searchParams }: { searchParams: Promise<{
               { nome: "email", rotulo: "E-mail", tipo: "email" },
               { nome: "senha", rotulo: "Senha inicial (mínimo 8 caracteres)", tipo: "password" },
               { nome: "perfil", rotulo: "Perfil", tipo: "select", opcoes: PERFIS.map((p) => ({ valor: p, rotulo: p })) },
+              // SPEC-015 / RB-19: conta de Estudante exige o curso.
+              {
+                nome: "cursoId",
+                rotulo: "Curso",
+                tipo: "select",
+                opcoes: cursos.map((c) => ({ valor: c.id, rotulo: c.nome })),
+                mostrarSe: { campo: "perfil", valor: "Estudante" },
+              },
             ]}
           />
           <p className="mt-3 text-sm text-mudo">Estudantes também podem ser cadastrados pela coordenação, já matriculados na turma.</p>

@@ -18,9 +18,9 @@ Cláusula EARS: WHEN um professor solicitar a visualização de dados acadêmico
 Aplicada por: RF-02, RF-13.
 
 RB-04 — Acesso do coordenador
-Descrição: Um coordenador visualiza os indicadores apenas das turmas sob sua responsabilidade.
-Cláusula EARS: WHEN um coordenador solicitar a visualização de indicadores acadêmicos, o sistema SHALL exibir apenas os indicadores das turmas sob sua responsabilidade.
-Aplicada por: RF-02, RF-15.
+Descrição: Um coordenador visualiza os indicadores apenas das turmas sob sua responsabilidade, que são as turmas dos cursos que ele coordena (desde 2026-10-22, OPEN-030).
+Cláusula EARS: WHEN um coordenador solicitar a visualização de indicadores acadêmicos, o sistema SHALL exibir apenas os indicadores das turmas dos cursos que ele coordena.
+Aplicada por: RF-02, RF-15, RF-21, RF-24.
 
 RB-05 — Frequência mínima
 Descrição: Frequência inferior a 75% caracteriza risco acadêmico, independentemente da média.
@@ -68,9 +68,9 @@ Cláusula EARS: O sistema SHALL calcular o progresso de um plano de recuperaçã
 Aplicada por: RF-14.
 
 RB-13 — Acesso do administrador
-Descrição: O administrador gerencia contas e não acessa dados acadêmicos (privilégio mínimo, RNF-05).
+Descrição: O administrador gerencia contas e cursos (nome e coordenador, OPEN-034) e não acessa dados acadêmicos (privilégio mínimo, RNF-05). No dashboard ele vê apenas contagens de contas e da estrutura dos cursos.
 Cláusula EARS: WHEN um administrador solicitar dados acadêmicos (notas, frequência, turmas, indicadores, planos ou relatórios), o sistema SHALL negar o acesso.
-Aplicada por: RF-02, RF-16.
+Aplicada por: RF-02, RF-16, RF-22, RF-25.
 
 RB-14 — Conta desativada
 Descrição: Conta desativada não acessa o sistema, mas seus dados continuam guardados e a conta pode ser reativada.
@@ -78,7 +78,8 @@ Cláusula EARS:
   IF uma conta estiver desativada, THEN o sistema SHALL recusar o login e as requisições feitas com uma sessão dessa conta.
   IF o administrador tentar desativar a própria conta, THEN o sistema SHALL impedir a desativação.
   IF o professor responsável por ao menos uma turma for desativado, THEN o sistema SHALL impedir a desativação.
-Aplicada por: RF-01, RF-16.
+  IF o coordenador de ao menos um curso for desativado, THEN o sistema SHALL impedir a desativação (incluído em 2026-10-22, OPEN-030).
+Aplicada por: RF-01, RF-16, RF-22.
 
 RB-15 — Senha inicial provisória
 Descrição: A senha definida por outra pessoa ao criar a conta é provisória; o dono da conta define a própria senha no primeiro acesso.
@@ -94,10 +95,32 @@ Cláusula EARS:
   O sistema SHALL NOT oferecer alteração nem exclusão de registros do histórico.
 Aplicada por: RF-20.
 
+RB-17 — Coordenação de curso
+Descrição: Cada curso tem exatamente um coordenador; um coordenador pode coordenar vários cursos (OPEN-030).
+Cláusula EARS:
+  O sistema SHALL manter cada curso com exatamente um coordenador, usuário com perfil Coordenador e conta ativa.
+  IF o usuário escolhido como coordenador não tiver perfil Coordenador ou estiver desativado, THEN o sistema SHALL impedir a operação.
+Aplicada por: RF-22.
+
+RB-18 — Turma de um curso
+Descrição: Uma disciplina pode fazer parte da grade de vários cursos, mas cada turma pertence a exatamente um curso, e a disciplina da turma está na grade desse curso (OPEN-031).
+Cláusula EARS:
+  WHEN uma turma for cadastrada, o sistema SHALL vinculá-la a exatamente um curso.
+  IF a disciplina escolhida não fizer parte da grade do curso da turma, THEN o sistema SHALL impedir o cadastro.
+Aplicada por: RF-04, RF-23.
+
+RB-19 — Estudante de um curso
+Descrição: Todo estudante pertence a exatamente um curso e só é matriculado em turmas desse curso (OPEN-032).
+Cláusula EARS:
+  WHEN uma conta de estudante for criada, o sistema SHALL vinculá-la a exatamente um curso.
+  IF o curso da turma for diferente do curso do estudante, THEN o sistema SHALL impedir a matrícula.
+Aplicada por: RF-03, RF-16.
+
 
 ## Resumo das regras
 
 - O sistema deve operar com base em perfis e autorizações distintas.
 - O sistema deve aplicar critérios acadêmicos para classificação de risco e atenção.
 - O sistema deve controlar acesso aos dados conforme a responsabilidade do usuário.
+- O sistema deve organizar disciplinas, turmas e estudantes por curso, cada curso com um coordenador.
 - O sistema deve acompanhar desempenho, frequência e prazos para gerar alertas e planos de recuperação.

@@ -1,7 +1,8 @@
 // Apresentação dos alertas da SPEC-006 (RF-12): sempre cor + símbolo + rótulo (RNF-06).
+import Link from "next/link";
 import { FREQUENCIA_MINIMA, MEDIA_NORMAL, MEDIA_RISCO } from "@/domain/situacao-academica";
 import type { Alerta } from "@/server/academico/painel";
-import { Cartao, SeloSituacao } from "./ui";
+import { CLASSE_LINK, Cartao, SeloSituacao } from "./ui";
 
 const formatarNumero = (v: number) => v.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
 
@@ -33,10 +34,13 @@ export function AvisoAlerta({ alerta }: { alerta: Alerta }) {
 }
 
 // Tabela "Alertas das minhas turmas" do professor; o valor que causou o alerta aparece em cor.
-export function TabelaAlertasProfessor({ alertas }: { alertas: Alerta[] }) {
+// SPEC-016: no dashboard mostra só as primeiras linhas (Risco primeiro) com o atalho "Ver todos".
+export function TabelaAlertasProfessor({ alertas, limite, verTodos }: { alertas: Alerta[]; limite?: number; verTodos?: string }) {
   if (alertas.length === 0) return null;
+  const visiveis = limite ? alertas.slice(0, limite) : alertas;
+  const acao = verTodos && visiveis.length < alertas.length ? <Link href={verTodos} className={CLASSE_LINK}>Ver todos →</Link> : undefined;
   return (
-    <Cartao titulo={`Alertas das minhas turmas (${alertas.length})`} className="mb-5">
+    <Cartao titulo={`Alertas das minhas turmas (${alertas.length})`} acao={acao} className="mb-5">
       <table className="tabela-responsiva w-full text-[15px]">
         <thead>
           <tr className="text-left text-xs font-semibold tracking-wide text-mudo uppercase">
@@ -48,7 +52,7 @@ export function TabelaAlertasProfessor({ alertas }: { alertas: Alerta[] }) {
           </tr>
         </thead>
         <tbody>
-          {alertas.map((a) => {
+          {visiveis.map((a) => {
             const mediaBaixa = a.media !== null && a.media < MEDIA_NORMAL;
             const frequenciaBaixa = a.frequencia !== null && a.frequencia < FREQUENCIA_MINIMA;
             return (

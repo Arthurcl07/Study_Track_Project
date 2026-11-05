@@ -4,9 +4,15 @@
   
 - **Professor**: usuário com perfil Professor; leciona turmas e registra notas, frequência e atividades.
   
-- **Coordenador**: usuário com perfil Coordenador; acompanha indicadores das turmas sob sua responsabilidade.
+- **Coordenador**: usuário com perfil Coordenador; coordena um ou mais cursos e acompanha os indicadores das turmas desses cursos.
   
-- **Turma**: agrupamento de estudantes vinculado a uma disciplina e a um professor responsável, em um período.
+- **Curso**: graduação (ex.: Engenharia da Computação) com um coordenador, uma grade de disciplinas, turmas e estudantes.
+  
+- **Grade do curso**: conjunto de disciplinas que fazem parte de um curso; uma disciplina pode estar na grade de vários cursos.
+  
+- **Dashboard**: tela inicial de cada perfil, com os principais números e gráficos do seu escopo.
+  
+- **Turma**: agrupamento de estudantes de um curso, vinculado a uma disciplina da grade desse curso e a um professor responsável, em um período.
   
 - **Disciplina**: unidade curricular que organiza conteúdo e turmas.
   

@@ -17,6 +17,7 @@ import {
   removerUsuariosDeTeste,
   requisicaoComSessao,
   requisicaoJson,
+  cursoPadraoDeTeste,
 } from "../apoio";
 
 const API = "http://localhost/api";
@@ -27,8 +28,8 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-async function entrar(perfil: "Estudante" | "Professor" | "Coordenador") {
-  const usuario = await criarUsuarioDeTeste(perfil);
+async function entrar(perfil: "Estudante" | "Professor" | "Coordenador", opcoes: { cursoId?: string } = {}) {
+  const usuario = await criarUsuarioDeTeste(perfil, opcoes);
   return { usuario, token: await entrarComo(usuario.email, usuario.senha) };
 }
 
@@ -119,7 +120,7 @@ describe("SPEC-002 — cadastros e vínculos", () => {
   it("AC-002-03: coordenador cadastra disciplina e turma e associa professor e estudantes", async () => {
     const coordenador = await entrar("Coordenador");
     const professor = await criarUsuarioDeTeste("Professor");
-    const estudante = await criarUsuarioDeTeste("Estudante");
+    const estudante = await criarUsuarioDeTeste("Estudante", { cursoId: coordenador.usuario.cursoId });
 
     const { resposta, turma, disciplinaId } = await criarTurmaPelaApi(coordenador.token, professor.id);
     expect(resposta.status).toBe(201);
@@ -135,7 +136,8 @@ describe("SPEC-002 — cadastros e vínculos", () => {
     const consultada = await (await buscarTurmaApi(requisicaoComSessao(`${API}/turmas/${turma.id}`, coordenador.token), parametros(turma.id))).json();
     expect(consultada.estudantes.map((e: { id: string }) => e.id)).toEqual([estudante.id]);
     const noBanco = await prisma.turma.findUniqueOrThrow({ where: { id: turma.id } });
-    expect(noBanco.coordenadorId).toBe(coordenador.usuario.id);
+    // SPEC-015: a turma fica no curso do coordenador (o responsável vem do curso, RB-04).
+    expect(noBanco.cursoId).toBe(coordenador.usuario.cursoId);
   });
 
   it("AC-002-04: usuário sem permissão tem o cadastro negado no servidor", async () => {
@@ -197,31 +199,28 @@ describe("SPEC-002 — cadastros e vínculos", () => {
   it("Caso de teste 12.3: o banco recusa turma sem disciplina válida e disciplina com carga horária zero", async () => {
     const professor = await criarUsuarioDeTeste("Professor");
     await expect(
-      prisma.turma.create({ data: { nome: "Sem disciplina", periodo: "2026/2", disciplinaId: randomUUID(), professorId: professor.id } }),
+      prisma.turma.create({ data: { nome: "Sem disciplina", periodo: "2026/2", disciplinaId: randomUUID(), professorId: professor.id, cursoId: await cursoPadraoDeTeste() } }),
     ).rejects.toThrow();
     await expect(
       prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 0 } }),
     ).rejects.toThrow();
   });
 
-  it("INV-002-03: turma pode ficar sem coordenador e um coordenador pode responder por várias turmas", async () => {
+  // SPEC-015 substituiu o coordenador gravado na turma (0 ou 1) pelo coordenador do curso (OPEN-030).
+  it("INV-002-03 (SPEC-015): um coordenador responde por várias turmas, as do curso que coordena", async () => {
     const coordenador = await entrar("Coordenador");
     const professor = await criarUsuarioDeTeste("Professor");
     const primeira = await criarTurmaPelaApi(coordenador.token, professor.id);
     const segunda = await criarTurmaPelaApi(coordenador.token, professor.id);
-    const semCoordenador = await prisma.turma.create({
-      data: { nome: "Sem coordenador", periodo: "2026/2", disciplinaId: primeira.disciplinaId, professorId: professor.id },
-    });
 
-    expect(semCoordenador.coordenadorId).toBeNull();
-    expect(await prisma.turma.count({ where: { coordenadorId: coordenador.usuario.id } })).toBe(2);
+    expect(await prisma.turma.count({ where: { curso: { coordenadorId: coordenador.usuario.id } } })).toBe(2);
     expect([primeira.turma.id, segunda.turma.id]).toHaveLength(2);
   });
 
   it("INV-002-04: matrícula é N:M e não duplica", async () => {
     const coordenador = await entrar("Coordenador");
     const professor = await criarUsuarioDeTeste("Professor");
-    const estudante = await criarUsuarioDeTeste("Estudante");
+    const estudante = await criarUsuarioDeTeste("Estudante", { cursoId: coordenador.usuario.cursoId });
     const a = (await criarTurmaPelaApi(coordenador.token, professor.id)).turma;
     const b = (await criarTurmaPelaApi(coordenador.token, professor.id)).turma;
 
@@ -241,8 +240,8 @@ describe("SPEC-002 — escopo das consultas", () => {
     const outroCoordenador = await entrar("Coordenador");
     const professor = await entrar("Professor");
     const outroProfessor = await criarUsuarioDeTeste("Professor");
-    const estudante = await entrar("Estudante");
-    const colega = await criarUsuarioDeTeste("Estudante");
+    const estudante = await entrar("Estudante", { cursoId: coordenador.usuario.cursoId });
+    const colega = await criarUsuarioDeTeste("Estudante", { cursoId: coordenador.usuario.cursoId });
 
     const minha = (await criarTurmaPelaApi(coordenador.token, professor.usuario.id)).turma;
     const alheia = (await criarTurmaPelaApi(outroCoordenador.token, outroProfessor.id)).turma;

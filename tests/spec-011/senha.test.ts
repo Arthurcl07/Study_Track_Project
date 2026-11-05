@@ -9,6 +9,7 @@ import { GET as turmasApi } from "@/app/api/turmas/route";
 import { POST as cadastrarEstudanteApi } from "@/app/api/turmas/[id]/estudantes/route";
 import { prisma } from "@/server/dados/prisma";
 import {
+  cursoPadraoDeTeste,
   PREFIXO_DISCIPLINA_TESTE, criarUsuarioDeTeste, emailDeTeste, entrarComo, parametros, removerUsuariosDeTeste,
   requisicaoComSessao, requisicaoDeLogin, requisicaoJson,
 } from "../apoio";
@@ -37,7 +38,7 @@ async function contaCriadaPeloAdmin() {
   const admin = await criarUsuarioDeTeste("Administrador");
   const tokenAdmin = await entrarComo(admin.email, admin.senha);
   const email = emailDeTeste("nova");
-  await criarContaApi(requisicaoJson("http://localhost/api/contas", { nome: "Nova Pessoa", email, senha: SENHA_INICIAL, perfil: "Estudante" }, tokenAdmin));
+  await criarContaApi(requisicaoJson("http://localhost/api/contas", { nome: "Nova Pessoa", email, senha: SENHA_INICIAL, perfil: "Estudante", cursoId: await cursoPadraoDeTeste() }, tokenAdmin));
   return { email, token: await entrarComo(email, SENHA_INICIAL) };
 }
 
@@ -74,7 +75,7 @@ describe("SPEC-011 — senha provisória e troca", () => {
     const coordenador = await criarUsuarioDeTeste("Coordenador");
     const professor = await criarUsuarioDeTeste("Professor");
     const disciplina = await prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 60 } });
-    const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, coordenadorId: coordenador.id } });
+    const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, cursoId: coordenador.cursoId } });
     const token = await entrarComo(coordenador.email, coordenador.senha);
     const email = emailDeTeste("matriculado");
 

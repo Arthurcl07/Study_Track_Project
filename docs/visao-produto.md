@@ -65,8 +65,9 @@
 ---
 
 ## Resumo das regras
-- O StudyTrack é uma plataforma de acompanhamento acadêmico com 3 perfis: Estudante,
-  Professor e Coordenador.
+- O StudyTrack é uma plataforma de acompanhamento acadêmico com 4 perfis: Estudante,
+  Professor, Coordenador e Administrador (este desde 2026-10-17, OPEN-025, só para contas e
+  cursos), organizada por cursos, cada um com o seu coordenador (desde 2026-10-22, OPEN-030).
 - O sistema resolve a falta de visibilidade objetiva sobre desempenho e risco acadêmico.
 - O valor central é a classificação automática (Normal/Atenção/Risco) e os alertas
   derivados dela, apoiando estudantes e professores a agir antes da reprovação.

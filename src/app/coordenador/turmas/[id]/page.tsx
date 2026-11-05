@@ -20,7 +20,7 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
     <Casca sessao={sessao} ativo="turmas">
       <CabecalhoPagina
         titulo={`${turma.nome} · ${turma.disciplina.nome}`}
-        subtitulo={`Período ${turma.periodo} · Professor: ${turma.professor.nome}`}
+        subtitulo={`${turma.curso.nome} · Período ${turma.periodo} · Professor: ${turma.professor.nome}`}
         voltar={{ href: "/coordenador/turmas", rotulo: "Turmas e estudantes" }}
       />
       <div className="grid items-start gap-5 lg:grid-cols-[1.6fr_1fr]">
@@ -51,7 +51,7 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
             <FormularioApi
               url={`/api/turmas/${turma.id}/estudantes`}
               textoBotao="Cadastrar estudante"
-              mensagemSucesso="Estudante cadastrado e matriculado."
+              mensagemSucesso={`Estudante cadastrado no curso ${turma.curso.nome} e matriculado.`}
               campos={[
                 { nome: "nome", rotulo: "Nome" },
                 { nome: "email", rotulo: "E-mail", tipo: "email" },
@@ -60,6 +60,7 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
             />
           </Cartao>
           <Cartao titulo="Matricular estudante já cadastrado">
+            <p className="mb-3 text-sm text-mudo">Só estudantes de {turma.curso.nome}.</p>
             <FormularioApi
               url={`/api/turmas/${turma.id}/matriculas`}
               textoBotao="Matricular"

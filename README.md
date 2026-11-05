@@ -31,7 +31,9 @@ SPEC-008 (dashboard da turma do professor e plano de recuperação para estudant
 (relatório acadêmico para Professor e Coordenador, em tela e em CSV) e SPEC-010 (perfil Administrador, que cria,
 desativa e reativa contas, e troca do professor da turma pelo coordenador). Também: senha própria com troca
 obrigatória no primeiro acesso de contas criadas pela tela (SPEC-011), plano de recuperação visível ao
-estudante (SPEC-012), histórico de notas (SPEC-013) e painel do coordenador com gráficos (SPEC-014).
+estudante (SPEC-012), histórico de notas (SPEC-013), painel do coordenador com gráficos (SPEC-014), cursos com
+coordenação própria e disciplinas compartilhadas entre cursos (SPEC-015) e um dashboard para cada perfil, aberto logo
+depois do login (SPEC-016).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 
@@ -106,10 +108,13 @@ com 2 de 4 itens concluídos. Elisa Rocha fica em Risco sem plano, para demonstr
 A situação de cada um sai do cálculo do sistema (`recalcularIndicador`), não é gravada à mão.
 Roteiro de apresentação: `docs/roteiro-apresentacao.md`.
 
-**Instituição simulada** (`prisma/simulacao.ts`, dados fictícios): 6 disciplinas (Banco de Dados, Engenharia de
-Software, Estruturas de Dados, Sistemas Operacionais, Redes de Computadores e Cálculo I), 6 turmas, 5 professores,
-uma segunda coordenadora (Paula Martins) e 50 estudantes, com provas, notas, frequência, atividades com entregas
-no prazo, atrasadas e faltando, planos de recuperação e histórico de notas. Os números são sempre os mesmos
+**Instituição simulada** (`prisma/simulacao.ts`, dados fictícios, SPEC-015 / OPEN-036): 6 cursos — Engenharia da
+Computação e Ciência da Computação (Marina Alves), Engenharia Elétrica (Paula Martins), Sistemas de Informação
+(Helena Prado), Publicidade e Propaganda (Sérgio Bastos) e Administração (Beatriz Moura) —, 15 disciplinas (Cálculo I,
+Física I, Algoritmos, Banco de Dados e Fundamentos de Marketing estão em mais de um curso, cada curso com a própria
+turma), 15 turmas, 8 professores e 70 estudantes, cada um num curso, com provas, notas, frequência, atividades com
+entregas no prazo, atrasadas, faltando e com prazo nos próximos dias, planos de recuperação e histórico de notas.
+Lista completa de contas, cursos e turmas: `CONTAS-DE-TESTE.txt`. Os números são sempre os mesmos
 (gerador com semente fixa) e rodar o seed de novo não duplica nada.
 
 Gestão de contas da SPEC-010 (OPEN-025): entre como `admin@studytrack.test` e use **Contas** para criar

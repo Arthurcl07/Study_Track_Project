@@ -25,8 +25,14 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | RF-19 | Plano visível ao estudante | RB-02, RB-12 | UC-02 | SPEC-012 | — | `tests/spec-012/` | SPEC-011-014.md |
 | RF-20 | Histórico de notas | RB-03, RB-04, RB-16 | UC-03, UC-13 | SPEC-013 | — | `tests/spec-013/` | SPEC-011-014.md |
 | RF-21 | Painel do coordenador | RB-04, RB-09 | — | SPEC-014 | — | `tests/spec-014/` | SPEC-011-014.md |
+| RF-22 | Cursos | RB-13, RB-14, RB-17 | UC-14 | SPEC-015 | — | `tests/spec-015/` | SPEC-015-016.md |
+| RF-23 | Grade do curso | RB-04, RB-18 | UC-15, UC-07 | SPEC-015 | — | `tests/spec-015/` | SPEC-015-016.md |
+| RF-24 | Dashboard inicial por perfil | RB-02, RB-03, RB-04, RB-09 | UC-16 | SPEC-016 | — | `tests/spec-016/` | SPEC-015-016.md |
+| RF-25 | Dashboard do administrador | RB-13 | UC-16 | SPEC-016 | — | `tests/spec-016/` | SPEC-015-016.md |
 
 ## Lacunas conhecidas
+
+- RF-22 a RF-25 (SPEC-015 e SPEC-016) sem issue: pedido direto de Arthur em 2026-10-22, registrado nos OPEN-030 a OPEN-036.
 
 - Todo RF tem caso de uso: RF-03, RF-04, RF-07, RF-08 e RF-13 ganharam os UC-06 a UC-10 em 2026-10-17.
 - RB-08 (atraso) e RB-12 (progresso do plano) viraram contrato com o fechamento do OPEN-010, do OPEN-003 e do OPEN-021.
@@ -50,3 +56,5 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | SPEC-012 | PlanoRecuperacao, ItemPlano |
 | SPEC-013 | HistoricoNota, Nota |
 | SPEC-014 | IndicadorAcademico, Turma, Atividade, Entrega (leitura) |
+| SPEC-015 | Curso, CursoDisciplina, Turma (curso), Usuario (curso do estudante) |
+| SPEC-016 | Usuario (criadaEm); leitura de IndicadorAcademico, Turma, Curso, Atividade, Entrega, PlanoRecuperacao |

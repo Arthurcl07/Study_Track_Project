@@ -50,7 +50,7 @@ function filtroIndicadoresDoEscopo(sessao: Sessao): Prisma.IndicadorAcademicoWhe
     case "Professor":
       return { turma: { professorId: sessao.usuarioId } };
     case "Coordenador":
-      return { turma: { coordenadorId: sessao.usuarioId } };
+      return { turma: { curso: { coordenadorId: sessao.usuarioId } } };
     default:
       return { id: { in: [] } };
   }

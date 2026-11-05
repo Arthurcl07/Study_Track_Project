@@ -6,6 +6,7 @@ import { PATCH as marcarItemApi } from "@/app/api/planos/itens/[id]/route";
 import { prisma } from "@/server/dados/prisma";
 import {
   PREFIXO_DISCIPLINA_TESTE, criarUsuarioDeTeste, entrarComo, parametros, removerUsuariosDeTeste, requisicaoComSessao, requisicaoJson,
+  cursoPadraoDeTeste,
 } from "../apoio";
 
 afterAll(async () => {
@@ -18,7 +19,7 @@ async function cenario() {
   const professor = await criarUsuarioDeTeste("Professor");
   const [a, b] = [await criarUsuarioDeTeste("Estudante"), await criarUsuarioDeTeste("Estudante")];
   const disciplina = await prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 60 } });
-  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id } });
+  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, cursoId: await cursoPadraoDeTeste() } });
   await prisma.matricula.createMany({ data: [a, b].map((e) => ({ estudanteId: e.id, turmaId: turma.id })) });
   const ativo = await prisma.planoRecuperacao.create({
     data: {

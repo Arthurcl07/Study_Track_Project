@@ -41,10 +41,10 @@ async function alterar(token: string, contaId: string, acao: "desativar" | "reat
 }
 
 // Turma do coordenador com o professor informado e um estudante em Risco com plano ativo e plano encerrado.
-async function turmaComPlanos(professorId: string, coordenadorId: string) {
+async function turmaComPlanos(professorId: string, cursoId: string) {
   const estudante = await criarUsuarioDeTeste("Estudante");
   const disciplina = await prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 60 } });
-  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId, coordenadorId } });
+  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId, cursoId } });
   await prisma.matricula.create({ data: { estudanteId: estudante.id, turmaId: turma.id } });
   await prisma.frequencia.create({ data: { estudanteId: estudante.id, turmaId: turma.id, percentual: 60 } });
   await recalcularIndicador(estudante.id, turma.id);
@@ -56,7 +56,7 @@ async function turmaComPlanos(professorId: string, coordenadorId: string) {
 describe("SPEC-010 — regras de domínio", () => {
   it("RB-01 / INV-010-01: conta nova exige nome, e-mail, senha de 8+ caracteres e um dos quatro perfis", () => {
     expect(validarNovaConta({ nome: "Júlia", email: "julia@x.com", senha: "12345678", perfil: "Professor" })).toEqual({
-      ok: true, dados: { nome: "Júlia", email: "julia@x.com", senha: "12345678", perfil: "Professor" },
+      ok: true, dados: { nome: "Júlia", email: "julia@x.com", senha: "12345678", perfil: "Professor", cursoId: null },
     });
     const invalida = validarNovaConta({ nome: "", email: "x", senha: "123", perfil: "Admin" });
     expect(invalida.ok).toBe(false);
@@ -65,16 +65,20 @@ describe("SPEC-010 — regras de domínio", () => {
   });
 
   it("RB-14 / INV-010-06: não desativa a si mesmo nem professor com turma; os demais podem", () => {
-    expect(motivoParaNaoDesativar({ id: "a", nome: "Admin", turmasComoProfessor: 0 }, "a")).toBe(MENSAGEM_DESATIVAR_A_SI_MESMO);
-    expect(motivoParaNaoDesativar({ id: "p", nome: "Carlos", turmasComoProfessor: 2 }, "a")).toMatch(/Carlos.*2 turma/);
-    expect(motivoParaNaoDesativar({ id: "e", nome: "Ana", turmasComoProfessor: 0 }, "a")).toBeNull();
+    expect(motivoParaNaoDesativar({ id: "a", nome: "Admin", turmasComoProfessor: 0, cursosCoordenados: 0 }, "a")).toBe(MENSAGEM_DESATIVAR_A_SI_MESMO);
+    expect(motivoParaNaoDesativar({ id: "p", nome: "Carlos", turmasComoProfessor: 2, cursosCoordenados: 0 }, "a")).toMatch(/Carlos.*2 turma/);
+    expect(motivoParaNaoDesativar({ id: "e", nome: "Ana", turmasComoProfessor: 0, cursosCoordenados: 0 }, "a")).toBeNull();
   });
 
-  it("RB-13 / INV-010-02 / INV-010-03: Administrador só tem a gestão de contas; os outros perfis não a têm", () => {
+  // SPEC-015 / SPEC-016 (OPEN-034): o Administrador também gerencia cursos e tem o próprio dashboard; nada acadêmico.
+  it("RB-13 / INV-010-02 / INV-010-03: Administrador só tem contas, cursos e o próprio dashboard; os outros perfis não os têm", () => {
+    const doAdministrador: string[] = [RECURSOS.gestaoContas, RECURSOS.gestaoCursos, RECURSOS.painelAdministrador];
     for (const recurso of Object.values(RECURSOS)) {
-      expect(podeAcessar("Administrador", recurso)).toBe(recurso === RECURSOS.gestaoContas);
+      expect(podeAcessar("Administrador", recurso)).toBe(doAdministrador.includes(recurso));
     }
-    for (const perfil of ["Estudante", "Professor", "Coordenador"]) expect(podeAcessar(perfil, RECURSOS.gestaoContas)).toBe(false);
+    for (const perfil of ["Estudante", "Professor", "Coordenador"]) {
+      for (const recurso of doAdministrador) expect(podeAcessar(perfil, recurso)).toBe(false);
+    }
   });
 });
 
@@ -97,8 +101,8 @@ describe("SPEC-010 — gestão de contas", () => {
     const { admin, token } = await comoAdmin();
     const antes = await prisma.usuario.count();
 
-    const semEmail = await criarConta(token, { nome: "X", senha: "senha-forte-1", perfil: "Estudante" });
-    const repetido = await criarConta(token, { nome: "X", email: admin.email, senha: "senha-forte-1", perfil: "Estudante" });
+    const semEmail = await criarConta(token, { nome: "X", senha: "senha-forte-1", perfil: "Professor" });
+    const repetido = await criarConta(token, { nome: "X", email: admin.email, senha: "senha-forte-1", perfil: "Professor" });
 
     expect(semEmail.status).toBe(400);
     expect(semEmail.corpo.campos.email).toBeDefined();
@@ -136,7 +140,7 @@ describe("SPEC-010 — gestão de contas", () => {
     const { token } = await comoAdmin();
     const professor = await criarUsuarioDeTeste("Professor");
     const coordenador = await criarUsuarioDeTeste("Coordenador");
-    const { estudante, turma } = await turmaComPlanos(professor.id, coordenador.id);
+    const { estudante, turma } = await turmaComPlanos(professor.id, coordenador.cursoId);
 
     await alterar(token, estudante.id, "desativar");
     expect(await prisma.matricula.count({ where: { estudanteId: estudante.id, turmaId: turma.id } })).toBe(1);
@@ -150,7 +154,7 @@ describe("SPEC-010 — gestão de contas", () => {
     const { admin, token } = await comoAdmin();
     const professor = await criarUsuarioDeTeste("Professor");
     const coordenador = await criarUsuarioDeTeste("Coordenador");
-    await turmaComPlanos(professor.id, coordenador.id);
+    await turmaComPlanos(professor.id, coordenador.cursoId);
 
     const proprio = await alterar(token, admin.id, "desativar");
     const comTurma = await alterar(token, professor.id, "desativar");
@@ -175,7 +179,7 @@ describe("SPEC-010 — gestão de contas", () => {
     const { token } = await comoAdmin();
     const professor = await criarUsuarioDeTeste("Professor");
     const coordenador = await criarUsuarioDeTeste("Coordenador");
-    const { turma } = await turmaComPlanos(professor.id, coordenador.id);
+    const { turma } = await turmaComPlanos(professor.id, coordenador.cursoId);
 
     expect((await turmasApi(requisicaoComSessao("http://localhost/api/turmas", token))).status).toBe(403);
     expect((await relatoriosApi(requisicaoComSessao("http://localhost/api/relatorios", token))).status).toBe(403);
@@ -194,7 +198,7 @@ describe("SPEC-010 — troca do professor da turma (RF-17)", () => {
     const anterior = await criarUsuarioDeTeste("Professor");
     const novo = await criarUsuarioDeTeste("Professor");
     const coordenador = await criarUsuarioDeTeste("Coordenador");
-    const { turma, ativo, encerrado } = await turmaComPlanos(anterior.id, coordenador.id);
+    const { turma, ativo, encerrado } = await turmaComPlanos(anterior.id, coordenador.cursoId);
     const tokenCoordenador = await entrarComo(coordenador.email, coordenador.senha);
 
     const { status, corpo } = await trocar(tokenCoordenador, turma.id, novo.id);
@@ -220,7 +224,7 @@ describe("SPEC-010 — troca do professor da turma (RF-17)", () => {
     const estudante = await criarUsuarioDeTeste("Estudante");
     const coordenador = await criarUsuarioDeTeste("Coordenador");
     const outroCoordenador = await criarUsuarioDeTeste("Coordenador");
-    const { turma } = await turmaComPlanos(atual.id, coordenador.id);
+    const { turma } = await turmaComPlanos(atual.id, coordenador.cursoId);
     await prisma.usuario.update({ where: { id: inativo.id }, data: { ativo: false } });
     const token = await entrarComo(coordenador.email, coordenador.senha);
 

@@ -1,7 +1,7 @@
 # CLAUDE.md — StudyTrack
 
 StudyTrack: sistema web de acompanhamento acadêmico (notas, frequência, atividades, situação
-acadêmica), com perfis Estudante, Professor e Coordenador.
+acadêmica), com perfis Estudante, Professor, Coordenador e Administrador, organizado por cursos.
 
 ## Stack
 Next.js (App Router, TypeScript) com Route Handlers em `app/api/`, Prisma + PostgreSQL, JWT em
@@ -13,7 +13,7 @@ Pré-requisitos: Node.js 24 LTS, PostgreSQL 17 em `localhost:5432`, `.env` criad
 
 - `npm install` — dependências + `prisma generate`.
 - `npx prisma migrate dev` — cria o banco e aplica as migrações (`prisma/migrations/`).
-- `npm run seed` — contas de teste, uma por perfil (credenciais no README), turma, avaliação e duas atividades de exemplo, e dados de demonstração fictícios (8 estudantes, segunda turma, entregas e um plano), além do administrador, de uma segunda professora e de uma instituição simulada (`prisma/simulacao.ts`: 6 turmas, 50 estudantes, notas, entregas, planos e histórico; determinística e idempotente). `Iniciar StudyTrack.bat` sobe o sistema sem comandos; logins em `CONTAS-DE-TESTE.txt`.
+- `npm run seed` — contas de teste, uma por perfil (credenciais no README), turma, avaliação e duas atividades de exemplo, e dados de demonstração fictícios (8 estudantes, segunda turma, entregas e um plano), além do administrador e de uma instituição simulada (`prisma/simulacao.ts`: 6 cursos com a coordenação, disciplinas compartilhadas, 15 turmas, 70 estudantes, notas, entregas, planos e histórico; determinística e idempotente). `Iniciar StudyTrack.bat` sobe o sistema sem comandos; logins em `CONTAS-DE-TESTE.txt`.
 - `npm run dev` — aplicação em http://localhost:3000.
 - `npm test` — Vitest (`tests/`), usa o banco local e limpa os dados que cria.
 
@@ -31,7 +31,14 @@ tela só é implementada depois do layout `aprovado` (OPEN-020).
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 a SPEC-014 implementadas)
+- `src/` — código-fonte (SPEC-001 a SPEC-016 implementadas)
+  Cursos (SPEC-015, RB-17 a RB-19): o coordenador NÃO fica na turma; o escopo dele é `turma.curso.coordenadorId`
+  (`filtroTurmasDoEscopo` em `src/server/dados/estrutura.ts` e os filtros de relatório e indicadores). Disciplina
+  pode estar em vários cursos (`CursoDisciplina`), turma é de 1 curso, estudante é de 1 curso (CHECK no banco:
+  `cursoId` preenchido só para Estudante). Regras puras em `src/domain/cursos.ts`. Nos testes, `criarUsuarioDeTeste`
+  dá um curso a todo coordenador e um curso de teste a todo estudante (`tests/apoio.ts`).
+  Dashboards (SPEC-016): cálculos em `src/domain/dashboard.ts`, consultas em `src/server/academico/dashboard.ts`
+  e `painel-coordenador.ts`; nada é gravado. `painelDoPerfil` leva cada perfil ao próprio dashboard (admin: `/admin`).
   Senha provisória (SPEC-011, RB-15): `trocarSenha` bloqueia páginas (vão para `/definir-senha`) e APIs (403)
   na própria guarda; só `/api/auth/senha` e o logout aceitam essa conta. O histórico de notas (SPEC-013, RB-16)
   é gravado dentro da transação de `registrarNota`/`alterarNota` e não tem rota de escrita.
