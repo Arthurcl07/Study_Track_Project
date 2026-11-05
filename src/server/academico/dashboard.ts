@@ -59,8 +59,10 @@ export async function consultarDashboardProfessor(sessao: Sessao, hoje = hojeEmB
       turmas: turmas.length,
       cursos: new Set(turmas.map((t) => t.curso.id)).size,
       estudantes: new Set(turmas.flatMap((t) => (t.estudantes ?? []).map((e) => e.id))).size,
-      emRisco: soma((r) => r.contagem.Risco),
-      emAtencao: soma((r) => r.contagem.Atencao),
+      // Estudantes distintos (um aluno em Risco em duas turmas conta uma vez), como no painel do coordenador
+      // (AC-014-01) e no cartão "Estudantes".
+      emRisco: new Set(emRisco.map((r) => r.estudanteId)).size,
+      emAtencao: new Set(alertas.filter((a) => a.nivel === "Atencao").map((a) => a.estudante.id)).size,
       entregasAtrasadas: soma((r) => r.entregasAtrasadas),
       planosAtivos: planos.length,
       progressoMedio: planosComProgresso.length === 0 ? null : Math.round(planosComProgresso.reduce((s, p) => s + p.progresso.percentual, 0) / planosComProgresso.length),

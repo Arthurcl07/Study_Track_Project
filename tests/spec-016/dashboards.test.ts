@@ -169,6 +169,18 @@ describe("SPEC-016 — dashboards com banco", () => {
     expect(painel.semPlano).toHaveLength(1);
   });
 
+  it("AC-016-05: no dashboard do professor, o estudante em Risco em duas turmas conta uma vez", async () => {
+    const coordenador = await criarUsuarioDeTeste("Coordenador");
+    const professor = await criarUsuarioDeTeste("Professor");
+    const aluno = await criarUsuarioDeTeste("Estudante", { cursoId: coordenador.cursoId });
+    await turma(coordenador.cursoId, professor.id, [{ id: aluno.id, nota: 2, freq: 90 }]);
+    await turma(coordenador.cursoId, professor.id, [{ id: aluno.id, nota: 3, freq: 90 }]);
+
+    const painel = await consultarDashboardProfessor(sessaoDe(professor, "Professor"));
+    expect(painel.resumo.reduce((s, r) => s + r.contagem.Risco, 0)).toBe(2);
+    expect(painel.totais).toMatchObject({ estudantes: 1, emRisco: 1 });
+  });
+
   it("AC-016-07 / AC-016-08: coordenador com 2 cursos filtra por curso; curso de outro coordenador é ignorado", async () => {
     const marina = await criarUsuarioDeTeste("Coordenador");
     const cc = await criarCursoDeTeste(marina.id);

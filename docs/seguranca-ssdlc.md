@@ -58,7 +58,7 @@ Detalhe em `docs/verificacao/qualidade.md`.
 | Autorização no servidor em toda rota de API e página autenticada | Aprovado (só login, logout, `/login`, `/acesso-negado` e `/` ficam sem guarda, por definição) |
 | Testes de escopo por perfil em todas as Specs com dados acadêmicos | Aprovado |
 | Logs sem senha, hash ou token | Aprovado (não há logs em `src/`) |
-| Auditoria de dependências (`npm audit`) | 3 alertas em ferramentas de desenvolvimento (`prisma` CLI e `vitest`), com correção só em versão major: risco aceito por ora (OPEN-022) |
+| Auditoria de dependências (`npm audit`) | 3 alertas em ferramentas de desenvolvimento (`prisma` CLI e `vitest`), com correção só em versão major: risco aceito por ora (OPEN-022). Em 2026-10-23 o `next` também foi apontado e foi atualizado para 16.4.3 (OPEN-037) |
 | Camadas 3 (hook local) e 4 (CI) | CI criada; hook local dispensado (OPEN-024) |
 
 ## 6. Registro de verificação da aplicação (2026-10-19, SPEC-011 a SPEC-014)
