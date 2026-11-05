@@ -6,7 +6,7 @@
 
 | Verificação | Resultado |
 |---|---|
-| Testes | 19 arquivos, **201 testes aprovados** (`npm test`); `tsc --noEmit` sem erros |
+| Testes | 19 arquivos, **202 testes aprovados** (`npm test`); `tsc --noEmit` sem erros |
 | Critérios AC (SPEC-001 a 016) | **116** na documentação; 115 com teste e o AC-016-12 (layout em 375 px) verificado no navegador (OPEN-023) |
 | Invariantes INV | **80**, todos com teste |
 | Regras RB-01 a RB-19 | 19, todas com teste (RB-17 a RB-19 em `spec-015/cursos`) |
@@ -15,7 +15,7 @@
 | Escopo (ADR-003) | o coordenador é filtrado por `turma.curso.coordenadorId` dentro de cada consulta (estrutura, indicadores, relatório, histórico, painel); troca de coordenação vale na hora (teste) |
 | Integridade (ADR-002) | FKs `Restrict` de turma e estudante para curso; chave composta na grade; CHECK "curso se e somente se Estudante" |
 | Logs | nenhum em `src/` |
-| Dependências | sem dependência nova; o `next dev` mostrou um aviso de vulnerabilidade do Next.js 16.4.0, registrado para decisão humana (não atualizado nesta entrega) |
+| Dependências | Next.js atualizado de 16.4.0 para 16.4.3 (OPEN-037, decisão de Arthur, PR #65): o `npm audit` deixou de apontar o `next`; continuam só os alertas do Prisma e do Vitest (OPEN-022) |
 
 ## 00. Reverificação de 2026-10-19 (depois das SPEC-011 a SPEC-014)
 

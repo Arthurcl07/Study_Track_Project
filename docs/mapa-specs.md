@@ -1,5 +1,5 @@
 # Mapa ordenado de Specs — StudyTrack
-> Nota (2026-10-02): este mapa reflete a baseline de 2026-09-25. Desde então o OPEN-006 foi fechado (ADR-004), o OPEN-007 foi fechado (visão do produto reescrita) e o UC-05 foi criado. Novas questões (OPEN-008 a OPEN-012) surgiram ao escrever as Specs completas. Ver `decisoes-em-aberto.md` e `specs.md`.
+> Nota (2026-10-02): este mapa reflete a baseline de 2026-09-25. As SPEC-010 a SPEC-016, incluídas depois, estão resumidas no fim deste arquivo. Desde então o OPEN-006 foi fechado (ADR-004), o OPEN-007 foi fechado (visão do produto reescrita) e o UC-05 foi criado. Novas questões (OPEN-008 a OPEN-012) surgiram ao escrever as Specs completas. Ver `decisoes-em-aberto.md` e `specs.md`.
 
 ## Escopo deste documento
 
@@ -208,6 +208,48 @@ Spec que necessitar de cada contrato.
 - **Dependências:** SPEC-001 a SPEC-008.
 - **Justificativa da ordem:** é uma leitura consolidada que depende de todos os dados e indicadores
 	e possui escopos distintos para professor e coordenador. Formato, filtros e UC-05 são `OPEN-005`.
+
+## Specs incluídas depois deste mapa (2026-10-17 a 2026-10-22)
+
+Cada uma entrou por pedido de Arthur ou sugestão aprovada, com a decisão registrada em `decisoes-em-aberto.md` e o texto completo em `specs.md`.
+
+### SPEC-010 — Administrador e gestão de contas
+
+- **Objetivo:** criar, listar, desativar e reativar contas por um perfil Administrador, sem acesso a dados acadêmicos; trocar o professor da turma.
+- **RF / RB:** RF-16, RF-17; RB-01, RB-13, RB-14.
+- **Dependências:** SPEC-001, SPEC-002. **OPEN:** OPEN-025.
+
+### SPEC-011 — Senha própria e troca no primeiro acesso
+
+- **Objetivo:** conta criada pela tela usa senha provisória até o dono definir a própria; "Alterar minha senha" para todos.
+- **RF / RB:** RF-18; RB-15. **Dependências:** SPEC-001, SPEC-010. **OPEN:** OPEN-026.
+
+### SPEC-012 — Plano de recuperação visível ao estudante
+
+- **Objetivo:** o estudante vê os próprios planos, itens e progresso, só leitura.
+- **RF / RB:** RF-19; RB-02, RB-12. **Dependências:** SPEC-007, SPEC-008. **OPEN:** OPEN-027.
+
+### SPEC-013 — Histórico de notas
+
+- **Objetivo:** registrar cada lançamento e alteração de nota (autor, data, antes e depois), sem edição nem exclusão.
+- **RF / RB:** RF-20; RB-03, RB-04, RB-16. **Dependências:** SPEC-004. **OPEN:** OPEN-028.
+
+### SPEC-014 — Painel do coordenador
+
+- **Objetivo:** visão comparativa das turmas do coordenador, com os mesmos números do relatório.
+- **RF / RB:** RF-21; RB-04, RB-09. **Dependências:** SPEC-009. **OPEN:** OPEN-029.
+
+### SPEC-015 — Cursos e coordenação por curso
+
+- **Objetivo:** cursos com um coordenador cada, disciplinas compartilhadas entre cursos, turma e estudante de um curso; o escopo do coordenador passa a ser o dos cursos que coordena.
+- **RF / RB:** RF-22, RF-23; RB-04, RB-13, RB-14, RB-17, RB-18, RB-19.
+- **Dependências:** SPEC-002, SPEC-009, SPEC-010. **OPEN:** OPEN-030 a OPEN-034, OPEN-036.
+
+### SPEC-016 — Dashboards por perfil
+
+- **Objetivo:** todo perfil abre no próprio dashboard, com os números e gráficos do seu escopo; o administrador só vê contas e cursos.
+- **RF / RB:** RF-24, RF-25; RB-02, RB-03, RB-04, RB-09, RB-13.
+- **Dependências:** SPEC-006 a SPEC-009, SPEC-012, SPEC-014, SPEC-015. **OPEN:** OPEN-034, OPEN-035.
 
 ## Questões em aberto transversais
 
