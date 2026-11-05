@@ -58,3 +58,35 @@ sequenceDiagram
     C-->>R: plano com progresso
     R-->>P: 201
 ```
+
+
+## UC-07 Cadastrar turma num curso (SPEC-015): escopo pelo curso e disciplina da grade (RB-04, RB-18)
+
+```mermaid
+sequenceDiagram
+    actor C as Coordenador
+    participant R as POST /api/turmas
+    participant G as Guarda (autorizarApi)
+    participant U as Caso de uso (cadastrarTurma)
+    participant D as Domínio (cursos.ts)
+    participant B as Banco (Prisma)
+
+    C->>R: curso, disciplina, professor, nome, período
+    R->>G: verifica sessão e perfil Coordenador
+    G-->>R: sessão válida (senão 401/403)
+    R->>U: cadastrarTurma(entrada, coordenadorId)
+    U->>B: cursos que este coordenador coordena (escopo na query)
+    B-->>U: lista de cursos
+    U->>D: escolherCurso(cursos, cursoPedido)
+    D-->>U: curso dele (senão 403; com mais de um curso e nenhum escolhido, 400)
+    U->>B: grade do curso escolhido
+    U->>D: disciplinaNaGrade(grade, disciplina)
+    D-->>U: está na grade (senão 400 no campo disciplina)
+    U->>B: professor ativo? grava a turma com o curso
+    U-->>R: turma criada
+    R-->>C: 201
+```
+
+As consultas seguintes do coordenador (turmas, relatório, histórico, dashboard) filtram por
+`turma.curso.coordenadorId` dentro da própria consulta: se o administrador trocar a coordenação do curso,
+o escopo muda na requisição seguinte (AC-015-04).
