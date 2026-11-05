@@ -6,8 +6,8 @@ Versão priorizada, com critério de seleção e ligação com as decisões: ver
 O que mais pesa nas decisões de estrutura do sistema, sintetizado a partir de RF, RNF e RB:
 
 1. **Controle de acesso por escopo de responsabilidade** — Estudante só vê os próprios dados;
-   Professor só vê as turmas que leciona; Coordenador só vê as turmas sob sua responsabilidade.
-   (RB-02, RB-03, RB-04, RNF-03, RNF-05)
+   Professor só vê as turmas que leciona; Coordenador só vê as turmas dos cursos que coordena
+   (SPEC-015); Administrador não vê dados acadêmicos. (RB-02, RB-03, RB-04, RB-13, RNF-03, RNF-05)
 2. **Consistência do indicador acadêmico** — toda alteração de nota, frequência ou atividade
    precisa recalcular a classificação (Normal/Atenção/Risco) de forma confiável e imediata.
    (RB-09, RB-10, RF-06, RF-07, RF-11)

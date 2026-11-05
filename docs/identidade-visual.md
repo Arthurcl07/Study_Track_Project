@@ -107,7 +107,7 @@ Contraste: Texto sobre Branco/Névoa e Branco sobre Marinho/Azul atendem leitura
 | Casca autenticada, celular | marca + nome na barra superior; menu abre por ☰ | barra Marinho, conteúdo Névoa |
 | Acesso negado / página não encontrada | assinatura horizontal | Névoa |
 
-A casca (OPEN-019, OPEN-020) tem: logotipo, itens de menu do perfil, nome e perfil do usuário e o botão **Sair**. Estudante, Professor e Coordenador usam a mesma identidade; só os itens de menu mudam.
+A casca (OPEN-019, OPEN-020) tem: logotipo, itens de menu do perfil, nome e perfil do usuário e o botão **Sair**. Estudante, Professor, Coordenador e Administrador usam a mesma identidade; só os itens de menu mudam. O primeiro item de todo perfil é o **Dashboard** (SPEC-016).
 
 ## Fora de escopo
 

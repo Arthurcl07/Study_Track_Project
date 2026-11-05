@@ -32,6 +32,8 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 
 ## Lacunas conhecidas
 
+- RF-22 a RF-25 (SPEC-015 e SPEC-016) sem issue: pedido direto de Arthur em 2026-10-22, registrado nos OPEN-030 a OPEN-036.
+
 - Todo RF tem caso de uso: RF-03, RF-04, RF-07, RF-08 e RF-13 ganharam os UC-06 a UC-10 em 2026-10-17.
 - RB-08 (atraso) e RB-12 (progresso do plano) viraram contrato com o fechamento do OPEN-010, do OPEN-003 e do OPEN-021.
 - Testes de cada RB, AC e INV pelo identificador: `docs/verificacao/qualidade.md`, seção 1. A coluna Verificação aponta para `docs/verificacao/`.

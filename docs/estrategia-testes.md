@@ -40,7 +40,7 @@ Situação em 2026-10-19: todos os AC, INV e RB têm teste com o identificador n
 
 | Característica | Requisito do projeto | Como verificar |
 |---|---|---|
-| Funcionalidade (segurança de acesso) | RNF-03, RNF-05, RB-02/03/04 | Testes de integração com 3 perfis; chamada direta à API sem permissão deve falhar |
+| Funcionalidade (segurança de acesso) | RNF-03, RNF-05, RB-02/03/04 | Testes de integração com os 4 perfis e com coordenadores de cursos diferentes; chamada direta à API sem permissão deve falhar |
 | Funcionalidade (acurácia) | RB-05 a RB-09 | Testes unitários nos limites de 5,0, 6,0 e 75% |
 | Confiabilidade | RB-10 (recálculo a cada alteração) | Teste: alterar nota e conferir indicador na mesma operação |
 | Usabilidade | RNF-04 (interface adaptável) | Verificação manual em computador, tablet e smartphone |
