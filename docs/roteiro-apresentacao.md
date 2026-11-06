@@ -24,7 +24,7 @@ Para trocar de perfil, use **Sair** no menu lateral.
 |---|---|
 | Requisitos em EARS e regras de negócio | `docs/StudyTrack_RF.md`, `docs/StudyTrack_RB.md` |
 | Mapa e texto das Specs, com status e registro de aprovação humana | `docs/specs.md` (seção "Registro de aprovação humana") |
-| Decisões que o agente não tomou sozinho | `docs/decisoes-em-aberto.md` (OPEN-001 a OPEN-044) |
+| Decisões que o agente não tomou sozinho | `docs/decisoes-em-aberto.md` (OPEN-001 a OPEN-047) |
 | Layout aprovado antes do código (OPEN-020) | `docs/layout/prototipo.html` |
 | Rastreabilidade RF → RB → UC → Spec → teste → verificação | `docs/rastreabilidade.md` |
 
@@ -80,11 +80,17 @@ Entrar como `admin@studytrack.test`.
 - **Coordenador (`coordenador@`) → Turmas e estudantes**: a Turma INT-ECO (2026/1) aparece como Encerrado e não aceita alterações; na Turma MS-A, **Importar planilha (CSV)** com **Baixar modelo** e a prévia (SPEC-021); links Boletim · Histórico de cada estudante. **Auditoria**: quem alterou o quê (SPEC-019). **Dashboard** e **Relatórios**: filtro Período (SPEC-017).
 - **Administrador → Períodos letivos**: 2026/1 encerrado e 2026/2 aberto; encerrar e reabrir (com confirmação). **Auditoria**: ações de contas, cursos e períodos.
 
+## 4d. Simulador, comparativo e comunicados (3 min) — SPEC-023 a SPEC-025
+
+- **Estudante (`carla.mendes@`) → Dashboard**: em cada turma, **Quanto preciso tirar?** para 6,0 e 5,0; **Simular minhas notas**, digitar 9 na Prova 2 e ver a média e a situação simuladas (a frequência de 70% mantém o Risco). **Documentos**: gráfico da evolução por semestre. **Comunicados**: aviso do professor e da coordenação.
+- **Professor (`professor@`) → Dashboard → Turma MS-A**: coluna **Precisa (6,0)** para cada estudante. **Comunicados**: publicar um aviso para a turma; a Carla recebe a notificação.
+- **Coordenador (`coordenador@`) → Dashboard**: **Comparativo entre semestres** (2026/1 × 2026/2, com setas de tendência e média por disciplina). **Comunicados**: publicar para todas as turmas de Engenharia da Computação.
+
 ## 5. Qualidade (2 min)
 
 | Mostrar | Onde |
 |---|---|
-| 268 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
+| 290 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
 | CI verde em todo PR, obrigatória na `main` | aba Actions do GitHub; `.github/workflows/ci.yml` |
 | Verificação de cada Spec (testes + navegador, desktop e celular) | `docs/verificacao/` |
 | Segurança: escopo na própria consulta, hash de senha, JWT em cookie httpOnly | `docs/seguranca-ssdlc.md`, ADR-003 e ADR-004 |

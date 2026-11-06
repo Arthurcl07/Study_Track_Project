@@ -35,7 +35,8 @@ estudante (SPEC-012), histórico de notas (SPEC-013), painel do coordenador com 
 coordenação própria e disciplinas compartilhadas entre cursos (SPEC-015), um dashboard para cada perfil, aberto logo
 depois do login (SPEC-016), períodos letivos com encerramento do semestre (SPEC-017), chamada por aula (SPEC-018),
 auditoria de todas as alterações (SPEC-019), boletim e histórico escolar em PDF (SPEC-020), importação de estudantes por
-planilha CSV (SPEC-021) e notificações no sistema (SPEC-022).
+planilha CSV (SPEC-021), notificações no sistema (SPEC-022), simulador "Quanto preciso tirar?" (SPEC-023), comparativo
+entre semestres (SPEC-024) e mural de comunicados (SPEC-025).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 

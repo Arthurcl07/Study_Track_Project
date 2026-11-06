@@ -31,7 +31,10 @@ tela só é implementada depois do layout `aprovado` (OPEN-020).
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 a SPEC-022 implementadas)
+- `src/` — código-fonte (SPEC-001 a SPEC-025 implementadas)
+  Simulador (SPEC-023, RB-25): `notaNecessaria`/`mediaSimulada` em `src/domain/simulador.ts`, usadas no servidor e no navegador;
+  nada é gravado. Comparativo (SPEC-024): `resumoPorPeriodo` em `src/domain/comparativo.ts`. Comunicados (SPEC-025, RB-26):
+  `src/server/academico/comunicados.ts`; alcance é turma ou curso (CHECK no banco), notificação e auditoria na transação.
   Período letivo (SPEC-017, RB-20): `Turma.periodo` é chave estrangeira para `PeriodoLetivo.nome`. Toda escrita acadêmica
   chama `travaDoPeriodo` (`src/server/academico/periodos.ts`) antes de gravar; telas de lançamento, dashboards do estudante e do
   professor e alertas usam só turmas de períodos abertos (`filtroDePeriodo`/`TURMA_DE_PERIODO_ABERTO` em `src/server/dados/periodos.ts`).

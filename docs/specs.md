@@ -52,6 +52,7 @@ Legenda de status da Spec:
 | SPEC-017 a SPEC-022 marcadas como `implementadas`: 268 testes e verificação em `docs/verificacao/SPEC-017-022.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
 | SPEC-023 a SPEC-025 incluídas a pedido do grupo (Luiz), com OPEN-045 a OPEN-047 fechadas (decisão humana, Luiz); RF-32 a RF-34, RB-25 e RB-26; texto das Specs e layout aguardando aprovação | `especificada` | 2026-11-06 |
 | SPEC-023 a SPEC-025 e layout aprovados (Luiz) | `aprovada` | 2026-11-06 |
+| SPEC-023 a SPEC-025 marcadas como `implementadas`: 290 testes e verificação em `docs/verificacao/SPEC-023-025.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
 
 ---
 
@@ -3083,7 +3084,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-023 — Simulador de notas ("Quanto preciso tirar?")
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -3195,7 +3196,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-024 — Comparativo entre semestres
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -3305,7 +3306,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-025 — Mural de comunicados
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
