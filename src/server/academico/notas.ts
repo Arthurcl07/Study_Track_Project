@@ -5,9 +5,11 @@
 import { validarAvaliacao, validarValorNota } from "@/domain/registro-notas";
 import { recalcularIndicador } from "@/server/academico/indicador";
 import { numeroBR } from "@/domain/auditoria";
+import { notificacaoNota } from "@/domain/notificacoes";
 import { auditar, nomeDoUsuario, turmaParaAuditoria } from "@/server/dados/auditoria";
 import type { ClienteBanco } from "@/server/dados/indicadores";
 import * as dados from "@/server/dados/notas";
+import { notificar } from "@/server/dados/notificacoes";
 import { travaDoPeriodo } from "./periodos";
 import type { Falha, Resultado } from "./cadastros";
 
@@ -60,6 +62,7 @@ export async function registrarNota(entrada: Record<string, unknown>, professorI
         await dados.registrarHistorico({ avaliacaoId: avaliacao.id, estudanteId: alvo.estudanteId, autorId: professorId, valorAnterior: null, valorNovo: validacao.dados }, tx);
         await auditarNota(tx, professorId, "nota.lancada", avaliacao.id, alvo.estudanteId, null, validacao.dados);
         const indicador = await recalcularIndicador(alvo.estudanteId, avaliacao.turmaId, tx);
+        await notificarNota(tx, avaliacao.id, alvo.estudanteId, validacao.dados, null, indicador.media);
         return { nota, indicador: { media: indicador.media, situacao: indicador.situacao } };
       }),
     );
@@ -89,6 +92,7 @@ export async function alterarNota(notaId: string, entrada: Record<string, unknow
       await dados.registrarHistorico({ avaliacaoId: nota.avaliacaoId, estudanteId: nota.estudanteId, autorId: professorId, valorAnterior: nota.valor, valorNovo: validacao.dados }, tx);
       await auditarNota(tx, professorId, "nota.alterada", nota.avaliacaoId, nota.estudanteId, nota.valor, validacao.dados);
       const indicador = await recalcularIndicador(nota.estudanteId, nota.avaliacao.turmaId, tx);
+      await notificarNota(tx, nota.avaliacaoId, nota.estudanteId, validacao.dados, nota.valor, indicador.media);
       return { nota: atualizada, indicador: { media: indicador.media, situacao: indicador.situacao } };
     }),
   );
@@ -109,4 +113,10 @@ async function auditarNota(
   const estudante = await nomeDoUsuario(estudanteId, tx);
   const valores = antes === null ? numeroBR(depois) : `${numeroBR(antes)} → ${numeroBR(depois)}`;
   await auditar(tx, { autorId, acao, ...contexto, descricao: `${estudante} em ${avaliacao.nome} (${contexto.rotulo}): ${valores}`, antes: antes === null ? null : { valor: antes }, depois: { valor: depois } });
+}
+
+// SPEC-022 (AC-022-03): o estudante é avisado da nota lançada ou alterada, com a média atual.
+async function notificarNota(tx: ClienteBanco, avaliacaoId: string, estudanteId: string, valor: number, anterior: number | null, media: number | null) {
+  const avaliacao = await tx.avaliacao.findUniqueOrThrow({ where: { id: avaliacaoId }, select: { nome: true, turma: { select: { disciplina: { select: { nome: true } } } } } });
+  await notificar(tx, estudanteId, notificacaoNota(avaliacao.nome, avaliacao.turma.disciplina.nome, valor, anterior, media));
 }

@@ -4,6 +4,7 @@ import { MENSAGEM_FORA_DE_RISCO, podeReceberPlano, progressoDoPlano, validarIten
 import type { Situacao } from "@/domain/situacao-academica";
 import { auditar, nomeDoUsuario, turmaParaAuditoria } from "@/server/dados/auditoria";
 import { executarEmTransacao } from "@/server/dados/notas";
+import { notificarPlano } from "@/server/dados/notificacoes";
 import * as dados from "@/server/dados/planos";
 import type { Falha, Resultado } from "./cadastros";
 import { travaDoPeriodo } from "./periodos";
@@ -76,6 +77,8 @@ export async function criarPlano(entrada: Record<string, unknown>, professorId: 
       const criado = await dados.criarPlano({ estudanteId, turmaId, professorId, itens: itens.dados }, tx);
       const contexto = await turmaParaAuditoria(turmaId, tx);
       const estudante = await nomeDoUsuario(estudanteId, tx);
+      // SPEC-022 (AC-022-04): o estudante é avisado do plano criado.
+      await notificarPlano(tx, estudanteId, turmaId, itens.dados.length);
       await auditar(tx, { autorId: professorId, acao: "plano.criado", ...contexto, descricao: `${estudante} em ${contexto.rotulo}, ${itens.dados.length} item(ns)`, depois: { itens: itens.dados } });
       return criado;
     });

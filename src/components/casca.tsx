@@ -1,6 +1,7 @@
 // Casca autenticada (RNF-06, OPEN-019, OPEN-020): menu lateral do perfil, usuário e Sair.
 // A permissão continua sendo verificada no servidor por cada página (INV-001-03); o menu só orienta.
 import type { Perfil } from "@/domain/perfil";
+import { naoLidasDoMenu } from "@/server/academico/notificacoes";
 import type { Sessao } from "@/server/auth/token";
 import type { NomeIcone } from "./icones";
 import { NavegacaoCasca } from "./navegacao-casca";
@@ -50,10 +51,13 @@ const MENUS: Record<Perfil, Entrada[]> = {
   ],
 };
 
-export function Casca({ sessao, ativo, children }: { sessao: Sessao; ativo: ItemMenu; children: React.ReactNode }) {
+// SPEC-022: o item Notificações mostra o número de não lidas (estudante e professor, RB-23).
+export async function Casca({ sessao, ativo, children }: { sessao: Sessao; ativo: ItemMenu; children: React.ReactNode }) {
+  const naoLidas = await naoLidasDoMenu(sessao);
+  const itens = MENUS[sessao.perfil].map((item) => (item.id === "notificacoes" ? { ...item, contador: naoLidas } : item));
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[256px_minmax(0,1fr)]">
-      <NavegacaoCasca itens={MENUS[sessao.perfil]} ativo={ativo} nome={sessao.nome} perfil={sessao.perfil} />
+      <NavegacaoCasca itens={itens} ativo={ativo} nome={sessao.nome} perfil={sessao.perfil} />
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 sm:py-8">{children}</main>
     </div>
   );
