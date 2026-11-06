@@ -1,6 +1,7 @@
 // Casos de uso do boletim e do histórico escolar (SPEC-020, RF-29, UC-19). Só leitura.
 // Estudante: só os próprios documentos (o estudante pedido é ignorado, AC-020-06, RB-02). Coordenador: estudante de
 // curso que coordena (AC-020-07, RB-04), filtrado na própria query (ADR-003). Outros perfis: nada (INV-020-05).
+import { resumoPorPeriodo } from "@/domain/comparativo";
 import { periodoPadrao, resultadoDaTurma, resumoDoHistorico, type Resultado } from "@/domain/documentos";
 import type { Situacao } from "@/domain/situacao-academica";
 import type { Sessao } from "@/server/auth/token";
@@ -95,5 +96,7 @@ export async function consultarDocumentosDoEstudante(sessao: Sessao) {
   return {
     periodos: [...historico.periodos].reverse().map((p) => ({ nome: p.nome, encerrado: p.encerrado, disciplinas: p.linhas.length })),
     resumo: historico.resumo,
+    // SPEC-024 (AC-024-05): média e frequência de cada semestre do próprio estudante.
+    semestres: resumoPorPeriodo(historico.periodos.flatMap((p) => p.linhas.map((l) => ({ ...l, disciplina: l.disciplina })))),
   };
 }

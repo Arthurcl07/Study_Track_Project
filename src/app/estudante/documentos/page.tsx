@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Casca } from "@/components/casca";
+import { MediaFrequenciaPorTurma } from "@/components/graficos-coordenador";
 import { SeloPeriodo } from "@/components/selo-periodo";
 import { CabecalhoPagina, Cartao, CartaoNumero, CLASSE_BOTAO_PRIMARIO, CLASSE_LINK, EstadoVazio } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
@@ -7,7 +8,8 @@ import { consultarDocumentosDoEstudante } from "@/server/academico/documentos";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 
 // SPEC-020 / RF-29 (UC-19): boletins de cada período e histórico escolar do próprio estudante (RB-02).
-// Layout aprovado em docs/layout/prototipo.html#est-documentos.
+// SPEC-024 (RF-33): gráfico da evolução por semestre.
+// Layout aprovado em docs/layout/prototipo.html#est-documentos e #est-documentos-semestres.
 export default async function Documentos() {
   const sessao = await exigirAcessoPagina(RECURSOS.documentos);
   const documentos = await consultarDocumentosDoEstudante(sessao);
@@ -53,6 +55,14 @@ export default async function Documentos() {
           <Link href="/documentos/historico" className={`w-full ${CLASSE_BOTAO_PRIMARIO}`}>Abrir histórico escolar →</Link>
         </Cartao>
       </div>
+      {(documentos?.semestres.length ?? 0) > 0 && (
+        <Cartao titulo="Minha evolução por semestre" className="mt-5">
+          <MediaFrequenciaPorTurma
+            descricao="Média e frequência por semestre"
+            turmas={documentos!.semestres.map((s) => ({ id: s.periodo, rotulo: s.periodo, mediaTurma: s.media, frequenciaMedia: s.frequencia }))}
+          />
+        </Cartao>
+      )}
     </Casca>
   );
 }
