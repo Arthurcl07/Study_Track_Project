@@ -5,7 +5,9 @@ import type { Sessao } from "@/server/auth/token";
 import type { NomeIcone } from "./icones";
 import { NavegacaoCasca } from "./navegacao-casca";
 
-export type ItemMenu = "inicio" | "notas" | "frequencia" | "atividades" | "relatorios" | "disciplinas" | "turmas" | "area" | "contas" | "cursos" | "senha" | "historico";
+export type ItemMenu =
+  | "inicio" | "notas" | "frequencia" | "atividades" | "relatorios" | "disciplinas" | "turmas" | "area" | "contas" | "cursos" | "senha" | "historico"
+  | "periodos" | "auditoria" | "documentos" | "notificacoes";
 
 type Entrada = { id: ItemMenu; rotulo: string; href: string; icone: NomeIcone };
 
@@ -13,14 +15,19 @@ const MENUS: Record<Perfil, Entrada[]> = {
   Estudante: [
     { id: "inicio", rotulo: "Dashboard", href: "/estudante", icone: "inicio" },
     { id: "atividades", rotulo: "Minhas atividades", href: "/estudante/atividades", icone: "calendario" },
+    // SPEC-020 e SPEC-022.
+    { id: "documentos", rotulo: "Documentos", href: "/estudante/documentos", icone: "documento" },
+    { id: "notificacoes", rotulo: "Notificações", href: "/notificacoes", icone: "sino" },
   ],
   Professor: [
     { id: "inicio", rotulo: "Dashboard", href: "/professor", icone: "inicio" },
     { id: "notas", rotulo: "Notas e avaliações", href: "/professor/notas", icone: "lapis" },
-    { id: "frequencia", rotulo: "Frequência", href: "/professor/frequencia", icone: "check" },
+    // SPEC-018: a chamada por aula substitui o lançamento do percentual (OPEN-041).
+    { id: "frequencia", rotulo: "Chamada", href: "/professor/frequencia", icone: "check" },
     { id: "atividades", rotulo: "Atividades", href: "/professor/atividades", icone: "calendario" },
     { id: "relatorios", rotulo: "Relatórios", href: "/relatorios", icone: "grafico" },
     { id: "historico", rotulo: "Histórico de notas", href: "/historico-notas", icone: "relogio" },
+    { id: "notificacoes", rotulo: "Notificações", href: "/notificacoes", icone: "sino" },
   ],
   Coordenador: [
     { id: "inicio", rotulo: "Dashboard", href: "/coordenador", icone: "inicio" },
@@ -28,6 +35,8 @@ const MENUS: Record<Perfil, Entrada[]> = {
     { id: "turmas", rotulo: "Turmas e estudantes", href: "/coordenador/turmas", icone: "pessoas" },
     { id: "relatorios", rotulo: "Relatórios", href: "/relatorios", icone: "grafico" },
     { id: "historico", rotulo: "Histórico de notas", href: "/historico-notas", icone: "relogio" },
+    // SPEC-019: ações acadêmicas dos cursos que coordena.
+    { id: "auditoria", rotulo: "Auditoria", href: "/coordenador/auditoria", icone: "escudo" },
     { id: "area", rotulo: "Área da coordenação", href: "/coordenador/area", icone: "cadeado" },
   ],
   // SPEC-010 / RB-13: o Administrador só gerencia contas e, desde a SPEC-015, cursos; o dashboard é da SPEC-016.
@@ -35,6 +44,9 @@ const MENUS: Record<Perfil, Entrada[]> = {
     { id: "inicio", rotulo: "Dashboard", href: "/admin", icone: "inicio" },
     { id: "contas", rotulo: "Contas", href: "/admin/contas", icone: "pessoas" },
     { id: "cursos", rotulo: "Cursos", href: "/admin/cursos", icone: "capelo" },
+    // SPEC-017 e SPEC-019: períodos letivos e auditoria administrativa.
+    { id: "periodos", rotulo: "Períodos letivos", href: "/admin/periodos", icone: "calendario" },
+    { id: "auditoria", rotulo: "Auditoria", href: "/admin/auditoria", icone: "escudo" },
   ],
 };
 

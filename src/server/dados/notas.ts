@@ -62,9 +62,10 @@ export function executarEmTransacao<T>(operacao: (tx: ClienteBanco) => Promise<T
 }
 
 // Dados da tela de lançamento: só as turmas que o professor leciona (RB-03).
+// SPEC-017 (RB-20): só turmas de períodos abertos, as únicas que aceitam lançamento.
 export function turmasParaLancamento(professorId: string) {
   return prisma.turma.findMany({
-    where: { professorId },
+    where: { professorId, periodoLetivo: { status: "Aberto" } },
     select: {
       id: true,
       nome: true,

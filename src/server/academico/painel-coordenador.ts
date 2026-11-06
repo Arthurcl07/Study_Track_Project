@@ -6,22 +6,25 @@ import { turmasQuePedemAtencao } from "@/domain/relatorio";
 import type { Sessao } from "@/server/auth/token";
 import { matriculasEmRisco, planosAtivos } from "@/server/dados/dashboard";
 import { cursosDoCoordenador, disciplinasDosCursos, listarTurmasDoEscopo } from "@/server/dados/estrutura";
+import { filtroDePeriodo, periodosDasTurmas } from "@/server/dados/periodos";
 import { estudantesEmRiscoDoCoordenador } from "@/server/dados/relatorios";
 import { gerarRelatorio } from "./relatorios";
 
 // SPEC-016 (AC-016-07): curso pedido que não é dele é ignorado e o painel mostra todos os cursos dele.
-export async function consultarPainelCoordenador(sessao: Sessao, cursoPedido?: string | null) {
-  const cursos = await cursosDoCoordenador(sessao.usuarioId);
+// SPEC-017 (AC-017-07): período pedido sem turma no escopo é ignorado; sem período, só os abertos.
+export async function consultarPainelCoordenador(sessao: Sessao, cursoPedido?: string | null, periodoPedido?: string | null) {
+  const [cursos, periodos] = await Promise.all([cursosDoCoordenador(sessao.usuarioId), periodosDasTurmas({ curso: { coordenadorId: sessao.usuarioId } })]);
   const filtro = cursos.find((c) => c.id === cursoPedido) ?? null;
+  const periodo = periodos.find((p) => p.nome === periodoPedido)?.nome ?? null;
   const cursoIds = filtro ? [filtro.id] : cursos.map((c) => c.id);
-  const escopo = { curso: { coordenadorId: sessao.usuarioId }, cursoId: { in: cursoIds } };
+  const escopo = { curso: { coordenadorId: sessao.usuarioId }, cursoId: { in: cursoIds }, ...filtroDePeriodo(periodo) };
 
   const [disciplinas, todasAsTurmas, relatorio, emRisco, planos, riscos] = await Promise.all([
     // SPEC-015: só as disciplinas da grade dos cursos que ele coordena.
     disciplinasDosCursos(cursoIds),
-    listarTurmasDoEscopo(sessao),
-    gerarRelatorio(sessao, { curso: filtro?.id ?? null }),
-    estudantesEmRiscoDoCoordenador(sessao.usuarioId, cursoIds),
+    listarTurmasDoEscopo(sessao, filtroDePeriodo(periodo)),
+    gerarRelatorio(sessao, { curso: filtro?.id ?? null, periodo }),
+    estudantesEmRiscoDoCoordenador(sessao.usuarioId, cursoIds, periodo),
     planosAtivos(escopo),
     matriculasEmRisco(escopo),
   ]);
@@ -32,6 +35,8 @@ export async function consultarPainelCoordenador(sessao: Sessao, cursoPedido?: s
   return {
     cursos,
     filtro,
+    periodos,
+    periodo,
     totais: {
       cursos: cursoIds.length,
       disciplinas: disciplinas.length,

@@ -32,9 +32,10 @@ export function turmaComEstudante(professorId: string, turmaId: string, estudant
   });
 }
 
+// SPEC-017 (RB-20): telas de lançamento mostram só turmas de períodos abertos.
 export function turmasParaFrequencia(professorId: string) {
   return prisma.turma.findMany({
-    where: { professorId },
+    where: { professorId, periodoLetivo: { status: "Aberto" } },
     select: {
       id: true,
       nome: true,
@@ -59,7 +60,7 @@ export function criarAtividade(turmaId: string, dados: DadosAtividade) {
 
 export function turmasComAtividades(professorId: string) {
   return prisma.turma.findMany({
-    where: { professorId },
+    where: { professorId, periodoLetivo: { status: "Aberto" } },
     select: {
       id: true,
       nome: true,
@@ -122,7 +123,8 @@ export function removerEntrega(entregaId: string) {
 // RB-02 / AC-005-09: atividades das turmas do estudante, trazendo SÓ a entrega dele.
 export function atividadesDoEstudante(estudanteId: string) {
   return prisma.atividade.findMany({
-    where: { turma: { matriculas: { some: { estudanteId } } } },
+    // SPEC-017 (INV-017-05): só turmas de períodos abertos.
+    where: { turma: { matriculas: { some: { estudanteId } }, periodoLetivo: { status: "Aberto" } } },
     select: {
       id: true,
       descricao: true,

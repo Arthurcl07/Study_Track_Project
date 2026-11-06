@@ -3,6 +3,7 @@ import { Casca } from "@/components/casca";
 import { MediaFrequenciaPorTurma, SituacaoPorTurma } from "@/components/graficos-coordenador";
 import { Icone } from "@/components/icones";
 import { SeletorCurso } from "@/components/seletor-curso";
+import { SeletorPeriodo } from "@/components/seletor-periodo";
 import { CabecalhoPagina, Cartao, CartaoNumero, CLASSE_LINK, EstadoVazio } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { consultarPainelCoordenador } from "@/server/academico/painel-coordenador";
@@ -11,11 +12,12 @@ import { exigirAcessoPagina } from "@/server/auth/guardas";
 // SPEC-014 / RF-21 (OPEN-029) e SPEC-016 / RF-24: dashboard do coordenador com filtro por curso, totais,
 // situação por curso e por turma, média e frequência por turma e turmas que pedem atenção. Mesmos números do
 // relatório (SPEC-009), no escopo dos cursos que ele coordena (RB-04).
+// SPEC-017: filtro Período (padrão: períodos abertos, INV-017-05).
 // Layout aprovado em docs/layout/prototipo.html#dash-coordenador.
-export default async function PainelCoordenador({ searchParams }: { searchParams: Promise<{ curso?: string }> }) {
+export default async function PainelCoordenador({ searchParams }: { searchParams: Promise<{ curso?: string; periodo?: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.painelCoordenador);
-  const { curso } = await searchParams;
-  const { cursos, filtro, totais, resumo, porCurso, atencao } = await consultarPainelCoordenador(sessao, curso);
+  const { curso, periodo: periodoPedido } = await searchParams;
+  const { cursos, filtro, periodos, periodo, totais, resumo, porCurso, atencao } = await consultarPainelCoordenador(sessao, curso, periodoPedido);
   const sufixo = filtro ? `?curso=${filtro.id}` : "";
   const subtitulo = filtro ? `Visão geral de ${filtro.nome}.` : cursos.length === 1 ? `Visão geral de ${cursos[0].nome}.` : "Visão geral dos cursos que você coordena.";
 
@@ -33,7 +35,12 @@ export default async function PainelCoordenador({ searchParams }: { searchParams
       <CabecalhoPagina
         titulo={`Olá, ${sessao.nome.split(" ")[0]}`}
         subtitulo={subtitulo}
-        acao={cursos.length > 1 && <SeletorCurso cursos={cursos} valor={filtro?.id ?? ""} todos={`Todos os meus cursos (${cursos.length})`} />}
+        acao={
+          <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
+            {periodos.length > 0 && <SeletorPeriodo periodos={periodos} valor={periodo ?? ""} />}
+            {cursos.length > 1 && <SeletorCurso cursos={cursos} valor={filtro?.id ?? ""} todos={`Todos os meus cursos (${cursos.length})`} />}
+          </div>
+        }
       />
       <div className="mb-5 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
         <CartaoNumero rotulo="Cursos" valor={totais.cursos} />

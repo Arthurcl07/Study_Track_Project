@@ -2303,7 +2303,7 @@ Padrão da SPEC-001 (seção 14).
 | **RB** | RB-14 (ajuste), RB-20 |
 | **RNF** | RNF-03, RNF-04, RNF-05, RNF-06 |
 | **UC / fluxo** | UC-17 Gerenciar períodos letivos |
-| **Entidades** | `PeriodoLetivo` (nova), `Turma` (`periodoId` substitui o texto `periodo`) |
+| **Entidades** | `PeriodoLetivo` (nova), `Turma` (`periodo` passa a ser chave estrangeira para o nome do período) |
 | **ADRs** | ADR-001, ADR-002, ADR-003 |
 | **Issues** | — |
 | **OPEN relacionados** | OPEN-040, OPEN-044 (dados de demonstração) |
@@ -2362,7 +2362,7 @@ SPEC-002, SPEC-009, SPEC-010, SPEC-015, SPEC-016.
 |---|---|
 | INV-017-01 | Toda turma pertence a exatamente 1 período letivo (FK obrigatória). |
 | INV-017-02 | Nome de período é único e segue AAAA/1 ou AAAA/2. |
-| INV-017-03 | Nenhuma escrita acadêmica é gravada em turma de período encerrado (RB-20), verificado no caso de uso, dentro da transação. |
+| INV-017-03 | Nenhuma escrita acadêmica é gravada em turma de período encerrado (RB-20), verificado no caso de uso antes da escrita. |
 | INV-017-04 | Nova turma só em período aberto. |
 | INV-017-05 | Dashboards do estudante e do professor e os alertas consideram só turmas de períodos abertos; relatório e dashboard do coordenador sem filtro também. |
 | INV-017-06 | Só o administrador cadastra, encerra e reabre período; isso não dá a ele acesso a dado acadêmico (RB-13). |
@@ -2376,7 +2376,7 @@ Nova entidade **PeriodoLetivo** (id, nome, status {Aberto, Encerrado}, criadoEm,
 
 - Regras puras em `src/domain/periodos.ts` (formato do nome, período aberto, mensagem da trava).
 - Verificação da trava num único ponto (`garantirPeriodoAberto(turmaId, tx)` em `src/server/academico/periodos.ts`), chamado por todos os casos de uso de escrita listados.
-- Migração: tabela `PeriodoLetivo`, `Turma.periodoId` preenchido a partir do texto antigo, remoção da coluna `Turma.periodo`.
+- Migração: tabela `PeriodoLetivo`, um período Aberto para cada texto já usado e `Turma.periodo` como chave estrangeira para `PeriodoLetivo.nome` (o nome não muda; assim as consultas que já liam `periodo` continuam iguais).
 - `filtroTurmasDoEscopo` ganha a opção de restringir a períodos abertos ou a um período.
 
 ## 9. Contratos necessários
@@ -2387,7 +2387,7 @@ Nova entidade **PeriodoLetivo** (id, nome, status {Aberto, Encerrado}, criadoEm,
 | `POST /api/periodos` | nome | período criado (Aberto) | campo inválido, nome repetido, sem permissão |
 | `POST /api/periodos/:id/encerrar` | — | período Encerrado | não encontrado, sem permissão |
 | `POST /api/periodos/:id/reabrir` | — | período Aberto | não encontrado, sem permissão |
-| `POST /api/turmas` | `periodoId` no lugar de `periodo` | turma criada | período encerrado ou inexistente |
+| `POST /api/turmas` | `periodo` (nome de um período aberto) | turma criada | período encerrado ou inexistente |
 | Escritas acadêmicas | (as de sempre) | — | 409 período encerrado |
 
 ## 10. RNFs aplicáveis

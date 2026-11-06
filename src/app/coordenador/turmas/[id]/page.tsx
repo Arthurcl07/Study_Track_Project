@@ -1,13 +1,15 @@
 import { notFound } from "next/navigation";
 import { Casca } from "@/components/casca";
 import { FormularioApi } from "@/components/formulario-api";
-import { CabecalhoPagina, Cartao, EstadoVazio } from "@/components/ui";
+import { CabecalhoPagina, Cartao, EstadoVazio, Mensagem } from "@/components/ui";
+import { mensagemPeriodoEncerrado } from "@/domain/periodos";
 import { RECURSOS } from "@/domain/autorizacao";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 import { buscarTurmaDoEscopo, listarProfessores } from "@/server/dados/estrutura";
 
 // SPEC-002 / RF-03: estudantes da turma, cadastro de estudante e matrícula de estudante existente.
 // SPEC-010 / RF-17: troca do professor responsável (só professores ativos aparecem).
+// SPEC-017 (RB-20): turma de período encerrado é somente leitura; os formulários não aparecem.
 // Layout aprovado em docs/layout/prototipo.html#coordenador-turma e #cadastro-erro.
 export default async function DetalheTurma({ params }: { params: Promise<{ id: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.cadastroAcademico);
@@ -16,6 +18,7 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
   if (!turma) notFound();
   const estudantes = turma.estudantes ?? [];
   const outrosProfessores = (await listarProfessores()).filter((p) => p.id !== turma.professor.id);
+  const encerrada = turma.periodoLetivo.status === "Encerrado";
   return (
     <Casca sessao={sessao} ativo="turmas">
       <CabecalhoPagina
@@ -46,6 +49,9 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
             </table>
           )}
         </Cartao>
+        {encerrada ? (
+          <Mensagem tipo="info">{mensagemPeriodoEncerrado(turma.periodo)} Cadastro, matrícula e troca de professor ficam bloqueados até o administrador reabrir o período.</Mensagem>
+        ) : (
         <div className="space-y-5">
           <Cartao titulo="Cadastrar novo estudante">
             <FormularioApi
@@ -86,6 +92,7 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
             )}
           </Cartao>
         </div>
+        )}
       </div>
     </Casca>
   );

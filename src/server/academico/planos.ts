@@ -4,6 +4,7 @@ import { MENSAGEM_FORA_DE_RISCO, podeReceberPlano, progressoDoPlano, validarIten
 import type { Situacao } from "@/domain/situacao-academica";
 import * as dados from "@/server/dados/planos";
 import type { Falha, Resultado } from "./cadastros";
+import { travaDoPeriodo } from "./periodos";
 
 const sucesso = <T>(valor: T): Resultado<T> => ({ ok: true, valor });
 const falha = <T>(f: Falha): Resultado<T> => ({ ok: false, falha: f });
@@ -58,6 +59,8 @@ export async function criarPlano(entrada: Record<string, unknown>, professorId: 
 
   const alvo = await dados.estudanteParaPlano(professorId, turmaId, estudanteId);
   if (!alvo) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ id: turmaId });
+  if (trava) return falha(trava);
   if (!podeReceberPlano(alvo.indicadores[0]?.situacao)) {
     return falha({ tipo: "invalido", erros: { selecao: MENSAGEM_FORA_DE_RISCO } });
   }
@@ -82,6 +85,8 @@ export async function criarPlano(entrada: Record<string, unknown>, professorId: 
 export async function marcarItemDoPlano(itemId: string, entrada: Record<string, unknown>, professorId: string) {
   const item = await dados.itemDoProfessor(professorId, itemId);
   if (!item) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ planos: { some: { itens: { some: { id: itemId } } } } });
+  if (trava) return falha(trava);
   if (item.plano.status !== "Ativo") return falha({ tipo: "conflito", erro: "Plano encerrado: os itens não podem mais ser alterados." });
   if (typeof entrada.concluido !== "boolean") return falha({ tipo: "invalido", erros: { concluido: "Informe se o item está concluído." } });
 
@@ -93,6 +98,8 @@ export async function marcarItemDoPlano(itemId: string, entrada: Record<string, 
 export async function encerrarPlanoDoProfessor(planoId: string, professorId: string) {
   const plano = await dados.planoDoProfessor(professorId, planoId);
   if (!plano) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ planos: { some: { id: planoId } } });
+  if (trava) return falha(trava);
   if (plano.status === "Encerrado") return falha({ tipo: "conflito", erro: "Este plano já está encerrado." });
   return sucesso(await dados.encerrarPlano(planoId));
 }

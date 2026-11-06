@@ -5,6 +5,7 @@
 import { validarAvaliacao, validarValorNota } from "@/domain/registro-notas";
 import { recalcularIndicador } from "@/server/academico/indicador";
 import * as dados from "@/server/dados/notas";
+import { travaDoPeriodo } from "./periodos";
 import type { Falha, Resultado } from "./cadastros";
 
 const sucesso = <T>(valor: T): Resultado<T> => ({ ok: true, valor });
@@ -17,6 +18,8 @@ function texto(valor: unknown): string {
 // OPEN-017: o professor cadastra avaliação (nome, peso, data) só nas turmas que leciona.
 export async function cadastrarAvaliacao(entrada: Record<string, unknown>, turmaId: string, professorId: string) {
   if (!(await dados.turmaLecionada(professorId, turmaId))) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ id: turmaId });
+  if (trava) return falha(trava);
 
   const validacao = validarAvaliacao(entrada);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
@@ -33,6 +36,8 @@ export async function registrarNota(entrada: Record<string, unknown>, professorI
   // INV-004-02: avaliação da turma informada, turma lecionada pelo professor e estudante matriculado nela.
   const avaliacao = await dados.avaliacaoParaLancamento(professorId, alvo);
   if (!avaliacao) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ id: avaliacao.turmaId });
+  if (trava) return falha(trava);
 
   const validacao = validarValorNota(entrada.valor);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
@@ -60,6 +65,8 @@ export async function registrarNota(entrada: Record<string, unknown>, professorI
 export async function alterarNota(notaId: string, entrada: Record<string, unknown>, professorId: string) {
   const nota = await dados.notaDoProfessor(professorId, notaId);
   if (!nota) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ id: nota.avaliacao.turmaId });
+  if (trava) return falha(trava);
 
   const validacao = validarValorNota(entrada.valor);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });

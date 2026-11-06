@@ -16,7 +16,10 @@ import {
   validarTurma,
   type ErrosDeCampo,
 } from "@/domain/estrutura-academica";
+import { MENSAGEM_PERIODO_NAO_ABERTO } from "@/domain/periodos";
 import { gerarHashSenha } from "@/server/auth/senha";
+import { periodoPorNome } from "@/server/dados/periodos";
+import { travaDoPeriodo } from "./periodos";
 import * as dados from "@/server/dados/estrutura";
 
 export type Falha =
@@ -78,6 +81,8 @@ export async function cadastrarTurma(entrada: Record<string, unknown>, coordenad
   if (!(await dados.buscarDisciplina(validacao.dados.disciplinaId))) erros.disciplinaId = "Disciplina inexistente.";
   else if (!disciplinaNaGrade(await dados.gradeDoCurso(cursoId), validacao.dados.disciplinaId)) erros.disciplinaId = MENSAGEM_DISCIPLINA_FORA_DA_GRADE;
   if (!(await dados.buscarProfessor(validacao.dados.professorId))) erros.professorId = "Professor inexistente.";
+  // SPEC-017 / INV-017-04: nova turma só em período letivo aberto.
+  if ((await periodoPorNome(validacao.dados.periodo))?.status !== "Aberto") erros.periodo = MENSAGEM_PERIODO_NAO_ABERTO;
   if (Object.keys(erros).length > 0) return falha({ tipo: "invalido", erros });
 
   return sucesso(await dados.criarTurma(validacao.dados, cursoId));
@@ -88,6 +93,8 @@ export async function cadastrarTurma(entrada: Record<string, unknown>, coordenad
 export async function cadastrarEstudante(entrada: Record<string, unknown>, turmaId: string, coordenadorId: string) {
   const turma = await dados.turmaSobResponsabilidade(coordenadorId, turmaId);
   if (!turma) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ id: turmaId });
+  if (trava) return falha(trava);
 
   const validacao = validarEstudante(entrada);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
@@ -108,6 +115,8 @@ export async function cadastrarEstudante(entrada: Record<string, unknown>, turma
 // RF-17 (SPEC-010): o coordenador responsável troca o professor da turma por outro professor ativo.
 export async function trocarProfessor(entrada: Record<string, unknown>, turmaId: string, coordenadorId: string) {
   if (!(await dados.turmaSobResponsabilidade(coordenadorId, turmaId))) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ id: turmaId });
+  if (trava) return falha(trava);
   const professorId = typeof entrada.professorId === "string" ? entrada.professorId.trim() : "";
   if (!professorId) return falha({ tipo: "invalido", erros: { professorId: "Escolha o novo professor." } });
   if (!(await dados.buscarProfessor(professorId))) {
@@ -121,6 +130,8 @@ export async function trocarProfessor(entrada: Record<string, unknown>, turmaId:
 export async function matricularEstudante(entrada: Record<string, unknown>, turmaId: string, coordenadorId: string) {
   const turma = await dados.turmaSobResponsabilidade(coordenadorId, turmaId);
   if (!turma) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ id: turmaId });
+  if (trava) return falha(trava);
 
   const email = typeof entrada.email === "string" ? entrada.email.trim() : "";
   if (!email) return falha({ tipo: "invalido", erros: { email: "Informe o e-mail do estudante." } });

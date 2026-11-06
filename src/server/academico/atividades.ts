@@ -8,6 +8,7 @@ import type { Sessao } from "@/server/auth/token";
 import * as dados from "@/server/dados/atividades";
 import { executarEmTransacao, turmaLecionada } from "@/server/dados/notas";
 import type { Falha, Resultado } from "./cadastros";
+import { travaDoPeriodo } from "./periodos";
 
 const sucesso = <T>(valor: T): Resultado<T> => ({ ok: true, valor });
 const falha = <T>(f: Falha): Resultado<T> => ({ ok: false, falha: f });
@@ -39,6 +40,8 @@ export async function registrarFrequencia(entrada: Record<string, unknown>, prof
 // Contrato "Cadastrar atividade" (RF-08): descrição e prazo, só em turma que o professor leciona.
 export async function cadastrarAtividade(entrada: Record<string, unknown>, turmaId: string, professorId: string) {
   if (!(await turmaLecionada(professorId, turmaId))) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ id: turmaId });
+  if (trava) return falha(trava);
 
   const validacao = validarAtividade(entrada);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
@@ -54,6 +57,8 @@ export async function registrarEntrega(entrada: Record<string, unknown>, ativida
 
   const atividade = await dados.atividadeParaEntrega(professorId, atividadeId, estudanteId);
   if (!atividade) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ atividades: { some: { id: atividadeId } } });
+  if (trava) return falha(trava);
 
   const hoje = hojeEmBrasilia();
   const data = validarDataEntrega(entrada.dataEntrega, hoje);
@@ -74,6 +79,8 @@ export async function registrarEntrega(entrada: Record<string, unknown>, ativida
 // Contrato "Desfazer entrega" (OPEN-003): remove um registro feito por engano.
 export async function desfazerEntrega(entregaId: string, professorId: string) {
   if (!(await dados.entregaDoProfessor(professorId, entregaId))) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ atividades: { some: { entregas: { some: { id: entregaId } } } } });
+  if (trava) return falha(trava);
   return sucesso(await dados.removerEntrega(entregaId));
 }
 

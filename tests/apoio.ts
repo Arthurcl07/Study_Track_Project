@@ -46,6 +46,8 @@ export async function removerUsuariosDeTeste() {
   const deTeste = { email: { endsWith: DOMINIO_TESTE } };
   const cursoDeTeste = { OR: [{ nome: { startsWith: PREFIXO_DISCIPLINA_TESTE } }, { coordenador: deTeste }] };
   await prisma.turma.deleteMany({ where: { OR: [{ professor: deTeste }, { curso: cursoDeTeste }] } });
+  // SPEC-017: períodos de teste ("19xx/N"), já sem turmas.
+  await prisma.periodoLetivo.deleteMany({ where: { nome: { startsWith: "19" } } });
   await prisma.usuario.deleteMany({ where: { ...deTeste, perfil: "Estudante" } });
   await prisma.curso.deleteMany({ where: cursoDeTeste });
   await prisma.disciplina.deleteMany({ where: { nome: { startsWith: PREFIXO_DISCIPLINA_TESTE } } });
@@ -88,4 +90,16 @@ export async function entrarComo(email: string, senha: string): Promise<string> 
 export function requisicaoComSessao(url: string, token?: string) {
   const headers = token ? { cookie: `${NOME_COOKIE_SESSAO}=${token}` } : undefined;
   return new Request(url, { headers });
+}
+
+// SPEC-017: período de teste com nome único "19xx/1" ou "19xx/2" (apagado em removerUsuariosDeTeste).
+let sequenciaPeriodo = 0;
+export async function criarPeriodoDeTeste(status: "Aberto" | "Encerrado" = "Aberto") {
+  for (;;) {
+    sequenciaPeriodo += 1;
+    const ano = 1900 + Math.floor(Math.random() * 100);
+    const nome = `${ano}/${(sequenciaPeriodo % 2) + 1}`;
+    if (await prisma.periodoLetivo.findUnique({ where: { nome } })) continue;
+    return prisma.periodoLetivo.create({ data: { nome, status, encerradoEm: status === "Encerrado" ? new Date() : null } });
+  }
 }

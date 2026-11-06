@@ -24,6 +24,8 @@ const RESUMO_TURMA = {
   id: true,
   nome: true,
   periodo: true,
+  // SPEC-017: status do período (turma de período encerrado é somente leitura, RB-20).
+  periodoLetivo: { select: { status: true } },
   disciplina: { select: { id: true, nome: true, cargaHoraria: true } },
   professor: { select: { id: true, nome: true } },
   curso: { select: { id: true, nome: true } },
@@ -53,9 +55,10 @@ function formatarTurma(turma: Record<string, unknown>): TurmaConsultada {
   return matriculas ? { ...base, estudantes: matriculas.map((m) => m.estudante) } : base;
 }
 
-export async function listarTurmasDoEscopo(sessao: Sessao): Promise<TurmaConsultada[]> {
+// SPEC-017: recorte opcional (ex.: períodos abertos ou um período), somado ao escopo.
+export async function listarTurmasDoEscopo(sessao: Sessao, recorte: Prisma.TurmaWhereInput = {}): Promise<TurmaConsultada[]> {
   const turmas = await prisma.turma.findMany({
-    where: filtroTurmasDoEscopo(sessao),
+    where: { AND: [filtroTurmasDoEscopo(sessao), recorte] },
     select: selecaoParaPerfil(sessao),
     orderBy: [{ periodo: "desc" }, { nome: "asc" }],
   });

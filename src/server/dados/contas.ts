@@ -21,7 +21,7 @@ export function criarConta(dados: { nome: string; email: string; senhaHash: stri
 export async function contaParaDesativar(id: string) {
   const conta = await prisma.usuario.findUnique({
     where: { id },
-    select: { id: true, nome: true, _count: { select: { turmasLecionadas: true, cursosCoordenados: true } } },
+    select: { id: true, nome: true, _count: { select: { turmasLecionadas: { where: { periodoLetivo: { status: "Aberto" } } }, cursosCoordenados: true } } },
   });
   return conta
     ? { id: conta.id, nome: conta.nome, turmasComoProfessor: conta._count.turmasLecionadas, cursosCoordenados: conta._count.cursosCoordenados }
@@ -32,7 +32,7 @@ export function definirAtivo(id: string, ativo: boolean) {
   return prisma.usuario.update({ where: { id }, data: { ativo }, select: CONTA });
 }
 
-// RB-14: a guarda confere a cada requisição se a conta da sessão continua existindo, ativa e com o mesmo perfil.
+// RB-14 (SPEC-017: só turmas de período aberto impedem a desativação do professor, INV-017-07): a guarda confere a cada requisição se a conta da sessão continua existindo, ativa e com o mesmo perfil.
 export function situacaoDaConta(id: string) {
   return prisma.usuario.findUnique({ where: { id }, select: { ativo: true, perfil: true, trocarSenha: true } });
 }
