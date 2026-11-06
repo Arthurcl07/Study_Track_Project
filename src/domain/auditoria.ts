@@ -32,6 +32,9 @@ export const ACOES = {
   "plano.criado": { rotulo: "Plano criado", categoria: "Academica", grupo: "Planos de recuperação" },
   "plano.encerrado": { rotulo: "Plano encerrado", categoria: "Academica", grupo: "Planos de recuperação" },
   "plano.item": { rotulo: "Item de plano marcado", categoria: "Academica", grupo: "Planos de recuperação" },
+  // SPEC-025: comunicados publicados e apagados.
+  "comunicado.publicado": { rotulo: "Comunicado publicado", categoria: "Academica", grupo: "Comunicados" },
+  "comunicado.apagado": { rotulo: "Comunicado apagado", categoria: "Academica", grupo: "Comunicados" },
 } as const satisfies Record<string, { rotulo: string; categoria: CategoriaAuditoria; grupo: string }>;
 
 export type AcaoAuditoria = keyof typeof ACOES;

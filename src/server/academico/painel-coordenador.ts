@@ -8,6 +8,7 @@ import { matriculasEmRisco, planosAtivos } from "@/server/dados/dashboard";
 import { cursosDoCoordenador, disciplinasDosCursos, listarTurmasDoEscopo } from "@/server/dados/estrutura";
 import { filtroDePeriodo, periodosDasTurmas } from "@/server/dados/periodos";
 import { estudantesEmRiscoDoCoordenador } from "@/server/dados/relatorios";
+import { comparativoDoCoordenador } from "./comparativo";
 import { gerarRelatorio } from "./relatorios";
 
 // SPEC-016 (AC-016-07): curso pedido que não é dele é ignorado e o painel mostra todos os cursos dele.
@@ -19,7 +20,7 @@ export async function consultarPainelCoordenador(sessao: Sessao, cursoPedido?: s
   const cursoIds = filtro ? [filtro.id] : cursos.map((c) => c.id);
   const escopo = { curso: { coordenadorId: sessao.usuarioId }, cursoId: { in: cursoIds }, ...filtroDePeriodo(periodo) };
 
-  const [disciplinas, todasAsTurmas, relatorio, emRisco, planos, riscos] = await Promise.all([
+  const [disciplinas, todasAsTurmas, relatorio, emRisco, planos, riscos, comparativo] = await Promise.all([
     // SPEC-015: só as disciplinas da grade dos cursos que ele coordena.
     disciplinasDosCursos(cursoIds),
     listarTurmasDoEscopo(sessao, filtroDePeriodo(periodo)),
@@ -27,6 +28,8 @@ export async function consultarPainelCoordenador(sessao: Sessao, cursoPedido?: s
     estudantesEmRiscoDoCoordenador(sessao.usuarioId, cursoIds, periodo),
     planosAtivos(escopo),
     matriculasEmRisco(escopo),
+    // SPEC-024 (RF-33): todos os períodos dos cursos do filtro, independente do filtro de período.
+    comparativoDoCoordenador(sessao.usuarioId, cursoIds),
   ]);
   const turmas = todasAsTurmas.filter((t) => cursoIds.includes(t.curso.id));
   const resumo = relatorio.ok ? relatorio.relatorio.resumo : [];
@@ -37,6 +40,7 @@ export async function consultarPainelCoordenador(sessao: Sessao, cursoPedido?: s
     filtro,
     periodos,
     periodo,
+    comparativo,
     totais: {
       cursos: cursoIds.length,
       disciplinas: disciplinas.length,

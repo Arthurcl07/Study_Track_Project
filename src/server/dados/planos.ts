@@ -13,6 +13,8 @@ export function turmaDoProfessorParaDashboard(professorId: string, turmaId: stri
       disciplina: { select: { nome: true } },
       matriculas: { select: { estudante: { select: { id: true, nome: true } } }, orderBy: { estudante: { nome: "asc" } } },
       indicadores: { select: { estudanteId: true, media: true, frequenciaAtual: true, situacao: true } },
+      // SPEC-023: pesos e notas das avaliações para a coluna "Precisa (6,0)".
+      avaliacoes: { select: { nome: true, peso: true, notas: { select: { estudanteId: true, valor: true } } }, orderBy: [{ data: "asc" }, { nome: "asc" }] },
       planos: {
         select: { id: true, status: true, criadoEm: true, estudanteId: true, itens: { select: { concluido: true } } },
         orderBy: { criadoEm: "desc" },

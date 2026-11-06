@@ -2,6 +2,7 @@
 // Quem pode: Professor responsável pela turma (conferido na rota pelo perfil e aqui pela query, ADR-003).
 import { MENSAGEM_FORA_DE_RISCO, podeReceberPlano, progressoDoPlano, validarItensPlano, type Progresso } from "@/domain/plano";
 import type { Situacao } from "@/domain/situacao-academica";
+import { METAS, notaNecessaria, type NotaNecessaria } from "@/domain/simulador";
 import { auditar, nomeDoUsuario, turmaParaAuditoria } from "@/server/dados/auditoria";
 import { executarEmTransacao } from "@/server/dados/notas";
 import { notificarPlano } from "@/server/dados/notificacoes";
@@ -20,6 +21,8 @@ export type EstudanteDaTurma = {
   frequencia: number | null;
   situacao: Situacao | null;
   plano: { id: string; status: "Ativo" | "Encerrado"; progresso: Progresso } | null;
+  // SPEC-023 (AC-023-07): nota necessária nas avaliações sem nota para a média chegar a 6,0.
+  precisa: NotaNecessaria;
 };
 
 export type DashboardTurma = {
@@ -49,6 +52,7 @@ export async function consultarTurmaDoProfessor(professorId: string, turmaId: st
       frequencia: indicador?.frequenciaAtual ?? null,
       situacao: indicador?.situacao ?? null,
       plano: plano ? { id: plano.id, status: plano.status, progresso: progressoDoPlano(plano.itens) } : null,
+      precisa: notaNecessaria(turma.avaliacoes.map((a) => ({ nome: a.nome, peso: a.peso, nota: a.notas.find((n) => n.estudanteId === estudante.id)?.valor ?? null })), METAS.normal),
     };
   });
   return { id: turma.id, nome: turma.nome, periodo: turma.periodo, disciplina: turma.disciplina.nome, contagem, estudantes };

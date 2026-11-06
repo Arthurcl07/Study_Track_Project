@@ -44,6 +44,13 @@ flowchart LR
     Coordenador --> UC20[UC-20 Importar Estudantes]
     Estudante --> UC21[UC-21 Consultar Notificações]
     Professor --> UC21
+    Estudante --> UC22[UC-22 Simular Notas]
+    Professor --> UC22
+    Professor --> UC23[UC-23 Publicar Comunicado]
+    Coordenador --> UC23
+    Estudante --> UC24[UC-24 Consultar o Mural]
+    Professor --> UC24
+    Coordenador --> UC24
 
     UC3 -.include.-> REC[Recalcular Indicador Acadêmico]
     UC8 -.include.-> REC

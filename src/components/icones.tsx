@@ -16,6 +16,7 @@ const CAMINHOS = {
   download: "M12 4v11M7 10l5 5 5-5M5 20h14",
   relogio: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M12 7v5l3 2",
   documento: "M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6",
+  megafone: "M4 10v4h3l6 4V6L7 10zM17 9a4 4 0 0 1 0 6",
   sino: "M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0",
   escudo: "M12 3 5 6v6c0 4.2 3 7.5 7 9 4-1.5 7-4.8 7-9V6zM9 12l2 2 4-4",
   capelo: "M2 9.5 12 5l10 4.5-10 4.5zM6 11.5V16c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.5M22 9.5V15",

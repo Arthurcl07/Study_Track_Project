@@ -50,6 +50,9 @@ Legenda de status da Spec:
 | SPEC-017 a SPEC-022 aprovadas (Luiz) | `aprovada` | 2026-11-05 |
 | Layout das SPEC-017 a SPEC-022 (períodos, chamada, auditoria, documentos, importação e notificações) | `aprovado` (Luiz) | 2026-11-05 |
 | SPEC-017 a SPEC-022 marcadas como `implementadas`: 268 testes e verificação em `docs/verificacao/SPEC-017-022.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
+| SPEC-023 a SPEC-025 incluídas a pedido do grupo (Luiz), com OPEN-045 a OPEN-047 fechadas (decisão humana, Luiz); RF-32 a RF-34, RB-25 e RB-26; texto das Specs e layout aguardando aprovação | `especificada` | 2026-11-06 |
+| SPEC-023 a SPEC-025 e layout aprovados (Luiz) | `aprovada` | 2026-11-06 |
+| SPEC-023 a SPEC-025 marcadas como `implementadas`: 290 testes e verificação em `docs/verificacao/SPEC-023-025.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
 
 ---
 
@@ -3072,6 +3075,350 @@ Nova entidade **Notificacao** (id, tipo {Risco, Nota, Plano, Prazo}, título, te
 ## 13. Questões em aberto
 
 Nenhuma. OPEN-043 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-023 — Simulador de notas ("Quanto preciso tirar?")
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-023 |
+| **Nome** | Simulador de notas |
+| **Objetivo** | Mostrar ao estudante e ao professor quanto o estudante precisa tirar nas avaliações que faltam para chegar a 6,0 e a 5,0, e deixar o estudante simular notas. |
+| **Valor** | O estudante sabe exatamente o que precisa fazer; o professor usa o número para montar o plano de recuperação. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-32 |
+| **RB** | RB-02, RB-03, RB-05, RB-06, RB-07, RB-25 |
+| **RNF** | RNF-01, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-22 Simular notas |
+| **Entidades** | leitura de `Avaliacao`, `Nota`, `IndicadorAcademico` |
+| **ADRs** | ADR-001, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-002, OPEN-045 |
+
+## 3. Escopo
+
+**Incluído**
+- Painel do estudante: em cada turma de período aberto, "Para 6,0 você precisa de X nas avaliações que faltam" e o mesmo para 5,0, com os estados já garantida, não alcançável e sem avaliação restante; aviso de frequência abaixo de 75%.
+- Simulação: o estudante digita notas hipotéticas nas avaliações sem nota e vê a média e a situação simuladas, calculadas no navegador com as mesmas funções do servidor. Nada é enviado nem gravado.
+- Dashboard da turma do professor: coluna "Precisa (6,0)" para cada estudante.
+
+**Fora do escopo**
+- Simular frequência; gravar simulações; simular avaliações que ainda não foram cadastradas.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Luiz.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Estudante — Quanto preciso tirar? | [prototipo.html#est-simulador](layout/prototipo.html#est-simulador) | [x] | [x] | Luiz | 2026-11-06 |
+| Professor — Dashboard da turma com "Precisa (6,0)" | [prototipo.html#prof-turma-simulador](layout/prototipo.html#prof-turma-simulador) | [x] | [x] | Luiz | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-003, SPEC-004, SPEC-007, SPEC-008, SPEC-017.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o estudante abre o painel; o sistema calcula, por turma, a nota necessária para 6,0 e 5,0 (RB-25); o estudante digita notas hipotéticas e vê a média e a situação simuladas.
+
+**Exceções:** turma sem avaliação restante: "Não há avaliação restante"; frequência abaixo de 75%: aviso de Risco pela frequência; turma de período encerrado: o simulador não aparece.
+
+**Pós-condições:** nenhuma alteração de dados.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-023-01 | Nota necessária pela fórmula da RB-25, arredondada para cima com uma casa. |
+| INV-023-02 | Média simulada = média ponderada da RB/OPEN-002 com as notas reais e as hipotéticas; situação simulada pela regra única (DA-02). |
+| INV-023-03 | Nada do simulador é gravado. |
+| INV-023-04 | O estudante só simula as próprias turmas; o professor só vê as turmas que leciona (RB-02, RB-03). |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- `notaNecessaria` e `mediaSimulada` em `src/domain/simulador.ts` (puro, usado no servidor e no navegador).
+- Pesos das avaliações incluídos nas consultas do painel e do dashboard da turma.
+
+## 9. Contratos necessários
+
+Sem rota nova: os números vêm no painel do estudante e no dashboard da turma.
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-04, RNF-06 | Tela aprovada, desktop e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-023-01 | Prova 1 (peso 2) = 4,0; Lista (1) = 5,0; Prova 2 (peso 2) sem nota | Estudante abre o painel | Para 6,0 precisa de 8,5; para 5,0 precisa de 6,0 |
+| AC-023-02 | Notas que já garantem 6,0 com zero nas restantes | Abre o painel | "Já garantida" |
+| AC-023-03 | Meta exige mais que 10 | Abre o painel | "Não alcançável" |
+| AC-023-04 | Todas as avaliações com nota | Abre o painel | "Não há avaliação restante" |
+| AC-023-05 | Frequência 70% | Abre o painel | Aviso de Risco pela frequência |
+| AC-023-06 | Estudante digita 9,0 na Prova 2 | Simula | Média e situação simuladas; nada gravado |
+| AC-023-07 | Professor | Abre o dashboard da turma | Coluna "Precisa (6,0)" para cada estudante |
+
+## 12. Casos de teste derivados
+
+1. `notaNecessaria` e `mediaSimulada` (RB-25) em todos os estados.
+2. Painel e dashboard da turma trazem os números; nada é gravado.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-045 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-024 — Comparativo entre semestres
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-024 |
+| **Nome** | Comparativo entre semestres |
+| **Objetivo** | Comparar os indicadores de um semestre com os anteriores, para o coordenador (cursos e disciplinas) e para o estudante (a própria trajetória). |
+| **Valor** | A coordenação vê se o curso melhorou ou piorou; o estudante vê a própria evolução. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-33 |
+| **RB** | RB-02, RB-04, RB-09, RB-24 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-16 (dashboard), UC-19 (documentos) |
+| **Entidades** | leitura de `PeriodoLetivo`, `Turma`, `IndicadorAcademico`, `Disciplina` |
+| **ADRs** | ADR-001, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-046 |
+
+## 3. Escopo
+
+**Incluído**
+- Dashboard do coordenador: cartão "Comparativo entre semestres" com, por período (todos os períodos com turmas dos cursos dele, respeitando o filtro de curso), média, frequência média, % em Risco e, nos encerrados, % de aprovação; gráfico de barras lado a lado; tabela por disciplina (média de cada período).
+- Documentos do estudante: gráfico com a média e a frequência de cada semestre cursado.
+
+**Fora do escopo**
+- Comparar cursos de outros coordenadores; exportar o comparativo.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Luiz.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Coordenador — Comparativo entre semestres | [prototipo.html#coord-comparativo](layout/prototipo.html#coord-comparativo) | [x] | [x] | Luiz | 2026-11-06 |
+| Estudante — Documentos com a evolução por semestre | [prototipo.html#est-documentos-semestres](layout/prototipo.html#est-documentos-semestres) | [x] | [x] | Luiz | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-016, SPEC-017, SPEC-020.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o coordenador abre o dashboard e vê o comparativo dos períodos; o estudante abre Documentos e vê o gráfico por semestre.
+
+**Exceções:** um só período: o comparativo mostra só ele, com a orientação de que aparece a comparação quando houver mais de um.
+
+**Pós-condições:** nenhuma alteração de dados.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-024-01 | Média do período = média simples das médias das matrículas com média; frequência = média simples das frequências registradas (como o relatório). |
+| INV-024-02 | % em Risco = matrículas em Risco ÷ matrículas com indicador; % de aprovação só em período encerrado = Aprovados ÷ matrículas com resultado (sem "Sem registro") (RB-24). |
+| INV-024-03 | O coordenador só vê turmas dos cursos que coordena (RB-04); o estudante, só as próprias (RB-02). |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- `resumoPorPeriodo` em `src/domain/comparativo.ts` (puro).
+- Consulta dos indicadores com o período em `src/server/academico/comparativo.ts`.
+- Gráfico em SVG gerado no servidor, como os demais.
+
+## 9. Contratos necessários
+
+Sem rota nova: os números vêm no dashboard do coordenador e na página Documentos.
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03 | Escopo na query |
+| RNF-04, RNF-06 | Tela aprovada, desktop e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-024-01 | Turmas em 2026/1 (encerrado) e 2026/2 | Coordenador abre o dashboard | Uma coluna por período com média, frequência, % em Risco e, em 2026/1, % de aprovação |
+| AC-024-02 | Duas matrículas em 2026/1: uma aprovada e uma reprovada | — | % de aprovação 50% |
+| AC-024-03 | Coordenador com curso filtrado | Abre o dashboard | Comparativo só daquele curso |
+| AC-024-04 | Turma de outro coordenador | — | Não entra no comparativo |
+| AC-024-05 | Estudante com turmas em dois períodos | Abre Documentos | Média e frequência de cada período |
+
+## 12. Casos de teste derivados
+
+1. `resumoPorPeriodo` (médias, % Risco, % aprovação só nos encerrados).
+2. Escopo e filtro de curso; dados do estudante.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-046 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-025 — Mural de comunicados
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-025 |
+| **Nome** | Mural de comunicados |
+| **Objetivo** | Professor e coordenador publicam avisos para a turma ou para o curso, que chegam como notificação e ficam num mural. |
+| **Valor** | A comunicação da turma fica dentro do sistema, junto das notas e da frequência, em vez de grupos paralelos. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-34 |
+| **RB** | RB-02, RB-03, RB-04, RB-20, RB-22, RB-23, RB-26 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-23 Publicar comunicado; UC-24 Consultar o mural |
+| **Entidades** | `Comunicado` (nova), `Notificacao`, `RegistroAuditoria` |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-043, OPEN-047 |
+
+## 3. Escopo
+
+**Incluído**
+- Página **Comunicados** (menu de Estudante, Professor e Coordenador): mural com os comunicados do alcance de quem está vendo, mais recentes primeiro (autor, alcance, data, título, texto).
+- Professor: formulário "Novo comunicado" com a turma (só as que leciona, de período aberto), título e texto. Coordenador: alcance "uma turma" ou "todas as turmas de um curso", com a turma ou o curso.
+- Ao publicar: grava o comunicado, uma notificação para cada estudante alcançado (tipo Comunicado) e, quando o autor é o coordenador, para os professores das turmas; auditoria.
+- O autor apaga o próprio comunicado (com confirmação); a auditoria registra.
+
+**Fora do escopo**
+- Anexos, comentários, edição, agendamento, envio por e-mail.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Luiz.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Comunicados — mural do estudante | [prototipo.html#comunicados-estudante](layout/prototipo.html#comunicados-estudante) | [x] | [x] | Luiz | 2026-11-06 |
+| Comunicados — publicar (coordenador) | [prototipo.html#comunicados-publicar](layout/prototipo.html#comunicados-publicar) | [x] | [x] | Luiz | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-002, SPEC-015, SPEC-017, SPEC-019, SPEC-022.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o professor escolhe a turma, escreve título e texto e publica; os estudantes recebem a notificação e veem o comunicado no mural.
+
+**Exceções:** título ou texto vazio ou longo demais: recusado com o campo; turma que não leciona ou curso que não coordena: acesso negado; turma de período encerrado: 409 (RB-20); curso sem turma de período aberto: recusado; apagar comunicado de outra pessoa: não encontrado.
+
+**Pós-condições:** comunicado, notificações e auditoria gravados na mesma transação.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-025-01 | Todo comunicado tem exatamente um alcance: uma turma ou um curso (CHECK). |
+| INV-025-02 | Só professor da turma ou coordenador do curso do alcance publica (RB-26). |
+| INV-025-03 | Estudante vê só comunicados das próprias turmas e dos cursos delas (de período aberto); professor, os das turmas que leciona, dos cursos delas e os próprios; coordenador, os dos cursos que coordena. |
+| INV-025-04 | Comunicado, notificações e auditoria na mesma transação. |
+| INV-025-05 | Só o autor apaga (RB-26). |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **Comunicado** (id, título, texto, criadoEm), com exatamente 1 autor e exatamente um alcance: 1 Turma ou 1 Curso. `Notificacao` ganha o tipo Comunicado.
+
+## 8. Impacto arquitetural
+
+- Validação e alcance em `src/domain/comunicados.ts` (puro).
+- Caso de uso em `src/server/academico/comunicados.ts`, com auditoria e notificações na transação.
+- Migração: tabela `Comunicado` com CHECK de alcance; valor novo no enum `TipoNotificacao`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/comunicados` | sessão | comunicados do alcance | sem permissão |
+| `POST /api/comunicados` | turmaId ou cursoId, título, texto | comunicado e número de notificados | campo inválido, acesso negado, período encerrado |
+| `DELETE /api/comunicados/:id` | — | apagado | não encontrado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03 | Alcance filtrado na query |
+| RNF-04, RNF-06 | Tela aprovada, desktop e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-025-01 | Professor da turma com 3 estudantes | Publica | Comunicado no mural da turma e 3 notificações |
+| AC-025-02 | Coordenador | Publica para todas as turmas de um curso | Estudantes e professores das turmas abertas do curso notificados; aparece no mural deles |
+| AC-025-03 | Estudante de outra turma | Abre o mural | Não vê o comunicado |
+| AC-025-04 | Professor de outra turma ou coordenador de outro curso | Tenta publicar | Acesso negado |
+| AC-025-05 | Título vazio, texto vazio ou texto com mais de 2.000 caracteres | Publica | Recusado com o campo |
+| AC-025-06 | Turma de período encerrado | Publica | 409 |
+| AC-025-07 | Autor | Apaga | Some do mural; auditoria registra |
+| AC-025-08 | Outro usuário | Tenta apagar | Não encontrado; continua no mural |
+| AC-025-09 | Administrador | Abre Comunicados | Acesso negado |
+
+## 12. Casos de teste derivados
+
+1. Validação de título e texto; alcance.
+2. Publicação, notificações, auditoria; escopo do mural; exclusão pelo autor.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-047 fechada.
 
 ## 14. Definition of Done
 

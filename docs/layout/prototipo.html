@@ -135,6 +135,16 @@
     .folha { margin: 0; padding: 20px 16px; box-shadow: none; } .folha .dados { grid-template-columns: 1fr 1fr; } .folha .larga { overflow-x: auto; }
   }
 
+  /* SPEC-023 a SPEC-025 */
+  .meta { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 12px; background: var(--nevoa); font-size: 14px; }
+  .meta strong { font-size: 22px; font-variant-numeric: tabular-nums; min-width: 52px; }
+  .meta + .meta { margin-top: 8px; }
+  .simula { display: grid; grid-template-columns: 1fr 90px; gap: 8px 12px; align-items: center; font-size: 14px; }
+  .comunicado { border: 1px solid var(--traco); border-radius: 14px; padding: 16px; background: #fff; }
+  .comunicado + .comunicado { margin-top: 12px; }
+  .comunicado h3 { margin: 6px 0 6px; font-size: 16px; } .comunicado p { margin: 0; font-size: 14px; line-height: 1.5; }
+  .comunicado .de { font-size: 13px; color: var(--mudo); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
   /* Login */
   .login { display: grid; grid-template-columns: 1fr 1fr; min-height: 100%; }
   .login .painel { background: var(--marinho); color: #fff; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; }
@@ -182,9 +192,9 @@ const logoClaro = (t = 22) => `<span style="display:inline-flex;align-items:cent
 // SPEC-016: o primeiro item de todo perfil passa a ser o Dashboard; o Administrador ganha Dashboard e Cursos (SPEC-015).
 // SPEC-017 a SPEC-022: Chamada substitui Frequência; Notificações (com contador), Documentos, Auditoria e Períodos letivos.
 const MENUS = {
-  Estudante: [["inicio", "🏠", "Dashboard"], ["atividades", "🗓️", "Minhas atividades"], ["documentos", "📄", "Documentos"], ["notificacoes", "🔔", "Notificações", 3]],
-  Professor: [["inicio", "🏠", "Dashboard"], ["notas", "📝", "Notas e avaliações"], ["frequencia", "✅", "Chamada"], ["atividades", "🗓️", "Atividades"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"], ["notificacoes", "🔔", "Notificações", 2]],
-  Coordenador: [["inicio", "🏠", "Dashboard"], ["disciplinas", "📚", "Disciplinas"], ["turmas", "👥", "Turmas e estudantes"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"], ["auditoria", "🛡️", "Auditoria"], ["area", "🔒", "Área da coordenação"]],
+  Estudante: [["inicio", "🏠", "Dashboard"], ["atividades", "🗓️", "Minhas atividades"], ["documentos", "📄", "Documentos"], ["comunicados", "📣", "Comunicados"], ["notificacoes", "🔔", "Notificações", 3]],
+  Professor: [["inicio", "🏠", "Dashboard"], ["notas", "📝", "Notas e avaliações"], ["frequencia", "✅", "Chamada"], ["atividades", "🗓️", "Atividades"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"], ["comunicados", "📣", "Comunicados"], ["notificacoes", "🔔", "Notificações", 2]],
+  Coordenador: [["inicio", "🏠", "Dashboard"], ["disciplinas", "📚", "Disciplinas"], ["turmas", "👥", "Turmas e estudantes"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"], ["comunicados", "📣", "Comunicados"], ["auditoria", "🛡️", "Auditoria"], ["area", "🔒", "Área da coordenação"]],
   Administrador: [["inicio", "🏠", "Dashboard"], ["contas", "👤", "Contas"], ["cursos", "🎓", "Cursos"], ["periodos", "📅", "Períodos letivos"], ["auditoria", "🛡️", "Auditoria"]],
 };
 const USUARIOS = { Estudante: "Ana Souza", Professor: "Prof. Carlos Lima", Coordenador: "Marina Alves", Administrador: "Renata Duarte" };
@@ -856,6 +866,91 @@ Simulado da prova substitutiva</textarea></div>
          ["🧭", "var(--normal-bg)", "var(--normal)", "Plano de recuperação criado em Modelagem de Software", "3 itens previstos por Carlos Lima.", "ontem, 16:20", false],
          ["📝", "var(--info-bg)", "var(--info)", "Nota alterada em Lista 1 — Banco de Dados", "Sua nota: 8,0 (antes 7,5).", "02/11", false]].map(([ic, bg, cor, ti, tx, qd, nova]) =>
         `<a href="#" class="notif ${nova ? "nova" : ""}" style="text-decoration:none;color:inherit"><span class="ic" style="background:${bg};color:${cor}">${ic}</span><div style="flex:1;min-width:0"><strong>${nova ? "● " : ""}${ti}</strong><p>${tx}</p></div><time>${qd}</time></a>`).join("")}
+    </div>`)],
+
+
+  // ---------------------------------------------------------------- SPEC-023 a SPEC-025
+  "est-simulador": ["SPEC-023 · Estudante — Quanto preciso tirar?", () => casca("Estudante", "inicio", `
+    ${cab("Olá, Carla", "Engenharia da Computação · 2026/2")}
+    <p style="color:var(--mudo);font-size:14px;margin:-8px 0 16px">… cartões, alertas e gráficos do dashboard (SPEC-016) …</p>
+    <div class="grade g2">
+      <div class="cartao turma-dash destaque-atencao"><div style="display:flex;justify-content:space-between;gap:8px"><div><span class="etiqueta">2026/2</span><h3 style="margin:8px 0 0">Banco de Dados</h3><p style="margin:4px 0 0;color:var(--mudo);font-size:14px">Turma BD-A · média atual 4,3</p></div>${selo("Risco")}</div>
+        <h2 style="margin:16px 0 10px;font-size:15px">🎯 Quanto preciso tirar?</h2>
+        <p style="margin:0 0 10px;font-size:13px;color:var(--mudo)">Nota igual nas avaliações que faltam: Prova 2 (peso 2).</p>
+        <div class="meta"><strong style="color:var(--atencao)">8,5</strong><span>para chegar a <b>6,0</b> (Normal)</span></div>
+        <div class="meta"><strong>6,0</strong><span>para chegar a <b>5,0</b> (sair do Risco por nota)</span></div>
+      </div>
+      <div class="cartao"><h2>Simular notas · Banco de Dados</h2>
+        <p style="margin:-6px 0 12px;font-size:13px;color:var(--mudo)">Digite notas para as avaliações que faltam. Nada é gravado.</p>
+        <div class="simula">
+          <span>Prova 1 (peso 2)</span><strong style="text-align:right">4,0</strong>
+          <span>Lista (peso 1)</span><strong style="text-align:right">5,0</strong>
+          <label for="p2">Prova 2 (peso 2)</label><input id="p2" class="campo" value="9">
+        </div>
+        <div class="msg msg-ok" style="margin-top:14px">Média simulada <b>6,2</b> · ${selo("Normal")}</div>
+        <p style="margin:12px 0 0;font-size:13px;color:var(--risco)">■ Frequência em 70%: abaixo de 75% a situação continua Risco, qualquer que seja a nota.</p>
+      </div>
+    </div>`)],
+
+  "prof-turma-simulador": ["SPEC-023 · Professor — Dashboard da turma com Precisa (6,0)", () => casca("Professor", "inicio", `
+    ${cab("Turma BD-A · Banco de Dados", "2026/2 · 8 estudantes", "", '<a href="#">Dashboard</a> / Turma BD-A')}
+    <div class="cartao"><h2>Estudantes</h2>
+      <table class="tabela-resp"><thead><tr><th>Estudante</th><th class="num">Média</th><th class="num">Frequência</th><th>Situação</th><th class="num">Precisa (6,0)</th><th>Plano</th></tr></thead><tbody>
+        ${[["Ana Souza", "8,1", "92%", "Normal", "garantida"], ["Bruno Costa", "5,4", "88%", "Atencao", "6,9"], ["Carla Mendes", "4,3", "70%", "Risco", "8,5"], ["Diego Ramos", "3,0", "80%", "Risco", "não alcançável"]].map(([n, m, f, s, p]) =>
+          `<tr><td data-r="Estudante">${n}</td><td data-r="Média" class="num">${m}</td><td data-r="Frequência" class="num">${f}</td><td data-r="Situação">${selo(s)}</td><td data-r="Precisa (6,0)" class="num" style="${p === "não alcançável" ? "color:var(--risco)" : p === "garantida" ? "color:var(--normal)" : ""}">${p}</td><td data-r="Plano"><a class="link" href="#">${s === "Risco" ? "Criar plano" : "—"}</a></td></tr>`).join("")}
+      </tbody></table>
+      <p style="margin:12px 0 0;font-size:13px;color:var(--mudo)">Nota igual em todas as avaliações ainda sem nota, com os pesos, para a média chegar a 6,0.</p></div>`)],
+
+  "coord-comparativo": ["SPEC-024 · Coordenador — Comparativo entre semestres", () => casca("Coordenador", "inicio", `
+    ${cab("Olá, Marina", "Visão geral de Engenharia da Computação.")}
+    <p style="color:var(--mudo);font-size:14px;margin:-8px 0 16px">… cartões e gráficos do dashboard (SPEC-016) …</p>
+    <div class="cartao" style="margin-bottom:16px"><div class="cab-cartao"><h2>Comparativo entre semestres</h2><span style="font-size:13px;color:var(--mudo)">Engenharia da Computação</span></div>
+      <div class="grade g2">
+        <div><svg viewBox="0 0 330 190" width="100%" role="img" aria-label="Média e frequência por semestre">
+          <line x1="36" x2="326" y1="55" y2="55" stroke="#93C5FD" stroke-dasharray="4 4"/><text x="32" y="58" font-size="9" text-anchor="end" fill="#64748B">75%</text>
+          <line x1="36" x2="326" y1="76" y2="76" stroke="#FCD34D" stroke-dasharray="4 4"/><text x="32" y="79" font-size="9" text-anchor="end" fill="#64748B">6,0</text>
+          <rect x="80" y="70" width="34" height="90" rx="3" fill="#2563EB"/><rect x="118" y="38" width="34" height="122" rx="3" fill="#93C5FD"/><text x="97" y="65" font-size="10" text-anchor="middle">6,4</text><text x="135" y="33" font-size="10" text-anchor="middle">87%</text><text x="116" y="176" font-size="11" text-anchor="middle">2026/1</text>
+          <rect x="200" y="79" width="34" height="81" rx="3" fill="#2563EB"/><rect x="238" y="45" width="34" height="115" rx="3" fill="#93C5FD"/><text x="217" y="74" font-size="10" text-anchor="middle">5,8</text><text x="255" y="40" font-size="10" text-anchor="middle">82%</text><text x="236" y="176" font-size="11" text-anchor="middle">2026/2</text>
+          <line x1="36" x2="326" y1="160" y2="160" stroke="#E2E8F0"/></svg>
+          <div class="contagem" style="font-size:13px"><span><span class="quadrado" style="background:#2563EB"></span> Média</span><span><span class="quadrado" style="background:#93C5FD"></span> Frequência</span></div></div>
+        <table class="tabela-resp"><thead><tr><th>Indicador</th><th class="num">2026/1</th><th class="num">2026/2</th></tr></thead><tbody>
+          <tr><td data-r="Indicador">Média</td><td data-r="2026/1" class="num">6,4</td><td data-r="2026/2" class="num">5,8 <span style="color:var(--risco)">▼</span></td></tr>
+          <tr><td data-r="Indicador">Frequência média</td><td data-r="2026/1" class="num">87%</td><td data-r="2026/2" class="num">82% <span style="color:var(--risco)">▼</span></td></tr>
+          <tr><td data-r="Indicador">■ Em Risco</td><td data-r="2026/1" class="num">17%</td><td data-r="2026/2" class="num">24% <span style="color:var(--risco)">▲</span></td></tr>
+          <tr><td data-r="Indicador">Aprovação</td><td data-r="2026/1" class="num">78%</td><td data-r="2026/2" class="num" style="color:var(--mudo)">em curso</td></tr>
+        </tbody></table>
+      </div>
+      <h2 style="margin:18px 0 10px;font-size:15px">Média por disciplina</h2>
+      <table class="tabela-resp"><thead><tr><th>Disciplina</th><th class="num">2026/1</th><th class="num">2026/2</th></tr></thead><tbody>
+        ${[["Cálculo Básico / Cálculo I", "5,9", "5,6"], ["Introdução à Computação", "6,8", "—"], ["Banco de Dados", "—", "5,9"]].map(([d, a, b]) => `<tr><td data-r="Disciplina">${d}</td><td data-r="2026/1" class="num">${a}</td><td data-r="2026/2" class="num">${b}</td></tr>`).join("")}
+      </tbody></table></div>`)],
+
+  "est-documentos-semestres": ["SPEC-024 · Estudante — Documentos com a evolução por semestre", () => casca("Estudante", "documentos", `
+    ${cab("Documentos", "Boletim de cada período e histórico escolar, prontos para imprimir ou salvar em PDF.")}
+    <p style="color:var(--mudo);font-size:14px;margin:-8px 0 16px">… Boletins e Histórico escolar (SPEC-020) …</p>
+    <div class="cartao"><h2>Minha evolução por semestre</h2>
+      ${mediaFrequencia([["2026/1", 6.8, 78], ["2026/2", 6.2, 70]], "Média e frequência por semestre")}</div>`)],
+
+  "comunicados-estudante": ["SPEC-025 · Comunicados — mural do estudante", () => casca("Estudante", "comunicados", `
+    ${cab("Comunicados", "Avisos das suas turmas e do seu curso.")}
+    <div style="max-width:760px">
+      ${[["Prof. Carlos Lima", "Turma MS-A · Modelagem de Software", "hoje, 09:12", "Prova 2 adiada para 26/11", "Por causa da semana de provas do curso, a Prova 2 passa para quinta-feira, 26/11, no mesmo horário. O conteúdo continua o mesmo: capítulos 4 a 6."],
+         ["Marina Alves (coordenação)", "Engenharia da Computação · todas as turmas", "ontem, 17:40", "Semana de recuperação", "De 30/11 a 04/12 haverá plantões de dúvidas em todas as disciplinas. Quem está em Atenção ou Risco deve procurar o professor da turma."]].map(([a, al, q, ti, tx]) =>
+        `<article class="comunicado"><div class="de"><strong style="color:var(--texto)">${a}</strong><span class="etiqueta">${al}</span><span>${q}</span></div><h3>${ti}</h3><p>${tx}</p></article>`).join("")}
+    </div>`)],
+
+  "comunicados-publicar": ["SPEC-025 · Comunicados — publicar (coordenador)", () => casca("Coordenador", "comunicados", `
+    ${cab("Comunicados", "Publique avisos para uma turma ou para todas as turmas de um curso. Os estudantes recebem notificação.")}
+    <div class="grade g-form">
+      <div><article class="comunicado"><div class="de"><strong style="color:var(--texto)">Marina Alves (você)</strong><span class="etiqueta">Engenharia da Computação · todas as turmas</span><span>ontem, 17:40</span><a class="link" href="#" style="margin-left:auto;color:var(--risco)">Apagar</a></div><h3>Semana de recuperação</h3><p>De 30/11 a 04/12 haverá plantões de dúvidas em todas as disciplinas.</p></article>
+        <article class="comunicado"><div class="de"><strong style="color:var(--texto)">Prof. Carlos Lima</strong><span class="etiqueta">Turma MS-A · Modelagem de Software</span><span>hoje, 09:12</span></div><h3>Prova 2 adiada para 26/11</h3><p>A Prova 2 passa para quinta-feira, 26/11, no mesmo horário.</p></article></div>
+      <div class="cartao"><h2>Novo comunicado</h2><div class="pilha">
+        ${lista("Para quem", ["Uma turma", "Todas as turmas de um curso"], "Todas as turmas de um curso")}
+        ${lista("Curso", ["Engenharia da Computação"], "Engenharia da Computação")}
+        ${campo("Título", "text", "Semana de recuperação")}
+        <div><label class="rotulo">Texto</label><textarea class="campo" rows="5">De 30/11 a 04/12 haverá plantões de dúvidas…</textarea><div style="font-size:12px;color:var(--mudo);text-align:right">54 de 2.000</div></div>
+        <p style="margin:0;font-size:13px;color:var(--mudo)">Chega como notificação para 25 estudantes e 5 professores das turmas abertas do curso.</p>
+        <button class="btn btn-primario btn-bloco">Publicar</button></div></div>
     </div>`)],
 
   "acesso-negado": ["SPEC-001 · Acesso negado", () => `<div class="simples"><div style="max-width:420px">

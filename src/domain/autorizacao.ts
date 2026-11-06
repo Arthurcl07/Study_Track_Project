@@ -45,6 +45,8 @@ export const RECURSOS = {
   documentos: "documentos",
   // SPEC-022 (RF-31, OPEN-043): notificações só para estudante e professor (RB-23).
   notificacoes: "notificacoes",
+  // SPEC-025 (RF-34, OPEN-047): mural para estudante, professor e coordenador; publicar só professor e coordenador.
+  comunicados: "comunicados",
 } as const;
 
 export type Recurso = (typeof RECURSOS)[keyof typeof RECURSOS];
@@ -72,6 +74,7 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "auditoria-academica": ["Coordenador"],
   documentos: ["Estudante", "Coordenador"],
   notificacoes: ["Estudante", "Professor"],
+  comunicados: ["Estudante", "Professor", "Coordenador"],
 };
 
 export function podeAcessar(perfil: unknown, recurso: unknown): boolean {
