@@ -24,6 +24,7 @@
 
 ## RF-07 — Registro de frequência
 - WHEN um professor registra ou altera a frequência de um estudante, o sistema SHALL atualizar o percentual de frequência e refletir a mudança no histórico acadêmico.
+- Desde 2026-11-05 (OPEN-041), o percentual é calculado pela chamada de cada aula (RF-27, RB-21); o professor não digita mais o percentual.
 
 ## RF-08 — Cadastro de atividades
 - WHEN um professor cadastra uma atividade com descrição, prazo e disciplina vinculada, o sistema SHALL registrar a atividade.
@@ -90,6 +91,31 @@
 
 ## RF-25 — Dashboard do administrador (incluído em 2026-10-22, OPEN-034)
 - WHEN um administrador acessa o seu dashboard, o sistema SHALL apresentar as contas por perfil, ativas e desativadas, as contas aguardando a troca da senha provisória, as contas criadas recentemente e, por curso, o coordenador e o número de disciplinas, turmas e estudantes, sem nenhum dado acadêmico.
+
+## RF-26 — Período letivo (incluído em 2026-11-05, OPEN-040)
+- WHEN um administrador cadastra um período letivo, o sistema SHALL criá-lo com status Aberto.
+- WHEN um administrador encerra um período letivo, o sistema SHALL tornar somente leitura todas as turmas desse período, até que ele seja reaberto.
+- WHEN um coordenador cadastra uma turma, o sistema SHALL vinculá-la a exatamente 1 período letivo aberto.
+
+## RF-27 — Chamada por aula (incluído em 2026-11-05, OPEN-041; substitui o lançamento do percentual do RF-07)
+- WHEN um professor registra a chamada de uma aula de uma turma que leciona, o sistema SHALL gravar a presença ou a falta de cada estudante matriculado e recalcular a frequência e o indicador acadêmico de cada um.
+- WHEN um professor corrige a chamada de uma aula já registrada, o sistema SHALL substituir as presenças dessa aula e recalcular a frequência e o indicador.
+
+## RF-28 — Auditoria (incluído em 2026-11-05, OPEN-039)
+- WHEN qualquer usuário realiza uma operação de escrita, o sistema SHALL registrar quem fez, quando, o que foi feito e os valores anteriores e novos, na mesma transação da operação.
+- WHEN um coordenador consulta a auditoria, o sistema SHALL apresentar só as ações acadêmicas dos cursos que ele coordena; WHEN um administrador consulta, só as ações de contas, cursos e períodos.
+
+## RF-29 — Boletim e histórico escolar (incluído em 2026-11-05, OPEN-038, OPEN-044)
+- WHEN um estudante ou um coordenador solicita o boletim de um período, o sistema SHALL apresentar um documento pronto para impressão e PDF com as turmas do estudante no período, as notas, a média, a frequência, a situação e o resultado.
+- WHEN um estudante ou um coordenador solicita o histórico escolar, o sistema SHALL apresentar o documento com todas as turmas do estudante, agrupadas por período, com carga horária, média, frequência e resultado.
+
+## RF-30 — Importação de estudantes por planilha (incluído em 2026-11-05, OPEN-042)
+- WHEN um coordenador envia uma planilha CSV de estudantes para uma turma de um curso que coordena, o sistema SHALL mostrar a prévia de cada linha, com o que será feito e os erros encontrados, sem gravar nada.
+- WHEN o coordenador confirma uma importação sem erros, o sistema SHALL criar as contas novas com senha provisória e matricular todos os estudantes da planilha na turma, numa única transação.
+
+## RF-31 — Notificações (incluído em 2026-11-05, OPEN-043)
+- WHEN um estudante entra em situação de Risco, recebe uma nota, ganha um plano de recuperação ou tem uma atividade a até 2 dias do prazo sem entrega, o sistema SHALL gravar uma notificação para o estudante; WHEN um estudante entra em Risco, também para o professor da turma.
+- WHEN o destinatário abre ou marca uma notificação como lida, o sistema SHALL registrar a leitura e atualizar o contador de não lidas.
 
 ---
 

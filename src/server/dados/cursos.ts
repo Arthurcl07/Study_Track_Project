@@ -1,5 +1,6 @@
 // Acesso a dados dos cursos (SPEC-015, RF-22). Só estrutura: nome, coordenador e contagens, nunca dado
 // acadêmico (RB-13, INV-015-08).
+import type { ClienteBanco } from "./indicadores";
 import { prisma } from "./prisma";
 
 const CURSO = {
@@ -23,7 +24,7 @@ export function listarCursosResumidos() {
 }
 
 export function buscarCurso(id: string) {
-  return prisma.curso.findUnique({ where: { id }, select: { id: true } });
+  return prisma.curso.findUnique({ where: { id }, select: { id: true, nome: true, coordenador: { select: { nome: true } } } });
 }
 
 export function cursoComNome(nome: string) {
@@ -39,11 +40,11 @@ export function listarCoordenadoresAtivos() {
   return prisma.usuario.findMany({ where: { perfil: "Coordenador", ativo: true }, select: { id: true, nome: true }, orderBy: { nome: "asc" } });
 }
 
-export async function criarCurso(dados: { nome: string; coordenadorId: string }) {
-  return formatar(await prisma.curso.create({ data: dados, select: CURSO }));
+export async function criarCurso(dados: { nome: string; coordenadorId: string }, db: ClienteBanco = prisma) {
+  return formatar(await db.curso.create({ data: dados, select: CURSO }));
 }
 
 // A troca vale na hora: o escopo do coordenador é lido do curso a cada consulta (INV-015-07).
-export async function trocarCoordenador(cursoId: string, coordenadorId: string) {
-  return formatar(await prisma.curso.update({ where: { id: cursoId }, data: { coordenadorId }, select: CURSO }));
+export async function trocarCoordenador(cursoId: string, coordenadorId: string, db: ClienteBanco = prisma) {
+  return formatar(await db.curso.update({ where: { id: cursoId }, data: { coordenadorId }, select: CURSO }));
 }

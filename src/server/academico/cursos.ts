@@ -1,7 +1,9 @@
 // Casos de uso de cursos (SPEC-015, RF-22, UC-14). Quem pode: Administrador, verificado nas rotas pela matriz
 // de autorização; aqui ficam as regras de nome único e de coordenador válido (RB-17).
 import { MENSAGEM_COORDENADOR_INVALIDO, MENSAGEM_NOME_CURSO_EM_USO, podeCoordenar, validarCurso } from "@/domain/cursos";
+import { auditar } from "@/server/dados/auditoria";
 import * as dados from "@/server/dados/cursos";
+import { executarEmTransacao } from "@/server/dados/notas";
 import type { Falha, Resultado } from "./cadastros";
 
 const sucesso = <T>(valor: T): Resultado<T> => ({ ok: true, valor });
@@ -11,7 +13,7 @@ const nomeEmUso = { tipo: "invalido", erros: { nome: MENSAGEM_NOME_CURSO_EM_USO 
 export const listarCursos = dados.listarCursos;
 
 // AC-015-01 a AC-015-03: nome obrigatório e único; coordenador ativo com perfil Coordenador.
-export async function criarCurso(entrada: Record<string, unknown>) {
+export async function criarCurso(entrada: Record<string, unknown>, autorId: string) {
   const validacao = validarCurso(entrada);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
   if (!podeCoordenar(await dados.contaParaCoordenar(validacao.dados.coordenadorId))) {
@@ -19,7 +21,13 @@ export async function criarCurso(entrada: Record<string, unknown>) {
   }
   if (await dados.cursoComNome(validacao.dados.nome)) return falha(nomeEmUso);
   try {
-    return sucesso(await dados.criarCurso(validacao.dados));
+    return sucesso(
+      await executarEmTransacao(async (tx) => {
+        const curso = await dados.criarCurso(validacao.dados, tx);
+        await auditar(tx, { autorId, acao: "curso.criado", descricao: `${curso.nome}, coordenado por ${curso.coordenador.nome}`, depois: { nome: curso.nome, coordenador: curso.coordenador.nome } });
+        return curso;
+      }),
+    );
   } catch (erro) {
     // Corrida entre dois cadastros com o mesmo nome: o índice único do banco decide (INV-015-02).
     if ((erro as { code?: string }).code === "P2002") return falha(nomeEmUso);
@@ -28,12 +36,25 @@ export async function criarCurso(entrada: Record<string, unknown>) {
 }
 
 // AC-015-04: o novo coordenador passa a ver as turmas do curso e o anterior deixa de ver, na hora.
-export async function trocarCoordenador(cursoId: string, entrada: Record<string, unknown>) {
-  if (!(await dados.buscarCurso(cursoId))) return falha({ tipo: "nao-encontrado", erro: "Curso não encontrado." });
+export async function trocarCoordenador(cursoId: string, entrada: Record<string, unknown>, autorId: string) {
+  const atual = await dados.buscarCurso(cursoId);
+  if (!atual) return falha({ tipo: "nao-encontrado", erro: "Curso não encontrado." });
   const coordenadorId = typeof entrada.coordenadorId === "string" ? entrada.coordenadorId.trim() : "";
   if (!coordenadorId) return falha({ tipo: "invalido", erros: { coordenadorId: "Escolha o novo coordenador." } });
   if (!podeCoordenar(await dados.contaParaCoordenar(coordenadorId))) {
     return falha({ tipo: "invalido", erros: { coordenadorId: MENSAGEM_COORDENADOR_INVALIDO } });
   }
-  return sucesso(await dados.trocarCoordenador(cursoId, coordenadorId));
+  return sucesso(
+    await executarEmTransacao(async (tx) => {
+      const curso = await dados.trocarCoordenador(cursoId, coordenadorId, tx);
+      await auditar(tx, {
+        autorId,
+        acao: "curso.coordenacao",
+        descricao: `${curso.nome}: ${atual.coordenador.nome} → ${curso.coordenador.nome}`,
+        antes: { coordenador: atual.coordenador.nome },
+        depois: { coordenador: curso.coordenador.nome },
+      });
+      return curso;
+    }),
+  );
 }

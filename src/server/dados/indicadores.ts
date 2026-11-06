@@ -60,7 +60,8 @@ function filtroIndicadoresDoEscopo(sessao: Sessao): Prisma.IndicadorAcademicoWhe
 // Lidos na hora (nunca gravados), então refletem sempre o indicador atual (INV-006-02).
 export function indicadoresEmAlertaDoEscopo(sessao: Sessao) {
   return prisma.indicadorAcademico.findMany({
-    where: { AND: [filtroIndicadoresDoEscopo(sessao), { situacao: { in: ["Atencao", "Risco"] } }] },
+    // SPEC-017 (INV-017-05): alertas só de turmas de períodos abertos.
+    where: { AND: [filtroIndicadoresDoEscopo(sessao), { situacao: { in: ["Atencao", "Risco"] } }, { turma: { periodoLetivo: { status: "Aberto" } } }] },
     select: {
       media: true,
       frequenciaAtual: true,

@@ -5,6 +5,9 @@
 // - Idempotente: rodar o seed de novo não duplica nada; notas e frequências voltam aos valores simulados.
 // - A situação (Normal/Atenção/Risco) nunca é escrita aqui: sai de recalcularIndicador (regra única, DA-02).
 // - Cada estudante é de um curso e só é matriculado em turmas desse curso (RB-19).
+// - SPEC-018: a frequência sai da chamada de cada aula (presenças ÷ aulas, RB-21), nunca de um percentual digitado.
+// - SPEC-017 / OPEN-044: além de 2026/2 (aberto), o semestre 2026/1 (encerrado) para o histórico escolar.
+import { frequenciaPelaChamada } from "../src/domain/frequencia";
 import { recalcularIndicador } from "../src/server/academico/indicador";
 import { salvarConta } from "../src/server/auth/contas";
 import { paraData } from "../src/server/dados/atividades";
@@ -168,7 +171,7 @@ async function garantirDisciplina(nome: string, carga: number) {
 }
 
 // Turma idempotente pelo nome. Uma turma que já existia é posta no curso indicado (bancos anteriores à SPEC-015).
-export async function garantirTurma(def: { nome: string; disciplina: string; cursoId: string; professorId: string }) {
+export async function garantirTurma(def: { nome: string; disciplina: string; cursoId: string; professorId: string; periodo?: string }) {
   const disciplina = await garantirDisciplina(def.disciplina, DISCIPLINAS[def.disciplina]?.carga ?? 60);
   await prisma.cursoDisciplina.upsert({
     where: { cursoId_disciplinaId: { cursoId: def.cursoId, disciplinaId: disciplina.id } },
@@ -177,7 +180,7 @@ export async function garantirTurma(def: { nome: string; disciplina: string; cur
   });
   const existente = await prisma.turma.findFirst({ where: { nome: def.nome } });
   if (existente) return prisma.turma.update({ where: { id: existente.id }, data: { cursoId: def.cursoId, disciplinaId: disciplina.id } });
-  return prisma.turma.create({ data: { nome: def.nome, periodo: "2026/2", disciplinaId: disciplina.id, professorId: def.professorId, cursoId: def.cursoId } });
+  return prisma.turma.create({ data: { nome: def.nome, periodo: def.periodo ?? "2026/2", disciplinaId: disciplina.id, professorId: def.professorId, cursoId: def.cursoId } });
 }
 
 export async function simularInstituicao(base: {
@@ -263,7 +266,7 @@ export async function simularInstituicao(base: {
       }
 
       const percentual = Math.round(e.faltoso ? entre(58, 74) : entre(78, 100));
-      await prisma.frequencia.upsert({ where: { estudanteId_turmaId: { estudanteId: e.id, turmaId: turma.id } }, update: { percentual }, create: { estudanteId: e.id, turmaId: turma.id, percentual } });
+      await registrarChamadaSimulada(turma.id, e.id, percentual, AULAS_2026_2);
       await recalcularIndicador(e.id, turma.id);
     }
 
@@ -332,6 +335,7 @@ export async function alinharMatriculasAoCurso() {
       prisma.historicoNota.deleteMany({ where: { ...par, avaliacao: { turmaId: m.turmaId } } }),
       prisma.nota.deleteMany({ where: { ...par, avaliacao: { turmaId: m.turmaId } } }),
       prisma.entrega.deleteMany({ where: { ...par, atividade: { turmaId: m.turmaId } } }),
+      prisma.presenca.deleteMany({ where: { ...par, aula: { turmaId: m.turmaId } } }),
       prisma.frequencia.deleteMany({ where: { ...par, turmaId: m.turmaId } }),
       prisma.indicadorAcademico.deleteMany({ where: { ...par, turmaId: m.turmaId } }),
       prisma.planoRecuperacao.deleteMany({ where: { ...par, turmaId: m.turmaId } }),
@@ -342,4 +346,98 @@ export async function alinharMatriculasAoCurso() {
   // Cursos provisórios da migração que ficaram vazios.
   await prisma.curso.deleteMany({ where: { nome: { startsWith: "Curso provisório" }, turmas: { none: {} }, estudantes: { none: {} } } });
   if (removidas > 0) console.log(`Matrículas fora do curso removidas dos dados de demonstração: ${removidas}`);
+}
+
+// ---------------------------------------------------------------- SPEC-018: chamada simulada
+
+// Datas fixas das aulas (terças e quintas), para a chamada ser a mesma a cada execução do seed.
+function datasDeAula(inicio: string, quantidade: number): string[] {
+  const datas: string[] = [];
+  let atual = inicio;
+  for (let k = 0; k < quantidade; k++) {
+    datas.push(atual);
+    atual = somarDias(atual, k % 2 === 0 ? 2 : 5);
+  }
+  return datas;
+}
+export const AULAS_2026_2 = datasDeAula("2026-08-11", 20);
+export const AULAS_2026_1 = datasDeAula("2026-02-24", 20);
+
+// Presenças de um estudante nas aulas da turma, com as faltas espalhadas, para chegar perto do percentual pedido.
+// A frequência gravada é a calculada pela chamada (RB-21). Idempotente: aula por turma e data, presença por estudante.
+export async function registrarChamadaSimulada(turmaId: string, estudanteId: string, percentual: number, datas: readonly string[]) {
+  const n = datas.length;
+  const faltas = n - Math.round((percentual / 100) * n);
+  const deslocamento = [...estudanteId].reduce((s, c) => s + c.charCodeAt(0), 0) % n;
+  const presencas: boolean[] = [];
+  for (const [k, data] of datas.entries()) {
+    const aula = await prisma.aula.upsert({ where: { turmaId_data: { turmaId, data: paraData(data) } }, update: {}, create: { turmaId, data: paraData(data) } });
+    const presente = (k * 7 + deslocamento) % n >= faltas;
+    presencas.push(presente);
+    await prisma.presenca.upsert({ where: { aulaId_estudanteId: { aulaId: aula.id, estudanteId } }, update: { presente }, create: { aulaId: aula.id, estudanteId, presente } });
+  }
+  const real = frequenciaPelaChamada(presencas)!;
+  await prisma.frequencia.upsert({ where: { estudanteId_turmaId: { estudanteId, turmaId } }, update: { percentual: real }, create: { estudanteId, turmaId, percentual: real } });
+}
+
+// ---------------------------------------------------------------- SPEC-017 / OPEN-044: semestre 2026/1 encerrado
+
+const TURMAS_2026_1 = [
+  { nome: "Turma INT-ECO", disciplina: "Introdução à Computação", carga: 80 },
+  { nome: "Turma LOG-ECO", disciplina: "Lógica", carga: 60 },
+  { nome: "Turma CB-ECO", disciplina: "Cálculo Básico", carga: 60 },
+];
+
+// Desempenho fixo das contas de demonstração (média; frequência), para o histórico ter Aprovado e Reprovado.
+const DESEMPENHO_2026_1: Record<string, [number, number][]> = {
+  "estudante@studytrack.test": [[7.4, 88], [6.1, 80], [4.6, 90]],
+  "carla.mendes@studytrack.test": [[6.8, 70], [7.2, 85], [6.4, 80]],
+  "ana.souza@studytrack.test": [[8.5, 95], [9, 100], [8, 90]],
+  "elisa.rocha@studytrack.test": [[5, 80], [4.2, 75], [6, 85]],
+};
+
+export async function simularPeriodoAnterior(base: { cursoId: string; professorTesteId: string }) {
+  // Gerador próprio: o semestre anterior não altera os números já simulados de 2026/2.
+  const aleatorio2 = gerador(20261);
+  const sortear = (min: number, max: number) => min + aleatorio2() * (max - min);
+  // Já nasce encerrado: as escritas abaixo são diretas no banco (não passam pela trava, RB-20) e não geram notificações.
+  await prisma.periodoLetivo.upsert({ where: { nome: "2026/1" }, update: {}, create: { nome: "2026/1", status: "Encerrado", encerradoEm: new Date("2026-07-10T15:00:00Z") } });
+  const professores = await prisma.usuario.findMany({ where: { email: { in: ["julia.reis@studytrack.test", "patricia.gomes@studytrack.test"] } }, select: { id: true }, orderBy: { email: "asc" } });
+  const docentes = [base.professorTesteId, ...professores.map((p) => p.id)];
+
+  // Estudantes do curso nas contas do seed: as de demonstração e 8 simulados.
+  const demonstracao = await prisma.usuario.findMany({ where: { email: { in: Object.keys(DESEMPENHO_2026_1) }, cursoId: base.cursoId }, select: { id: true, email: true } });
+  const simulados = await prisma.usuario.findMany({
+    where: { cursoId: base.cursoId, email: { endsWith: "@studytrack.test", notIn: Object.keys(DESEMPENHO_2026_1) } },
+    select: { id: true, email: true },
+    orderBy: { email: "asc" },
+    take: 8,
+  });
+
+  for (const [indice, def] of TURMAS_2026_1.entries()) {
+    const turma = await garantirTurma({ nome: def.nome, disciplina: def.disciplina, cursoId: base.cursoId, professorId: docentes[indice % docentes.length], periodo: "2026/1" });
+    const disciplina = await prisma.disciplina.findUniqueOrThrow({ where: { id: turma.disciplinaId } });
+    if (disciplina.cargaHoraria !== def.carga) await prisma.disciplina.update({ where: { id: disciplina.id }, data: { cargaHoraria: def.carga } });
+    const avaliacoes = [];
+    for (const [k, nome] of ["Prova 1", "Prova 2"].entries()) {
+      avaliacoes.push(
+        (await prisma.avaliacao.findFirst({ where: { turmaId: turma.id, nome } })) ??
+          (await prisma.avaliacao.create({ data: { turmaId: turma.id, nome, peso: 1, data: new Date(`${k === 0 ? "2026-04-10" : "2026-06-12"}T00:00:00Z`) } })),
+      );
+    }
+    for (const e of [...demonstracao, ...simulados]) {
+      const fixo = DESEMPENHO_2026_1[e.email]?.[indice];
+      const media = fixo ? fixo[0] : meioPonto(sortear(3.5, 9.5));
+      const frequencia = fixo ? fixo[1] : Math.round(aleatorio2() < 0.15 ? sortear(55, 74) : sortear(78, 100));
+      await prisma.matricula.upsert({ where: { estudanteId_turmaId: { estudanteId: e.id, turmaId: turma.id } }, update: {}, create: { estudanteId: e.id, turmaId: turma.id } });
+      for (const avaliacao of avaliacoes) {
+        await prisma.nota.upsert({ where: { avaliacaoId_estudanteId: { avaliacaoId: avaliacao.id, estudanteId: e.id } }, update: { valor: media }, create: { avaliacaoId: avaliacao.id, estudanteId: e.id, valor: media } });
+      }
+      await registrarChamadaSimulada(turma.id, e.id, frequencia, AULAS_2026_1);
+      await recalcularIndicador(e.id, turma.id);
+    }
+  }
+  // Data de encerramento fixa (bancos em que o período já existia).
+  await prisma.periodoLetivo.update({ where: { nome: "2026/1" }, data: { status: "Encerrado", encerradoEm: new Date("2026-07-10T15:00:00Z") } });
+  console.log(`Semestre 2026/1 (encerrado) pronto: ${TURMAS_2026_1.length} turmas de Engenharia da Computação, ${demonstracao.length + simulados.length} estudantes.`);
 }

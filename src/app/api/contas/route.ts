@@ -13,5 +13,5 @@ export async function GET(requisicao: Request) {
 export async function POST(requisicao: Request) {
   const acesso = await autorizarApi(requisicao, RECURSOS.gestaoContas);
   if ("negado" in acesso) return acesso.negado;
-  return respostaDeResultado(await criarConta(await lerCorpo(requisicao)));
+  return respostaDeResultado(await criarConta(await lerCorpo(requisicao), acesso.sessao.usuarioId));
 }

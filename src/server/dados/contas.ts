@@ -1,5 +1,6 @@
 // Acesso a dados da gestão de contas (SPEC-010, RF-16). Nunca devolve o hash da senha.
 import type { Perfil } from "@/domain/perfil";
+import type { ClienteBanco } from "./indicadores";
 import { prisma } from "./prisma";
 
 const CONTA = { id: true, nome: true, email: true, perfil: true, ativo: true, curso: { select: { nome: true } } } as const;
@@ -14,25 +15,25 @@ export function listarContas(perfil?: Perfil) {
 
 // RB-15 (SPEC-011): conta criada pela tela começa com senha provisória.
 // SPEC-015 / RB-19: o curso só é gravado para Estudante (CHECK na migração, INV-015-05).
-export function criarConta(dados: { nome: string; email: string; senhaHash: string; perfil: Perfil; cursoId: string | null }) {
-  return prisma.usuario.create({ data: { ...dados, trocarSenha: true }, select: CONTA });
+export function criarConta(dados: { nome: string; email: string; senhaHash: string; perfil: Perfil; cursoId: string | null }, db: ClienteBanco = prisma) {
+  return db.usuario.create({ data: { ...dados, trocarSenha: true }, select: CONTA });
 }
 
 export async function contaParaDesativar(id: string) {
   const conta = await prisma.usuario.findUnique({
     where: { id },
-    select: { id: true, nome: true, _count: { select: { turmasLecionadas: true, cursosCoordenados: true } } },
+    select: { id: true, nome: true, _count: { select: { turmasLecionadas: { where: { periodoLetivo: { status: "Aberto" } } }, cursosCoordenados: true } } },
   });
   return conta
     ? { id: conta.id, nome: conta.nome, turmasComoProfessor: conta._count.turmasLecionadas, cursosCoordenados: conta._count.cursosCoordenados }
     : null;
 }
 
-export function definirAtivo(id: string, ativo: boolean) {
-  return prisma.usuario.update({ where: { id }, data: { ativo }, select: CONTA });
+export function definirAtivo(id: string, ativo: boolean, db: ClienteBanco = prisma) {
+  return db.usuario.update({ where: { id }, data: { ativo }, select: CONTA });
 }
 
-// RB-14: a guarda confere a cada requisição se a conta da sessão continua existindo, ativa e com o mesmo perfil.
+// RB-14 (SPEC-017: só turmas de período aberto impedem a desativação do professor, INV-017-07): a guarda confere a cada requisição se a conta da sessão continua existindo, ativa e com o mesmo perfil.
 export function situacaoDaConta(id: string) {
   return prisma.usuario.findUnique({ where: { id }, select: { ativo: true, perfil: true, trocarSenha: true } });
 }

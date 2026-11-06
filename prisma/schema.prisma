@@ -5,6 +5,10 @@
 // SPEC-008: PlanoRecuperacao e ItemPlano (OPEN-021; progresso derivado dos itens, RB-12).
 // SPEC-015: Curso, grade Curso–Disciplina (N:M), turma e estudante de um curso (OPEN-030 a OPEN-033).
 // SPEC-016: Usuario.criadaEm (dashboard do administrador, RF-25).
+// SPEC-022: Notificacao (OPEN-043).
+// SPEC-019: RegistroAuditoria (OPEN-039).
+// SPEC-018: Aula e Presenca; a frequência passa a ser calculada pela chamada (OPEN-041).
+// SPEC-017: PeriodoLetivo; Turma.periodo passa a ser chave estrangeira para o nome do período (OPEN-040).
 
 generator client {
   provider = "prisma-client-js"
@@ -48,6 +52,9 @@ model Usuario {
   frequencias            Frequencia[]
   indicadores            IndicadorAcademico[]
   entregas               Entrega[]
+  presencas              Presenca[]
+  registrosAuditoria     RegistroAuditoria[]
+  notificacoes           Notificacao[]
   historicoComoEstudante HistoricoNota[]      @relation("EstudanteDoHistorico")
   historicoComoAutor     HistoricoNota[]      @relation("AutorDoHistorico")
   planosComoEstudante    PlanoRecuperacao[]   @relation("EstudanteDoPlano")
@@ -66,6 +73,7 @@ model Curso {
   grade         CursoDisciplina[]
   turmas        Turma[]
   estudantes    Usuario[]         @relation("EstudanteDoCurso")
+  auditoria     RegistroAuditoria[]
 
   @@index([coordenadorId])
 }
@@ -97,7 +105,9 @@ model Disciplina {
 model Turma {
   id            String               @id @default(uuid())
   nome          String
+  // SPEC-017 / INV-017-01: exatamente 1 período letivo (o nome, que não muda, é a chave).
   periodo       String
+  periodoLetivo PeriodoLetivo        @relation(fields: [periodo], references: [nome], onDelete: Restrict, onUpdate: Cascade)
   disciplinaId  String
   disciplina    Disciplina           @relation(fields: [disciplinaId], references: [id], onDelete: Restrict)
   professorId   String
@@ -110,9 +120,27 @@ model Turma {
   indicadores   IndicadorAcademico[]
   atividades    Atividade[]
   planos        PlanoRecuperacao[]
+  aulas         Aula[]
+  auditoria     RegistroAuditoria[]
 
   @@index([professorId])
   @@index([cursoId])
+  @@index([periodo])
+}
+
+enum StatusPeriodo {
+  Aberto
+  Encerrado
+}
+
+// SPEC-017 / RB-20 (OPEN-040): turma de período encerrado é somente leitura. INV-017-02: nome único, AAAA/1 ou AAAA/2.
+model PeriodoLetivo {
+  id          String        @id @default(uuid())
+  nome        String        @unique
+  status      StatusPeriodo @default(Aberto)
+  criadoEm    DateTime      @default(now())
+  encerradoEm DateTime?
+  turmas      Turma[]
 }
 
 // INV-002-04: matrícula N:M entre estudantes e turmas, sem duplicidade.
@@ -164,6 +192,7 @@ model Nota {
 }
 
 // Exatamente 1 registro de frequência vigente por estudante e turma (modelo de domínio).
+// SPEC-018 / RB-21: o percentual é calculado pela chamada (presenças ÷ aulas em que o estudante constou).
 model Frequencia {
   id           String   @id @default(uuid())
   estudanteId  String
@@ -278,4 +307,79 @@ model HistoricoNota {
 
   @@index([avaliacaoId])
   @@index([estudanteId])
+}
+
+// SPEC-018 / INV-018-01: no máximo 1 aula por turma e data (OPEN-041). Só a data: horário de Brasília.
+model Aula {
+  id           String     @id @default(uuid())
+  turmaId      String
+  turma        Turma      @relation(fields: [turmaId], references: [id], onDelete: Cascade)
+  data         DateTime   @db.Date
+  registradaEm DateTime   @default(now())
+  presencas    Presenca[]
+
+  @@unique([turmaId, data])
+}
+
+// SPEC-018 / INV-018-02: uma presença (ou falta) por estudante e aula.
+model Presenca {
+  aulaId      String
+  aula        Aula    @relation(fields: [aulaId], references: [id], onDelete: Cascade)
+  estudanteId String
+  estudante   Usuario @relation(fields: [estudanteId], references: [id], onDelete: Cascade)
+  presente    Boolean
+
+  @@id([aulaId, estudanteId])
+  @@index([estudanteId])
+}
+
+enum CategoriaAuditoria {
+  Administrativa
+  Academica      @map("Acadêmica")
+}
+
+// SPEC-019 / RB-22 (OPEN-039): um registro por escrita, gravado na mesma transação. Não há operação de edição
+// nem de exclusão pela aplicação (INV-019-02). Registro acadêmico tem o curso (escopo do coordenador, INV-019-03).
+model RegistroAuditoria {
+  id           String             @id @default(uuid())
+  categoria    CategoriaAuditoria
+  acao         String
+  descricao    String
+  // Valores anteriores e novos, sem senha nem hash (INV-019-05).
+  antes        Json?
+  depois       Json?
+  autorId      String
+  autor        Usuario            @relation(fields: [autorId], references: [id], onDelete: Cascade)
+  cursoId      String?
+  curso        Curso?             @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  turmaId      String?
+  turma        Turma?             @relation(fields: [turmaId], references: [id], onDelete: SetNull)
+  registradoEm DateTime           @default(now())
+
+  @@index([categoria, registradoEm])
+  @@index([cursoId, registradoEm])
+}
+
+enum TipoNotificacao {
+  Risco
+  Nota
+  Plano
+  Prazo
+}
+
+// SPEC-022 / RB-23 (OPEN-043): notificação gravada, de exatamente 1 destinatário, o único que a vê e marca como
+// lida. A chave (só para prazo) garante no máximo uma notificação por estudante e atividade (INV-022-03).
+model Notificacao {
+  id         String          @id @default(uuid())
+  usuarioId  String
+  usuario    Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  tipo       TipoNotificacao
+  titulo     String
+  texto      String
+  link       String
+  chave      String?         @unique
+  criadaEm   DateTime        @default(now())
+  lidaEm     DateTime?
+
+  @@index([usuarioId, lidaEm])
 }

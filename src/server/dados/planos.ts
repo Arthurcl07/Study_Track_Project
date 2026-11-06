@@ -1,5 +1,6 @@
 // Acesso a dados do dashboard da turma e dos planos de recuperação (SPEC-008). O professor só alcança
 // turmas e planos das turmas que leciona, sempre dentro da própria query (ADR-003, RB-03).
+import type { ClienteBanco } from "./indicadores";
 import { prisma } from "./prisma";
 
 export function turmaDoProfessorParaDashboard(professorId: string, turmaId: string) {
@@ -28,8 +29,8 @@ export function estudanteParaPlano(professorId: string, turmaId: string, estudan
   });
 }
 
-export function criarPlano(dados: { estudanteId: string; turmaId: string; professorId: string; itens: string[] }) {
-  return prisma.planoRecuperacao.create({
+export function criarPlano(dados: { estudanteId: string; turmaId: string; professorId: string; itens: string[] }, db: ClienteBanco = prisma) {
+  return db.planoRecuperacao.create({
     data: {
       estudanteId: dados.estudanteId,
       turmaId: dados.turmaId,
@@ -68,12 +69,12 @@ export function indicadorDoEstudanteNaTurma(estudanteId: string, turmaId: string
 export function itemDoProfessor(professorId: string, itemId: string) {
   return prisma.itemPlano.findFirst({
     where: { id: itemId, plano: { turma: { professorId } } },
-    select: { id: true, planoId: true, plano: { select: { status: true } } },
+    select: { id: true, planoId: true, descricao: true, concluido: true, plano: { select: { status: true, turmaId: true, estudante: { select: { nome: true } } } } },
   });
 }
 
-export function marcarItem(itemId: string, concluido: boolean) {
-  return prisma.itemPlano.update({
+export function marcarItem(itemId: string, concluido: boolean, db: ClienteBanco = prisma) {
+  return db.itemPlano.update({
     where: { id: itemId },
     data: { concluido, concluidoEm: concluido ? new Date() : null },
     select: { id: true, concluido: true, concluidoEm: true, planoId: true },
@@ -84,8 +85,8 @@ export function itensDoPlano(planoId: string) {
   return prisma.itemPlano.findMany({ where: { planoId }, select: { concluido: true } });
 }
 
-export function encerrarPlano(planoId: string) {
-  return prisma.planoRecuperacao.update({
+export function encerrarPlano(planoId: string, db: ClienteBanco = prisma) {
+  return db.planoRecuperacao.update({
     where: { id: planoId },
     data: { status: "Encerrado", encerradoEm: new Date() },
     select: { id: true, status: true, encerradoEm: true },

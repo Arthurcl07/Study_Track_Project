@@ -8,6 +8,7 @@ import type { Sessao } from "@/server/auth/token";
 import { listarCursos } from "@/server/dados/cursos";
 import * as dados from "@/server/dados/dashboard";
 import { filtroTurmasDoEscopo, listarTurmasDoEscopo } from "@/server/dados/estrutura";
+import { TURMA_DE_PERIODO_ABERTO } from "@/server/dados/periodos";
 import { consultarAtividades } from "./atividades";
 import { consultarAlertas, consultarPainel } from "./painel";
 import { gerarRelatorio } from "./relatorios";
@@ -42,9 +43,10 @@ export type DashboardEstudante = Awaited<ReturnType<typeof consultarDashboardEst
 
 // RF-24 (professor): turmas que leciona (RB-03), com os mesmos números do relatório (INV-016-02).
 export async function consultarDashboardProfessor(sessao: Sessao, hoje = hojeEmBrasilia()) {
-  const escopo = filtroTurmasDoEscopo(sessao);
+  // SPEC-017 (INV-017-05): o dashboard do professor considera só turmas de períodos abertos.
+  const escopo = { AND: [filtroTurmasDoEscopo(sessao), TURMA_DE_PERIODO_ABERTO] };
   const [turmas, relatorio, alertas, atividades, planos, emRisco] = await Promise.all([
-    listarTurmasDoEscopo(sessao),
+    listarTurmasDoEscopo(sessao, TURMA_DE_PERIODO_ABERTO),
     gerarRelatorio(sessao, {}, hoje),
     consultarAlertas(sessao),
     consultarAtividades(sessao, hoje),
