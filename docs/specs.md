@@ -47,6 +47,8 @@ Legenda de status da Spec:
 | Layout das SPEC-015 e SPEC-016 (cursos, grade, turmas com curso e os 4 dashboards) | `aprovado` (Arthur) | 2026-10-22 |
 | SPEC-015 e SPEC-016 marcadas como `implementadas`: 201 testes e verificação em `docs/verificacao/SPEC-015-016.md`; PR #64 integrado em `development` por Arthur antes da revisão, que Luiz Eduardo faz depois (pedida no PR #64), condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-10-23 |
 | SPEC-017 a SPEC-022 incluídas a pedido do grupo (Luiz), com OPEN-038 a OPEN-044 fechadas (decisão humana, Luiz); RF-26 a RF-31, RB-20 a RB-24, RF-07 e RB-14 ajustados; texto das Specs e layout aguardando aprovação | `especificada` | 2026-11-05 |
+| SPEC-017 a SPEC-022 aprovadas (Luiz) | `aprovada` | 2026-11-05 |
+| Layout das SPEC-017 a SPEC-022 (períodos, chamada, auditoria, documentos, importação e notificações) | `aprovado` (Luiz) | 2026-11-05 |
 
 ---
 
@@ -2282,7 +2284,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-017 — Período letivo
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -2322,12 +2324,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `pendente`. Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz. Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Administrador — Períodos letivos | [prototipo.html#admin-periodos](layout/prototipo.html#admin-periodos) | [ ] | [ ] | — | — |
-| Coordenador — Turmas com período | [prototipo.html#coord-turmas-periodo](layout/prototipo.html#coord-turmas-periodo) | [ ] | [ ] | — | — |
+| Administrador — Períodos letivos | [prototipo.html#admin-periodos](layout/prototipo.html#admin-periodos) | [x] | [x] | Luiz | 2026-11-05 |
+| Coordenador — Turmas com período | [prototipo.html#coord-turmas-periodo](layout/prototipo.html#coord-turmas-periodo) | [x] | [x] | Luiz | 2026-11-05 |
 
 ## 4. Dependências
 
@@ -2429,7 +2431,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-018 — Chamada por aula
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -2466,11 +2468,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `pendente`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Professor — Chamada | [prototipo.html#prof-chamada](layout/prototipo.html#prof-chamada) | [ ] | [ ] | — | — |
+| Professor — Chamada | [prototipo.html#prof-chamada](layout/prototipo.html#prof-chamada) | [x] | [x] | Luiz | 2026-11-05 |
 
 ## 4. Dependências
 
@@ -2563,7 +2565,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-019 — Auditoria
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -2600,12 +2602,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `pendente`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Coordenador — Auditoria | [prototipo.html#coord-auditoria](layout/prototipo.html#coord-auditoria) | [ ] | [ ] | — | — |
-| Administrador — Auditoria | [prototipo.html#admin-auditoria](layout/prototipo.html#admin-auditoria) | [ ] | [ ] | — | — |
+| Coordenador — Auditoria | [prototipo.html#coord-auditoria](layout/prototipo.html#coord-auditoria) | [x] | [x] | Luiz | 2026-11-05 |
+| Administrador — Auditoria | [prototipo.html#admin-auditoria](layout/prototipo.html#admin-auditoria) | [x] | [x] | Luiz | 2026-11-05 |
 
 ## 4. Dependências
 
@@ -2690,7 +2692,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-020 — Boletim e histórico escolar
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -2727,13 +2729,13 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `pendente`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Estudante — Documentos | [prototipo.html#est-documentos](layout/prototipo.html#est-documentos) | [ ] | [ ] | — | — |
-| Boletim | [prototipo.html#doc-boletim](layout/prototipo.html#doc-boletim) | [ ] | [ ] | — | — |
-| Histórico escolar | [prototipo.html#doc-historico](layout/prototipo.html#doc-historico) | [ ] | [ ] | — | — |
+| Estudante — Documentos | [prototipo.html#est-documentos](layout/prototipo.html#est-documentos) | [x] | [x] | Luiz | 2026-11-05 |
+| Boletim | [prototipo.html#doc-boletim](layout/prototipo.html#doc-boletim) | [x] | [x] | Luiz | 2026-11-05 |
+| Histórico escolar | [prototipo.html#doc-historico](layout/prototipo.html#doc-historico) | [x] | [x] | Luiz | 2026-11-05 |
 
 ## 4. Dependências
 
@@ -2822,7 +2824,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-021 — Importação de estudantes por planilha
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -2859,12 +2861,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `pendente`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Coordenador — Importar planilha (prévia com erros) | [prototipo.html#coord-importacao](layout/prototipo.html#coord-importacao) | [ ] | [ ] | — | — |
-| Coordenador — Importação concluída | [prototipo.html#coord-importacao-ok](layout/prototipo.html#coord-importacao-ok) | [ ] | [ ] | — | — |
+| Coordenador — Importar planilha (prévia com erros) | [prototipo.html#coord-importacao](layout/prototipo.html#coord-importacao) | [x] | [x] | Luiz | 2026-11-05 |
+| Coordenador — Importação concluída | [prototipo.html#coord-importacao-ok](layout/prototipo.html#coord-importacao-ok) | [x] | [x] | Luiz | 2026-11-05 |
 
 ## 4. Dependências
 
@@ -2950,7 +2952,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-022 — Notificações
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -2987,11 +2989,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `pendente`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Notificações (estudante) | [prototipo.html#notificacoes](layout/prototipo.html#notificacoes) | [ ] | [ ] | — | — |
+| Notificações (estudante) | [prototipo.html#notificacoes](layout/prototipo.html#notificacoes) | [x] | [x] | Luiz | 2026-11-05 |
 
 ## 4. Dependências
 
