@@ -106,8 +106,8 @@ export default async function DashboardProfessor() {
           )}
           {painel.semPlano.length > 0 && (
             <p className="mt-4 text-[13px] text-mudo">
-              {painel.semPlano.length} estudante(s) em Risco ainda sem plano: {painel.semPlano.slice(0, 3).map((s) => `${s.estudante} (${s.turma})`).join(", ")}
-              {painel.semPlano.length > 3 ? " e outros" : ""}.
+              {painel.semPlano.length} matrícula(s) em Risco ainda sem plano: {painel.semPlano.slice(0, 3).map((s) => `${s.estudante} (${s.turma})`).join(", ")}
+              {painel.semPlano.length > 3 ? " e outras" : ""}.
             </p>
           )}
         </Cartao>
