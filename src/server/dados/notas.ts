@@ -8,8 +8,8 @@ export function turmaLecionada(professorId: string, turmaId: string) {
   return prisma.turma.findFirst({ where: { id: turmaId, professorId }, select: { id: true } });
 }
 
-export function criarAvaliacao(turmaId: string, dados: DadosAvaliacao) {
-  return prisma.avaliacao.create({
+export function criarAvaliacao(turmaId: string, dados: DadosAvaliacao, db: ClienteBanco = prisma) {
+  return db.avaliacao.create({
     data: { ...dados, turmaId },
     select: { id: true, turmaId: true, nome: true, peso: true, data: true },
   });

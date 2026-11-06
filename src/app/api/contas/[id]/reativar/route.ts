@@ -8,5 +8,5 @@ export async function POST(requisicao: Request, contexto: { params: Promise<{ id
   const acesso = await autorizarApi(requisicao, RECURSOS.gestaoContas);
   if ("negado" in acesso) return acesso.negado;
   const { id } = await contexto.params;
-  return respostaDeResultado(await reativarConta(id), 200);
+  return respostaDeResultado(await reativarConta(id, acesso.sessao.usuarioId), 200);
 }

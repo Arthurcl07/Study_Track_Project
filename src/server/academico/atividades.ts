@@ -4,7 +4,9 @@
 import { hojeEmBrasilia, statusEntrega, validarAtividade, validarDataEntrega, type StatusEntrega } from "@/domain/atividades";
 import type { Sessao } from "@/server/auth/token";
 import * as dados from "@/server/dados/atividades";
-import { turmaLecionada } from "@/server/dados/notas";
+import { dataBR } from "@/domain/auditoria";
+import { auditar, nomeDoUsuario, turmaParaAuditoria } from "@/server/dados/auditoria";
+import { executarEmTransacao, turmaLecionada } from "@/server/dados/notas";
 import type { Falha, Resultado } from "./cadastros";
 import { travaDoPeriodo } from "./periodos";
 
@@ -24,7 +26,12 @@ export async function cadastrarAtividade(entrada: Record<string, unknown>, turma
   const validacao = validarAtividade(entrada);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
 
-  const atividade = await dados.criarAtividade(turmaId, validacao.dados);
+  const atividade = await executarEmTransacao(async (tx) => {
+    const criada = await dados.criarAtividade(turmaId, validacao.dados, tx);
+    const contexto = await turmaParaAuditoria(turmaId, tx);
+    await auditar(tx, { autorId: professorId, acao: "atividade.criada", ...contexto, descricao: `${criada.descricao} (prazo ${dataBR(validacao.dados.prazo)}) em ${contexto.rotulo}` });
+    return criada;
+  });
   return sucesso({ ...atividade, prazo: dados.deData(atividade.prazo) });
 }
 
@@ -43,7 +50,13 @@ export async function registrarEntrega(entrada: Record<string, unknown>, ativida
   if (!data.ok) return falha({ tipo: "invalido", erros: data.erros });
 
   try {
-    const entrega = await dados.criarEntrega(atividadeId, estudanteId, data.dados);
+    const entrega = await executarEmTransacao(async (tx) => {
+      const criada = await dados.criarEntrega(atividadeId, estudanteId, data.dados, tx);
+      const contexto = await turmaParaAuditoria(atividade.turmaId, tx);
+      const estudante = await nomeDoUsuario(estudanteId, tx);
+      await auditar(tx, { autorId: professorId, acao: "entrega.registrada", ...contexto, descricao: `${estudante} em ${atividade.descricao} (${contexto.rotulo}), entregue em ${dataBR(data.dados)}` });
+      return criada;
+    });
     const dataEntrega = dados.deData(entrega.dataEntrega);
     return sucesso({ ...entrega, dataEntrega, status: statusEntrega(dados.deData(atividade.prazo), dataEntrega, hoje) });
   } catch (erro) {
@@ -56,10 +69,19 @@ export async function registrarEntrega(entrada: Record<string, unknown>, ativida
 
 // Contrato "Desfazer entrega" (OPEN-003): remove um registro feito por engano.
 export async function desfazerEntrega(entregaId: string, professorId: string) {
-  if (!(await dados.entregaDoProfessor(professorId, entregaId))) return falha({ tipo: "fora-do-escopo" });
+  const entrega = await dados.entregaDoProfessor(professorId, entregaId);
+  if (!entrega) return falha({ tipo: "fora-do-escopo" });
   const trava = await travaDoPeriodo({ atividades: { some: { entregas: { some: { id: entregaId } } } } });
   if (trava) return falha(trava);
-  return sucesso(await dados.removerEntrega(entregaId));
+  return sucesso(
+    await executarEmTransacao(async (tx) => {
+      const removida = await dados.removerEntrega(entregaId, tx);
+      const contexto = await turmaParaAuditoria(entrega.atividade.turmaId, tx);
+      const estudante = await nomeDoUsuario(entrega.estudanteId, tx);
+      await auditar(tx, { autorId: professorId, acao: "entrega.desfeita", ...contexto, descricao: `${estudante} em ${entrega.atividade.descricao} (${contexto.rotulo})`, antes: { dataEntrega: dados.deData(entrega.dataEntrega) } });
+      return removida;
+    }),
+  );
 }
 
 export type AtividadeComStatus = {

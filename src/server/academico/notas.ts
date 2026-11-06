@@ -4,6 +4,9 @@
 // transação (INV-004-03, RB-10, AD-02): se o recálculo falhar, a nota anterior fica como estava.
 import { validarAvaliacao, validarValorNota } from "@/domain/registro-notas";
 import { recalcularIndicador } from "@/server/academico/indicador";
+import { numeroBR } from "@/domain/auditoria";
+import { auditar, nomeDoUsuario, turmaParaAuditoria } from "@/server/dados/auditoria";
+import type { ClienteBanco } from "@/server/dados/indicadores";
 import * as dados from "@/server/dados/notas";
 import { travaDoPeriodo } from "./periodos";
 import type { Falha, Resultado } from "./cadastros";
@@ -23,7 +26,14 @@ export async function cadastrarAvaliacao(entrada: Record<string, unknown>, turma
 
   const validacao = validarAvaliacao(entrada);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
-  return sucesso(await dados.criarAvaliacao(turmaId, validacao.dados));
+  return sucesso(
+    await dados.executarEmTransacao(async (tx) => {
+      const avaliacao = await dados.criarAvaliacao(turmaId, validacao.dados, tx);
+      const contexto = await turmaParaAuditoria(turmaId, tx);
+      await auditar(tx, { autorId: professorId, acao: "avaliacao.criada", ...contexto, descricao: `${avaliacao.nome} (peso ${numeroBR(avaliacao.peso)}) em ${contexto.rotulo}` });
+      return avaliacao;
+    }),
+  );
 }
 
 // Contrato "Registrar nota": turma, avaliação, estudante e valor.
@@ -48,6 +58,7 @@ export async function registrarNota(entrada: Record<string, unknown>, professorI
         const nota = await dados.inserirNota({ avaliacaoId: avaliacao.id, estudanteId: alvo.estudanteId, valor: validacao.dados }, tx);
         // RB-16 (SPEC-013): lançamento registrado no histórico, sem valor anterior.
         await dados.registrarHistorico({ avaliacaoId: avaliacao.id, estudanteId: alvo.estudanteId, autorId: professorId, valorAnterior: null, valorNovo: validacao.dados }, tx);
+        await auditarNota(tx, professorId, "nota.lancada", avaliacao.id, alvo.estudanteId, null, validacao.dados);
         const indicador = await recalcularIndicador(alvo.estudanteId, avaliacao.turmaId, tx);
         return { nota, indicador: { media: indicador.media, situacao: indicador.situacao } };
       }),
@@ -76,8 +87,26 @@ export async function alterarNota(notaId: string, entrada: Record<string, unknow
       const atualizada = await dados.atualizarValorNota(nota.id, validacao.dados, tx);
       // RB-16 (SPEC-013): alteração registrada com o valor anterior e o novo.
       await dados.registrarHistorico({ avaliacaoId: nota.avaliacaoId, estudanteId: nota.estudanteId, autorId: professorId, valorAnterior: nota.valor, valorNovo: validacao.dados }, tx);
+      await auditarNota(tx, professorId, "nota.alterada", nota.avaliacaoId, nota.estudanteId, nota.valor, validacao.dados);
       const indicador = await recalcularIndicador(nota.estudanteId, nota.avaliacao.turmaId, tx);
       return { nota: atualizada, indicador: { media: indicador.media, situacao: indicador.situacao } };
     }),
   );
+}
+
+// SPEC-019 (AC-019-01): "Carla Mendes em Prova 1 (ES-A · Modelagem de Software): 5,0 → 6,5".
+async function auditarNota(
+  tx: ClienteBanco,
+  autorId: string,
+  acao: "nota.lancada" | "nota.alterada",
+  avaliacaoId: string,
+  estudanteId: string,
+  antes: number | null,
+  depois: number,
+) {
+  const avaliacao = await tx.avaliacao.findUniqueOrThrow({ where: { id: avaliacaoId }, select: { nome: true, turmaId: true } });
+  const contexto = await turmaParaAuditoria(avaliacao.turmaId, tx);
+  const estudante = await nomeDoUsuario(estudanteId, tx);
+  const valores = antes === null ? numeroBR(depois) : `${numeroBR(antes)} → ${numeroBR(depois)}`;
+  await auditar(tx, { autorId, acao, ...contexto, descricao: `${estudante} em ${avaliacao.nome} (${contexto.rotulo}): ${valores}`, antes: antes === null ? null : { valor: antes }, depois: { valor: depois } });
 }

@@ -8,5 +8,5 @@ export async function POST(requisicao: Request, contexto: { params: Promise<{ id
   const acesso = await autorizarApi(requisicao, RECURSOS.gestaoPeriodos);
   if ("negado" in acesso) return acesso.negado;
   const { id } = await contexto.params;
-  return respostaDeResultado(await mudarStatusDoPeriodo(id, "Encerrado"), 200);
+  return respostaDeResultado(await mudarStatusDoPeriodo(id, "Encerrado", acesso.sessao.usuarioId), 200);
 }

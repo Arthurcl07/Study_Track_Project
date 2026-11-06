@@ -53,8 +53,8 @@ export function turmasParaFrequencia(professorId: string) {
 
 // ---------- Atividades ----------
 
-export function criarAtividade(turmaId: string, dados: DadosAtividade) {
-  return prisma.atividade.create({
+export function criarAtividade(turmaId: string, dados: DadosAtividade, db: ClienteBanco = prisma) {
+  return db.atividade.create({
     data: { turmaId, descricao: dados.descricao, prazo: paraData(dados.prazo) },
     select: { id: true, turmaId: true, descricao: true, prazo: true },
   });
@@ -98,12 +98,12 @@ export function atividadeDoProfessor(professorId: string, atividadeId: string) {
 export function atividadeParaEntrega(professorId: string, atividadeId: string, estudanteId: string) {
   return prisma.atividade.findFirst({
     where: { id: atividadeId, turma: { professorId, matriculas: { some: { estudanteId } } } },
-    select: { id: true, prazo: true },
+    select: { id: true, prazo: true, descricao: true, turmaId: true },
   });
 }
 
-export function criarEntrega(atividadeId: string, estudanteId: string, dataEntrega: string) {
-  return prisma.entrega.create({
+export function criarEntrega(atividadeId: string, estudanteId: string, dataEntrega: string, db: ClienteBanco = prisma) {
+  return db.entrega.create({
     data: { atividadeId, estudanteId, dataEntrega: paraData(dataEntrega) },
     select: { id: true, atividadeId: true, estudanteId: true, dataEntrega: true },
   });
@@ -112,12 +112,12 @@ export function criarEntrega(atividadeId: string, estudanteId: string, dataEntre
 export function entregaDoProfessor(professorId: string, entregaId: string) {
   return prisma.entrega.findFirst({
     where: { id: entregaId, atividade: { turma: { professorId } } },
-    select: { id: true },
+    select: { id: true, dataEntrega: true, estudanteId: true, atividade: { select: { descricao: true, turmaId: true } } },
   });
 }
 
-export function removerEntrega(entregaId: string) {
-  return prisma.entrega.delete({ where: { id: entregaId }, select: { id: true } });
+export function removerEntrega(entregaId: string, db: ClienteBanco = prisma) {
+  return db.entrega.delete({ where: { id: entregaId }, select: { id: true } });
 }
 
 // ---------- Consultas por perfil ----------

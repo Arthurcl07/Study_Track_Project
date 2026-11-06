@@ -6,6 +6,8 @@ import { gerarHashSenha } from "@/server/auth/senha";
 import * as dados from "@/server/dados/contas";
 import { buscarCurso } from "@/server/dados/cursos";
 import { emailJaCadastrado } from "@/server/dados/estrutura";
+import { auditar } from "@/server/dados/auditoria";
+import { executarEmTransacao } from "@/server/dados/notas";
 import type { Resultado } from "./cadastros";
 
 const sucesso = <T>(valor: T): Resultado<T> => ({ ok: true, valor });
@@ -15,7 +17,9 @@ export function listarContas(perfil: unknown) {
 }
 
 // AC-010-01 / AC-010-02: conta ativa com exatamente o perfil escolhido; senha só como hash (RNF-02).
-export async function criarConta(entrada: Record<string, unknown>) {
+// AC-010-01 / AC-010-02: conta ativa com exatamente o perfil escolhido; senha só como hash (RNF-02).
+// SPEC-019: a criação e o registro de auditoria (sem a senha, INV-019-05) vão na mesma transação.
+export async function criarConta(entrada: Record<string, unknown>, autorId: string) {
   const validacao = validarNovaConta(entrada);
   if (!validacao.ok) return { ok: false, falha: { tipo: "invalido", erros: validacao.erros } } as const;
   const { senha, ...resto } = validacao.dados;
@@ -26,7 +30,19 @@ export async function criarConta(entrada: Record<string, unknown>) {
     return { ok: false, falha: { tipo: "invalido", erros: { cursoId: "Curso inexistente." } } } as const;
   }
   try {
-    return sucesso(await dados.criarConta({ ...resto, senhaHash: await gerarHashSenha(senha) }));
+    const senhaHash = await gerarHashSenha(senha);
+    return sucesso(
+      await executarEmTransacao(async (tx) => {
+        const conta = await dados.criarConta({ ...resto, senhaHash }, tx);
+        await auditar(tx, {
+          autorId,
+          acao: "conta.criada",
+          descricao: `${conta.nome} (${conta.perfil}${conta.curso ? `, ${conta.curso.nome}` : ""}), com senha provisória`,
+          depois: { nome: conta.nome, email: conta.email, perfil: conta.perfil, curso: conta.curso?.nome ?? null },
+        });
+        return conta;
+      }),
+    );
   } catch (erro) {
     // Corrida entre dois cadastros com o mesmo e-mail: a constraint única do banco decide.
     if ((erro as { code?: string }).code === "P2002") return emailEmUso;
@@ -41,12 +57,27 @@ export async function desativarConta(contaId: string, administradorId: string) {
   if (!alvo) return { ok: false, falha: { tipo: "nao-encontrado", erro: "Conta não encontrada." } } as const;
   const motivo = motivoParaNaoDesativar(alvo, administradorId);
   if (motivo) return { ok: false, falha: { tipo: "conflito", erro: motivo } } as const;
-  return sucesso(await dados.definirAtivo(contaId, false));
+  return sucesso(await mudarSituacao(contaId, false, administradorId));
 }
 
-export async function reativarConta(contaId: string) {
+export async function reativarConta(contaId: string, administradorId: string) {
   if (!(await dados.contaParaDesativar(contaId))) {
     return { ok: false, falha: { tipo: "nao-encontrado", erro: "Conta não encontrada." } } as const;
   }
-  return sucesso(await dados.definirAtivo(contaId, true));
+  return sucesso(await mudarSituacao(contaId, true, administradorId));
+}
+
+// SPEC-019: desativação e reativação com o registro de auditoria na mesma transação.
+function mudarSituacao(contaId: string, ativo: boolean, autorId: string) {
+  return executarEmTransacao(async (tx) => {
+    const conta = await dados.definirAtivo(contaId, ativo, tx);
+    await auditar(tx, {
+      autorId,
+      acao: ativo ? "conta.reativada" : "conta.desativada",
+      descricao: `${conta.nome} (${conta.perfil})`,
+      antes: { ativo: !ativo },
+      depois: { ativo },
+    });
+    return conta;
+  });
 }

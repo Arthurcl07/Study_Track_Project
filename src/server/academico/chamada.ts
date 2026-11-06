@@ -4,6 +4,8 @@
 import { hojeEmBrasilia } from "@/domain/atividades";
 import { validarChamada } from "@/domain/frequencia";
 import { recalcularIndicador } from "@/server/academico/indicador";
+import { dataBR } from "@/domain/auditoria";
+import { auditar, nomeDoUsuario, turmaParaAuditoria } from "@/server/dados/auditoria";
 import * as dados from "@/server/dados/chamada";
 import { executarEmTransacao } from "@/server/dados/notas";
 import type { Falha, Resultado } from "./cadastros";
@@ -28,6 +30,18 @@ export async function registrarChamada(entrada: Record<string, unknown>, profess
   return sucesso(
     await executarEmTransacao(async (tx) => {
       const gravada = await dados.salvarChamada(turmaId, data, presencas, tx);
+      // SPEC-019: "ES-A · Modelagem · 05/11/2026: 6 presentes, 2 faltas (Carla Mendes, Paula Nunes)".
+      const contexto = await turmaParaAuditoria(turmaId, tx);
+      const faltas = presencas.filter((p) => !p.presente);
+      const nomes = await Promise.all(faltas.slice(0, 5).map((p) => nomeDoUsuario(p.estudanteId, tx)));
+      const lista = nomes.length > 0 ? ` (${nomes.join(", ")}${faltas.length > 5 ? "…" : ""})` : "";
+      await auditar(tx, {
+        autorId: professorId,
+        acao: gravada.corrigida ? "chamada.corrigida" : "chamada.registrada",
+        ...contexto,
+        descricao: `${contexto.rotulo} · ${dataBR(data)}: ${presencas.length - faltas.length} presente(s), ${faltas.length} falta(s)${lista}`,
+        depois: { data, presencas },
+      });
       const indicadores = [];
       for (const { estudanteId } of presencas) {
         const indicador = await recalcularIndicador(estudanteId, turmaId, tx);
