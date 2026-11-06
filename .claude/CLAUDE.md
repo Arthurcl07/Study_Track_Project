@@ -31,7 +31,15 @@ tela só é implementada depois do layout `aprovado` (OPEN-020).
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 a SPEC-016 implementadas)
+- `src/` — código-fonte (SPEC-001 a SPEC-022 implementadas)
+  Período letivo (SPEC-017, RB-20): `Turma.periodo` é chave estrangeira para `PeriodoLetivo.nome`. Toda escrita acadêmica
+  chama `travaDoPeriodo` (`src/server/academico/periodos.ts`) antes de gravar; telas de lançamento, dashboards do estudante e do
+  professor e alertas usam só turmas de períodos abertos (`filtroDePeriodo`/`TURMA_DE_PERIODO_ABERTO` em `src/server/dados/periodos.ts`).
+  Chamada (SPEC-018, RB-21): a frequência sai de `Aula`/`Presenca` (`frequenciaPelaChamada`); não existe mais lançamento do percentual.
+  Auditoria (SPEC-019, RB-22): todo caso de uso de escrita chama `auditar(tx, ...)` dentro da própria transação; caso de uso
+  novo de escrita também precisa auditar. Notificações (SPEC-022): "entrou em Risco" sai do `recalcularIndicador`; nota e plano
+  nos casos de uso; prazo quando o estudante entra (`naoLidasDoMenu` na casca). Boletim e histórico (SPEC-020): `resultadoDaTurma`
+  em `src/domain/documentos.ts` (RB-24). Importação CSV (SPEC-021): `src/domain/importacao.ts` e `src/server/academico/importacao.ts`.
   Cursos (SPEC-015, RB-17 a RB-19): o coordenador NÃO fica na turma; o escopo dele é `turma.curso.coordenadorId`
   (`filtroTurmasDoEscopo` em `src/server/dados/estrutura.ts` e os filtros de relatório e indicadores). Disciplina
   pode estar em vários cursos (`CursoDisciplina`), turma é de 1 curso, estudante é de 1 curso (CHECK no banco:

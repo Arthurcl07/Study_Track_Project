@@ -24,7 +24,7 @@ Para trocar de perfil, use **Sair** no menu lateral.
 |---|---|
 | Requisitos em EARS e regras de negócio | `docs/StudyTrack_RF.md`, `docs/StudyTrack_RB.md` |
 | Mapa e texto das Specs, com status e registro de aprovação humana | `docs/specs.md` (seção "Registro de aprovação humana") |
-| Decisões que o agente não tomou sozinho | `docs/decisoes-em-aberto.md` (OPEN-001 a OPEN-036) |
+| Decisões que o agente não tomou sozinho | `docs/decisoes-em-aberto.md` (OPEN-001 a OPEN-044) |
 | Layout aprovado antes do código (OPEN-020) | `docs/layout/prototipo.html` |
 | Rastreabilidade RF → RB → UC → Spec → teste → verificação | `docs/rastreabilidade.md` |
 
@@ -73,11 +73,18 @@ Entrar como `admin@studytrack.test`.
 - Tentar abrir `/relatorios` como administrador: Acesso negado (o admin não vê dados acadêmicos).
 - A conta criada pelo admin, ao entrar, cai em **Defina sua senha** e só usa o sistema depois de trocar (SPEC-011).
 
+## 4c. Recursos de sistema acadêmico (4 min) — SPEC-017 a SPEC-022
+
+- **Professor (`professor@`) → Chamada**: escolher a turma, desmarcar uma falta e salvar; a frequência e a situação do estudante mudam na hora (SPEC-018). **Notificações** no menu, com o contador (SPEC-022).
+- **Estudante (`carla.mendes@`) → Notificações**: entrou em Risco, nota lançada e plano criado. **Documentos → Abrir histórico escolar**: 2026/1 com Aprovado e Reprovado por frequência, 2026/2 Em curso; **Baixar PDF** (SPEC-020).
+- **Coordenador (`coordenador@`) → Turmas e estudantes**: a Turma INT-ECO (2026/1) aparece como Encerrado e não aceita alterações; na Turma MS-A, **Importar planilha (CSV)** com **Baixar modelo** e a prévia (SPEC-021); links Boletim · Histórico de cada estudante. **Auditoria**: quem alterou o quê (SPEC-019). **Dashboard** e **Relatórios**: filtro Período (SPEC-017).
+- **Administrador → Períodos letivos**: 2026/1 encerrado e 2026/2 aberto; encerrar e reabrir (com confirmação). **Auditoria**: ações de contas, cursos e períodos.
+
 ## 5. Qualidade (2 min)
 
 | Mostrar | Onde |
 |---|---|
-| 203 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
+| 268 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
 | CI verde em todo PR, obrigatória na `main` | aba Actions do GitHub; `.github/workflows/ci.yml` |
 | Verificação de cada Spec (testes + navegador, desktop e celular) | `docs/verificacao/` |
 | Segurança: escopo na própria consulta, hash de senha, JWT em cookie httpOnly | `docs/seguranca-ssdlc.md`, ADR-003 e ADR-004 |

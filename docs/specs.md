@@ -49,6 +49,7 @@ Legenda de status da Spec:
 | SPEC-017 a SPEC-022 incluídas a pedido do grupo (Luiz), com OPEN-038 a OPEN-044 fechadas (decisão humana, Luiz); RF-26 a RF-31, RB-20 a RB-24, RF-07 e RB-14 ajustados; texto das Specs e layout aguardando aprovação | `especificada` | 2026-11-05 |
 | SPEC-017 a SPEC-022 aprovadas (Luiz) | `aprovada` | 2026-11-05 |
 | Layout das SPEC-017 a SPEC-022 (períodos, chamada, auditoria, documentos, importação e notificações) | `aprovado` (Luiz) | 2026-11-05 |
+| SPEC-017 a SPEC-022 marcadas como `implementadas`: 268 testes e verificação em `docs/verificacao/SPEC-017-022.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
 
 ---
 
@@ -2284,7 +2285,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-017 — Período letivo
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -2431,7 +2432,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-018 — Chamada por aula
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -2565,7 +2566,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-019 — Auditoria
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -2692,7 +2693,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-020 — Boletim e histórico escolar
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -2824,7 +2825,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-021 — Importação de estudantes por planilha
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -2952,7 +2953,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-022 — Notificações
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
