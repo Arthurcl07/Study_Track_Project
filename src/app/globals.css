@@ -60,3 +60,31 @@ body {
     text-align: left;
   }
 }
+
+/* SPEC-020 (RF-29, OPEN-038): boletim e histórico prontos para impressão e "Salvar como PDF" em A4.
+   A barra com Voltar e Baixar PDF não sai no papel. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  body {
+    background: #fff;
+  }
+  .nao-imprimir {
+    display: none !important;
+  }
+  .folha-documento {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    border: 0;
+  }
+  .folha-documento table {
+    break-inside: auto;
+  }
+  .folha-documento tr {
+    break-inside: avoid;
+  }
+}

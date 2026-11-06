@@ -1,7 +1,8 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Casca } from "@/components/casca";
 import { FormularioApi } from "@/components/formulario-api";
-import { CabecalhoPagina, Cartao, EstadoVazio, Mensagem } from "@/components/ui";
+import { CabecalhoPagina, Cartao, CLASSE_LINK, EstadoVazio, Mensagem } from "@/components/ui";
 import { mensagemPeriodoEncerrado } from "@/domain/periodos";
 import { RECURSOS } from "@/domain/autorizacao";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
@@ -9,6 +10,7 @@ import { buscarTurmaDoEscopo, listarProfessores } from "@/server/dados/estrutura
 
 // SPEC-002 / RF-03: estudantes da turma, cadastro de estudante e matrícula de estudante existente.
 // SPEC-010 / RF-17: troca do professor responsável (só professores ativos aparecem).
+// SPEC-020 (RF-29): links para o boletim do período da turma e o histórico de cada estudante.
 // SPEC-017 (RB-20): turma de período encerrado é somente leitura; os formulários não aparecem.
 // Layout aprovado em docs/layout/prototipo.html#coordenador-turma e #cadastro-erro.
 export default async function DetalheTurma({ params }: { params: Promise<{ id: string }> }) {
@@ -36,13 +38,19 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
                 <tr className="text-left text-xs font-semibold tracking-wide text-mudo uppercase">
                   <th className="pb-2.5">Nome</th>
                   <th className="pb-2.5">E-mail</th>
+                  <th className="pb-2.5">Documentos</th>
                 </tr>
               </thead>
               <tbody>
                 {estudantes.map((e) => (
                   <tr key={e.id} className="border-t border-traco">
                     <td data-rotulo="Nome" className="py-3 pr-2">{e.nome}</td>
-                    <td data-rotulo="E-mail" className="py-3 break-all text-mudo">{e.email}</td>
+                    <td data-rotulo="E-mail" className="py-3 pr-2 break-all text-mudo">{e.email}</td>
+                    <td data-rotulo="Documentos" className="py-3 text-sm whitespace-nowrap">
+                      <Link href={`/documentos/boletim?estudante=${e.id}&periodo=${encodeURIComponent(turma.periodo)}`} className={CLASSE_LINK}>Boletim</Link>
+                      {" · "}
+                      <Link href={`/documentos/historico?estudante=${e.id}`} className={CLASSE_LINK}>Histórico</Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>
