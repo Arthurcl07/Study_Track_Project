@@ -44,6 +44,8 @@ export function turmasParaFrequencia(professorId: string) {
       matriculas: ESTUDANTES_DA_TURMA,
       frequencias: { select: { estudanteId: true, percentual: true } },
       indicadores: { select: { estudanteId: true, situacao: true } },
+      // SPEC-018: aulas com as presenças, para a tela de chamada.
+      aulas: { select: { data: true, presencas: { select: { estudanteId: true, presente: true } } }, orderBy: { data: "desc" } },
     },
     orderBy: [{ periodo: "desc" }, { nome: "asc" }],
   });

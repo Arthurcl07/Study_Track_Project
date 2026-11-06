@@ -1,12 +1,10 @@
-// Casos de uso da SPEC-005: registrar frequência, cadastrar atividade, registrar e desfazer entrega,
-// e consultar atividades com o status de entrega. Quem pode escrever: Professor (OPEN-001, OPEN-003),
+// Casos de uso da SPEC-005: cadastrar atividade, registrar e desfazer entrega,
+// e consultar atividades com o status de entrega (a frequência passou para a chamada, SPEC-018). Quem pode escrever: Professor (OPEN-001, OPEN-003),
 // conferido na rota; aqui fica o escopo da turma (RB-03), sempre dentro da própria query (ADR-003).
 import { hojeEmBrasilia, statusEntrega, validarAtividade, validarDataEntrega, type StatusEntrega } from "@/domain/atividades";
-import { validarPercentualFrequencia } from "@/domain/frequencia";
-import { recalcularIndicador } from "@/server/academico/indicador";
 import type { Sessao } from "@/server/auth/token";
 import * as dados from "@/server/dados/atividades";
-import { executarEmTransacao, turmaLecionada } from "@/server/dados/notas";
+import { turmaLecionada } from "@/server/dados/notas";
 import type { Falha, Resultado } from "./cadastros";
 import { travaDoPeriodo } from "./periodos";
 
@@ -15,26 +13,6 @@ const falha = <T>(f: Falha): Resultado<T> => ({ ok: false, falha: f });
 
 function texto(valor: unknown): string {
   return typeof valor === "string" ? valor.trim() : "";
-}
-
-// Contrato "Registrar frequência". INV-005-04 / RB-10: grava e recalcula o indicador na MESMA transação.
-export async function registrarFrequencia(entrada: Record<string, unknown>, professorId: string) {
-  const turmaId = texto(entrada.turmaId);
-  const estudanteId = texto(entrada.estudanteId);
-  if (!turmaId || !estudanteId) return falha({ tipo: "invalido", erros: { selecao: "Escolha a turma e o estudante." } });
-
-  if (!(await dados.turmaComEstudante(professorId, turmaId, estudanteId))) return falha({ tipo: "fora-do-escopo" });
-
-  const validacao = validarPercentualFrequencia(entrada.percentual);
-  if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
-
-  return sucesso(
-    await executarEmTransacao(async (tx) => {
-      const frequencia = await dados.salvarFrequencia(estudanteId, turmaId, validacao.dados, tx);
-      const indicador = await recalcularIndicador(estudanteId, turmaId, tx);
-      return { frequencia, indicador: { media: indicador.media, frequenciaAtual: indicador.frequenciaAtual, situacao: indicador.situacao } };
-    }),
-  );
 }
 
 // Contrato "Cadastrar atividade" (RF-08): descrição e prazo, só em turma que o professor leciona.
