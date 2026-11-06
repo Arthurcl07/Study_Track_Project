@@ -47,7 +47,7 @@ export default async function PainelCoordenador({ searchParams }: { searchParams
           detalhe={totais.estudantes > 0 ? `${Math.round((totais.emRisco / totais.estudantes) * 100)}% dos estudantes` : undefined}
           href={`/relatorios?situacao=Risco${filtro ? `&curso=${filtro.id}` : ""}`}
         />
-        <CartaoNumero rotulo="Planos ativos" valor={totais.planosAtivos} detalhe={`${totais.riscoSemPlano} em Risco sem plano`} />
+        <CartaoNumero rotulo="Planos ativos" valor={totais.planosAtivos} detalhe={`${totais.riscoSemPlano} estudante(s) em Risco sem plano`} />
       </div>
 
       {resumo.length === 0 ? (

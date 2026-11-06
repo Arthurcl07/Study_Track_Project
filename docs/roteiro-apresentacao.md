@@ -54,13 +54,13 @@ Entrar como `professor@studytrack.test`.
 
 ## 4. Coordenador (4 min) — SPEC-002, SPEC-009, SPEC-014, SPEC-015 e SPEC-016
 
-Entrar como `coordenador@studytrack.test` (Marina Alves coordena Engenharia da Computação e Ciência da Computação).
-- **Dashboard**: totais, situação por curso, média e frequência por turma e turmas que pedem atenção; trocar o **Curso** no filtro e ver os números mudarem (SPEC-016).
-- **Disciplinas**: a grade de cada curso; Cálculo I e Algoritmos aparecem com "Também em" outros cursos; adicionar à grade uma disciplina de outro curso (SPEC-015).
-- **Turmas e estudantes**: coluna Curso; na nova turma, a lista de disciplinas muda conforme o curso escolhido.
+Entrar como `coordenador@studytrack.test` (Marina Alves coordena Engenharia da Computação; cada curso tem o seu coordenador).
+- **Dashboard**: totais, situação por turma, média e frequência por turma e turmas que pedem atenção, só do curso dela (SPEC-016). Para mostrar o filtro por curso, o administrador dá a ela um segundo curso em **Cursos** e o seletor **Curso** aparece no dashboard e no relatório.
+- **Disciplinas**: a grade do curso; Cálculo I e Algoritmos aparecem com "Também em" outros cursos; adicionar à grade uma disciplina de outro curso (SPEC-015).
+- **Turmas e estudantes**: coluna Curso; na nova turma, só aparecem as disciplinas da grade do curso.
 - **Histórico de notas**: depois do passo 5 do professor, a alteração da nota do Bruno aparece com quem fez e quando (SPEC-013).
 - **Turmas e estudantes**: cadastrar um estudante novo na Turma ER-B (e tentar sem e-mail para ver a validação).
-- **Relatórios**: filtrar por curso e por situação Risco; **Exportar CSV** e abrir no Excel.
+- **Relatórios**: filtrar por situação Risco; **Exportar CSV** e abrir no Excel.
 
 ## 4b. Administrador (3 min) — SPEC-010, SPEC-015 e SPEC-016
 
@@ -77,7 +77,7 @@ Entrar como `admin@studytrack.test`.
 
 | Mostrar | Onde |
 |---|---|
-| 202 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
+| 203 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
 | CI verde em todo PR, obrigatória na `main` | aba Actions do GitHub; `.github/workflows/ci.yml` |
 | Verificação de cada Spec (testes + navegador, desktop e celular) | `docs/verificacao/` |
 | Segurança: escopo na própria consulta, hash de senha, JWT em cookie httpOnly | `docs/seguranca-ssdlc.md`, ADR-003 e ADR-004 |

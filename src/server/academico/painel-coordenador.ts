@@ -39,7 +39,8 @@ export async function consultarPainelCoordenador(sessao: Sessao, cursoPedido?: s
       estudantes: estudantes.size,
       emRisco,
       planosAtivos: planos.length,
-      riscoSemPlano: riscoSemPlano(riscos, planos).length,
+      // Estudantes distintos, como o cartão Em Risco: um aluno em Risco sem plano em duas turmas conta uma vez.
+      riscoSemPlano: new Set(riscoSemPlano(riscos, planos).map((r) => r.estudanteId)).size,
     },
     resumo,
     porCurso: situacaoPorCurso(

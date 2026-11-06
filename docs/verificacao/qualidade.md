@@ -6,7 +6,7 @@
 
 | Verificação | Resultado |
 |---|---|
-| Testes | 19 arquivos, **202 testes aprovados** (`npm test`); `tsc --noEmit` sem erros |
+| Testes | 19 arquivos, **203 testes aprovados** (`npm test`); `tsc --noEmit` sem erros |
 | Critérios AC (SPEC-001 a 016) | **116** na documentação; 115 com teste e o AC-016-12 (layout em 375 px) verificado no navegador (OPEN-023) |
 | Invariantes INV | **80**, todos com teste |
 | Regras RB-01 a RB-19 | 19, todas com teste (RB-17 a RB-19 em `spec-015/cursos`) |

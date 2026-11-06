@@ -12,17 +12,17 @@ Cada perfil abre direto no próprio Dashboard; o resto fica no menu lateral.
 CONTAS PRINCIPAIS (use estas na apresentação)
 --------------------------------------------------------
 Administradora   Renata Duarte   admin@studytrack.test         -> Dashboard de contas e cursos, Contas, Cursos
-Coordenadora     Marina Alves    coordenador@studytrack.test   -> 2 cursos (filtro por curso), grade, turmas, relatórios
+Coordenadora     Marina Alves    coordenador@studytrack.test   -> Engenharia da Computação: grade, turmas, relatórios
 Professor        Carlos Lima     professor@studytrack.test     -> turmas em 2 cursos, notas, frequência, atividades, planos
 Estudante        Carla Mendes    carla.mendes@studytrack.test  -> em Risco, com plano de recuperação
 Estudante        João Pereira    estudante@studytrack.test     -> painel com 3 turmas (Normal, Atenção e Risco)
 Estudante        Ana Souza       ana.souza@studytrack.test     -> painel com tudo em Normal
 
 --------------------------------------------------------
-CURSOS (6)
+CURSOS (6) — um coordenador para cada
 --------------------------------------------------------
 Administração              Beatriz Moura   turmas: Turma GP-ADM, Turma MKT-ADM
-Ciência da Computação      Marina Alves    turmas: Turma ALG-CC, Turma ED-B, Turma ES-A
+Ciência da Computação      Otávio Campos   turmas: Turma ALG-CC, Turma ED-B, Turma ES-A
 Engenharia da Computação   Marina Alves    turmas: Turma BD-A, Turma CAL-ECO, Turma ER-B, Turma MS-A, Turma SO-B
 Engenharia Elétrica        Paula Martins   turmas: Turma CAL-ELE, Turma FIS-ELE, Turma RC-A
 Publicidade e Propaganda   Sérgio Bastos   turmas: Turma CRI-PP, Turma MKT-PP
@@ -31,11 +31,12 @@ Sistemas de Informação     Helena Prado    turmas: Turma ALG-SI, Turma BD-SI
 --------------------------------------------------------
 COORDENADORES
 --------------------------------------------------------
-Beatriz Moura          beatriz.moura@studytrack.test        cursos: Administração
-Helena Prado           helena.prado@studytrack.test         cursos: Sistemas de Informação
-Marina Alves           coordenador@studytrack.test          cursos: Ciência da Computação, Engenharia da Computação
-Paula Martins          paula.martins@studytrack.test        cursos: Engenharia Elétrica
-Sérgio Bastos          sergio.bastos@studytrack.test        cursos: Publicidade e Propaganda
+Beatriz Moura          beatriz.moura@studytrack.test        curso: Administração
+Helena Prado           helena.prado@studytrack.test         curso: Sistemas de Informação
+Marina Alves           coordenador@studytrack.test          curso: Engenharia da Computação
+Otávio Campos          otavio.campos@studytrack.test        curso: Ciência da Computação
+Paula Martins          paula.martins@studytrack.test        curso: Engenharia Elétrica
+Sérgio Bastos          sergio.bastos@studytrack.test        curso: Publicidade e Propaganda
 
 --------------------------------------------------------
 PROFESSORES
@@ -136,5 +137,7 @@ Observações:
 - Contas criadas pela tela (pelo admin ou pela coordenação) pedem uma senha nova no primeiro acesso.
   As contas acima, criadas pelo seed, não pedem.
 - Cada estudante é de um curso e só é matriculado em turmas desse curso.
+- O filtro por curso no dashboard e no relatório do coordenador só aparece para quem coordena mais de um curso
+  (o administrador pode dar um segundo curso a alguém na tela Cursos).
 - A situação de cada estudante muda conforme notas e frequência forem lançadas na apresentação.
   Para voltar aos valores originais: rode o seed de novo (opção 3 do .bat).
