@@ -400,7 +400,8 @@ export async function simularPeriodoAnterior(base: { cursoId: string; professorT
   // Gerador próprio: o semestre anterior não altera os números já simulados de 2026/2.
   const aleatorio2 = gerador(20261);
   const sortear = (min: number, max: number) => min + aleatorio2() * (max - min);
-  await prisma.periodoLetivo.upsert({ where: { nome: "2026/1" }, update: {}, create: { nome: "2026/1" } });
+  // Já nasce encerrado: as escritas abaixo são diretas no banco (não passam pela trava, RB-20) e não geram notificações.
+  await prisma.periodoLetivo.upsert({ where: { nome: "2026/1" }, update: {}, create: { nome: "2026/1", status: "Encerrado", encerradoEm: new Date("2026-07-10T15:00:00Z") } });
   const professores = await prisma.usuario.findMany({ where: { email: { in: ["julia.reis@studytrack.test", "patricia.gomes@studytrack.test"] } }, select: { id: true }, orderBy: { email: "asc" } });
   const docentes = [base.professorTesteId, ...professores.map((p) => p.id)];
 
@@ -436,7 +437,7 @@ export async function simularPeriodoAnterior(base: { cursoId: string; professorT
       await recalcularIndicador(e.id, turma.id);
     }
   }
-  // Encerrado por último: as escritas acima são do seed (diretas no banco), não passam pela trava (RB-20).
+  // Data de encerramento fixa (bancos em que o período já existia).
   await prisma.periodoLetivo.update({ where: { nome: "2026/1" }, data: { status: "Encerrado", encerradoEm: new Date("2026-07-10T15:00:00Z") } });
   console.log(`Semestre 2026/1 (encerrado) pronto: ${TURMAS_2026_1.length} turmas de Engenharia da Computação, ${demonstracao.length + simulados.length} estudantes.`);
 }

@@ -9,9 +9,11 @@ import { GET as notificacoesApi } from "@/app/api/notificacoes/route";
 import { PATCH as alterarNotaApi } from "@/app/api/notas/[id]/route";
 import { POST as registrarNotaApi } from "@/app/api/notas/route";
 import { POST as criarPlanoApi } from "@/app/api/planos/route";
+import { recalcularIndicador } from "@/server/academico/indicador";
 import { prisma } from "@/server/dados/prisma";
 import {
   PREFIXO_DISCIPLINA_TESTE,
+  criarPeriodoDeTeste,
   criarUsuarioDeTeste,
   cursoPadraoDeTeste,
   entrarComo,
@@ -107,6 +109,16 @@ describe("SPEC-022 — eventos (integração)", () => {
     expect(r.status).toBe(201);
     const [plano] = await doUsuario(c.estudante.id, "Plano");
     expect(plano.texto).toContain("2 item(ns)");
+  });
+
+  it("INV-017-05: recálculo em turma de período encerrado não notifica Risco", async () => {
+    const c = await cenario();
+    const encerrado = await criarPeriodoDeTeste("Encerrado");
+    await prisma.turma.update({ where: { id: c.turma.id }, data: { periodo: encerrado.nome } });
+    await prisma.frequencia.create({ data: { estudanteId: c.estudante.id, turmaId: c.turma.id, percentual: 40 } });
+    await recalcularIndicador(c.estudante.id, c.turma.id);
+    expect(await doUsuario(c.estudante.id)).toHaveLength(0);
+    expect(await doUsuario(c.professor.id)).toHaveLength(0);
   });
 
   it("INV-022-04: nota recusada não gera notificação", async () => {

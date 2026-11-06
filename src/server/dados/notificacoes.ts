@@ -17,12 +17,14 @@ export function notificar(db: ClienteBanco, usuarioId: string, n: NovaNotificaca
   return db.notificacao.create({ data: { usuarioId, ...n }, select: { id: true } });
 }
 
-// AC-022-01: estudante e professor da turma, quando a situação muda para Risco.
+// AC-022-01: estudante e professor da turma, quando a situação muda para Risco. Turma de período encerrado não
+// notifica (como os alertas e os prazos, INV-017-05).
 export async function notificarEntradaEmRisco(db: ClienteBanco, estudanteId: string, turmaId: string, media: number | null, frequencia: number | null) {
   const turma = await db.turma.findUniqueOrThrow({
     where: { id: turmaId },
-    select: { nome: true, professorId: true, professor: { select: { nome: true } }, disciplina: { select: { nome: true } } },
+    select: { nome: true, professorId: true, professor: { select: { nome: true } }, disciplina: { select: { nome: true } }, periodoLetivo: { select: { status: true } } },
   });
+  if (turma.periodoLetivo.status !== "Aberto") return;
   const estudante = await db.usuario.findUniqueOrThrow({ where: { id: estudanteId }, select: { nome: true } });
   await notificar(db, estudanteId, notificacaoRiscoEstudante(turma.disciplina.nome, turma.professor.nome, media, frequencia));
   await notificar(db, turma.professorId, notificacaoRiscoProfessor(estudante.nome, `${turma.nome} · ${turma.disciplina.nome}`, turmaId, media, frequencia));
