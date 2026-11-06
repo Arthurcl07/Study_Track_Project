@@ -117,6 +117,18 @@
 - WHEN um estudante entra em situação de Risco, recebe uma nota, ganha um plano de recuperação ou tem uma atividade a até 2 dias do prazo sem entrega, o sistema SHALL gravar uma notificação para o estudante; WHEN um estudante entra em Risco, também para o professor da turma.
 - WHEN o destinatário abre ou marca uma notificação como lida, o sistema SHALL registrar a leitura e atualizar o contador de não lidas.
 
+## RF-32 — Simulador de notas (incluído em 2026-11-06, OPEN-045)
+- WHEN um estudante ou o professor da turma consulta a turma, o sistema SHALL mostrar a nota que o estudante precisa tirar, igual em todas as avaliações ainda sem nota, para chegar à média 6,0 e à média 5,0.
+- WHEN o estudante informa notas hipotéticas para as avaliações sem nota, o sistema SHALL mostrar a média e a situação simuladas sem gravar nada.
+
+## RF-33 — Comparativo entre semestres (incluído em 2026-11-06, OPEN-046)
+- WHEN um coordenador consulta o dashboard, o sistema SHALL comparar, por período letivo, a média, a frequência média, o percentual em Risco e, nos períodos encerrados, o percentual de aprovação dos cursos que coordena, no total e por disciplina.
+- WHEN um estudante consulta os documentos, o sistema SHALL mostrar a média e a frequência de cada período em que cursou turmas.
+
+## RF-34 — Mural de comunicados (incluído em 2026-11-06, OPEN-047)
+- WHEN um professor publica um comunicado para uma turma que leciona, ou um coordenador para uma turma ou para todas as turmas de um curso que coordena, o sistema SHALL gravar o comunicado e notificar os estudantes alcançados (e os professores das turmas, quando o autor for o coordenador).
+- WHEN o autor apaga o próprio comunicado, o sistema SHALL retirá-lo do mural e registrar a ação na auditoria.
+
 ---
 
 

@@ -1,5 +1,5 @@
 # Mapa ordenado de Specs — StudyTrack
-> Nota (2026-10-02): este mapa reflete a baseline de 2026-09-25. As SPEC-010 a SPEC-022, incluídas depois, estão resumidas no fim deste arquivo. Desde então o OPEN-006 foi fechado (ADR-004), o OPEN-007 foi fechado (visão do produto reescrita) e o UC-05 foi criado. Novas questões (OPEN-008 a OPEN-012) surgiram ao escrever as Specs completas. Ver `decisoes-em-aberto.md` e `specs.md`.
+> Nota (2026-10-02): este mapa reflete a baseline de 2026-09-25. As SPEC-010 a SPEC-025, incluídas depois, estão resumidas no fim deste arquivo. Desde então o OPEN-006 foi fechado (ADR-004), o OPEN-007 foi fechado (visão do produto reescrita) e o UC-05 foi criado. Novas questões (OPEN-008 a OPEN-012) surgiram ao escrever as Specs completas. Ver `decisoes-em-aberto.md` e `specs.md`.
 
 ## Escopo deste documento
 
@@ -286,6 +286,21 @@ Cada uma entrou por pedido de Arthur ou sugestão aprovada, com a decisão regis
 - **Objetivo:** sino com notificações gravadas de Risco, nota, plano e prazo para estudante e professor.
 - **RF / RB:** RF-31; RB-23.
 - **Dependências:** SPEC-003, SPEC-004, SPEC-005, SPEC-008, SPEC-017. **OPEN:** OPEN-043.
+
+### SPEC-023 — Simulador de notas
+
+- **Objetivo:** nota necessária nas avaliações restantes para 6,0 e 5,0, e simulação livre para o estudante; o professor vê por aluno.
+- **RF / RB:** RF-32; RB-25. **Dependências:** SPEC-003, SPEC-004, SPEC-007, SPEC-008, SPEC-017. **OPEN:** OPEN-045.
+
+### SPEC-024 — Comparativo entre semestres
+
+- **Objetivo:** indicadores por período para o coordenador (total e por disciplina) e para o estudante.
+- **RF / RB:** RF-33; RB-24. **Dependências:** SPEC-016, SPEC-017, SPEC-020. **OPEN:** OPEN-046.
+
+### SPEC-025 — Mural de comunicados
+
+- **Objetivo:** professor e coordenador publicam avisos para a turma ou o curso, com notificação e mural.
+- **RF / RB:** RF-34; RB-26. **Dependências:** SPEC-002, SPEC-015, SPEC-017, SPEC-019, SPEC-022. **OPEN:** OPEN-047.
 
 ## Questões em aberto transversais
 

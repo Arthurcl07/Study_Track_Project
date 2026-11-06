@@ -153,6 +153,22 @@ Cláusula EARS:
   IF o período estiver encerrado e faltar média ou frequência, THEN o sistema SHALL apresentar Sem registro; IF o período estiver aberto, THEN Em curso.
 Aplicada por: RF-29.
 
+RB-25 — Nota necessária
+Descrição: A nota necessária é a nota igual nas avaliações ainda sem nota que, com os pesos, leva a média ponderada à meta (6,0 ou 5,0); a simulação nunca é gravada (OPEN-045).
+Cláusula EARS:
+  WHEN o simulador for consultado, o sistema SHALL calcular a nota necessária como (meta × soma de todos os pesos − soma de peso × nota das avaliações com nota) ÷ soma dos pesos das avaliações sem nota, arredondada para cima com uma casa.
+  IF a nota necessária for menor ou igual a zero, THEN o sistema SHALL indicar meta já garantida; IF for maior que 10, THEN SHALL indicar meta não alcançável; IF não houver avaliação sem nota, THEN SHALL indicar que não há avaliação restante.
+  IF a frequência for inferior a 75%, THEN o sistema SHALL avisar que a situação continua Risco independentemente da nota (RB-05).
+Aplicada por: RF-32.
+
+RB-26 — Alcance do comunicado
+Descrição: Um comunicado alcança uma turma ou todas as turmas de período aberto de um curso; só quem está nesse alcance o vê, e só o autor o apaga (OPEN-047).
+Cláusula EARS:
+  WHEN um estudante ou professor consultar o mural, o sistema SHALL apresentar apenas os comunicados das turmas em que estuda ou leciona e dos cursos dessas turmas.
+  IF o autor não for professor da turma nem coordenador do curso do alcance, ou a turma for de período encerrado, THEN o sistema SHALL impedir a publicação.
+  IF quem pede a exclusão não for o autor, THEN o sistema SHALL impedir a exclusão.
+Aplicada por: RF-34.
+
 
 ## Resumo das regras
 
