@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Casca } from "@/components/casca";
 import { FormularioApi } from "@/components/formulario-api";
+import { ImportacaoPlanilha } from "@/components/importacao-planilha";
 import { CabecalhoPagina, Cartao, CLASSE_LINK, EstadoVazio, Mensagem } from "@/components/ui";
 import { mensagemPeriodoEncerrado } from "@/domain/periodos";
 import { RECURSOS } from "@/domain/autorizacao";
@@ -10,6 +11,7 @@ import { buscarTurmaDoEscopo, listarProfessores } from "@/server/dados/estrutura
 
 // SPEC-002 / RF-03: estudantes da turma, cadastro de estudante e matrícula de estudante existente.
 // SPEC-010 / RF-17: troca do professor responsável (só professores ativos aparecem).
+// SPEC-021 (RF-30): importação de estudantes por planilha CSV, com prévia e tudo ou nada.
 // SPEC-020 (RF-29): links para o boletim do período da turma e o histórico de cada estudante.
 // SPEC-017 (RB-20): turma de período encerrado é somente leitura; os formulários não aparecem.
 // Layout aprovado em docs/layout/prototipo.html#coordenador-turma e #cadastro-erro.
@@ -61,6 +63,10 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
           <Mensagem tipo="info">{mensagemPeriodoEncerrado(turma.periodo)} Cadastro, matrícula e troca de professor ficam bloqueados até o administrador reabrir o período.</Mensagem>
         ) : (
         <div className="space-y-5">
+          <Cartao titulo="Importar planilha (CSV)">
+            <p className="mb-3 text-sm text-mudo">Cadastre e matricule vários estudantes de {turma.curso.nome} de uma vez. Nada é gravado antes de você confirmar.</p>
+            <ImportacaoPlanilha turmaId={turma.id} />
+          </Cartao>
           <Cartao titulo="Cadastrar novo estudante">
             <FormularioApi
               url={`/api/turmas/${turma.id}/estudantes`}
