@@ -1,6 +1,20 @@
-# Verificação de qualidade e segurança — SPEC-001 a SPEC-022
+# Verificação de qualidade e segurança — SPEC-001 a SPEC-025
 
-**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) em 2026-10-22 com as SPEC-015 e 016 (seção 000) e em **2026-11-06** com as SPEC-017 a 022 (seção 0000).
+**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) em 2026-10-22 com as SPEC-015 e 016 (seção 000) em 2026-11-06 com as SPEC-017 a 022 (seção 0000) e, no mesmo dia, com as **SPEC-023 a 025** (seção 00000).
+
+## 00000. Reverificação de 2026-11-06 (depois das SPEC-023 a SPEC-025)
+
+| Verificação | Resultado |
+|---|---|
+| Testes | 28 arquivos, **290 testes aprovados** (`npm test`); `tsc --noEmit` sem erros |
+| Critérios AC (SPEC-001 a 025) | **183** na documentação; 182 com teste e o AC-016-12 verificado no navegador (OPEN-023) |
+| Invariantes INV | **125**, todos com teste |
+| Regras RB-01 a RB-26 | 26, todas com teste (RB-25 em `spec-023`, RB-26 em `spec-025`) |
+| Guardas | `/api/comunicados` e `/api/comunicados/:id` usam `autorizarApi`; `/comunicados` usa `exigirAcessoPagina`; o Administrador não ganhou recurso novo |
+| Escopo (ADR-003) | mural filtrado por turma, curso ou autoria na própria query; comparativo pelo `curso.coordenadorId`; simulador só com as notas do próprio estudante |
+| Integridade (ADR-002) | CHECK de alcance único no `Comunicado` |
+| Transações | comunicado, notificações e auditoria na mesma transação |
+| Dependências | nenhuma nova |
 
 ## 0000. Reverificação de 2026-11-06 (depois das SPEC-017 a SPEC-022)
 

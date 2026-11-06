@@ -2,7 +2,7 @@
 import { numeroBR } from "./auditoria";
 import type { Situacao } from "./situacao-academica";
 
-export type TipoNotificacao = "Risco" | "Nota" | "Plano" | "Prazo";
+export type TipoNotificacao = "Risco" | "Nota" | "Plano" | "Prazo" | "Comunicado";
 export type NovaNotificacao = { tipo: TipoNotificacao; titulo: string; texto: string; link: string; chave?: string };
 
 export const DIAS_DE_AVISO_DO_PRAZO = 2;
@@ -55,6 +55,11 @@ export function notificacaoPlano(disciplina: string, itens: number, professor: s
     texto: `${itens} item(ns) previsto(s) por ${professor}.`,
     link: "/estudante",
   };
+}
+
+// SPEC-025 (AC-025-01): aviso de comunicado publicado para a turma ou o curso.
+export function notificacaoComunicado(titulo: string, autor: string, alcance: string): NovaNotificacao {
+  return { tipo: "Comunicado", titulo: `Comunicado: ${titulo}`, texto: `${autor} · ${alcance}`, link: "/comunicados" };
 }
 
 export const chavePrazo = (atividadeId: string, estudanteId: string) => `prazo:${atividadeId}:${estudanteId}`;

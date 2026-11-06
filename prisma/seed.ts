@@ -251,7 +251,13 @@ async function exemplosDeNotificacoesEAuditoria(base: { professorId: string; coo
       ],
     });
   }
-  console.log("Notificações e registros de auditoria de exemplo prontos.");
+  // SPEC-025: dois comunicados de exemplo (um do professor para a turma, um da coordenação para o curso).
+  if ((await prisma.comunicado.count({ where: { OR: [{ turmaId: turma.id }, { cursoId: base.cursoId }] } })) === 0) {
+    await prisma.comunicado.create({ data: { autorId: base.professorId, turmaId: turma.id, titulo: "Prova 2 adiada para 26/11", texto: "Por causa da semana de provas do curso, a Prova 2 passa para quinta-feira, 26/11, no mesmo horário. O conteúdo continua o mesmo: capítulos 4 a 6.", criadoEm: new Date(`${base.hoje}T12:10:00Z`) } });
+    await prisma.comunicado.create({ data: { autorId: base.coordenadorId, cursoId: base.cursoId, titulo: "Semana de recuperação", texto: "De 30/11 a 04/12 haverá plantões de dúvidas em todas as disciplinas. Quem está em Atenção ou Risco deve procurar o professor da turma.", criadoEm: ontem } });
+    await prisma.notificacao.create({ data: { usuarioId: carla.id, tipo: "Comunicado", titulo: "Comunicado: Prova 2 adiada para 26/11", texto: "Prof. Carlos Lima · Turma MS-A · Modelagem de Software", link: "/comunicados", criadaEm: new Date(`${base.hoje}T12:10:00Z`) } });
+  }
+  console.log("Notificações, comunicados e registros de auditoria de exemplo prontos.");
 }
 
 function somarDias(base: string, dias: number) {

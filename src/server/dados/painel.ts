@@ -13,7 +13,8 @@ export function turmasDoPainel(estudanteId: string) {
       disciplina: { select: { nome: true } },
       professor: { select: { nome: true } },
       avaliacoes: {
-        select: { nome: true, data: true, notas: { where: { estudanteId }, select: { valor: true } } },
+        // SPEC-023: o peso entra no simulador de notas (RB-25).
+        select: { nome: true, data: true, peso: true, notas: { where: { estudanteId }, select: { valor: true } } },
       },
       indicadores: {
         where: { estudanteId },

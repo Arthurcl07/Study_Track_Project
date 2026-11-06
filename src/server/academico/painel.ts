@@ -8,6 +8,7 @@ import { indicadoresEmAlertaDoEscopo } from "@/server/dados/indicadores";
 import { turmasDoPainel } from "@/server/dados/painel";
 import { planosDoEstudante } from "@/server/dados/planos";
 import { progressoDoPlano, type Progresso } from "@/domain/plano";
+import { METAS, notaNecessaria, type AvaliacaoSimulada, type NotaNecessaria } from "@/domain/simulador";
 import { consultarAtividades } from "./atividades";
 
 export type Alerta = {
@@ -51,6 +52,9 @@ export type TurmaDoPainel = {
   alerta: NivelAlerta | null;
   avaliacoesComNota: number;
   evolucao: PontoEvolucao[];
+  // SPEC-023 (RF-32): avaliações com peso e nota (do próprio estudante) e a nota necessária para 6,0 e 5,0.
+  avaliacoes: AvaliacaoSimulada[];
+  necessaria: { normal: NotaNecessaria; saidaDoRisco: NotaNecessaria };
 };
 
 export type PlanoDoEstudante = {
@@ -104,6 +108,7 @@ export async function consultarPainel(sessao: Sessao): Promise<Painel> {
         alerta: nivelDoAlerta(indicador?.situacao),
         avaliacoesComNota: evolucao.length,
         evolucao,
+        ...simulador(t.avaliacoes.map((a) => ({ nome: a.nome, peso: a.peso, nota: a.notas[0]?.valor ?? null }))),
       };
     }),
     alertas,
@@ -123,4 +128,9 @@ export async function consultarPainel(sessao: Sessao): Promise<Painel> {
       .filter((a) => a.status !== "NoPrazo")
       .sort((a, b) => (a.status === b.status ? a.prazo.localeCompare(b.prazo) : a.status === "Atrasada" ? -1 : 1)),
   };
+}
+
+// SPEC-023 / RB-25: nada é gravado; só se calcula na leitura (INV-023-03).
+function simulador(avaliacoes: AvaliacaoSimulada[]) {
+  return { avaliacoes, necessaria: { normal: notaNecessaria(avaliacoes, METAS.normal), saidaDoRisco: notaNecessaria(avaliacoes, METAS.saidaDoRisco) } };
 }

@@ -4,6 +4,7 @@ import { MediaFrequenciaPorTurma, SituacaoPorTurma } from "@/components/graficos
 import { Icone } from "@/components/icones";
 import { SeletorCurso } from "@/components/seletor-curso";
 import { SeletorPeriodo } from "@/components/seletor-periodo";
+import { ComparativoSemestres } from "@/components/comparativo-semestres";
 import { CabecalhoPagina, Cartao, CartaoNumero, CLASSE_LINK, EstadoVazio } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { consultarPainelCoordenador } from "@/server/academico/painel-coordenador";
@@ -17,7 +18,7 @@ import { exigirAcessoPagina } from "@/server/auth/guardas";
 export default async function PainelCoordenador({ searchParams }: { searchParams: Promise<{ curso?: string; periodo?: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.painelCoordenador);
   const { curso, periodo: periodoPedido } = await searchParams;
-  const { cursos, filtro, periodos, periodo, totais, resumo, porCurso, atencao } = await consultarPainelCoordenador(sessao, curso, periodoPedido);
+  const { cursos, filtro, periodos, periodo, totais, resumo, porCurso, atencao, comparativo } = await consultarPainelCoordenador(sessao, curso, periodoPedido);
   const sufixo = filtro ? `?curso=${filtro.id}` : "";
   const subtitulo = filtro ? `Visão geral de ${filtro.nome}.` : cursos.length === 1 ? `Visão geral de ${cursos[0].nome}.` : "Visão geral dos cursos que você coordena.";
 
@@ -121,6 +122,8 @@ export default async function PainelCoordenador({ searchParams }: { searchParams
           </div>
         </>
       )}
+      {/* SPEC-024 (RF-33): comparativo entre semestres dos cursos do filtro. */}
+      <ComparativoSemestres comparativo={comparativo} curso={filtro?.nome ?? (cursos.length === 1 ? cursos[0].nome : `${cursos.length} cursos`)} />
     </Casca>
   );
 }

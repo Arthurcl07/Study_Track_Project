@@ -6,6 +6,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { textoNecessaria } from "@/domain/simulador";
 import type { DashboardTurma } from "@/server/academico/planos";
 import {
   Cartao, CLASSE_BOTAO_PRIMARIO, CLASSE_CAMPO, CLASSE_LINK, CLASSE_ROTULO, corDaFrequencia, corDaMedia, ErroCampo, EstadoVazio,
@@ -67,6 +68,7 @@ export function DashboardTurmaProfessor({ turma }: { turma: DashboardTurma }) {
                 <th className="px-2 pb-2.5 text-right">Média</th>
                 <th className="px-2 pb-2.5 text-right">Frequência</th>
                 <th className="pb-2.5 pl-3">Situação</th>
+                <th className="px-2 pb-2.5 text-right" title="Nota igual nas avaliações sem nota para a média chegar a 6,0">Precisa (6,0)</th>
                 <th className="px-2 pb-2.5">Plano</th>
               </tr>
             </thead>
@@ -78,6 +80,12 @@ export function DashboardTurmaProfessor({ turma }: { turma: DashboardTurma }) {
                   <td data-rotulo="Frequência" className={`px-2 py-3 text-right tabular-nums ${corDaFrequencia(e.frequencia) && `font-semibold ${corDaFrequencia(e.frequencia)}`}`}>{e.frequencia === null ? "—" : `${numero(e.frequencia)}%`}</td>
                   <td data-rotulo="Situação" className="py-3 pr-2 pl-3">
                     {e.situacao ? <SeloSituacao situacao={e.situacao} /> : <span className="text-mudo">Sem dados</span>}
+                  </td>
+                  <td
+                    data-rotulo="Precisa (6,0)"
+                    className={`px-2 py-3 text-right tabular-nums ${e.precisa.tipo === "inalcancavel" ? "text-risco" : e.precisa.tipo === "garantida" ? "text-normal" : ""}`}
+                  >
+                    {textoNecessaria(e.precisa)}
                   </td>
                   <td data-rotulo="Plano" className="px-2 py-3">
                     {e.plano && e.plano.status === "Ativo" ? (

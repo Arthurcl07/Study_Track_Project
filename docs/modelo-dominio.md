@@ -20,7 +20,8 @@
 - **ItemPlano** — id, descrição, concluído, concluídoEm. Item próprio do plano; o professor marca, o estudante só vê (OPEN-021, OPEN-027).
 - **HistoricoNota** — id, valorAnterior (vazio no lançamento), valorNovo, registradoEm. Um registro por lançamento ou alteração de nota, com o autor; nunca editado nem apagado (RB-16, OPEN-028).
 - **RegistroAuditoria** — id, categoria {Administrativa, Acadêmica}, ação, descrição, antes, depois, registradoEm. Um por escrita, gravado na mesma transação; nunca editado nem apagado (RB-22, OPEN-039).
-- **Notificacao** — id, tipo {Risco, Nota, Plano, Prazo}, título, texto, link, chave, criadaEm, lidaEm. Só o destinatário vê e marca como lida (RB-23, OPEN-043).
+- **Comunicado** — id, título, texto, criadoEm. Aviso de um professor ou coordenador para exatamente um alcance: 1 Turma ou 1 Curso; só o autor apaga (RB-26, OPEN-047).
+- **Notificacao** — id, tipo {Risco, Nota, Plano, Prazo, Comunicado}, título, texto, link, chave, criadaEm, lidaEm. Só o destinatário vê e marca como lida (RB-23, OPEN-043).
 
 
 ## Relacionamentos e multiplicidades
@@ -44,6 +45,7 @@
 - Uma Turma tem de 0 a N Aulas; cada Aula tem 1 Presenca por estudante matriculado no momento da chamada (OPEN-041).
 - Um Usuario é autor de 0 a N RegistroAuditoria; o registro acadêmico refere-se a 1 Curso e, quando houver, a 1 Turma (OPEN-039).
 - Um Usuario (Estudante ou Professor) recebe de 0 a N Notificacoes; cada Notificacao tem exatamente 1 destinatário (OPEN-043).
+- Um Usuario (Professor ou Coordenador) publica de 0 a N Comunicados; cada Comunicado tem 1 autor e alcança exatamente 1 Turma ou 1 Curso (OPEN-047).
 
 
 ## Diagrama de classes (versionável — GitHub renderiza Mermaid nativamente)

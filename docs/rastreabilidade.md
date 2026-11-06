@@ -35,11 +35,15 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | RF-29 | Boletim e histórico escolar | RB-02, RB-04, RB-24 | UC-19 | SPEC-020 | — | `tests/spec-020/` | SPEC-017-022.md |
 | RF-30 | Importação de estudantes por planilha | RB-15, RB-19, RB-20 | UC-20 | SPEC-021 | — | `tests/spec-021/` | SPEC-017-022.md |
 | RF-31 | Notificações | RB-02, RB-03, RB-23 | UC-21 | SPEC-022 | — | `tests/spec-022/` | SPEC-017-022.md |
+| RF-32 | Simulador de notas | RB-02, RB-03, RB-05, RB-25 | UC-22 | SPEC-023 | — | `tests/spec-023/` | SPEC-023-025.md |
+| RF-33 | Comparativo entre semestres | RB-02, RB-04, RB-24 | UC-16, UC-19 | SPEC-024 | — | `tests/spec-024/` | SPEC-023-025.md |
+| RF-34 | Mural de comunicados | RB-20, RB-22, RB-23, RB-26 | UC-23, UC-24 | SPEC-025 | — | `tests/spec-025/` | SPEC-023-025.md |
 
 ## Lacunas conhecidas
 
 - RF-22 a RF-25 (SPEC-015 e SPEC-016) sem issue: pedido direto de Arthur em 2026-10-22, registrado nos OPEN-030 a OPEN-036.
 - RF-26 a RF-31 (SPEC-017 a SPEC-022) sem issue: pedido do grupo (Luiz) em 2026-11-05, registrado nos OPEN-038 a OPEN-044.
+- RF-32 a RF-34 (SPEC-023 a SPEC-025) sem issue: pedido do grupo (Luiz) em 2026-11-06, registrado nos OPEN-045 a OPEN-047.
 
 - Todo RF tem caso de uso: RF-03, RF-04, RF-07, RF-08 e RF-13 ganharam os UC-06 a UC-10 em 2026-10-17.
 - RB-08 (atraso) e RB-12 (progresso do plano) viraram contrato com o fechamento do OPEN-010, do OPEN-003 e do OPEN-021.
@@ -71,3 +75,6 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | SPEC-020 | leitura de Usuario, Curso, PeriodoLetivo, Turma, Avaliacao, Nota, Aula, Presenca, IndicadorAcademico |
 | SPEC-021 | Usuario, Matricula, RegistroAuditoria |
 | SPEC-022 | Notificacao |
+| SPEC-023 | leitura de Avaliacao, Nota, IndicadorAcademico |
+| SPEC-024 | leitura de PeriodoLetivo, Turma, IndicadorAcademico, Disciplina |
+| SPEC-025 | Comunicado, Notificacao, RegistroAuditoria |

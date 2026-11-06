@@ -3,6 +3,7 @@ import { AvisoAlerta } from "@/components/alertas";
 import { Casca } from "@/components/casca";
 import { ListaPrazos } from "@/components/dashboard";
 import { GraficoEvolucao } from "@/components/grafico-evolucao";
+import { SimuladorNotas } from "@/components/simulador-notas";
 import { MediaFrequenciaPorTurma } from "@/components/graficos-coordenador";
 import { PlanosDoEstudante } from "@/components/planos-estudante";
 import {
@@ -143,6 +144,8 @@ export default async function DashboardEstudante() {
             </dl>
             <p className="mb-1 text-xs text-mudo">Evolução das notas</p>
             <GraficoEvolucao pontos={t.evolucao} />
+            {/* SPEC-023 (RF-32): quanto precisa tirar e simulação; nada é gravado. */}
+            <SimuladorNotas avaliacoes={t.avaliacoes} necessaria={t.necessaria} frequencia={t.frequencia} />
           </section>
         ))}
       </div>

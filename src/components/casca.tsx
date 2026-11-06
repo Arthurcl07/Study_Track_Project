@@ -8,7 +8,7 @@ import { NavegacaoCasca } from "./navegacao-casca";
 
 export type ItemMenu =
   | "inicio" | "notas" | "frequencia" | "atividades" | "relatorios" | "disciplinas" | "turmas" | "area" | "contas" | "cursos" | "senha" | "historico"
-  | "periodos" | "auditoria" | "documentos" | "notificacoes";
+  | "periodos" | "auditoria" | "documentos" | "notificacoes" | "comunicados";
 
 type Entrada = { id: ItemMenu; rotulo: string; href: string; icone: NomeIcone };
 
@@ -18,6 +18,8 @@ const MENUS: Record<Perfil, Entrada[]> = {
     { id: "atividades", rotulo: "Minhas atividades", href: "/estudante/atividades", icone: "calendario" },
     // SPEC-020 e SPEC-022.
     { id: "documentos", rotulo: "Documentos", href: "/estudante/documentos", icone: "documento" },
+    // SPEC-025: mural de comunicados.
+    { id: "comunicados", rotulo: "Comunicados", href: "/comunicados", icone: "megafone" },
     { id: "notificacoes", rotulo: "Notificações", href: "/notificacoes", icone: "sino" },
   ],
   Professor: [
@@ -28,6 +30,7 @@ const MENUS: Record<Perfil, Entrada[]> = {
     { id: "atividades", rotulo: "Atividades", href: "/professor/atividades", icone: "calendario" },
     { id: "relatorios", rotulo: "Relatórios", href: "/relatorios", icone: "grafico" },
     { id: "historico", rotulo: "Histórico de notas", href: "/historico-notas", icone: "relogio" },
+    { id: "comunicados", rotulo: "Comunicados", href: "/comunicados", icone: "megafone" },
     { id: "notificacoes", rotulo: "Notificações", href: "/notificacoes", icone: "sino" },
   ],
   Coordenador: [
@@ -36,6 +39,7 @@ const MENUS: Record<Perfil, Entrada[]> = {
     { id: "turmas", rotulo: "Turmas e estudantes", href: "/coordenador/turmas", icone: "pessoas" },
     { id: "relatorios", rotulo: "Relatórios", href: "/relatorios", icone: "grafico" },
     { id: "historico", rotulo: "Histórico de notas", href: "/historico-notas", icone: "relogio" },
+    { id: "comunicados", rotulo: "Comunicados", href: "/comunicados", icone: "megafone" },
     // SPEC-019: ações acadêmicas dos cursos que coordena.
     { id: "auditoria", rotulo: "Auditoria", href: "/coordenador/auditoria", icone: "escudo" },
     { id: "area", rotulo: "Área da coordenação", href: "/coordenador/area", icone: "cadeado" },
