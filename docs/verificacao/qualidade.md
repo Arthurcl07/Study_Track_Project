@@ -1,6 +1,23 @@
-# Verificação de qualidade e segurança — SPEC-001 a SPEC-016
+# Verificação de qualidade e segurança — SPEC-001 a SPEC-022
 
-**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) e em **2026-10-22** com as SPEC-015 e 016 (seção 000).
+**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) em 2026-10-22 com as SPEC-015 e 016 (seção 000) e em **2026-11-06** com as SPEC-017 a 022 (seção 0000).
+
+## 0000. Reverificação de 2026-11-06 (depois das SPEC-017 a SPEC-022)
+
+| Verificação | Resultado |
+|---|---|
+| Testes | 25 arquivos, **268 testes aprovados** (`npm test`); `tsc --noEmit` sem erros |
+| Critérios AC (SPEC-001 a 022) | **162** na documentação; 161 com teste e o AC-016-12 (layout em 375 px) verificado no navegador (OPEN-023) |
+| Invariantes INV | **113**, todos com teste |
+| Regras RB-01 a RB-24 | 24, todas com teste (RB-20 em `spec-017`, RB-21 em `spec-018`, RB-22 em `spec-019`, RB-23 em `spec-022`, RB-24 em `spec-020`) |
+| Guardas | as rotas novas (`/api/periodos`, `/api/aulas`, `/api/auditoria`, `/api/turmas/:id/importacao`, `/api/notificacoes`) usam `autorizarApi`; as páginas novas usam `exigirAcessoPagina` |
+| Privilégio mínimo (RB-13) | o Administrador ganhou só `gestao-periodos` e `auditoria-administrativa` (estrutura); o teste da SPEC-010 percorre todos os recursos |
+| Escopo (ADR-003) | auditoria do coordenador filtrada por `curso.coordenadorId`; notificações pelo destinatário; documentos pelo estudante da sessão ou pelo curso do coordenador, sempre na própria query |
+| Integridade (ADR-002) | `Turma.periodo` com chave estrangeira para `PeriodoLetivo.nome` e CHECK do formato; aula única por turma e data; presença única por aula e estudante; chave única da notificação de prazo |
+| Transações | auditoria, notificação de evento, chamada, frequência e indicador gravados na mesma transação da escrita; importação tudo ou nada |
+| Segredos | auditoria sem senha nem hash (teste); senha provisória da importação só no retorno da confirmação |
+| Logs | nenhum em `src/` |
+| Dependências | nenhuma nova |
 
 ## 000. Reverificação de 2026-10-22 (depois das SPEC-015 e SPEC-016)
 

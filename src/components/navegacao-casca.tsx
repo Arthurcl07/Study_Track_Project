@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Icone, type NomeIcone } from "./icones";
 import { Logotipo } from "./marca";
 
-type Item = { id: string; rotulo: string; href: string; icone: NomeIcone };
+type Item = { id: string; rotulo: string; href: string; icone: NomeIcone; contador?: number };
 
 export function NavegacaoCasca({ itens, ativo, nome, perfil }: { itens: Item[]; ativo: string; nome: string; perfil: string }) {
   const router = useRouter();
@@ -60,6 +60,10 @@ export function NavegacaoCasca({ itens, ativo, nome, perfil }: { itens: Item[]; 
             >
               <Icone nome={item.icone} />
               {item.rotulo}
+              {/* SPEC-022: contador de não lidas. */}
+              {item.contador ? (
+                <span className="ml-auto rounded-full bg-risco px-2 py-px text-xs font-bold text-white" aria-label={`${item.contador} não lida(s)`}>{item.contador}</span>
+              ) : null}
             </Link>
           );
         })}

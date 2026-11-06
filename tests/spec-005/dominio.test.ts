@@ -10,7 +10,7 @@ import {
   validarDataEntrega,
 } from "@/domain/atividades";
 import { classificarSituacao } from "@/domain/situacao-academica";
-import { MENSAGEM_FREQUENCIA_INVALIDA, validarPercentualFrequencia } from "@/domain/frequencia";
+import { frequenciaPelaChamada } from "@/domain/frequencia";
 
 describe("SPEC-005 — status de entrega (OPEN-010, RB-08)", () => {
   const prazo = "2026-10-20";
@@ -63,14 +63,11 @@ describe("SPEC-005 — validações", () => {
     expect(validarDataEntrega("ontem", "2026-10-16").ok).toBe(false);
   });
 
-  it("RF-07: frequência de 0 a 100%, aceitando vírgula e o símbolo %", () => {
-    expect(validarPercentualFrequencia("74,5")).toEqual({ ok: true, dados: 74.5 });
-    expect(validarPercentualFrequencia("80%")).toEqual({ ok: true, dados: 80 });
-    expect(validarPercentualFrequencia(0)).toEqual({ ok: true, dados: 0 });
-    expect(validarPercentualFrequencia(100)).toEqual({ ok: true, dados: 100 });
-    for (const invalido of [-1, 100.1, "", "abc", null]) {
-      expect(validarPercentualFrequencia(invalido)).toEqual({ ok: false, erros: { percentual: MENSAGEM_FREQUENCIA_INVALIDA } });
-    }
+  // SPEC-018 (OPEN-041): o percentual digitado deu lugar à chamada; a frequência fica sempre entre 0 e 100%.
+  it("RF-07: frequência pela chamada fica entre 0 e 100%", () => {
+    expect(frequenciaPelaChamada([true, true, true, false])).toBe(75);
+    expect(frequenciaPelaChamada([false])).toBe(0);
+    expect(frequenciaPelaChamada([true])).toBe(100);
   });
 
   it("INV-005-01 / Caso 12.1: frequência de 74,9% leva a Risco e 75% não (regra única da SPEC-003)", () => {

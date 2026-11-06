@@ -5,17 +5,22 @@
 
 - **Usuario** — id, nome, email, senhaHash, perfil {Estudante, Professor, Coordenador, Administrador}, ativo. Representa qualquer pessoa que acessa o sistema; o atributo `perfil` define o papel (um usuário, não classes separadas). `ativo` (padrão: sim) é alterado só pelo Administrador (RB-14, OPEN-025); conta inativa não entra no sistema, mas seus dados permanecem. `trocarSenha` (padrão: não) marca conta criada pela tela que ainda não definiu a própria senha (RB-15, OPEN-026). `criadaEm` registra quando a conta foi criada (dashboard do administrador, OPEN-034).
 - **Curso** — id, nome (único). Organiza a grade de disciplinas, as turmas e os estudantes; tem exatamente 1 coordenador (RB-17, OPEN-030).
-- **Turma** — id, nome, período. Pertence a exatamente 1 Curso (RB-18, OPEN-031).
+- **PeriodoLetivo** — id, nome (AAAA/1 ou AAAA/2, único), status {Aberto, Encerrado}, criadoEm, encerradoEm. Período encerrado torna as turmas dele somente leitura (RB-20, OPEN-040).
+- **Turma** — id, nome. Pertence a exatamente 1 Curso (RB-18, OPEN-031) e a exatamente 1 PeriodoLetivo (OPEN-040; antes o período era um texto).
 - **Disciplina** — id, nome, cargaHoraria.
 - **Avaliacao** — id, nome/tipo, peso, data.
 - **Nota** — id, valor, dataRegistro.
-- **Frequencia** — id, percentual, atualizadaEm.
+- **Frequencia** — id, percentual, atualizadaEm. Desde a SPEC-018 o percentual é calculado pela chamada (RB-21, OPEN-041).
+- **Aula** — id, data, registradaEm. Uma aula por turma e data (OPEN-041).
+- **Presenca** — presente (sim/não). Uma por estudante e aula.
 - **Atividade** — id, descrição, prazo.
 - **Entrega** — id, dataEntrega, status {NoPrazo, Atrasada, Pendente}. O status é **derivado** de prazo, data da entrega e data atual (OPEN-010); só a entrega registrada é persistida, e "Pendente"/"Atrasada" sem entrega não geram registro.
 - **IndicadorAcademico** — id, media, frequenciaAtual, situacao {Normal, Atenção, Risco}, atualizadoEm.
 - **PlanoRecuperacao** — id, status {Ativo, Encerrado}, criadoEm, encerradoEm. O progresso é **derivado** dos itens (RB-12), não gravado (OPEN-021).
 - **ItemPlano** — id, descrição, concluído, concluídoEm. Item próprio do plano; o professor marca, o estudante só vê (OPEN-021, OPEN-027).
 - **HistoricoNota** — id, valorAnterior (vazio no lançamento), valorNovo, registradoEm. Um registro por lançamento ou alteração de nota, com o autor; nunca editado nem apagado (RB-16, OPEN-028).
+- **RegistroAuditoria** — id, categoria {Administrativa, Acadêmica}, ação, descrição, antes, depois, registradoEm. Um por escrita, gravado na mesma transação; nunca editado nem apagado (RB-22, OPEN-039).
+- **Notificacao** — id, tipo {Risco, Nota, Plano, Prazo}, título, texto, link, chave, criadaEm, lidaEm. Só o destinatário vê e marca como lida (RB-23, OPEN-043).
 
 
 ## Relacionamentos e multiplicidades
@@ -35,6 +40,10 @@
 - Um Curso possui de 0 a N Turmas; cada Turma pertence a exatamente 1 Curso, e a Disciplina da Turma faz parte da grade desse Curso (RB-18).
 - Um Curso possui de 0 a N Estudantes; cada Usuario com perfil Estudante pertence a exatamente 1 Curso e só se matricula em Turmas desse Curso (RB-19, OPEN-032).
 - Uma Avaliação acumula de 0 a N registros de HistoricoNota; cada registro refere-se a exatamente 1 Avaliação, 1 Estudante e 1 Usuario autor (OPEN-028).
+- Um PeriodoLetivo tem de 0 a N Turmas; cada Turma pertence a exatamente 1 PeriodoLetivo (OPEN-040).
+- Uma Turma tem de 0 a N Aulas; cada Aula tem 1 Presenca por estudante matriculado no momento da chamada (OPEN-041).
+- Um Usuario é autor de 0 a N RegistroAuditoria; o registro acadêmico refere-se a 1 Curso e, quando houver, a 1 Turma (OPEN-039).
+- Um Usuario (Estudante ou Professor) recebe de 0 a N Notificacoes; cada Notificacao tem exatamente 1 destinatário (OPEN-043).
 
 
 ## Diagrama de classes (versionável — GitHub renderiza Mermaid nativamente)

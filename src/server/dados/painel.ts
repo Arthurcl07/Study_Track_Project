@@ -4,7 +4,8 @@ import { prisma } from "./prisma";
 
 export function turmasDoPainel(estudanteId: string) {
   return prisma.turma.findMany({
-    where: { matriculas: { some: { estudanteId } } },
+    // SPEC-017 (INV-017-05): o painel mostra só turmas de períodos abertos; as anteriores ficam no histórico escolar.
+    where: { matriculas: { some: { estudanteId } }, periodoLetivo: { status: "Aberto" } },
     select: {
       id: true,
       nome: true,

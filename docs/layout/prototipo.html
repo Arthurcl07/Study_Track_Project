@@ -109,6 +109,32 @@
   .filtro-curso select { min-width: 240px; }
   @container (max-width: 720px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpi strong { font-size: 24px; } .filtro-curso select { min-width: 0; width: 100%; } }
 
+  /* SPEC-017 a SPEC-022 */
+  .badge { margin-left: auto; background: #EF4444; color: #fff; border-radius: 999px; font-size: 12px; font-weight: 700; padding: 1px 8px; }
+  .s-encerrado { color: #475569; background: #E2E8F0; } .s-aberto { color: var(--normal); background: var(--normal-bg); }
+  .chamada { display: flex; align-items: center; gap: 12px; padding: 10px 4px; border-top: 1px solid var(--traco); font-size: 15px; }
+  .chamada input { width: 20px; height: 20px; accent-color: var(--azul); flex: none; }
+  .chamada .falta { margin-left: auto; font-size: 13px; color: var(--risco); font-weight: 600; }
+  .registro { display: grid; grid-template-columns: 150px 1fr; gap: 14px; padding: 12px 0; border-top: 1px solid var(--traco); font-size: 14px; }
+  .registro time { color: var(--mudo); font-size: 13px; } .registro p { margin: 3px 0 0; color: var(--mudo); font-size: 13px; }
+  .notif { display: flex; gap: 12px; padding: 14px; border-radius: 12px; border: 1px solid var(--traco); background: #fff; }
+  .notif + .notif { margin-top: 10px; } .notif.nova { border-color: #BFDBFE; background: var(--info-bg); }
+  .notif .ic { flex: none; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .notif strong { display: block; font-size: 15px; } .notif p { margin: 3px 0 0; font-size: 14px; color: var(--mudo); } .notif time { font-size: 12px; color: var(--mudo); }
+  .doc-barra { display: flex; gap: 10px; justify-content: space-between; align-items: center; padding: 14px 20px; background: #fff; border-bottom: 1px solid var(--traco); }
+  .folha { background: #fff; max-width: 820px; margin: 20px auto; padding: 40px 44px; box-shadow: 0 4px 18px rgba(15,23,42,.12); font-size: 13px; }
+  .folha .topo-doc { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; border-bottom: 2px solid var(--marinho); padding-bottom: 14px; }
+  .folha h1 { font-size: 20px; margin: 0; letter-spacing: .02em; text-transform: uppercase; } .folha h2 { font-size: 14px; margin: 22px 0 8px; color: var(--marinho); }
+  .folha .dados { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 16px; margin-top: 14px; }
+  .folha .dados small { display: block; color: var(--mudo); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+  .folha table { font-size: 12.5px; } .folha th { font-size: 10.5px; padding: 6px 8px; background: var(--nevoa); } .folha td { padding: 7px 8px; }
+  .folha .rodape-doc { margin-top: 26px; padding-top: 10px; border-top: 1px solid var(--traco); color: var(--mudo); font-size: 11px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .res-ok { color: var(--normal); font-weight: 700; } .res-nao { color: var(--risco); font-weight: 700; } .res-curso { color: var(--info); font-weight: 600; }
+  @container (max-width: 720px) {
+    .registro { grid-template-columns: 1fr; gap: 4px; }
+    .folha { margin: 0; padding: 20px 16px; box-shadow: none; } .folha .dados { grid-template-columns: 1fr 1fr; } .folha .larga { overflow-x: auto; }
+  }
+
   /* Login */
   .login { display: grid; grid-template-columns: 1fr 1fr; min-height: 100%; }
   .login .painel { background: var(--marinho); color: #fff; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; }
@@ -154,16 +180,17 @@ const logoInverso = (t = 22) => `<span style="display:inline-flex;align-items:ce
 const logoClaro = (t = 22) => `<span style="display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:${t}px;letter-spacing:-.3px">${MARCA_CLARA}<span><span style="color:#0F2A4A">Study</span><span style="color:#2563EB">Track</span></span></span>`;
 
 // SPEC-016: o primeiro item de todo perfil passa a ser o Dashboard; o Administrador ganha Dashboard e Cursos (SPEC-015).
+// SPEC-017 a SPEC-022: Chamada substitui Frequência; Notificações (com contador), Documentos, Auditoria e Períodos letivos.
 const MENUS = {
-  Estudante: [["inicio", "🏠", "Dashboard"], ["atividades", "🗓️", "Minhas atividades"]],
-  Professor: [["inicio", "🏠", "Dashboard"], ["notas", "📝", "Notas e avaliações"], ["frequencia", "✅", "Frequência"], ["atividades", "🗓️", "Atividades"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"]],
-  Coordenador: [["inicio", "🏠", "Dashboard"], ["disciplinas", "📚", "Disciplinas"], ["turmas", "👥", "Turmas e estudantes"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"], ["area", "🔒", "Área da coordenação"]],
-  Administrador: [["inicio", "🏠", "Dashboard"], ["contas", "👤", "Contas"], ["cursos", "🎓", "Cursos"]],
+  Estudante: [["inicio", "🏠", "Dashboard"], ["atividades", "🗓️", "Minhas atividades"], ["documentos", "📄", "Documentos"], ["notificacoes", "🔔", "Notificações", 3]],
+  Professor: [["inicio", "🏠", "Dashboard"], ["notas", "📝", "Notas e avaliações"], ["frequencia", "✅", "Chamada"], ["atividades", "🗓️", "Atividades"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"], ["notificacoes", "🔔", "Notificações", 2]],
+  Coordenador: [["inicio", "🏠", "Dashboard"], ["disciplinas", "📚", "Disciplinas"], ["turmas", "👥", "Turmas e estudantes"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"], ["auditoria", "🛡️", "Auditoria"], ["area", "🔒", "Área da coordenação"]],
+  Administrador: [["inicio", "🏠", "Dashboard"], ["contas", "👤", "Contas"], ["cursos", "🎓", "Cursos"], ["periodos", "📅", "Períodos letivos"], ["auditoria", "🛡️", "Auditoria"]],
 };
 const USUARIOS = { Estudante: "Ana Souza", Professor: "Prof. Carlos Lima", Coordenador: "Marina Alves", Administrador: "Renata Duarte" };
 
 function casca(perfil, ativo, conteudo) {
-  const itens = MENUS[perfil].map(([id, ic, rot]) => `<a href="#" class="${id === ativo ? "ativo" : ""}"><span>${ic}</span>${rot}</a>`).join("");
+  const itens = MENUS[perfil].map(([id, ic, rot, n]) => `<a href="#" class="${id === ativo ? "ativo" : ""}"><span>${ic}</span>${rot}${n ? `<span class="badge" aria-label="${n} não lidas">${n}</span>` : ""}</a>`).join("");
   return `<div class="casca" id="casca">
     <div class="topo">${logoInverso(18)}<button onclick="document.getElementById('casca').classList.toggle('aberto')" aria-label="Abrir menu">☰</button></div>
     <nav class="lateral"><div class="logo">${logoInverso()}</div>${itens}
@@ -675,6 +702,161 @@ Simulado da prova substitutiva</textarea></div>
         ${[["Engenharia da Computação", "Marina Alves", 7, 4, 32], ["Ciência da Computação", "Marina Alves", 5, 2, 18], ["Engenharia Elétrica", "Paula Martins", 5, 2, 15], ["Sistemas de Informação", "Helena Prado", 4, 1, 9], ["Publicidade e Propaganda", "Sérgio Bastos", 4, 1, 8], ["Administração", "Beatriz Moura", 4, 1, 7]]
           .map(([c, co, d, t, e]) => `<tr><td data-r="Curso">${c}</td><td data-r="Coordenação">${co}</td><td data-r="Disciplinas" class="num">${d}</td><td data-r="Turmas" class="num">${t}</td><td data-r="Estudantes" class="num">${e}</td></tr>`).join("")}
       </tbody></table></div>`)],
+
+
+  // ---------------------------------------------------------------- SPEC-017 a SPEC-022
+  "admin-periodos": ["SPEC-017 · Administrador — Períodos letivos", () => casca("Administrador", "periodos", `
+    ${cab("Períodos letivos", "Cada turma pertence a um período. Encerrar um período deixa as turmas dele somente leitura: ninguém lança nota, chamada, atividade ou plano.")}
+    <div class="msg msg-ok" style="margin-bottom:16px" role="status">Período 2026/1 encerrado. As 15 turmas dele agora são somente leitura.</div>
+    <div class="grade g-form">
+      <div class="cartao"><h2>Períodos (3)</h2>
+        <table class="tabela-resp"><thead><tr><th>Período</th><th>Situação</th><th class="num">Turmas</th><th></th></tr></thead><tbody>
+          <tr><td data-r="Período"><strong>2027/1</strong></td><td data-r="Situação"><span class="selo s-aberto">● Aberto</span></td><td data-r="Turmas" class="num">0</td><td><a class="link" href="#">Encerrar</a></td></tr>
+          <tr><td data-r="Período"><strong>2026/2</strong></td><td data-r="Situação"><span class="selo s-aberto">● Aberto</span></td><td data-r="Turmas" class="num">15</td><td><a class="link" href="#">Encerrar</a></td></tr>
+          <tr><td data-r="Período"><strong>2026/1</strong><br><small style="color:var(--mudo)">encerrado em 05/11/2026</small></td><td data-r="Situação"><span class="selo s-encerrado">■ Encerrado</span></td><td data-r="Turmas" class="num">15</td><td><a class="link" href="#">Reabrir</a></td></tr>
+        </tbody></table></div>
+      <div class="cartao"><h2>Novo período</h2><div class="pilha">
+        ${campo("Nome (AAAA/1 ou AAAA/2)", "text", "2027/2")}
+        <p style="margin:0;font-size:13px;color:var(--mudo)">O período nasce aberto. Encerrar e reabrir ficam registrados na auditoria.</p>
+        <button class="btn btn-primario btn-bloco">Criar período</button></div></div>
+    </div>`)],
+
+  "coord-turmas-periodo": ["SPEC-017 · Coordenador — Turmas com período", () => casca("Coordenador", "turmas", `
+    ${cab("Turmas e estudantes", "Turmas dos cursos que você coordena. Turmas de período encerrado ficam somente leitura.")}
+    <div class="grade g-form">
+      <div class="cartao"><div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px"><h2 style="margin:0">Turmas (4)</h2><div style="min-width:180px">${lista("Período", ["Todos", "2026/2", "2026/1"], "Todos")}</div></div>
+        <table class="tabela-resp"><thead><tr><th>Turma</th><th>Período</th><th>Professor</th><th class="num">Estudantes</th></tr></thead><tbody>
+          ${[["ES-A · Modelagem de Software", "2026/2", true, "Carlos Lima", 8], ["CAL-ECO · Cálculo I", "2026/2", true, "Júlia Reis", 9], ["INT-ECO · Introdução à Computação", "2026/1", false, "Carlos Lima", 10], ["LOG-ECO · Lógica", "2026/1", false, "Júlia Reis", 9]].map(([n, p, ab, pr, e]) =>
+            `<tr><td data-r="Turma"><a class="link" href="#">${n}</a></td><td data-r="Período">${p} ${ab ? "" : '<span class="selo s-encerrado" style="font-size:11px">■ Encerrado</span>'}</td><td data-r="Professor">${pr}</td><td data-r="Estudantes" class="num">${e}</td></tr>`).join("")}
+        </tbody></table></div>
+      <div class="cartao"><h2>Nova turma</h2><div class="pilha">
+        ${lista("Curso", ["Engenharia da Computação"], "Engenharia da Computação")}${campo("Nome da turma", "text", "Turma BD-B")}
+        ${lista("Período", ["2026/2", "2027/1"], "2027/1")}
+        <p style="margin:-6px 0 0;font-size:13px;color:var(--mudo)">Só períodos abertos aparecem aqui.</p>
+        ${lista("Disciplina", ["Banco de Dados"], "Banco de Dados")}${lista("Professor responsável", ["Carlos Lima", "Júlia Reis"], "")}
+        <button class="btn btn-primario btn-bloco">Cadastrar turma</button></div></div>
+    </div>`)],
+
+  "prof-chamada": ["SPEC-018 · Professor — Chamada", () => casca("Professor", "frequencia", `
+    ${cab("Chamada", "Marque as faltas de cada aula. A frequência é calculada pelas presenças.", `<div style="min-width:260px">${lista("Turma", ["Turma ES-A · Modelagem de Software (2026/2)", "Turma SO-B · Sistemas Operacionais (2026/2)"], "Turma ES-A · Modelagem de Software (2026/2)")}</div>`)}
+    <div class="grade g-form">
+      <div class="pilha" style="margin:0">
+        <div class="cartao"><h2>Estudantes (8)</h2>
+          <table class="tabela-resp"><thead><tr><th>Estudante</th><th class="num">Presenças</th><th class="num">Frequência</th><th>Situação</th></tr></thead><tbody>
+            ${[["Ana Souza", 11, 12, "Normal"], ["Bruno Costa", 10, 12, "Atencao"], ["Carla Mendes", 8, 12, "Risco"], ["Diego Ramos", 12, 12, "Normal"], ["Lívia Torres", 9, 12, "Atencao"]].map(([n, p, a, s]) => { const f = Math.round(p / a * 100);
+              return `<tr><td data-r="Estudante">${n}</td><td data-r="Presenças" class="num">${p} de ${a}</td><td data-r="Frequência" class="num" ${f < 75 ? 'style="color:var(--risco);font-weight:600"' : ""}>${f}%</td><td data-r="Situação">${selo(s)}</td></tr>`; }).join("")}
+          </tbody></table></div>
+        <div class="cartao"><h2>Aulas registradas (12)</h2>
+          <table class="tabela-resp"><thead><tr><th>Data</th><th class="num">Presentes</th><th></th></tr></thead><tbody>
+            ${[["04/11/2026 (ter)", 7], ["30/10/2026 (qui)", 8], ["28/10/2026 (ter)", 6]].map(([d, n]) => `<tr><td data-r="Data">${d}</td><td data-r="Presentes" class="num">${n} de 8</td><td><a class="link" href="#">Corrigir</a></td></tr>`).join("")}
+          </tbody></table><p style="margin:10px 0 0;font-size:13px;color:var(--mudo)">… e mais 9 aulas.</p></div>
+      </div>
+      <div class="cartao"><h2>Nova chamada</h2>
+        ${campo("Data da aula", "date", "2026-11-05")}
+        <p style="font-size:13px;color:var(--mudo);margin:12px 0 4px">Todos começam presentes. Desmarque quem faltou.</p>
+        ${[["Ana Souza", 1], ["Bruno Costa", 1], ["Carla Mendes", 0], ["Diego Ramos", 1], ["Lívia Torres", 1], ["Marcos Dias", 1], ["Paula Nunes", 0], ["Rafael Lopes", 1]].map(([n, pr]) => `<label class="chamada"><input type="checkbox" ${pr ? "checked" : ""}> ${n}${pr ? "" : '<span class="falta">Falta</span>'}</label>`).join("")}
+        <div class="msg msg-info" style="margin:12px 0">6 presentes · 2 faltas</div>
+        <button class="btn btn-primario btn-bloco">Salvar chamada</button></div>
+    </div>`)],
+
+  "coord-auditoria": ["SPEC-019 · Coordenador — Auditoria", () => casca("Coordenador", "auditoria", `
+    ${cab("Auditoria", "Tudo o que foi alterado nos cursos que você coordena: quem fez, quando e de quanto para quanto.", `<div style="min-width:220px">${lista("Tipo de ação", ["Todas", "Notas", "Chamada", "Matrículas e importação", "Atividades e entregas", "Planos de recuperação", "Disciplinas e turmas"], "Todas")}</div>`)}
+    <div class="cartao">
+      ${[["05/11/2026 14:32", "Carlos Lima", "Nota alterada", "Carla Mendes em Prova 1 (ES-A · Modelagem de Software): 5,0 → 6,5"],
+         ["05/11/2026 14:10", "Carlos Lima", "Chamada registrada", "ES-A · 05/11/2026: 6 presentes, 2 faltas (Carla Mendes, Paula Nunes)"],
+         ["05/11/2026 10:02", "Marina Alves", "Importação", "CAL-ECO · Cálculo I: 12 contas novas, 3 matrículas"],
+         ["04/11/2026 18:45", "Júlia Reis", "Entrega desfeita", "Bruno Costa em Lista 2 (BD-A)"],
+         ["04/11/2026 16:20", "Carlos Lima", "Plano criado", "Carla Mendes em ES-A, 3 itens"],
+         ["03/11/2026 09:15", "Marina Alves", "Professor trocado", "SO-B · Sistemas Operacionais: Júlia Reis → Carlos Lima"]].map(([d, a, ac, ds], i) =>
+        `<div class="registro" ${i === 0 ? 'style="border-top:0;padding-top:0"' : ""}><div><time>${d}</time><br><strong style="font-weight:600">${a}</strong></div><div><span class="etiqueta">${ac}</span><p style="color:var(--texto);font-size:14px;margin-top:6px">${ds}</p></div></div>`).join("")}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:14px"><span style="color:var(--mudo)">Página 1 de 4</span><a class="btn btn-secundario" href="#">Próxima →</a></div>
+    </div>`)],
+
+  "admin-auditoria": ["SPEC-019 · Administrador — Auditoria", () => casca("Administrador", "auditoria", `
+    ${cab("Auditoria", "Ações sobre contas, cursos e períodos. Alterações acadêmicas ficam com a coordenação de cada curso.", `<div style="min-width:200px">${lista("Tipo de ação", ["Todas", "Contas", "Cursos", "Períodos"], "Todas")}</div>`)}
+    <div class="cartao">
+      ${[["05/11/2026 15:01", "Renata Duarte", "Período encerrado", "2026/1 (15 turmas ficam somente leitura)"],
+         ["05/11/2026 11:30", "Renata Duarte", "Coordenação trocada", "Ciência da Computação: Marina Alves → Otávio Campos"],
+         ["04/11/2026 17:12", "Renata Duarte", "Conta desativada", "Rui Prado (Estudante)"],
+         ["04/11/2026 08:40", "Renata Duarte", "Conta criada", "Lucas Prado (Estudante, Engenharia da Computação), com senha provisória"]].map(([d, a, ac, ds], i) =>
+        `<div class="registro" ${i === 0 ? 'style="border-top:0;padding-top:0"' : ""}><div><time>${d}</time><br><strong style="font-weight:600">${a}</strong></div><div><span class="etiqueta">${ac}</span><p style="color:var(--texto);font-size:14px;margin-top:6px">${ds}</p></div></div>`).join("")}
+    </div>`)],
+
+  "est-documentos": ["SPEC-020 · Estudante — Documentos", () => casca("Estudante", "documentos", `
+    ${cab("Documentos", "Boletim de cada período e histórico escolar, prontos para imprimir ou salvar em PDF.")}
+    <div class="grade g2">
+      <div class="cartao"><h2>📄 Boletins</h2>
+        <table class="tabela-resp"><thead><tr><th>Período</th><th>Situação</th><th class="num">Disciplinas</th><th></th></tr></thead><tbody>
+          <tr><td data-r="Período"><strong>2026/2</strong></td><td data-r="Situação"><span class="selo s-aberto">● Em curso</span></td><td data-r="Disciplinas" class="num">3</td><td><a class="link" href="#">Abrir boletim →</a></td></tr>
+          <tr><td data-r="Período"><strong>2026/1</strong></td><td data-r="Situação"><span class="selo s-encerrado">■ Encerrado</span></td><td data-r="Disciplinas" class="num">2</td><td><a class="link" href="#">Abrir boletim →</a></td></tr>
+        </tbody></table></div>
+      <div class="cartao"><h2>🎓 Histórico escolar</h2><p style="margin:0 0 14px;color:var(--mudo);font-size:14px">Todas as disciplinas cursadas, por período, com o resultado de cada uma.</p>
+        <div class="kpis" style="--n:2;margin-bottom:14px">${kpi("Disciplinas aprovadas", "2")}${kpi("Carga horária aprovada", "140 h")}</div>
+        <a class="btn btn-primario btn-bloco" href="#">Abrir histórico escolar →</a></div>
+    </div>`)],
+
+  "doc-boletim": ["SPEC-020 · Boletim (página de impressão)", () => `<div style="background:#E9EDF3;min-height:100%">
+    <div class="doc-barra"><a class="btn btn-secundario" href="#">← Voltar</a><button class="btn btn-primario">⬇ Baixar PDF</button></div>
+    <div class="folha">
+      <div class="topo-doc"><div>${logoClaro(20)}<p style="margin:6px 0 0;color:var(--mudo)">Sistema de acompanhamento acadêmico</p></div><div style="text-align:right"><h1>Boletim</h1><p style="margin:4px 0 0">Período <strong>2026/2</strong> · em curso</p></div></div>
+      <div class="dados"><div><small>Estudante</small>Carla Mendes</div><div><small>E-mail</small>carla.mendes@studytrack.test</div><div><small>Curso</small>Engenharia da Computação</div></div>
+      ${[["Modelagem de Software", "ES-A", "Carlos Lima", 80, [["Prova 1", "6,5"], ["Trabalho", "5,8"]], "6,2", "8 de 12", "67%", "Risco"], ["Banco de Dados", "BD-A", "Júlia Reis", 60, [["Prova 1", "7,0"], ["Lista", "8,0"]], "7,3", "11 de 12", "92%", "Normal"]].map(([d, t, p, ch, av, m, aulas, f, s]) => `
+        <h2>${d} <span style="font-weight:400;color:var(--mudo)">· Turma ${t} · ${p} · ${ch} h</span></h2>
+        <div class="larga"><table><thead><tr>${av.map(([a]) => `<th class="num">${a}</th>`).join("")}<th class="num">Média</th><th class="num">Aulas</th><th class="num">Frequência</th><th>Situação</th><th>Resultado</th></tr></thead>
+        <tbody><tr>${av.map(([, n]) => `<td class="num">${n}</td>`).join("")}<td class="num"><strong>${m}</strong></td><td class="num">${aulas}</td><td class="num">${f}</td><td>${selo(s)}</td><td class="res-curso">Em curso</td></tr></tbody></table></div>`).join("")}
+      <div class="rodape-doc"><span>Emitido pelo StudyTrack em 05/11/2026 às 15:20 (horário de Brasília).</span><span>Resultado final só após o encerramento do período.</span></div>
+    </div></div>`],
+
+  "doc-historico": ["SPEC-020 · Histórico escolar (página de impressão)", () => `<div style="background:#E9EDF3;min-height:100%">
+    <div class="doc-barra"><a class="btn btn-secundario" href="#">← Voltar</a><button class="btn btn-primario">⬇ Baixar PDF</button></div>
+    <div class="folha">
+      <div class="topo-doc"><div>${logoClaro(20)}<p style="margin:6px 0 0;color:var(--mudo)">Sistema de acompanhamento acadêmico</p></div><div style="text-align:right"><h1>Histórico escolar</h1></div></div>
+      <div class="dados"><div><small>Estudante</small>João Pereira</div><div><small>E-mail</small>estudante@studytrack.test</div><div><small>Curso</small>Engenharia da Computação</div><div><small>Disciplinas aprovadas</small>2</div><div><small>Carga horária aprovada</small>140 h</div><div><small>Períodos</small>2026/1 e 2026/2</div></div>
+      ${[["2026/1 · encerrado", [["Introdução à Computação", 80, "7,4", "88%", '<span class="res-ok">Aprovado</span>'], ["Lógica", 60, "6,1", "79%", '<span class="res-ok">Aprovado</span>'], ["Cálculo Básico", 60, "4,6", "92%", '<span class="res-nao">Reprovado por nota</span>']]],
+         ["2026/2 · em curso", [["Modelagem de Software", 80, "6,8", "83%", '<span class="res-curso">Em curso</span>'], ["Banco de Dados", 60, "5,4", "81%", '<span class="res-curso">Em curso</span>'], ["Cálculo I", 80, "4,8", "75%", '<span class="res-curso">Em curso</span>']]]].map(([per, linhas]) => `
+        <h2>Período ${per}</h2>
+        <div class="larga"><table><thead><tr><th>Disciplina</th><th class="num">CH</th><th class="num">Média</th><th class="num">Frequência</th><th>Resultado</th></tr></thead><tbody>
+          ${linhas.map(([d, ch, m, f, r]) => `<tr><td>${d}</td><td class="num">${ch} h</td><td class="num">${m}</td><td class="num">${f}</td><td>${r}</td></tr>`).join("")}
+        </tbody></table></div>`).join("")}
+      <div class="rodape-doc"><span>Emitido pelo StudyTrack em 05/11/2026 às 15:22 (horário de Brasília).</span><span>Aprovado: média ≥ 6,0 e frequência ≥ 75%.</span></div>
+    </div></div>`],
+
+  "coord-importacao": ["SPEC-021 · Coordenador — Importar planilha (prévia com erros)", () => casca("Coordenador", "turmas", `
+    ${cab("Turma CAL-ECO · Cálculo I", "Período 2026/2 · Engenharia da Computação · Professor: Júlia Reis", "", '<a href="#">Turmas e estudantes</a> / CAL-ECO')}
+    <div class="cartao"><h2>Importar planilha (CSV)</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px">
+        <div style="flex:1;min-width:220px"><label class="rotulo">Arquivo</label><input class="campo" type="file"></div>
+        <a class="link" href="#" style="font-size:14px">Baixar modelo (nome;email)</a>
+      </div>
+      <div class="msg msg-erro" style="margin-bottom:14px" role="alert">2 linhas com erro. Corrija a planilha e envie de novo: nada foi gravado.</div>
+      <div class="contagem" style="margin-bottom:12px;font-size:13px"><span class="selo s-normal">● 12 contas novas</span><span class="selo s-pendente">↺ 3 só matrícula</span><span class="selo s-pendente">– 1 já matriculado</span><span class="selo s-risco">■ 2 com erro</span></div>
+      <table class="tabela-resp"><thead><tr><th class="num">Linha</th><th>Nome</th><th>E-mail</th><th>O que acontece</th></tr></thead><tbody>
+        ${[[2, "Ana Lima", "ana.lima@studytrack.test", '<span class="selo s-normal">● Conta nova</span>'], [3, "Bruno Alves", "bruno.alves@studytrack.test", '<span class="selo s-pendente">↺ Só matrícula</span>'], [4, "Caio Nunes", "caio.nunes@", '<span class="selo s-risco">■ E-mail inválido</span>'], [5, "Duda Reis", "duda.reis@studytrack.test", '<span class="selo s-risco">■ Estudante de outro curso (Administração)</span>'], [6, "Enzo Melo", "enzo.melo@studytrack.test", '<span class="selo s-pendente">– Já matriculado</span>']].map(([l, n, e, s]) =>
+          `<tr><td data-r="Linha" class="num">${l}</td><td data-r="Nome">${n}</td><td data-r="E-mail" style="color:var(--mudo)">${e}</td><td data-r="O que acontece">${s}</td></tr>`).join("")}
+      </tbody></table>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap"><button class="btn btn-secundario">Cancelar</button><button class="btn btn-primario" disabled style="opacity:.5;cursor:not-allowed">Confirmar importação</button></div>
+    </div>`)],
+
+  "coord-importacao-ok": ["SPEC-021 · Coordenador — Importação concluída", () => casca("Coordenador", "turmas", `
+    ${cab("Turma CAL-ECO · Cálculo I", "Período 2026/2 · Engenharia da Computação · Professor: Júlia Reis", "", '<a href="#">Turmas e estudantes</a> / CAL-ECO')}
+    <div class="msg msg-ok" style="margin-bottom:16px" role="status">Importação concluída: 12 contas novas e 15 matrículas.</div>
+    <div class="cartao"><div class="cab-cartao"><h2>Senhas provisórias</h2><button class="btn btn-primario">⬇ Baixar lista (CSV)</button></div>
+      <div class="msg msg-info" style="margin-bottom:12px">Esta lista aparece só agora. Entregue a cada estudante: no primeiro acesso, ele define a própria senha.</div>
+      <table class="tabela-resp"><thead><tr><th>Nome</th><th>E-mail</th><th>Senha provisória</th></tr></thead><tbody>
+        ${[["Ana Lima", "ana.lima@studytrack.test", "k7Rq-2mXa-9p"], ["Felipe Rocha", "felipe.rocha@studytrack.test", "Zt4w-8nBe-3c"], ["Gabi Souza", "gabi.souza@studytrack.test", "p2Lm-6vQy-7h"]].map(([n, e, s]) =>
+          `<tr><td data-r="Nome">${n}</td><td data-r="E-mail" style="color:var(--mudo)">${e}</td><td data-r="Senha provisória"><code style="font-size:14px">${s}</code></td></tr>`).join("")}
+      </tbody></table><p style="margin:10px 0 0;font-size:13px;color:var(--mudo)">… e mais 9 contas.</p></div>`)],
+
+  "notificacoes": ["SPEC-022 · Notificações (estudante)", () => casca("Estudante", "notificacoes", `
+    ${cab("Notificações", "Avisos sobre as suas turmas. Abrir um aviso marca como lido.", '<button class="btn btn-secundario">✓ Marcar todas como lidas</button>')}
+    <div style="max-width:760px">
+      ${[["■", "var(--risco-bg)", "var(--risco)", "Você entrou em situação de Risco em Modelagem de Software", "Sua frequência está em 67%, abaixo de 75%. Converse com Carlos Lima.", "há 10 min", true],
+         ["📝", "var(--info-bg)", "var(--info)", "Nota lançada em Prova 1 — Modelagem de Software", "Sua nota: 6,5. Média atual: 6,2.", "há 25 min", true],
+         ["🗓️", "var(--atencao-bg)", "var(--atencao)", "Prazo amanhã: Diagrama de sequência", "Modelagem de Software · ainda sem entrega registrada.", "hoje, 08:00", true],
+         ["🧭", "var(--normal-bg)", "var(--normal)", "Plano de recuperação criado em Modelagem de Software", "3 itens previstos por Carlos Lima.", "ontem, 16:20", false],
+         ["📝", "var(--info-bg)", "var(--info)", "Nota alterada em Lista 1 — Banco de Dados", "Sua nota: 8,0 (antes 7,5).", "02/11", false]].map(([ic, bg, cor, ti, tx, qd, nova]) =>
+        `<a href="#" class="notif ${nova ? "nova" : ""}" style="text-decoration:none;color:inherit"><span class="ic" style="background:${bg};color:${cor}">${ic}</span><div style="flex:1;min-width:0"><strong>${nova ? "● " : ""}${ti}</strong><p>${tx}</p></div><time>${qd}</time></a>`).join("")}
+    </div>`)],
 
   "acesso-negado": ["SPEC-001 · Acesso negado", () => `<div class="simples"><div style="max-width:420px">
     <div style="margin-bottom:24px">${logoClaro(24)}</div><div style="font-size:40px">🔒</div><h1 style="margin:8px 0">Acesso negado</h1>

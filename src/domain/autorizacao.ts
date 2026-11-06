@@ -36,6 +36,15 @@ export const RECURSOS = {
   gestaoCursos: "gestao-cursos",
   // SPEC-016 (RF-25): dashboard do Administrador, só com contas e estrutura dos cursos (RB-13).
   painelAdministrador: "painel-administrador",
+  // SPEC-017 (RF-26, OPEN-040): períodos letivos, só pelo Administrador. É estrutura, não dado acadêmico.
+  gestaoPeriodos: "gestao-periodos",
+  // SPEC-019 (RF-28, OPEN-039): auditoria administrativa (Administrador) e acadêmica (Coordenador, cursos dele).
+  auditoriaAdministrativa: "auditoria-administrativa",
+  auditoriaAcademica: "auditoria-academica",
+  // SPEC-020 (RF-29, OPEN-038): boletim e histórico — estudante (os próprios) e coordenador (cursos dele).
+  documentos: "documentos",
+  // SPEC-022 (RF-31, OPEN-043): notificações só para estudante e professor (RB-23).
+  notificacoes: "notificacoes",
 } as const;
 
 export type Recurso = (typeof RECURSOS)[keyof typeof RECURSOS];
@@ -58,6 +67,11 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "historico-notas": ["Professor", "Coordenador"],
   "gestao-cursos": ["Administrador"],
   "painel-administrador": ["Administrador"],
+  "gestao-periodos": ["Administrador"],
+  "auditoria-administrativa": ["Administrador"],
+  "auditoria-academica": ["Coordenador"],
+  documentos: ["Estudante", "Coordenador"],
+  notificacoes: ["Estudante", "Professor"],
 };
 
 export function podeAcessar(perfil: unknown, recurso: unknown): boolean {

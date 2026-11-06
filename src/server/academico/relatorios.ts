@@ -5,9 +5,13 @@ import { hojeEmBrasilia, statusEntrega } from "@/domain/atividades";
 import { consolidarTurma, ehSituacaoRelatorio, type LinhaEstudante, type ResumoTurma, type SituacaoRelatorio } from "@/domain/relatorio";
 import type { Sessao } from "@/server/auth/token";
 import { deData } from "@/server/dados/atividades";
-import { turmasDoRelatorio } from "@/server/dados/relatorios";
+import { periodosDasTurmas } from "@/server/dados/periodos";
+import { filtroTurmasDoRelatorio, turmasDoRelatorio } from "@/server/dados/relatorios";
 
 export type Relatorio = {
+  // SPEC-017: períodos com turmas no escopo e o período do filtro (null = períodos abertos).
+  periodosDisponiveis: { nome: string; status: "Aberto" | "Encerrado" }[];
+  periodo: string | null;
   // SPEC-015: cursos das turmas do escopo, para o filtro de curso do coordenador com mais de um curso.
   cursosDisponiveis: { id: string; nome: string }[];
   turmasDisponiveis: { id: string; rotulo: string }[];
@@ -15,11 +19,14 @@ export type Relatorio = {
   linhas: LinhaEstudante[];
 };
 
-export type FiltrosRelatorio = { turma?: string | null; situacao?: string | null; curso?: string | null };
+export type FiltrosRelatorio = { turma?: string | null; situacao?: string | null; curso?: string | null; periodo?: string | null };
 
 export async function gerarRelatorio(sessao: Sessao, filtros: FiltrosRelatorio, hoje = hojeEmBrasilia()):
   Promise<{ ok: true; relatorio: Relatorio } | { ok: false; motivo: "fora-do-escopo" }> {
-  const todas = await turmasDoRelatorio(sessao);
+  // SPEC-017 (AC-017-07): período sem turma no escopo é ignorado (fica nos períodos abertos).
+  const periodosDisponiveis = await periodosDasTurmas(filtroTurmasDoRelatorio(sessao));
+  const periodo = periodosDisponiveis.find((p) => p.nome === filtros.periodo)?.nome ?? null;
+  const todas = await turmasDoRelatorio(sessao, periodo);
   const cursosDisponiveis = [...new Map(todas.map((t) => [t.curso.id, t.curso])).values()].sort((a, b) => a.nome.localeCompare(b.nome));
   // AC-015-15: curso pedido fora do escopo é bloqueado, como a turma (AC-009-03).
   if (filtros.curso && !cursosDisponiveis.some((c) => c.id === filtros.curso)) return { ok: false, motivo: "fora-do-escopo" };
@@ -54,5 +61,5 @@ export async function gerarRelatorio(sessao: Sessao, filtros: FiltrosRelatorio, 
     resumo.push({ id: t.id, rotulo, ...consolidarTurma(daTurma) });
     linhas.push(...daTurma.filter((l) => !situacao || l.situacao === situacao));
   }
-  return { ok: true, relatorio: { cursosDisponiveis, turmasDisponiveis, resumo, linhas } };
+  return { ok: true, relatorio: { periodosDisponiveis, periodo, cursosDisponiveis, turmasDisponiveis, resumo, linhas } };
 }

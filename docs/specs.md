@@ -46,6 +46,10 @@ Legenda de status da Spec:
 | SPEC-015 e SPEC-016 aprovadas, com OPEN-035 fechada (decisão humana, Arthur) | `aprovada` | 2026-10-22 |
 | Layout das SPEC-015 e SPEC-016 (cursos, grade, turmas com curso e os 4 dashboards) | `aprovado` (Arthur) | 2026-10-22 |
 | SPEC-015 e SPEC-016 marcadas como `implementadas`: 201 testes e verificação em `docs/verificacao/SPEC-015-016.md`; PR #64 integrado em `development` por Arthur antes da revisão, que Luiz Eduardo faz depois (pedida no PR #64), condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-10-23 |
+| SPEC-017 a SPEC-022 incluídas a pedido do grupo (Luiz), com OPEN-038 a OPEN-044 fechadas (decisão humana, Luiz); RF-26 a RF-31, RB-20 a RB-24, RF-07 e RB-14 ajustados; texto das Specs e layout aguardando aprovação | `especificada` | 2026-11-05 |
+| SPEC-017 a SPEC-022 aprovadas (Luiz) | `aprovada` | 2026-11-05 |
+| Layout das SPEC-017 a SPEC-022 (períodos, chamada, auditoria, documentos, importação e notificações) | `aprovado` (Luiz) | 2026-11-05 |
+| SPEC-017 a SPEC-022 marcadas como `implementadas`: 268 testes e verificação em `docs/verificacao/SPEC-017-022.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
 
 ---
 
@@ -2272,6 +2276,802 @@ Sem entidade nova. `Usuario` ganha `criadaEm`.
 ## 13. Questões em aberto
 
 Nenhuma. OPEN-034 e OPEN-035 fechadas.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-017 — Período letivo
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-017 |
+| **Nome** | Período letivo |
+| **Objetivo** | Organizar as turmas por semestre (2026/1, 2026/2) e permitir encerrar um semestre, tornando as turmas dele somente leitura. |
+| **Valor** | O semestre fechado não muda mais por engano; relatórios e dashboards separam o semestre atual dos anteriores; o histórico escolar ganha base. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-26, RF-04 |
+| **RB** | RB-14 (ajuste), RB-20 |
+| **RNF** | RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-17 Gerenciar períodos letivos |
+| **Entidades** | `PeriodoLetivo` (nova), `Turma` (`periodo` passa a ser chave estrangeira para o nome do período) |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-040, OPEN-044 (dados de demonstração) |
+
+## 3. Escopo
+
+**Incluído**
+- Tela **Períodos letivos** do administrador (`/admin/periodos`): lista com nome, status e número de turmas; **novo período** (nome AAAA/1 ou AAAA/2); **encerrar** e **reabrir**.
+- Turma ligada a 1 período; a nova turma do coordenador escolhe entre os períodos **abertos**. A migração cria um período (Aberto) para cada texto de período já usado e liga as turmas.
+- **Trava (RB-20):** em turma de período encerrado são recusados: avaliação, nota, chamada (SPEC-018), atividade, entrega (registrar e desfazer), plano de recuperação (criar, itens, encerrar), cadastro e matrícula de estudante, importação (SPEC-021) e troca de professor.
+- Telas de lançamento do professor (Notas, Chamada, Atividades, planos) listam só turmas de períodos abertos. A tela Turmas do coordenador mostra todas, com a coluna Período e o selo **Encerrado**; o detalhe de turma encerrada não mostra os formulários.
+- **Relatório** e **dashboard do coordenador**: filtro **Período** (padrão: períodos abertos; opções: cada período). Dashboards do estudante e do professor e os alertas: só turmas de períodos abertos.
+- Ajuste do RB-14: o professor só fica impedido de ser desativado por turmas de períodos **abertos**.
+
+**Fora do escopo**
+- Datas de início e fim do período, calendário acadêmico, renomear ou apagar período (sem RF).
+- Copiar turmas de um período para o outro.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz. Protótipo: [`layout/prototipo.html`](layout/prototipo.html).
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Administrador — Períodos letivos | [prototipo.html#admin-periodos](layout/prototipo.html#admin-periodos) | [x] | [x] | Luiz | 2026-11-05 |
+| Coordenador — Turmas com período | [prototipo.html#coord-turmas-periodo](layout/prototipo.html#coord-turmas-periodo) | [x] | [x] | Luiz | 2026-11-05 |
+
+## 4. Dependências
+
+SPEC-002, SPEC-009, SPEC-010, SPEC-015, SPEC-016.
+
+## 5. Comportamento esperado
+
+**Pré-condições:** administrador autenticado (cadastro, encerramento e reabertura); coordenador autenticado (turma).
+
+**Fluxo principal (encerrar):**
+1. Administrador abre Períodos letivos e escolhe **Encerrar** em 2026/1.
+2. Sistema pede confirmação, muda o status para Encerrado, grava a data e a auditoria (SPEC-019).
+3. A partir daí, toda escrita acadêmica nas turmas de 2026/1 é recusada com a mensagem do período encerrado.
+
+**Fluxos alternativos:**
+- Reabrir: status volta a Aberto; as escritas voltam a ser aceitas.
+- Novo período: nome no formato AAAA/1 ou AAAA/2; nasce Aberto.
+
+**Exceções:**
+- Nome fora do formato ou repetido: recusado, com o campo indicado.
+- Nova turma em período encerrado ou inexistente: recusada.
+- Escrita em turma de período encerrado: 409 "O período 2026/1 está encerrado: a turma é somente leitura."
+- Perfil que não é administrador nas rotas de período: acesso negado.
+
+**Pós-condições:** status do período e auditoria gravados.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-017-01 | Toda turma pertence a exatamente 1 período letivo (FK obrigatória). |
+| INV-017-02 | Nome de período é único e segue AAAA/1 ou AAAA/2. |
+| INV-017-03 | Nenhuma escrita acadêmica é gravada em turma de período encerrado (RB-20), verificado no caso de uso antes da escrita. |
+| INV-017-04 | Nova turma só em período aberto. |
+| INV-017-05 | Dashboards do estudante e do professor e os alertas consideram só turmas de períodos abertos; relatório e dashboard do coordenador sem filtro também. |
+| INV-017-06 | Só o administrador cadastra, encerra e reabre período; isso não dá a ele acesso a dado acadêmico (RB-13). |
+| INV-017-07 | Professor com turma apenas em períodos encerrados pode ser desativado; com turma em período aberto, não (RB-14). |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **PeriodoLetivo** (id, nome, status {Aberto, Encerrado}, criadoEm, encerradoEm). Um período tem de 0 a N turmas; cada turma pertence a exatamente 1 período.
+
+## 8. Impacto arquitetural
+
+- Regras puras em `src/domain/periodos.ts` (formato do nome, período aberto, mensagem da trava).
+- Verificação da trava num único ponto (`garantirPeriodoAberto(turmaId, tx)` em `src/server/academico/periodos.ts`), chamado por todos os casos de uso de escrita listados.
+- Migração: tabela `PeriodoLetivo`, um período Aberto para cada texto já usado e `Turma.periodo` como chave estrangeira para `PeriodoLetivo.nome` (o nome não muda; assim as consultas que já liam `periodo` continuam iguais).
+- `filtroTurmasDoEscopo` ganha a opção de restringir a períodos abertos ou a um período.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/periodos` | sessão (admin ou coordenador) | períodos com status e número de turmas | sem permissão |
+| `POST /api/periodos` | nome | período criado (Aberto) | campo inválido, nome repetido, sem permissão |
+| `POST /api/periodos/:id/encerrar` | — | período Encerrado | não encontrado, sem permissão |
+| `POST /api/periodos/:id/reabrir` | — | período Aberto | não encontrado, sem permissão |
+| `POST /api/turmas` | `periodo` (nome de um período aberto) | turma criada | período encerrado ou inexistente |
+| Escritas acadêmicas | (as de sempre) | — | 409 período encerrado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03, RNF-05 | Rotas de período só para o administrador; trava no servidor, não só na tela |
+| RNF-04, RNF-06 | Telas do protótipo aprovadas, desktop e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-017-01 | Administrador | Cria o período 2027/1 | Período Aberto na lista |
+| AC-017-02 | Administrador | Cria "2027-1", "2027/3" ou um nome repetido | Recusado com o campo indicado |
+| AC-017-03 | Período 2026/1 encerrado | Professor lança nota, registra chamada, cria atividade ou registra entrega numa turma dele | 409 com a mensagem do período encerrado; nada gravado |
+| AC-017-04 | Período 2026/1 encerrado | Coordenador matricula estudante, troca o professor ou cria turma em 2026/1 | Recusado |
+| AC-017-05 | Período encerrado e reaberto | Professor lança nota | Nota gravada |
+| AC-017-06 | Turmas em 2026/1 (encerrado) e 2026/2 (aberto) | Estudante e professor abrem o dashboard; coordenador abre o relatório sem filtro | Só as turmas de 2026/2 |
+| AC-017-07 | Coordenador | Filtra o relatório por 2026/1 | Só as turmas de 2026/1 dos cursos dele |
+| AC-017-08 | Professor só com turmas de período encerrado | Administrador desativa a conta | Conta desativada |
+| AC-017-09 | Coordenador ou professor | Tenta criar, encerrar ou reabrir período | Acesso negado |
+
+## 12. Casos de teste derivados
+
+1. Funções puras: formato do nome, mensagem da trava.
+2. Cadastro, encerramento e reabertura pelo administrador; acesso negado aos demais.
+3. Trava em cada escrita acadêmica (RB-20).
+4. Filtros de período no relatório, nos dashboards e nos alertas.
+5. Desativação de professor com turmas só em período encerrado (RB-14).
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-040 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-018 — Chamada por aula
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-018 |
+| **Nome** | Chamada por aula |
+| **Objetivo** | O professor faz a chamada de cada aula e a frequência passa a ser calculada pelas presenças. |
+| **Valor** | Frequência confiável e auditável, aula a aula, como num sistema acadêmico de verdade; o professor não precisa calcular percentual. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-07 (alterado), RF-27 |
+| **RB** | RB-03, RB-05, RB-10, RB-20, RB-21 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-08 Registrar frequência (reescrito como chamada) |
+| **Entidades** | `Aula` e `Presenca` (novas), `Frequencia` (passa a ser derivada da chamada), `IndicadorAcademico` |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-041 |
+
+## 3. Escopo
+
+**Incluído**
+- Tela **Chamada** do professor (substitui Frequência): escolhe a turma; vê as aulas registradas (data, presentes de quantos) e a frequência e situação de cada estudante; **nova chamada**: data (padrão: hoje) e a lista dos matriculados, todos marcados como presentes; o professor desmarca as faltas e salva.
+- **Corrigir** a chamada de uma aula já registrada (mesma tela, com as marcações gravadas).
+- Ao salvar: grava a aula e as presenças, recalcula a frequência de cada estudante da aula (RB-21) e o indicador (RB-10), tudo numa transação, e grava a auditoria (SPEC-019).
+- Remoção do lançamento manual do percentual (`POST /api/frequencias`).
+
+**Fora do escopo**
+- Excluir aula, chamada por horário (mais de uma aula no mesmo dia), justificativa de falta, chamada feita pelo estudante (sem RF).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Professor — Chamada | [prototipo.html#prof-chamada](layout/prototipo.html#prof-chamada) | [x] | [x] | Luiz | 2026-11-05 |
+
+## 4. Dependências
+
+SPEC-003, SPEC-005, SPEC-017.
+
+## 5. Comportamento esperado
+
+**Pré-condições:** professor autenticado, turma que leciona, período aberto.
+
+**Fluxo principal:**
+1. Professor abre Chamada e escolhe a turma.
+2. Informa a data e marca as faltas.
+3. Sistema grava a aula com uma presença por estudante matriculado, recalcula frequência e indicador de cada um e grava a auditoria.
+4. Tela mostra a aula na lista e as frequências atualizadas.
+
+**Fluxos alternativos:**
+- Data de aula já registrada: a chamada é corrigida (substitui as presenças da aula).
+
+**Exceções:**
+- Data futura ou inválida: recusada.
+- Lista diferente dos matriculados (faltando estudante ou com estudante de fora): recusada.
+- Turma de outro professor: não encontrada. Período encerrado: 409 (RB-20).
+
+**Pós-condições:** aula, presenças, frequências, indicadores e auditoria gravados juntos.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-018-01 | No máximo 1 aula por turma e data (índice único). |
+| INV-018-02 | Uma presença por estudante e aula; só estudantes matriculados na turma. |
+| INV-018-03 | Frequência = presenças ÷ aulas em que o estudante constou × 100 (RB-21); sem aula, não registrada. |
+| INV-018-04 | Aula, presenças, frequência e indicador são gravados na mesma transação (RB-10). |
+| INV-018-05 | Só o professor da turma registra ou corrige a chamada (RB-03). |
+| INV-018-06 | Data da aula não pode ser futura (horário de Brasília). |
+
+## 7. Modelo de domínio envolvido
+
+Novas entidades **Aula** (id, data, registradaEm), de exatamente 1 turma, e **Presenca** (presente sim/não), de exatamente 1 aula e 1 estudante. `Frequencia` continua guardando o percentual vigente, agora calculado pela chamada.
+
+## 8. Impacto arquitetural
+
+- Cálculo puro em `src/domain/frequencia.ts` (`frequenciaPelaChamada`).
+- Caso de uso `registrarChamada` em `src/server/academico/chamada.ts`, na mesma transação de `recalcularIndicador`.
+- Migração: tabelas `Aula` e `Presenca`.
+- O seed gera as aulas da demonstração com as presenças que dão as frequências dos estudantes.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/aulas?turmaId=` | sessão (professor da turma) | aulas com presentes/total; presenças de cada aula | não encontrada |
+| `POST /api/aulas` | turmaId, data, presencas [{estudanteId, presente}] | aula gravada, frequências novas | data inválida, lista inválida, não encontrada, período encerrado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Chamada de 30 estudantes gravada em até 3 s |
+| RNF-03 | Escopo do professor dentro da query |
+| RNF-04, RNF-06 | Tela aprovada, desktop e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-018-01 | Turma com 3 estudantes | Professor registra a chamada com 1 falta | Aula gravada; frequência 100%, 100% e 0% |
+| AC-018-02 | 4 aulas, estudante com 3 presenças | Consulta a turma | Frequência 75%, situação conforme RB-05 |
+| AC-018-03 | Estudante com 4 presenças em 5 aulas (80%) | Professor corrige uma aula para falta | Frequência 60% e situação Risco |
+| AC-018-04 | Estudante matriculado depois de 2 aulas | Professor registra a 3ª aula com presença | Frequência 100% (só a aula em que constou) |
+| AC-018-05 | Professor | Registra chamada com data futura, faltando estudante ou com estudante de fora | Recusada, nada gravado |
+| AC-018-06 | Turma de outro professor ou estudante | Tenta registrar chamada | Não encontrada / acesso negado |
+| AC-018-07 | Qualquer chamada | É registrada | Indicador recalculado na mesma transação |
+
+## 12. Casos de teste derivados
+
+1. Função pura `frequenciaPelaChamada` (RB-21).
+2. Registro, correção, data futura, lista inválida, escopo.
+3. Recalcular indicador na mesma transação.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-041 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-019 — Auditoria
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-019 |
+| **Nome** | Auditoria |
+| **Objetivo** | Registrar quem fez cada alteração, quando, e de quanto para quanto, e mostrar esse registro a quem é responsável. |
+| **Valor** | Transparência e segurança: toda mudança de nota, chamada, matrícula, conta ou curso pode ser explicada depois. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-28 |
+| **RB** | RB-04, RB-13, RB-22 |
+| **RNF** | RNF-02, RNF-03, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-18 Consultar auditoria |
+| **Entidades** | `RegistroAuditoria` (nova) |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-039 |
+
+## 3. Escopo
+
+**Incluído**
+- Registro gravado na mesma transação de toda escrita. **Administrativas:** conta criada, desativada e reativada (pelo administrador); curso criado; coordenação trocada; período criado, encerrado e reaberto. **Acadêmicas:** disciplina criada; disciplina adicionada à grade; turma criada; professor trocado; estudante cadastrado; estudante matriculado; importação; avaliação criada; nota lançada e alterada; chamada registrada e corrigida; atividade criada; entrega registrada e desfeita; plano criado e encerrado; item de plano adicionado e concluído.
+- Cada registro: autor, data e hora, ação, descrição legível ("Nota de Carla Mendes em Prova 1 (ES-A): 5,0 → 6,5"), curso e turma envolvidos e os valores anteriores e novos.
+- Tela **Auditoria** do administrador (`/admin/auditoria`, só administrativas) e do coordenador (`/coordenador/auditoria`, só acadêmicas dos cursos dele), mais recentes primeiro, com filtro por tipo de ação e páginas de 50.
+
+**Fora do escopo**
+- Registrar consultas, login e troca da própria senha; exportar a auditoria; auditoria para professor e estudante (sem RF).
+- Senhas nunca entram no registro (nem em texto nem em hash).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Coordenador — Auditoria | [prototipo.html#coord-auditoria](layout/prototipo.html#coord-auditoria) | [x] | [x] | Luiz | 2026-11-05 |
+| Administrador — Auditoria | [prototipo.html#admin-auditoria](layout/prototipo.html#admin-auditoria) | [x] | [x] | Luiz | 2026-11-05 |
+
+## 4. Dependências
+
+SPEC-002 a SPEC-005, SPEC-008, SPEC-010, SPEC-015, SPEC-017, SPEC-018.
+
+## 5. Comportamento esperado
+
+**Pré-condições:** coordenador ou administrador autenticado.
+
+**Fluxo principal:**
+1. Usuário faz qualquer escrita; o caso de uso grava o registro na mesma transação.
+2. Coordenador ou administrador abre Auditoria e vê os registros do seu escopo, mais recentes primeiro.
+3. Filtra por tipo de ação e navega pelas páginas.
+
+**Exceções:**
+- Escrita que falha: nenhum registro (a transação inteira volta).
+- Professor ou estudante na tela: acesso negado.
+
+**Pós-condições:** nenhuma alteração na consulta.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-019-01 | Todo caso de uso de escrita grava exatamente 1 registro por ação, na mesma transação (RB-22). |
+| INV-019-02 | Não há rota nem função de alteração ou exclusão de registro. |
+| INV-019-03 | O coordenador só vê registros acadêmicos de cursos que coordena (filtro na query, ADR-003). |
+| INV-019-04 | O administrador só vê registros administrativos; nenhum dado acadêmico (RB-13). |
+| INV-019-05 | Nenhum registro contém senha ou hash de senha. |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **RegistroAuditoria** (id, categoria {Administrativa, Acadêmica}, ação, descrição, antes, depois, registradoEm), com exatamente 1 autor (Usuario) e, quando acadêmica, o curso e, se houver, a turma.
+
+## 8. Impacto arquitetural
+
+- Ações, categorias e textos em `src/domain/auditoria.ts` (puro).
+- `auditar(tx, ...)` em `src/server/dados/auditoria.ts`, chamado dentro das transações dos casos de uso.
+- Migração: tabela `RegistroAuditoria` com índices por data e por curso.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/auditoria` | sessão, ação (opcional), página | registros do escopo, total de páginas | sem permissão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-02, RNF-05 | Nenhuma senha no registro; escopo por perfil |
+| RNF-03 | Filtro de escopo na query |
+| RNF-04, RNF-06 | Tela aprovada, desktop e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-019-01 | Professor altera uma nota de 5,0 para 6,5 | Coordenador do curso abre Auditoria | Registro com autor, data, "5,0 → 6,5" |
+| AC-019-02 | Chamada, entrega, plano, matrícula e importação realizadas | Coordenador do curso abre Auditoria | Um registro para cada ação |
+| AC-019-03 | Registros de dois cursos | Coordenador de um deles abre Auditoria | Só os do próprio curso |
+| AC-019-04 | Administrador cria conta e encerra período | Abre Auditoria | Registros administrativos; nenhum acadêmico |
+| AC-019-05 | Escrita recusada (ex.: nota 11) | — | Nenhum registro gravado |
+| AC-019-06 | Conta criada com senha | Registro gravado | Não contém a senha nem o hash |
+| AC-019-07 | Professor ou estudante | Abre Auditoria | Acesso negado |
+
+## 12. Casos de teste derivados
+
+1. Funções puras de descrição (valores com vírgula, ações).
+2. Um registro por caso de uso de escrita; nada quando falha.
+3. Escopo de coordenador e administrador; filtro e paginação.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-039 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-020 — Boletim e histórico escolar
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-020 |
+| **Nome** | Boletim e histórico escolar |
+| **Objetivo** | Emitir o boletim de um período e o histórico escolar completo do estudante, prontos para imprimir ou salvar em PDF. |
+| **Valor** | O documento que estudante e coordenação esperam de um sistema acadêmico, com o resultado de cada disciplina. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-29 |
+| **RB** | RB-02, RB-04, RB-09, RB-13, RB-24 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-19 Emitir boletim e histórico |
+| **Entidades** | leitura de `Usuario`, `Curso`, `PeriodoLetivo`, `Turma`, `Disciplina`, `Avaliacao`, `Nota`, `Frequencia`, `Aula`, `Presenca`, `IndicadorAcademico` |
+| **ADRs** | ADR-001, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-038, OPEN-044 |
+
+## 3. Escopo
+
+**Incluído**
+- **Boletim** de um período (padrão: o período aberto mais recente em que o estudante tem turma): por turma, disciplina, turma, professor, carga horária, nota de cada avaliação, média, aulas e presenças, frequência, situação e resultado (RB-24).
+- **Histórico escolar**: todas as turmas do estudante agrupadas por período (mais antigo primeiro): disciplina, carga horária, média, frequência e resultado; resumo com disciplinas aprovadas e carga horária aprovada.
+- Cabeçalho: StudyTrack, nome e e-mail do estudante, curso, data e hora da emissão (Brasília). Botões **Baixar PDF** (impressão do navegador) e **Voltar**, que não aparecem no papel.
+- Estudante: item de menu **Documentos** com os boletins de cada período e o histórico. Coordenador: links **Boletim** e **Histórico** em cada estudante do detalhe da turma.
+
+**Fora do escopo**
+- Assinatura digital, código de verificação, PDF gerado no servidor (OPEN-038), envio por e-mail.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Estudante — Documentos | [prototipo.html#est-documentos](layout/prototipo.html#est-documentos) | [x] | [x] | Luiz | 2026-11-05 |
+| Boletim | [prototipo.html#doc-boletim](layout/prototipo.html#doc-boletim) | [x] | [x] | Luiz | 2026-11-05 |
+| Histórico escolar | [prototipo.html#doc-historico](layout/prototipo.html#doc-historico) | [x] | [x] | Luiz | 2026-11-05 |
+
+## 4. Dependências
+
+SPEC-003, SPEC-004, SPEC-015, SPEC-017, SPEC-018.
+
+## 5. Comportamento esperado
+
+**Pré-condições:** estudante (os próprios documentos) ou coordenador (estudante de curso que coordena) autenticado.
+
+**Fluxo principal:**
+1. Usuário abre o boletim ou o histórico.
+2. Sistema monta o documento só com as turmas do estudante, calculando o resultado de cada turma (RB-24).
+3. Usuário clica em **Baixar PDF** e salva pelo navegador.
+
+**Exceções:**
+- Estudante pedindo documento de outro: recebe o próprio (o parâmetro é ignorado).
+- Coordenador pedindo estudante de outro curso, ou estudante inexistente: não encontrado.
+- Professor ou administrador: acesso negado.
+- Estudante sem turma no período: documento com aviso "Nenhuma turma neste período".
+
+**Pós-condições:** nenhuma alteração de dados.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-020-01 | O documento só contém turmas do estudante (RB-02, RB-04). |
+| INV-020-02 | Resultado conforme RB-24: Aprovado, Reprovado por nota, por frequência ou por nota e frequência, Sem registro e Em curso. |
+| INV-020-03 | Média, frequência e situação são as do indicador vigente (as mesmas do painel e do relatório). |
+| INV-020-04 | Carga horária aprovada = soma das cargas das turmas com resultado Aprovado. |
+| INV-020-05 | Professor e administrador não emitem (RB-13). |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- `resultadoDaTurma` e o resumo do histórico em `src/domain/documentos.ts` (puro).
+- Consulta em `src/server/academico/documentos.ts`.
+- Páginas `/documentos/boletim` e `/documentos/historico` com CSS de impressão (A4), sem biblioteca nova.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| Página `/documentos/boletim` | estudante (coordenador), período (opcional) | documento do período | não encontrado, acesso negado |
+| Página `/documentos/historico` | estudante (coordenador) | documento completo | não encontrado, acesso negado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Documento em até 3 s |
+| RNF-03, RNF-05 | Escopo na query; professor e administrador negados |
+| RNF-04, RNF-06 | Legível no celular; impressão em A4 sem cortar colunas |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-020-01 | Período encerrado: média 7,0 e frequência 80% | Histórico | Aprovado |
+| AC-020-02 | Período encerrado: média 5,5 e frequência 90%; média 7,0 e 70%; média 4,0 e 60% | Histórico | Reprovado por nota; por frequência; por nota e frequência |
+| AC-020-03 | Período aberto | Boletim | Resultado "Em curso" |
+| AC-020-04 | Período encerrado sem nota | Histórico | Sem registro |
+| AC-020-05 | Estudante com turmas em 2026/1 e 2026/2 | Abre o histórico | Dois períodos, carga horária aprovada correta |
+| AC-020-06 | Estudante | Pede o histórico de outro estudante | Recebe o próprio |
+| AC-020-07 | Coordenador | Pede o histórico de estudante de outro curso | Não encontrado |
+| AC-020-08 | Professor ou administrador | Abre um documento | Acesso negado |
+
+## 12. Casos de teste derivados
+
+1. `resultadoDaTurma` para todas as combinações (RB-24) e resumo do histórico.
+2. Escopo do estudante e do coordenador; negação para professor e administrador.
+3. Boletim com o período padrão e com período escolhido.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-038 e OPEN-044 fechadas.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-021 — Importação de estudantes por planilha
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-021 |
+| **Nome** | Importação de estudantes por planilha |
+| **Objetivo** | Cadastrar e matricular dezenas de estudantes de uma vez a partir de um CSV, com prévia e sem meio-termo. |
+| **Valor** | Começo de semestre sem cadastro manual um a um; nenhum dado pela metade se a planilha tiver erro. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-30, RF-03 |
+| **RB** | RB-04, RB-15, RB-19, RB-20, RB-22 |
+| **RNF** | RNF-02, RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-20 Importar estudantes |
+| **Entidades** | `Usuario`, `Matricula`, `RegistroAuditoria` |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-042 |
+
+## 3. Escopo
+
+**Incluído**
+- No detalhe da turma, cartão **Importar planilha (CSV)**: o coordenador escolhe o arquivo e vê a **prévia**: cada linha com nome, e-mail e o que acontecerá (conta nova, só matrícula, já matriculado) ou o erro.
+- **Confirmar importação** só fica disponível sem erros; grava tudo numa transação: contas novas (Estudante, curso da turma, senha provisória aleatória, troca obrigatória), matrículas e um registro de auditoria.
+- Depois de gravar: lista das senhas provisórias, mostrada uma vez, com **Baixar lista (CSV)**.
+- Formato: primeira linha com `nome` e `email` (ou `e-mail`), separador `;` ou `,`, UTF-8 (com ou sem BOM), até 500 linhas de dados.
+
+**Fora do escopo**
+- Importar professores, notas ou turmas; arquivos Excel (.xlsx); enviar as senhas por e-mail.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Coordenador — Importar planilha (prévia com erros) | [prototipo.html#coord-importacao](layout/prototipo.html#coord-importacao) | [x] | [x] | Luiz | 2026-11-05 |
+| Coordenador — Importação concluída | [prototipo.html#coord-importacao-ok](layout/prototipo.html#coord-importacao-ok) | [x] | [x] | Luiz | 2026-11-05 |
+
+## 4. Dependências
+
+SPEC-002, SPEC-011, SPEC-015, SPEC-017, SPEC-019.
+
+## 5. Comportamento esperado
+
+**Pré-condições:** coordenador autenticado; turma de curso que coordena, em período aberto.
+
+**Fluxo principal:**
+1. Coordenador escolhe o arquivo e pede a prévia.
+2. Sistema valida cada linha e devolve a prévia, sem gravar.
+3. Sem erros, o coordenador confirma; o sistema grava contas, matrículas e auditoria numa transação.
+4. Sistema mostra as senhas provisórias das contas novas.
+
+**Exceções:**
+- Arquivo sem cabeçalho, vazio ou com mais de 500 linhas: recusado com explicação.
+- Linha com erro: prévia mostra o erro; a confirmação é recusada (400) mesmo se enviada direto à API.
+- Turma fora do escopo: não encontrada. Período encerrado: 409.
+
+**Pós-condições:** todas as linhas gravadas ou nenhuma.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-021-01 | Importação é tudo ou nada (uma transação). |
+| INV-021-02 | Prévia não grava nada. |
+| INV-021-03 | E-mail repetido na planilha, inválido, de conta que não é Estudante, desativada ou de outro curso é erro (RB-19). |
+| INV-021-04 | Conta nova nasce com senha provisória aleatória (mínimo 10 caracteres) e troca obrigatória (RB-15); só o hash é gravado (RNF-02). |
+| INV-021-05 | Estudante já matriculado não gera erro nem matrícula duplicada. |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- Leitura e validação do CSV em `src/domain/importacao.ts` (puro).
+- Caso de uso `importarEstudantes` em `src/server/academico/importacao.ts`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `POST /api/turmas/:id/importacao` | `csv` (texto), `confirmar` (sim/não) | prévia; ou gravação com as senhas provisórias | arquivo inválido, linhas com erro, não encontrada, período encerrado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-02 | Só o hash da senha gravado; senha mostrada uma vez |
+| RNF-03 | Escopo do coordenador na query |
+| RNF-04, RNF-06 | Tela aprovada, desktop e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-021-01 | CSV com 2 e-mails novos e 1 estudante do curso | Prévia | 2 contas novas, 1 só matrícula; nada gravado |
+| AC-021-02 | O mesmo CSV | Confirma | 2 contas com troca obrigatória e 3 matrículas; senhas mostradas |
+| AC-021-03 | CSV com e-mail repetido, e-mail inválido e estudante de outro curso | Prévia | Cada erro na linha certa; confirmação recusada; nada gravado |
+| AC-021-04 | CSV com estudante já matriculado | Confirma | Sem duplicar, sem erro |
+| AC-021-05 | CSV sem cabeçalho ou com 501 linhas | Prévia | Recusado com explicação |
+| AC-021-06 | Turma de outro coordenador ou de período encerrado | Importa | Não encontrada / 409 |
+| AC-021-07 | CSV com separador vírgula e BOM | Prévia | Lido corretamente |
+
+## 12. Casos de teste derivados
+
+1. Leitura do CSV (separador, BOM, aspas, cabeçalho) e validação por linha.
+2. Prévia sem gravação; confirmação tudo ou nada; senhas provisórias.
+3. Escopo e período encerrado.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-042 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-022 — Notificações
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-022 |
+| **Nome** | Notificações |
+| **Objetivo** | Avisar o estudante e o professor, dentro do sistema, do que mudou e pede atenção. |
+| **Valor** | Ninguém precisa ficar abrindo telas para descobrir que entrou em Risco, recebeu nota ou tem prazo chegando. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-31 |
+| **RB** | RB-02, RB-03, RB-13, RB-23 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-21 Consultar notificações |
+| **Entidades** | `Notificacao` (nova) |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-004 (mantida), OPEN-043 |
+
+## 3. Escopo
+
+**Incluído**
+- Gravadas na mesma transação do evento: **entrou em Risco** (situação muda de outra para Risco no recálculo do indicador: estudante e professor da turma); **nota lançada ou alterada** (estudante); **plano de recuperação criado** (estudante).
+- **Prazo próximo:** quando o estudante entra no sistema, atividades de períodos abertos com prazo de hoje até 2 dias depois e sem entrega geram uma notificação cada (no máximo uma por atividade, RB-23).
+- Menu lateral do estudante e do professor: item **Notificações** com o número de não lidas. Página **Notificações**: lista (mais recentes primeiro, não lidas destacadas), abrir uma notificação marca como lida e leva à tela relacionada; **Marcar todas como lidas**.
+
+**Fora do escopo**
+- E-mail, push, preferências de notificação, apagar notificação (sem RF).
+- Notificações para coordenador e administrador.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-05 por Luiz.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Notificações (estudante) | [prototipo.html#notificacoes](layout/prototipo.html#notificacoes) | [x] | [x] | Luiz | 2026-11-05 |
+
+## 4. Dependências
+
+SPEC-003, SPEC-004, SPEC-005, SPEC-008, SPEC-017.
+
+## 5. Comportamento esperado
+
+**Pré-condições:** estudante ou professor autenticado.
+
+**Fluxo principal:**
+1. Evento acontece (nota, Risco, plano); a notificação é gravada na mesma transação.
+2. Destinatário vê o contador no menu e abre Notificações.
+3. Abre uma notificação: ela fica lida e o sistema leva à tela relacionada.
+
+**Exceções:**
+- Marcar como lida notificação de outro usuário: não encontrada.
+- Coordenador ou administrador na página: acesso negado.
+
+**Pós-condições:** leitura gravada.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-022-01 | Cada notificação tem exatamente 1 destinatário, o único que a vê e marca (RB-23). |
+| INV-022-02 | "Entrou em Risco" só quando a situação anterior não era Risco. |
+| INV-022-03 | No máximo uma notificação de prazo por estudante e atividade (índice único). |
+| INV-022-04 | Notificação de evento é gravada na mesma transação do evento; se o evento falhar, não há notificação. |
+| INV-022-05 | Coordenador e administrador não recebem notificações. |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **Notificacao** (id, tipo {Risco, Nota, Plano, Prazo}, título, texto, link, chave, criadaEm, lidaEm), de exatamente 1 usuário destinatário.
+
+## 8. Impacto arquitetural
+
+- Textos e regra "entrou em Risco" em `src/domain/notificacoes.ts` (puro).
+- Gravação em `src/server/dados/notificacoes.ts`, chamada dentro das transações de nota, plano e recálculo do indicador.
+- Migração: tabela `Notificacao` com índice único na chave (nula para eventos sem deduplicação).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/notificacoes` | sessão | notificações do usuário, total de não lidas | sem permissão |
+| `POST /api/notificacoes/:id/lida` | — | lida | não encontrada |
+| `POST /api/notificacoes/lidas` | — | todas lidas | sem permissão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Contador no menu sem atrasar a página (consulta indexada) |
+| RNF-03 | Filtro pelo destinatário na query |
+| RNF-04, RNF-06 | Tela aprovada, desktop e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-022-01 | Estudante Normal | Nota faz a situação ir para Risco | Estudante e professor da turma recebem "entrou em Risco" |
+| AC-022-02 | Estudante já em Risco | Nova nota mantém Risco | Nenhuma nova notificação de Risco (só a de nota) |
+| AC-022-03 | Professor | Lança ou altera a nota de um estudante | Estudante recebe a notificação de nota |
+| AC-022-04 | Professor | Cria plano para o estudante | Estudante recebe a notificação de plano |
+| AC-022-05 | Atividade com prazo amanhã sem entrega | Estudante entra duas vezes | Uma única notificação de prazo |
+| AC-022-06 | Dois estudantes | Um consulta ou marca notificação do outro | Não vê; não encontrada |
+| AC-022-07 | Estudante com 3 não lidas | Marca todas como lidas | Contador zera |
+| AC-022-08 | Coordenador ou administrador | Abre Notificações | Acesso negado |
+
+## 12. Casos de teste derivados
+
+1. Funções puras: "entrou em Risco", textos.
+2. Gravação por evento, deduplicação do prazo, escopo e leitura.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-043 fechada.
 
 ## 14. Definition of Done
 

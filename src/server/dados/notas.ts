@@ -8,8 +8,8 @@ export function turmaLecionada(professorId: string, turmaId: string) {
   return prisma.turma.findFirst({ where: { id: turmaId, professorId }, select: { id: true } });
 }
 
-export function criarAvaliacao(turmaId: string, dados: DadosAvaliacao) {
-  return prisma.avaliacao.create({
+export function criarAvaliacao(turmaId: string, dados: DadosAvaliacao, db: ClienteBanco = prisma) {
+  return db.avaliacao.create({
     data: { ...dados, turmaId },
     select: { id: true, turmaId: true, nome: true, peso: true, data: true },
   });
@@ -62,9 +62,10 @@ export function executarEmTransacao<T>(operacao: (tx: ClienteBanco) => Promise<T
 }
 
 // Dados da tela de lançamento: só as turmas que o professor leciona (RB-03).
+// SPEC-017 (RB-20): só turmas de períodos abertos, as únicas que aceitam lançamento.
 export function turmasParaLancamento(professorId: string) {
   return prisma.turma.findMany({
-    where: { professorId },
+    where: { professorId, periodoLetivo: { status: "Aberto" } },
     select: {
       id: true,
       nome: true,

@@ -2,8 +2,12 @@
 // Quem pode: Professor responsável pela turma (conferido na rota pelo perfil e aqui pela query, ADR-003).
 import { MENSAGEM_FORA_DE_RISCO, podeReceberPlano, progressoDoPlano, validarItensPlano, type Progresso } from "@/domain/plano";
 import type { Situacao } from "@/domain/situacao-academica";
+import { auditar, nomeDoUsuario, turmaParaAuditoria } from "@/server/dados/auditoria";
+import { executarEmTransacao } from "@/server/dados/notas";
+import { notificarPlano } from "@/server/dados/notificacoes";
 import * as dados from "@/server/dados/planos";
 import type { Falha, Resultado } from "./cadastros";
+import { travaDoPeriodo } from "./periodos";
 
 const sucesso = <T>(valor: T): Resultado<T> => ({ ok: true, valor });
 const falha = <T>(f: Falha): Resultado<T> => ({ ok: false, falha: f });
@@ -58,6 +62,8 @@ export async function criarPlano(entrada: Record<string, unknown>, professorId: 
 
   const alvo = await dados.estudanteParaPlano(professorId, turmaId, estudanteId);
   if (!alvo) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ id: turmaId });
+  if (trava) return falha(trava);
   if (!podeReceberPlano(alvo.indicadores[0]?.situacao)) {
     return falha({ tipo: "invalido", erros: { selecao: MENSAGEM_FORA_DE_RISCO } });
   }
@@ -67,7 +73,15 @@ export async function criarPlano(entrada: Record<string, unknown>, professorId: 
 
   try {
     // INV-008-02: o professor do plano é sempre o professor responsável pela turma (o próprio solicitante).
-    const plano = await dados.criarPlano({ estudanteId, turmaId, professorId, itens: itens.dados });
+    const plano = await executarEmTransacao(async (tx) => {
+      const criado = await dados.criarPlano({ estudanteId, turmaId, professorId, itens: itens.dados }, tx);
+      const contexto = await turmaParaAuditoria(turmaId, tx);
+      const estudante = await nomeDoUsuario(estudanteId, tx);
+      // SPEC-022 (AC-022-04): o estudante é avisado do plano criado.
+      await notificarPlano(tx, estudanteId, turmaId, itens.dados.length);
+      await auditar(tx, { autorId: professorId, acao: "plano.criado", ...contexto, descricao: `${estudante} em ${contexto.rotulo}, ${itens.dados.length} item(ns)`, depois: { itens: itens.dados } });
+      return criado;
+    });
     const { itens: criados, ...resto } = plano;
     return sucesso({ ...resto, progresso: progressoDoPlano(criados) });
   } catch (erro) {
@@ -82,10 +96,25 @@ export async function criarPlano(entrada: Record<string, unknown>, professorId: 
 export async function marcarItemDoPlano(itemId: string, entrada: Record<string, unknown>, professorId: string) {
   const item = await dados.itemDoProfessor(professorId, itemId);
   if (!item) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ planos: { some: { itens: { some: { id: itemId } } } } });
+  if (trava) return falha(trava);
   if (item.plano.status !== "Ativo") return falha({ tipo: "conflito", erro: "Plano encerrado: os itens não podem mais ser alterados." });
   if (typeof entrada.concluido !== "boolean") return falha({ tipo: "invalido", erros: { concluido: "Informe se o item está concluído." } });
+  const concluido = entrada.concluido;
 
-  const atualizado = await dados.marcarItem(itemId, entrada.concluido);
+  const atualizado = await executarEmTransacao(async (tx) => {
+    const marcado = await dados.marcarItem(itemId, concluido, tx);
+    const contexto = await turmaParaAuditoria(item.plano.turmaId, tx);
+    await auditar(tx, {
+      autorId: professorId,
+      acao: "plano.item",
+      ...contexto,
+      descricao: `${item.plano.estudante.nome} (${contexto.rotulo}): "${item.descricao}" ${concluido ? "concluído" : "desmarcado"}`,
+      antes: { concluido: item.concluido },
+      depois: { concluido },
+    });
+    return marcado;
+  });
   return sucesso({ item: atualizado, progresso: progressoDoPlano(await dados.itensDoPlano(item.planoId)) });
 }
 
@@ -93,8 +122,17 @@ export async function marcarItemDoPlano(itemId: string, entrada: Record<string, 
 export async function encerrarPlanoDoProfessor(planoId: string, professorId: string) {
   const plano = await dados.planoDoProfessor(professorId, planoId);
   if (!plano) return falha({ tipo: "fora-do-escopo" });
+  const trava = await travaDoPeriodo({ planos: { some: { id: planoId } } });
+  if (trava) return falha(trava);
   if (plano.status === "Encerrado") return falha({ tipo: "conflito", erro: "Este plano já está encerrado." });
-  return sucesso(await dados.encerrarPlano(planoId));
+  return sucesso(
+    await executarEmTransacao(async (tx) => {
+      const encerrado = await dados.encerrarPlano(planoId, tx);
+      const contexto = await turmaParaAuditoria(plano.turma.id, tx);
+      await auditar(tx, { autorId: professorId, acao: "plano.encerrado", ...contexto, descricao: `${plano.estudante.nome} em ${contexto.rotulo}` });
+      return encerrado;
+    }),
+  );
 }
 
 // Detalhe do plano para a tela, com a situação atual do estudante (aviso de saída do Risco, OPEN-012).

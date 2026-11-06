@@ -1,8 +1,10 @@
 // SPEC-005 — frequência, atividades e entregas: rotas reais + banco PostgreSQL local (integração).
+// SPEC-018 (OPEN-041): a frequência passou a ser registrada pela chamada (/api/aulas); os critérios da SPEC-005
+// sobre frequência continuam valendo e são exercidos por ela.
 import { randomUUID } from "node:crypto";
 import { afterAll, describe, expect, it, vi } from "vitest";
 import { hojeEmBrasilia } from "@/domain/atividades";
-import { POST as frequenciaApi } from "@/app/api/frequencias/route";
+import { POST as chamadaApi } from "@/app/api/aulas/route";
 import { POST as atividadeApi } from "@/app/api/turmas/[id]/atividades/route";
 import { POST as entregaApi } from "@/app/api/atividades/[id]/entregas/route";
 import { DELETE as desfazerApi } from "@/app/api/entregas/[id]/route";
@@ -75,41 +77,46 @@ function registrarEntrega(atividadeId: string, estudanteId: string, token: strin
   return entregaApi(requisicaoJson(`${API}/atividades/${atividadeId}/entregas`, { estudanteId, dataEntrega }, token), parametros(atividadeId));
 }
 
-describe("SPEC-005 — frequência", () => {
-  it("AC-005-01 / INV-005-01: professor registra frequência e o indicador é recalculado (74,9% Risco, 75% Normal)", async () => {
-    const { turma, estudanteA, token } = await cenario();
-    const registrar = (percentual: string) =>
-      frequenciaApi(requisicaoJson(`${API}/frequencias`, { turmaId: turma.id, estudanteId: estudanteA.id, percentual }, token));
+// Chamada de uma aula: estudanteA presente ou não, estudanteB sempre presente.
+function chamada(turmaId: string, estudanteA: string, estudanteB: string, data: string, presenteA: boolean, token: string) {
+  const presencas = [{ estudanteId: estudanteA, presente: presenteA }, { estudanteId: estudanteB, presente: true }];
+  return chamadaApi(requisicaoJson(`${API}/aulas`, { turmaId, data, presencas }, token));
+}
 
-    const risco = await registrar("74,9");
-    expect(risco.status).toBe(200);
-    expect((await risco.json()).indicador).toMatchObject({ frequenciaAtual: 74.9, situacao: "Risco" });
+describe("SPEC-005 — frequência (pela chamada, SPEC-018)", () => {
+  it("AC-005-01 / INV-005-01: frequência registrada e o indicador recalculado (75% Normal, 60% Risco)", async () => {
+    const { turma, estudanteA, estudanteB, token } = await cenario();
+    const hoje = hojeEmBrasilia();
+    for (const [i, presente] of [true, true, true, false].entries()) {
+      expect((await chamada(turma.id, estudanteA.id, estudanteB.id, dias(hoje, -10 + i), presente, token)).status).toBe(200);
+    }
+    expect(await prisma.indicadorAcademico.findFirst({ where: { estudanteId: estudanteA.id, turmaId: turma.id } })).toMatchObject({ frequenciaAtual: 75, situacao: "Normal" });
 
-    const normal = await registrar("75");
-    expect((await normal.json()).indicador).toMatchObject({ frequenciaAtual: 75, situacao: "Normal" });
+    const risco = await chamada(turma.id, estudanteA.id, estudanteB.id, dias(hoje, -5), false, token);
+    const corpo = await risco.json();
+    expect(corpo.indicadores.find((i: { estudanteId: string }) => i.estudanteId === estudanteA.id)).toMatchObject({ frequenciaAtual: 60, situacao: "Risco" });
     expect(await prisma.frequencia.count({ where: { estudanteId: estudanteA.id, turmaId: turma.id } })).toBe(1);
   });
 
-  it("Contrato Registrar frequência: valor fora de 0–100 é recusado e nada muda", async () => {
-    const { turma, estudanteA, token } = await cenario();
-    const resposta = await frequenciaApi(requisicaoJson(`${API}/frequencias`, { turmaId: turma.id, estudanteId: estudanteA.id, percentual: 120 }, token));
+  it("Contrato Registrar chamada: data futura é recusada e nada muda", async () => {
+    const { turma, estudanteA, estudanteB, token } = await cenario();
+    const resposta = await chamada(turma.id, estudanteA.id, estudanteB.id, dias(hojeEmBrasilia(), 1), true, token);
 
     expect(resposta.status).toBe(400);
-    expect((await resposta.json()).campos).toHaveProperty("percentual");
+    expect((await resposta.json()).campos).toHaveProperty("data");
     expect(await prisma.frequencia.count({ where: { estudanteId: estudanteA.id } })).toBe(0);
   });
 
-  it("INV-005-04: se o recálculo falhar, a frequência também não é gravada (mesma transação)", async () => {
-    const { turma, estudanteA, token } = await cenario();
+  it("INV-005-04: se o recálculo falhar, a chamada e a frequência também não são gravadas (mesma transação)", async () => {
+    const { turma, estudanteA, estudanteB, token } = await cenario();
     falhaNoRecalculo.ativa = true;
     try {
-      await expect(
-        frequenciaApi(requisicaoJson(`${API}/frequencias`, { turmaId: turma.id, estudanteId: estudanteA.id, percentual: 60 }, token)),
-      ).rejects.toThrow();
+      await expect(chamada(turma.id, estudanteA.id, estudanteB.id, hojeEmBrasilia(), false, token)).rejects.toThrow();
     } finally {
       falhaNoRecalculo.ativa = false;
     }
     expect(await prisma.frequencia.count({ where: { estudanteId: estudanteA.id } })).toBe(0);
+    expect(await prisma.aula.count({ where: { turmaId: turma.id } })).toBe(0);
   });
 });
 
@@ -205,7 +212,8 @@ describe("SPEC-005 — escopo", () => {
     const intruso = await criarUsuarioDeTeste("Professor");
     const tokenIntruso = await entrarComo(intruso.email, intruso.senha);
 
-    const frequencia = await frequenciaApi(requisicaoJson(`${API}/frequencias`, { turmaId: turma.id, estudanteId: estudanteA.id, percentual: 50 }, tokenIntruso));
+    const { estudanteB } = await prisma.matricula.findFirstOrThrow({ where: { turmaId: turma.id, NOT: { estudanteId: estudanteA.id } }, select: { estudanteId: true } }).then((m) => ({ estudanteB: m.estudanteId }));
+    const frequencia = await chamada(turma.id, estudanteA.id, estudanteB, hojeEmBrasilia(), false, tokenIntruso);
     const novaAtividade = await atividadeApi(
       requisicaoJson(`${API}/turmas/${turma.id}/atividades`, { descricao: "Intrusa", prazo: dias(hojeEmBrasilia(), 2) }, tokenIntruso),
       parametros(turma.id),
@@ -226,10 +234,10 @@ describe("SPEC-005 — escopo", () => {
     const tokenEstudante = await entrarComo(estudanteA.email, estudanteA.senha);
     const coordenador = await criarUsuarioDeTeste("Coordenador");
     const tokenCoordenador = await entrarComo(coordenador.email, coordenador.senha);
-    const corpo = { turmaId: turma.id, estudanteId: estudanteA.id, percentual: 90 };
+    const corpo = { turmaId: turma.id, data: hojeEmBrasilia(), presencas: [{ estudanteId: estudanteA.id, presente: true }] };
 
-    expect((await frequenciaApi(requisicaoJson(`${API}/frequencias`, corpo, tokenEstudante))).status).toBe(403);
-    expect((await frequenciaApi(requisicaoJson(`${API}/frequencias`, corpo, tokenCoordenador))).status).toBe(403);
+    expect((await chamadaApi(requisicaoJson(`${API}/aulas`, corpo, tokenEstudante))).status).toBe(403);
+    expect((await chamadaApi(requisicaoJson(`${API}/aulas`, corpo, tokenCoordenador))).status).toBe(403);
     expect((await consultaApi(requisicaoComSessao(`${API}/atividades`, tokenCoordenador))).status).toBe(403);
     expect((await consultaApi(requisicaoComSessao(`${API}/atividades`))).status).toBe(401);
   });

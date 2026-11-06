@@ -12,6 +12,7 @@ import { exigirAcessoPagina } from "@/server/auth/guardas";
 
 // SPEC-009 / RF-15 (UC-05): relatório acadêmico em tela e CSV (OPEN-005), no escopo do perfil (RB-03, RB-04).
 // Os filtros vão na URL (GET), então a tela e o CSV recebem exatamente os mesmos parâmetros (INV-009-05).
+// SPEC-017 (RF-26): filtro Período; sem escolha, só as turmas de períodos abertos (INV-017-05).
 // Layout aprovado em docs/layout/prototipo.html#relatorio.
 const OPCOES_SITUACAO: { valor: SituacaoRelatorio; rotulo: string }[] = [
   { valor: "Normal", rotulo: "Normal" },
@@ -34,13 +35,13 @@ function Situacao({ situacao }: { situacao: SituacaoRelatorio }) {
   return <SeloSituacao situacao={situacao} />;
 }
 
-export default async function Relatorios({ searchParams }: { searchParams: Promise<{ turma?: string; situacao?: string; curso?: string }> }) {
+export default async function Relatorios({ searchParams }: { searchParams: Promise<{ turma?: string; situacao?: string; curso?: string; periodo?: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.relatorios);
   const filtros = await searchParams;
   const turma = filtros.turma || "";
   const curso = filtros.curso || "";
   const situacao = ehSituacaoRelatorio(filtros.situacao) ? filtros.situacao : "";
-  const resultado = await gerarRelatorio(sessao, { turma: turma || null, situacao: situacao || null, curso: curso || null });
+  const resultado = await gerarRelatorio(sessao, { turma: turma || null, situacao: situacao || null, curso: curso || null, periodo: filtros.periodo || null });
 
   const subtitulo =
     sessao.perfil === "Coordenador"
@@ -57,10 +58,11 @@ export default async function Relatorios({ searchParams }: { searchParams: Promi
     );
   }
 
-  const { cursosDisponiveis, turmasDisponiveis, resumo, linhas } = resultado.relatorio;
+  const { periodosDisponiveis, periodo, cursosDisponiveis, turmasDisponiveis, resumo, linhas } = resultado.relatorio;
   // SPEC-015 (AC-015-15): filtro de curso só para o coordenador com mais de um curso.
   const filtrarCurso = sessao.perfil === "Coordenador" && cursosDisponiveis.length > 1;
   const consulta = new URLSearchParams();
+  if (periodo) consulta.set("periodo", periodo);
   if (curso) consulta.set("curso", curso);
   if (turma) consulta.set("turma", turma);
   if (situacao) consulta.set("situacao", situacao);
@@ -80,12 +82,19 @@ export default async function Relatorios({ searchParams }: { searchParams: Promi
         }
       />
 
-      {turmasDisponiveis.length === 0 ? (
+      {turmasDisponiveis.length === 0 && periodosDisponiveis.length === 0 ? (
         <EstadoVazio>Nenhuma turma no seu escopo ainda.</EstadoVazio>
       ) : (
         <div className="space-y-5">
           <Cartao>
-            <form method="get" className={`grid gap-4 sm:items-end ${filtrarCurso ? "sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto]" : "sm:grid-cols-[1fr_1fr_auto]"}`}>
+            <form method="get" className={`grid gap-4 sm:items-end ${filtrarCurso ? "sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]" : "sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto]"}`}>
+              <div>
+                <label htmlFor="periodo" className={CLASSE_ROTULO}>Período</label>
+                <select id="periodo" name="periodo" defaultValue={periodo ?? ""} className={CLASSE_CAMPO}>
+                  <option value="">Períodos abertos</option>
+                  {periodosDisponiveis.map((p) => <option key={p.nome} value={p.nome}>{p.nome}{p.status === "Encerrado" ? " (encerrado)" : ""}</option>)}
+                </select>
+              </div>
               {filtrarCurso && (
                 <div>
                   <label htmlFor="curso" className={CLASSE_ROTULO}>Curso</label>

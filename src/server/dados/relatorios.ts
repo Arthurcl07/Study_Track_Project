@@ -2,17 +2,19 @@
 // perfil sem regra (Estudante) não casa com nada (INV-009-03).
 import type { Prisma } from "@prisma/client";
 import type { Sessao } from "@/server/auth/token";
+import { filtroDePeriodo } from "./periodos";
 import { prisma } from "./prisma";
 
-function filtroTurmasDoRelatorio(sessao: Sessao): Prisma.TurmaWhereInput {
+export function filtroTurmasDoRelatorio(sessao: Sessao): Prisma.TurmaWhereInput {
   if (sessao.perfil === "Professor") return { professorId: sessao.usuarioId };
   if (sessao.perfil === "Coordenador") return { curso: { coordenadorId: sessao.usuarioId } };
   return { id: { in: [] } };
 }
 
-export function turmasDoRelatorio(sessao: Sessao) {
+// SPEC-017: sem período, só as turmas de períodos abertos (INV-017-05).
+export function turmasDoRelatorio(sessao: Sessao, periodo?: string | null) {
   return prisma.turma.findMany({
-    where: filtroTurmasDoRelatorio(sessao),
+    where: { AND: [filtroTurmasDoRelatorio(sessao), filtroDePeriodo(periodo)] },
     select: {
       id: true,
       nome: true,
@@ -28,9 +30,9 @@ export function turmasDoRelatorio(sessao: Sessao) {
 
 // SPEC-014: estudantes distintos em Risco nas turmas sob responsabilidade do coordenador (RB-04).
 // SPEC-016: opcionalmente só nos cursos informados (filtro do dashboard, já recortado ao escopo).
-export async function estudantesEmRiscoDoCoordenador(coordenadorId: string, cursoIds?: string[]) {
+export async function estudantesEmRiscoDoCoordenador(coordenadorId: string, cursoIds?: string[], periodo?: string | null) {
   const linhas = await prisma.indicadorAcademico.findMany({
-    where: { situacao: "Risco", turma: { curso: { coordenadorId }, ...(cursoIds ? { cursoId: { in: cursoIds } } : {}) } },
+    where: { situacao: "Risco", turma: { curso: { coordenadorId }, ...(cursoIds ? { cursoId: { in: cursoIds } } : {}), ...filtroDePeriodo(periodo) } },
     distinct: ["estudanteId"],
     select: { estudanteId: true },
   });

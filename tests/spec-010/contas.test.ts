@@ -71,8 +71,9 @@ describe("SPEC-010 — regras de domínio", () => {
   });
 
   // SPEC-015 / SPEC-016 (OPEN-034): o Administrador também gerencia cursos e tem o próprio dashboard; nada acadêmico.
-  it("RB-13 / INV-010-02 / INV-010-03: Administrador só tem contas, cursos e o próprio dashboard; os outros perfis não os têm", () => {
-    const doAdministrador: string[] = [RECURSOS.gestaoContas, RECURSOS.gestaoCursos, RECURSOS.painelAdministrador];
+  // SPEC-017 e SPEC-019: períodos letivos e auditoria administrativa também são estrutura, não dado acadêmico.
+  it("RB-13 / INV-010-02 / INV-010-03: Administrador só tem contas, cursos, períodos, auditoria administrativa e o próprio dashboard; os outros perfis não os têm", () => {
+    const doAdministrador: string[] = [RECURSOS.gestaoContas, RECURSOS.gestaoCursos, RECURSOS.painelAdministrador, RECURSOS.gestaoPeriodos, RECURSOS.auditoriaAdministrativa];
     for (const recurso of Object.values(RECURSOS)) {
       expect(podeAcessar("Administrador", recurso)).toBe(doAdministrador.includes(recurso));
     }

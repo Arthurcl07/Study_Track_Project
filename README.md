@@ -32,8 +32,10 @@ SPEC-008 (dashboard da turma do professor e plano de recuperação para estudant
 desativa e reativa contas, e troca do professor da turma pelo coordenador). Também: senha própria com troca
 obrigatória no primeiro acesso de contas criadas pela tela (SPEC-011), plano de recuperação visível ao
 estudante (SPEC-012), histórico de notas (SPEC-013), painel do coordenador com gráficos (SPEC-014), cursos com
-coordenação própria e disciplinas compartilhadas entre cursos (SPEC-015) e um dashboard para cada perfil, aberto logo
-depois do login (SPEC-016).
+coordenação própria e disciplinas compartilhadas entre cursos (SPEC-015), um dashboard para cada perfil, aberto logo
+depois do login (SPEC-016), períodos letivos com encerramento do semestre (SPEC-017), chamada por aula (SPEC-018),
+auditoria de todas as alterações (SPEC-019), boletim e histórico escolar em PDF (SPEC-020), importação de estudantes por
+planilha CSV (SPEC-021) e notificações no sistema (SPEC-022).
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 

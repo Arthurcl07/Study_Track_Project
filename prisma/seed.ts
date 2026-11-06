@@ -7,7 +7,7 @@ import { recalcularIndicador } from "../src/server/academico/indicador";
 import { salvarConta } from "../src/server/auth/contas";
 import { paraData } from "../src/server/dados/atividades";
 import { prisma } from "../src/server/dados/prisma";
-import { alinharMatriculasAoCurso, garantirTurma, prepararCursos, simularInstituicao } from "./simulacao";
+import { AULAS_2026_2, alinharMatriculasAoCurso, garantirTurma, prepararCursos, registrarChamadaSimulada, simularInstituicao, simularPeriodoAnterior } from "./simulacao";
 import type { Perfil } from "../src/domain/perfil";
 
 const SENHA_DE_TESTE = "StudyTrack@2026";
@@ -26,6 +26,8 @@ const AVALIACAO_EXEMPLO = { nome: "Prova 1", peso: 1, data: new Date("2026-09-15
 
 async function main() {
   await renomearNomesAntigos();
+  // SPEC-017: toda turma é de um período letivo; 2026/2 é o semestre aberto da demonstração.
+  await prisma.periodoLetivo.upsert({ where: { nome: "2026/2" }, update: {}, create: { nome: "2026/2" } });
   const contas: Partial<Record<Perfil, { id: string }>> = {};
   // O estudante de teste vem depois dos cursos (SPEC-015: todo estudante tem curso, RB-19).
   for (const conta of CONTAS_DE_TESTE.filter((c) => c.perfil !== "Estudante")) {
@@ -76,6 +78,9 @@ async function main() {
   // Instituição simulada (6 cursos, 15 turmas, ~70 estudantes) para a apresentação: prisma/simulacao.ts.
   await simularInstituicao({ senha: SENHA_DE_TESTE, cursos, professorTesteId: professor.id, estudanteTesteId: estudante.id, hoje });
   await alinharMatriculasAoCurso();
+  // SPEC-017 / OPEN-044: semestre anterior encerrado, para o histórico escolar ter Aprovado e Reprovado.
+  await simularPeriodoAnterior({ cursoId: cursos.ECO, professorTesteId: professor.id });
+  await exemplosDeNotificacoesEAuditoria({ professorId: professor.id, coordenadorId: coordenador.id, cursoId: cursos.ECO, hoje });
 }
 
 // Dados de demonstração (fictícios): estudantes em Normal, Atenção, Risco e sem dados, para os
@@ -191,13 +196,8 @@ async function registrarDesempenho(turmaId: string, avaliacoes: string[], tabela
         create: { avaliacaoId: avaliacoes[i], estudanteId, valor },
       });
     }
-    if (desempenho.frequencia !== null) {
-      await prisma.frequencia.upsert({
-        where: { estudanteId_turmaId: { estudanteId, turmaId } },
-        update: { percentual: desempenho.frequencia },
-        create: { estudanteId, turmaId, percentual: desempenho.frequencia },
-      });
-    }
+    // SPEC-018: a frequência sai da chamada das aulas (RB-21).
+    if (desempenho.frequencia !== null) await registrarChamadaSimulada(turmaId, estudanteId, desempenho.frequencia, AULAS_2026_2);
     // Sem nota e sem frequência o estudante fica sem indicador ("Sem dados" nos dashboards e relatórios).
     if (desempenho.frequencia === null && desempenho.notas.every((n) => n === null)) {
       await prisma.indicadorAcademico.deleteMany({ where: { estudanteId, turmaId } });
@@ -205,6 +205,53 @@ async function registrarDesempenho(turmaId: string, avaliacoes: string[], tabela
     }
     await recalcularIndicador(estudanteId, turmaId);
   }
+}
+
+// SPEC-019 e SPEC-022: alguns registros de auditoria e notificações de exemplo, para as telas não começarem vazias.
+// Idempotente: só cria quando ainda não há nenhum registro do mesmo tipo para a pessoa ou o curso.
+async function exemplosDeNotificacoesEAuditoria(base: { professorId: string; coordenadorId: string; cursoId: string; hoje: string }) {
+  const [carla, joao, admin] = await Promise.all(
+    ["carla.mendes@studytrack.test", "estudante@studytrack.test", "admin@studytrack.test"].map((email) => prisma.usuario.findUniqueOrThrow({ where: { email }, select: { id: true } })),
+  );
+  const turma = await prisma.turma.findFirstOrThrow({ where: { nome: "Turma MS-A" }, select: { id: true } });
+  const ontem = new Date(`${somarDias(base.hoje, -1)}T13:00:00Z`);
+  const antes = new Date(`${somarDias(base.hoje, -3)}T16:20:00Z`);
+
+  if ((await prisma.notificacao.count({ where: { usuarioId: carla.id } })) === 0) {
+    await prisma.notificacao.createMany({
+      data: [
+        { usuarioId: carla.id, tipo: "Risco", titulo: "Você entrou em situação de Risco em Modelagem de Software", texto: "Motivo: frequência em 70%, abaixo de 75%. Converse com Carlos Lima.", link: "/estudante", criadaEm: ontem },
+        { usuarioId: carla.id, tipo: "Nota", titulo: "Nota lançada em Trabalho 1 — Modelagem de Software", texto: "Sua nota: 6,4. Média atual: 6,2.", link: "/estudante", criadaEm: ontem },
+        { usuarioId: carla.id, tipo: "Plano", titulo: "Plano de recuperação criado em Modelagem de Software", texto: "4 item(ns) previsto(s) por Carlos Lima.", link: "/estudante", criadaEm: antes, lidaEm: antes },
+      ],
+    });
+  }
+  if ((await prisma.notificacao.count({ where: { usuarioId: joao.id } })) === 0) {
+    await prisma.notificacao.create({ data: { usuarioId: joao.id, tipo: "Nota", titulo: "Nota lançada em Prova 1 — Modelagem de Software", texto: "Sua nota foi registrada. Confira a média no dashboard.", link: "/estudante", criadaEm: ontem } });
+  }
+  if ((await prisma.notificacao.count({ where: { usuarioId: base.professorId } })) === 0) {
+    await prisma.notificacao.create({ data: { usuarioId: base.professorId, tipo: "Risco", titulo: "Carla Mendes entrou em Risco em Turma MS-A · Modelagem de Software", texto: "Motivo: frequência em 70%, abaixo de 75%. Avalie criar um plano de recuperação.", link: `/professor/turmas/${turma.id}`, criadaEm: ontem } });
+  }
+
+  if ((await prisma.registroAuditoria.count({ where: { categoria: "Administrativa" } })) === 0) {
+    await prisma.registroAuditoria.createMany({
+      data: [
+        { categoria: "Administrativa", acao: "periodo.encerrado", descricao: "2026/1 (3 turma(s) ficam somente leitura)", autorId: admin.id, antes: { status: "Aberto" }, depois: { status: "Encerrado" }, registradoEm: new Date("2026-07-10T15:00:00Z") },
+        { categoria: "Administrativa", acao: "periodo.criado", descricao: "2026/2", autorId: admin.id, depois: { status: "Aberto" }, registradoEm: new Date("2026-07-20T12:00:00Z") },
+        { categoria: "Administrativa", acao: "curso.coordenacao", descricao: "Ciência da Computação: Marina Alves → Otávio Campos", autorId: admin.id, antes: { coordenador: "Marina Alves" }, depois: { coordenador: "Otávio Campos" }, registradoEm: antes },
+      ],
+    });
+  }
+  if ((await prisma.registroAuditoria.count({ where: { cursoId: base.cursoId } })) === 0) {
+    await prisma.registroAuditoria.createMany({
+      data: [
+        { categoria: "Academica", acao: "plano.criado", descricao: "Carla Mendes em Turma MS-A · Modelagem de Software, 4 item(ns)", autorId: base.professorId, cursoId: base.cursoId, turmaId: turma.id, registradoEm: antes },
+        { categoria: "Academica", acao: "nota.alterada", descricao: "Carla Mendes em Trabalho 1 (Turma MS-A · Modelagem de Software): 5,8 → 6,4", autorId: base.professorId, cursoId: base.cursoId, turmaId: turma.id, antes: { valor: 5.8 }, depois: { valor: 6.4 }, registradoEm: ontem },
+        { categoria: "Academica", acao: "chamada.registrada", descricao: "Turma MS-A · Modelagem de Software: chamadas do semestre registradas pela coordenação da demonstração", autorId: base.coordenadorId, cursoId: base.cursoId, turmaId: turma.id, registradoEm: ontem },
+      ],
+    });
+  }
+  console.log("Notificações e registros de auditoria de exemplo prontos.");
 }
 
 function somarDias(base: string, dias: number) {

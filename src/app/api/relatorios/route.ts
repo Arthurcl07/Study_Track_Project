@@ -1,4 +1,4 @@
-// GET /api/relatorios?curso=&turma=&situacao=&formato=csv — relatório acadêmico (SPEC-009, RF-15, OPEN-005).
+// GET /api/relatorios?periodo=&curso=&turma=&situacao=&formato=csv — relatório acadêmico (SPEC-009, RF-15, OPEN-005).
 // Tela e CSV saem da mesma consolidação (INV-009-05).
 import { RECURSOS } from "@/domain/autorizacao";
 import { gerarCsv } from "@/domain/relatorio";
@@ -14,6 +14,8 @@ export async function GET(requisicao: Request) {
     turma: parametros.get("turma"),
     situacao: parametros.get("situacao"),
     curso: parametros.get("curso"),
+    // SPEC-017: sem período, só os abertos.
+    periodo: parametros.get("periodo"),
   });
   if (!resultado.ok) return Response.json({ erro: "Acesso negado: esta turma não está no seu escopo." }, { status: 403 });
 

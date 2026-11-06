@@ -3,6 +3,7 @@
 import type { Prisma } from "@prisma/client";
 import type { DadosDisciplina, DadosTurma } from "@/domain/estrutura-academica";
 import type { Sessao } from "@/server/auth/token";
+import type { ClienteBanco } from "./indicadores";
 import { prisma } from "./prisma";
 
 // Filtro de escopo por perfil. Perfil sem regra recebe um filtro que não casa com nada.
@@ -24,6 +25,8 @@ const RESUMO_TURMA = {
   id: true,
   nome: true,
   periodo: true,
+  // SPEC-017: status do período (turma de período encerrado é somente leitura, RB-20).
+  periodoLetivo: { select: { status: true } },
   disciplina: { select: { id: true, nome: true, cargaHoraria: true } },
   professor: { select: { id: true, nome: true } },
   curso: { select: { id: true, nome: true } },
@@ -53,9 +56,10 @@ function formatarTurma(turma: Record<string, unknown>): TurmaConsultada {
   return matriculas ? { ...base, estudantes: matriculas.map((m) => m.estudante) } : base;
 }
 
-export async function listarTurmasDoEscopo(sessao: Sessao): Promise<TurmaConsultada[]> {
+// SPEC-017: recorte opcional (ex.: períodos abertos ou um período), somado ao escopo.
+export async function listarTurmasDoEscopo(sessao: Sessao, recorte: Prisma.TurmaWhereInput = {}): Promise<TurmaConsultada[]> {
   const turmas = await prisma.turma.findMany({
-    where: filtroTurmasDoEscopo(sessao),
+    where: { AND: [filtroTurmasDoEscopo(sessao), recorte] },
     select: selecaoParaPerfil(sessao),
     orderBy: [{ periodo: "desc" }, { nome: "asc" }],
   });
@@ -82,8 +86,8 @@ export function cursosDoCoordenador(coordenadorId: string) {
 }
 
 // RF-23 / OPEN-033: a disciplina nova já nasce na grade do curso escolhido.
-export function criarDisciplina(dados: DadosDisciplina, cursoId: string) {
-  return prisma.disciplina.create({ data: { ...dados, cursos: { create: { cursoId } } } });
+export function criarDisciplina(dados: DadosDisciplina, cursoId: string, db: ClienteBanco = prisma) {
+  return db.disciplina.create({ data: { ...dados, cursos: { create: { cursoId } } } });
 }
 
 // Disciplinas da grade dos cursos informados, com todos os cursos em que cada uma está (OPEN-031).
@@ -115,12 +119,12 @@ export async function gradeDoCurso(cursoId: string) {
 }
 
 // INV-015-04: a chave composta (curso, disciplina) impede duplicar a disciplina na grade.
-export function adicionarDisciplinaAGrade(cursoId: string, disciplinaId: string) {
-  return prisma.cursoDisciplina.create({ data: { cursoId, disciplinaId }, select: { cursoId: true, disciplinaId: true } });
+export function adicionarDisciplinaAGrade(cursoId: string, disciplinaId: string, db: ClienteBanco = prisma) {
+  return db.cursoDisciplina.create({ data: { cursoId, disciplinaId }, select: { cursoId: true, disciplinaId: true, disciplina: { select: { nome: true } } } });
 }
 
 export function buscarDisciplina(id: string) {
-  return prisma.disciplina.findUnique({ where: { id }, select: { id: true } });
+  return prisma.disciplina.findUnique({ where: { id }, select: { id: true, nome: true } });
 }
 
 // Só professores ativos podem receber turma (SPEC-010, RF-17, INV-010-07).
@@ -138,35 +142,32 @@ export function buscarProfessor(id: string) {
 
 // RF-17 / INV-010-07: a turma e seus planos de recuperação ATIVOS passam ao novo professor na mesma
 // transação (INV-008-02); planos encerrados mantêm o professor que os conduziu.
-export function trocarProfessorDaTurma(turmaId: string, professorId: string) {
-  return prisma.$transaction(async (tx) => {
-    const turma = await tx.turma.update({ where: { id: turmaId }, data: { professorId }, select: RESUMO_TURMA });
-    await tx.planoRecuperacao.updateMany({ where: { turmaId, status: "Ativo" }, data: { professorId } });
-    return turma;
-  });
+// SPEC-019: o caso de uso abre a transação (com a auditoria) e passa o cliente dela.
+export async function trocarProfessorDaTurma(turmaId: string, professorId: string, tx: ClienteBanco) {
+  const turma = await tx.turma.update({ where: { id: turmaId }, data: { professorId }, select: RESUMO_TURMA });
+  await tx.planoRecuperacao.updateMany({ where: { turmaId, status: "Ativo" }, data: { professorId } });
+  return turma;
 }
 
 // SPEC-015 / RB-18: a turma é de exatamente 1 curso; o coordenador responsável é o do curso.
-export function criarTurma(dados: DadosTurma, cursoId: string) {
-  return prisma.turma.create({ data: { ...dados, cursoId }, select: RESUMO_TURMA });
+export function criarTurma(dados: DadosTurma, cursoId: string, db: ClienteBanco = prisma) {
+  return db.turma.create({ data: { ...dados, cursoId }, select: RESUMO_TURMA });
 }
 
 // Cria o estudante e a matrícula na mesma transação: nada é persistido parcialmente (INV-002-05).
 // SPEC-015 / RB-19: o estudante pertence ao curso da turma.
-export function criarEstudanteMatriculado(
+export async function criarEstudanteMatriculado(
   dados: { nome: string; email: string; senhaHash: string },
   turma: { id: string; cursoId: string },
+  tx: ClienteBanco,
 ) {
-  const turmaId = turma.id;
-  return prisma.$transaction(async (tx) => {
-    const estudante = await tx.usuario.create({
-      // RB-15 (SPEC-011): a senha inicial informada pelo coordenador é provisória.
-      data: { ...dados, perfil: "Estudante", trocarSenha: true, cursoId: turma.cursoId },
-      select: { id: true, nome: true, email: true },
-    });
-    await tx.matricula.create({ data: { estudanteId: estudante.id, turmaId } });
-    return estudante;
+  const estudante = await tx.usuario.create({
+    // RB-15 (SPEC-011): a senha inicial informada pelo coordenador é provisória.
+    data: { ...dados, perfil: "Estudante", trocarSenha: true, cursoId: turma.cursoId },
+    select: { id: true, nome: true, email: true },
   });
+  await tx.matricula.create({ data: { estudanteId: estudante.id, turmaId: turma.id } });
+  return estudante;
 }
 
 export function buscarEstudantePorEmail(email: string) {
@@ -180,8 +181,8 @@ export function emailJaCadastrado(email: string) {
   return prisma.usuario.findUnique({ where: { email: email.trim().toLowerCase() }, select: { id: true } });
 }
 
-export function matricular(estudanteId: string, turmaId: string) {
-  return prisma.matricula.upsert({
+export function matricular(estudanteId: string, turmaId: string, db: ClienteBanco = prisma) {
+  return db.matricula.upsert({
     where: { estudanteId_turmaId: { estudanteId, turmaId } },
     update: {},
     create: { estudanteId, turmaId },
