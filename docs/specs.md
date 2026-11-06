@@ -51,6 +51,7 @@ Legenda de status da Spec:
 | Layout das SPEC-017 a SPEC-022 (períodos, chamada, auditoria, documentos, importação e notificações) | `aprovado` (Luiz) | 2026-11-05 |
 | SPEC-017 a SPEC-022 marcadas como `implementadas`: 268 testes e verificação em `docs/verificacao/SPEC-017-022.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
 | SPEC-023 a SPEC-025 incluídas a pedido do grupo (Luiz), com OPEN-045 a OPEN-047 fechadas (decisão humana, Luiz); RF-32 a RF-34, RB-25 e RB-26; texto das Specs e layout aguardando aprovação | `especificada` | 2026-11-06 |
+| SPEC-023 a SPEC-025 e layout aprovados (Luiz) | `aprovada` | 2026-11-06 |
 
 ---
 
@@ -3082,7 +3083,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-023 — Simulador de notas ("Quanto preciso tirar?")
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -3118,12 +3119,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `pendente`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Luiz.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Estudante — Quanto preciso tirar? | [prototipo.html#est-simulador](layout/prototipo.html#est-simulador) | [ ] | [ ] | — | — |
-| Professor — Dashboard da turma com "Precisa (6,0)" | [prototipo.html#prof-turma-simulador](layout/prototipo.html#prof-turma-simulador) | [ ] | [ ] | — | — |
+| Estudante — Quanto preciso tirar? | [prototipo.html#est-simulador](layout/prototipo.html#est-simulador) | [x] | [x] | Luiz | 2026-11-06 |
+| Professor — Dashboard da turma com "Precisa (6,0)" | [prototipo.html#prof-turma-simulador](layout/prototipo.html#prof-turma-simulador) | [x] | [x] | Luiz | 2026-11-06 |
 
 ## 4. Dependências
 
@@ -3194,7 +3195,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-024 — Comparativo entre semestres
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -3229,12 +3230,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `pendente`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Luiz.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Coordenador — Comparativo entre semestres | [prototipo.html#coord-comparativo](layout/prototipo.html#coord-comparativo) | [ ] | [ ] | — | — |
-| Estudante — Documentos com a evolução por semestre | [prototipo.html#est-documentos-semestres](layout/prototipo.html#est-documentos-semestres) | [ ] | [ ] | — | — |
+| Coordenador — Comparativo entre semestres | [prototipo.html#coord-comparativo](layout/prototipo.html#coord-comparativo) | [x] | [x] | Luiz | 2026-11-06 |
+| Estudante — Documentos com a evolução por semestre | [prototipo.html#est-documentos-semestres](layout/prototipo.html#est-documentos-semestres) | [x] | [x] | Luiz | 2026-11-06 |
 
 ## 4. Dependências
 
@@ -3304,7 +3305,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-025 — Mural de comunicados
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -3341,12 +3342,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `pendente`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Luiz.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Comunicados — mural do estudante | [prototipo.html#comunicados-estudante](layout/prototipo.html#comunicados-estudante) | [ ] | [ ] | — | — |
-| Comunicados — publicar (coordenador) | [prototipo.html#comunicados-publicar](layout/prototipo.html#comunicados-publicar) | [ ] | [ ] | — | — |
+| Comunicados — mural do estudante | [prototipo.html#comunicados-estudante](layout/prototipo.html#comunicados-estudante) | [x] | [x] | Luiz | 2026-11-06 |
+| Comunicados — publicar (coordenador) | [prototipo.html#comunicados-publicar](layout/prototipo.html#comunicados-publicar) | [x] | [x] | Luiz | 2026-11-06 |
 
 ## 4. Dependências
 
