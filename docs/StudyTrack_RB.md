@@ -77,7 +77,7 @@ Descrição: Conta desativada não acessa o sistema, mas seus dados continuam gu
 Cláusula EARS:
   IF uma conta estiver desativada, THEN o sistema SHALL recusar o login e as requisições feitas com uma sessão dessa conta.
   IF o administrador tentar desativar a própria conta, THEN o sistema SHALL impedir a desativação.
-  IF o professor responsável por ao menos uma turma for desativado, THEN o sistema SHALL impedir a desativação.
+  IF o professor responsável por ao menos uma turma de período letivo aberto for desativado, THEN o sistema SHALL impedir a desativação ("de período aberto" incluído em 2026-11-05, OPEN-040).
   IF o coordenador de ao menos um curso for desativado, THEN o sistema SHALL impedir a desativação (incluído em 2026-10-22, OPEN-030).
 Aplicada por: RF-01, RF-16, RF-22.
 
@@ -116,6 +116,43 @@ Cláusula EARS:
   IF o curso da turma for diferente do curso do estudante, THEN o sistema SHALL impedir a matrícula.
 Aplicada por: RF-03, RF-16.
 
+RB-20 — Período encerrado
+Descrição: Turma de período letivo encerrado é somente leitura (OPEN-040).
+Cláusula EARS:
+  IF a turma pertencer a um período letivo encerrado, THEN o sistema SHALL impedir avaliação, nota, chamada, atividade, entrega, plano de recuperação, matrícula, importação e troca de professor nessa turma.
+  WHEN um período letivo for reaberto, o sistema SHALL voltar a permitir essas operações.
+Aplicada por: RF-26.
+
+RB-21 — Frequência pela chamada
+Descrição: A frequência do estudante na turma é o percentual de presenças nas aulas em que ele constou da chamada (OPEN-041).
+Cláusula EARS:
+  WHEN a chamada de uma aula for registrada ou corrigida, o sistema SHALL calcular a frequência de cada estudante da aula como presenças ÷ aulas em que ele constou × 100 e recalcular o indicador acadêmico na mesma transação.
+  IF o estudante ainda não constar de nenhuma aula, THEN o sistema SHALL tratar a frequência como não registrada.
+Aplicada por: RF-07, RF-27.
+
+RB-22 — Registro de auditoria
+Descrição: Toda escrita gera um registro de auditoria, gravado na mesma transação; o registro nunca é alterado nem apagado e só é visto no escopo de cada perfil (OPEN-039).
+Cláusula EARS:
+  WHEN uma operação de escrita for concluída, o sistema SHALL gravar o autor, a data e hora, a ação, a descrição e os valores anteriores e novos.
+  IF a operação falhar, THEN o sistema SHALL NOT gravar o registro.
+  O sistema SHALL NOT oferecer alteração nem exclusão de registros de auditoria.
+Aplicada por: RF-28.
+
+RB-23 — Notificação do destinatário
+Descrição: Cada notificação pertence a um único usuário, que é o único que a vê e a marca como lida; administrador e coordenador não recebem notificações (OPEN-043).
+Cláusula EARS:
+  WHEN um usuário consultar notificações, o sistema SHALL apresentar apenas as notificações das quais ele é o destinatário.
+  O sistema SHALL gravar no máximo uma notificação de prazo por estudante e atividade.
+Aplicada por: RF-31.
+
+RB-24 — Resultado da turma
+Descrição: No histórico e no boletim, o resultado de uma turma de período encerrado é Aprovado com média igual ou superior a 6,0 e frequência igual ou superior a 75%; caso contrário, Reprovado, com o motivo (OPEN-044).
+Cláusula EARS:
+  IF o período da turma estiver encerrado e a média for igual ou superior a 6,0 e a frequência for igual ou superior a 75%, THEN o sistema SHALL apresentar o resultado Aprovado.
+  IF o período estiver encerrado e a média for inferior a 6,0 ou a frequência inferior a 75%, THEN o sistema SHALL apresentar Reprovado por nota, por frequência ou por nota e frequência.
+  IF o período estiver encerrado e faltar média ou frequência, THEN o sistema SHALL apresentar Sem registro; IF o período estiver aberto, THEN Em curso.
+Aplicada por: RF-29.
+
 
 ## Resumo das regras
 
@@ -124,3 +161,4 @@ Aplicada por: RF-03, RF-16.
 - O sistema deve controlar acesso aos dados conforme a responsabilidade do usuário.
 - O sistema deve organizar disciplinas, turmas e estudantes por curso, cada curso com um coordenador.
 - O sistema deve acompanhar desempenho, frequência e prazos para gerar alertas e planos de recuperação.
+- O sistema deve organizar as turmas por período letivo, travar os períodos encerrados e registrar quem fez cada alteração.

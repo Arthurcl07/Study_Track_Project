@@ -1,5 +1,5 @@
 # Mapa ordenado de Specs — StudyTrack
-> Nota (2026-10-02): este mapa reflete a baseline de 2026-09-25. As SPEC-010 a SPEC-016, incluídas depois, estão resumidas no fim deste arquivo. Desde então o OPEN-006 foi fechado (ADR-004), o OPEN-007 foi fechado (visão do produto reescrita) e o UC-05 foi criado. Novas questões (OPEN-008 a OPEN-012) surgiram ao escrever as Specs completas. Ver `decisoes-em-aberto.md` e `specs.md`.
+> Nota (2026-10-02): este mapa reflete a baseline de 2026-09-25. As SPEC-010 a SPEC-022, incluídas depois, estão resumidas no fim deste arquivo. Desde então o OPEN-006 foi fechado (ADR-004), o OPEN-007 foi fechado (visão do produto reescrita) e o UC-05 foi criado. Novas questões (OPEN-008 a OPEN-012) surgiram ao escrever as Specs completas. Ver `decisoes-em-aberto.md` e `specs.md`.
 
 ## Escopo deste documento
 
@@ -250,6 +250,42 @@ Cada uma entrou por pedido de Arthur ou sugestão aprovada, com a decisão regis
 - **Objetivo:** todo perfil abre no próprio dashboard, com os números e gráficos do seu escopo; o administrador só vê contas e cursos.
 - **RF / RB:** RF-24, RF-25; RB-02, RB-03, RB-04, RB-09, RB-13.
 - **Dependências:** SPEC-006 a SPEC-009, SPEC-012, SPEC-014, SPEC-015. **OPEN:** OPEN-034, OPEN-035.
+
+### SPEC-017 — Período letivo
+
+- **Objetivo:** turmas organizadas por semestre; o administrador encerra e reabre; turma de período encerrado é somente leitura.
+- **RF / RB:** RF-26; RB-14 (ajuste), RB-20.
+- **Dependências:** SPEC-002, SPEC-009, SPEC-010, SPEC-015, SPEC-016. **OPEN:** OPEN-040.
+
+### SPEC-018 — Chamada por aula
+
+- **Objetivo:** o professor faz a chamada de cada aula; a frequência é calculada pelas presenças.
+- **RF / RB:** RF-07 (alterado), RF-27; RB-05, RB-10, RB-21.
+- **Dependências:** SPEC-003, SPEC-005, SPEC-017. **OPEN:** OPEN-041.
+
+### SPEC-019 — Auditoria
+
+- **Objetivo:** toda escrita registrada (quem, quando, antes e depois); coordenador vê as acadêmicas dos seus cursos, administrador as administrativas.
+- **RF / RB:** RF-28; RB-13, RB-22.
+- **Dependências:** SPEC-002 a SPEC-005, SPEC-008, SPEC-010, SPEC-015, SPEC-017, SPEC-018. **OPEN:** OPEN-039.
+
+### SPEC-020 — Boletim e histórico escolar
+
+- **Objetivo:** documentos prontos para imprimir ou salvar em PDF, com o resultado de cada disciplina.
+- **RF / RB:** RF-29; RB-02, RB-04, RB-24.
+- **Dependências:** SPEC-003, SPEC-004, SPEC-015, SPEC-017, SPEC-018. **OPEN:** OPEN-038, OPEN-044.
+
+### SPEC-021 — Importação de estudantes por planilha
+
+- **Objetivo:** cadastrar e matricular estudantes por CSV, com prévia e tudo ou nada.
+- **RF / RB:** RF-30; RB-15, RB-19, RB-20.
+- **Dependências:** SPEC-002, SPEC-011, SPEC-015, SPEC-017, SPEC-019. **OPEN:** OPEN-042.
+
+### SPEC-022 — Notificações
+
+- **Objetivo:** sino com notificações gravadas de Risco, nota, plano e prazo para estudante e professor.
+- **RF / RB:** RF-31; RB-23.
+- **Dependências:** SPEC-003, SPEC-004, SPEC-005, SPEC-008, SPEC-017. **OPEN:** OPEN-043.
 
 ## Questões em aberto transversais
 

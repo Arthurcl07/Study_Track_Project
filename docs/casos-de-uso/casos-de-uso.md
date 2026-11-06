@@ -36,6 +36,14 @@ flowchart LR
     Professor --> UC16
     Coordenador --> UC16
     Administrador --> UC16
+    Administrador --> UC17[UC-17 Gerenciar Períodos Letivos]
+    Coordenador --> UC18[UC-18 Consultar Auditoria]
+    Administrador --> UC18
+    Estudante --> UC19[UC-19 Emitir Boletim e Histórico]
+    Coordenador --> UC19
+    Coordenador --> UC20[UC-20 Importar Estudantes]
+    Estudante --> UC21[UC-21 Consultar Notificações]
+    Professor --> UC21
 
     UC3 -.include.-> REC[Recalcular Indicador Acadêmico]
     UC8 -.include.-> REC
