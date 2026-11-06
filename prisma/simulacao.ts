@@ -47,8 +47,9 @@ const PROFESSORES = [
   { nome: "Sílvia Couto", email: "silvia.couto@studytrack.test" },
 ];
 
-// Coordenação (OPEN-030): "teste" é Marina Alves (coordenador@), que coordena 2 cursos.
+// Coordenação (OPEN-030, OPEN-036): um coordenador diferente para cada curso; "teste" é Marina Alves (coordenador@).
 const COORDENADORES = {
+  otavio: { nome: "Otávio Campos", email: "otavio.campos@studytrack.test" },
   paula: { nome: "Paula Martins", email: "paula.martins@studytrack.test" },
   helena: { nome: "Helena Prado", email: "helena.prado@studytrack.test" },
   sergio: { nome: "Sérgio Bastos", email: "sergio.bastos@studytrack.test" },
@@ -58,7 +59,7 @@ const COORDENADORES = {
 // OPEN-036: 6 cursos. Cálculo I, Física I e Algoritmos estão em mais de um curso (cada curso com a própria turma).
 export const CURSOS = {
   ECO: { nome: "Engenharia da Computação", coordenador: "teste" },
-  CC: { nome: "Ciência da Computação", coordenador: "teste" },
+  CC: { nome: "Ciência da Computação", coordenador: "otavio" },
   ELE: { nome: "Engenharia Elétrica", coordenador: "paula" },
   SI: { nome: "Sistemas de Informação", coordenador: "helena" },
   PP: { nome: "Publicidade e Propaganda", coordenador: "sergio" },

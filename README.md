@@ -108,9 +108,10 @@ com 2 de 4 itens concluídos. Elisa Rocha fica em Risco sem plano, para demonstr
 A situação de cada um sai do cálculo do sistema (`recalcularIndicador`), não é gravada à mão.
 Roteiro de apresentação: `docs/roteiro-apresentacao.md`.
 
-**Instituição simulada** (`prisma/simulacao.ts`, dados fictícios, SPEC-015 / OPEN-036): 6 cursos — Engenharia da
-Computação e Ciência da Computação (Marina Alves), Engenharia Elétrica (Paula Martins), Sistemas de Informação
-(Helena Prado), Publicidade e Propaganda (Sérgio Bastos) e Administração (Beatriz Moura) —, 15 disciplinas (Cálculo I,
+**Instituição simulada** (`prisma/simulacao.ts`, dados fictícios, SPEC-015 / OPEN-036): 6 cursos, um coordenador para
+cada — Engenharia da Computação (Marina Alves), Ciência da Computação (Otávio Campos), Engenharia Elétrica (Paula
+Martins), Sistemas de Informação (Helena Prado), Publicidade e Propaganda (Sérgio Bastos) e Administração (Beatriz
+Moura) —, 15 disciplinas (Cálculo I,
 Física I, Algoritmos, Banco de Dados e Fundamentos de Marketing estão em mais de um curso, cada curso com a própria
 turma), 15 turmas, 8 professores e 70 estudantes, cada um num curso, com provas, notas, frequência, atividades com
 entregas no prazo, atrasadas, faltando e com prazo nos próximos dias, planos de recuperação e histórico de notas.
