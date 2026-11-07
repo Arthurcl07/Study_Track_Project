@@ -61,7 +61,7 @@ describe("SPEC-026 — correção de cadastros (integração)", () => {
     const admin = await entrar("Administrador");
     const conta = await criarUsuarioDeTeste("Professor");
     const outro = await criarUsuarioDeTeste("Professor");
-    const novoEmail = `editado-${randomUUID()}@studytrack-teste.test`;
+    const novoEmail = `editado-${randomUUID()}@vitest.studytrack.test`;
     const r = await editarContaApi(patch(`${API}/contas/${conta.id}`, { nome: "Nome Novo", email: novoEmail }, admin.token), parametros(conta.id));
     expect(r.status).toBe(200);
     expect(await prisma.usuario.findUnique({ where: { id: conta.id }, select: { nome: true, email: true } })).toEqual({ nome: "Nome Novo", email: novoEmail });

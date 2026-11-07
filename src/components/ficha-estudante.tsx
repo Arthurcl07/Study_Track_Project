@@ -5,6 +5,7 @@
 // resultado. O coordenador vê a ficha sem editar. Layout aprovado em docs/layout/prototipo.html#estudante-secretaria.
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type ReactNode } from "react";
+import { hojeEmBrasilia } from "@/domain/atividades";
 import { MOTIVOS_ABONO, ROTULO_MOTIVO_ABONO, ROTULO_SITUACAO_CURSO, SITUACOES_CURSO, efeitoNasMatriculas, type SituacaoCurso } from "@/domain/secretaria";
 import type { FichaConsultada } from "@/server/academico/secretaria";
 import { SeloSituacaoCurso } from "./lista-estudantes";
@@ -95,7 +96,7 @@ function SituacaoNoCurso({ ficha }: { ficha: FichaConsultada }) {
           {SITUACOES_CURSO.filter((s) => s !== ficha.situacaoCurso).map((s) => <option key={s} value={s}>{ROTULO_SITUACAO_CURSO[s]}</option>)}
         </select>
       </Campo>
-      <Campo nome="data" rotulo="Data" tipo="date" valor={new Date().toISOString().slice(0, 10)} erro={e.data} />
+      <Campo nome="data" rotulo="Data" tipo="date" valor={hojeEmBrasilia()} erro={e.data} />
       <Campo nome="motivo" rotulo="Motivo" erro={e.motivo} />
       {efeito && ficha.matriculasCursandoAbertas > 0 && (
         <Mensagem tipo="erro">

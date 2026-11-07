@@ -55,6 +55,7 @@ Legenda de status da Spec:
 | SPEC-023 a SPEC-025 marcadas como `implementadas`: 290 testes e verificação em `docs/verificacao/SPEC-023-025.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
 | SPEC-026 a SPEC-035 (Nível 1: secretaria) incluídas a pedido de Arthur, com OPEN-048 a OPEN-057 fechadas (decisão humana, Arthur); RF-35 a RF-43, RB-27 a RB-33; RB-01, RB-13, RB-15, RB-19, RB-20, RB-21, RB-24, RB-25, RF-27 e RF-29 ajustados | `especificada` | 2026-11-06 |
 | SPEC-026 a SPEC-035 e layout aprovados (Arthur) | `aprovada` | 2026-11-06 |
+| SPEC-026 a SPEC-035 marcadas como `implementadas`: 353 testes e verificação em `docs/verificacao/SPEC-026-035.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
 
 ---
 
@@ -3430,7 +3431,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-026 — Correção de cadastros
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -3565,7 +3566,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-027 — Redefinição de senha por pedido
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -3690,7 +3691,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-028 — Várias aulas no mesmo dia
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -3803,7 +3804,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-029 — Prova substitutiva e exame final
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -3926,7 +3927,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-030 — Virada de semestre
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -4040,7 +4041,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-031 — Situação do estudante no curso
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -4114,7 +4115,7 @@ SPEC-015, SPEC-017, SPEC-019, SPEC-020, SPEC-033.
 
 - Regras puras em `src/domain/situacao-curso.ts` (transições e efeito nas matrículas).
 - Filtro único `MATRICULA_CURSANDO` em `src/server/dados/` usado por todas as consultas de trabalho (chamada, notas, entregas, planos, dashboards, alertas, relatórios, comunicados, importação).
-- Migração: enum e coluna em `Matricula` (padrão Cursando).
+- Migração: enum e coluna em `Matricula` (padrão Cursando). **Ajustado na implementação (2026-11-06):** `IndicadorAcademico` e `Frequencia` ganharam chave estrangeira para a `Matricula` (migração `nivel_1_vinculos_matricula`), para os dashboards filtrarem a matrícula cursando na própria query.
 
 ## 9. Contratos necessários
 
@@ -4160,7 +4161,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-032 — Abono de faltas
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -4279,7 +4280,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-033 — Ficha do estudante e dados da instituição
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -4355,7 +4356,7 @@ Novas entidades **FichaEstudante** (1:1 com o estudante) e **Instituicao** (regi
 
 - Validações puras em `src/domain/ficha.ts` (CPF, CNPJ, número de matrícula, logotipo).
 - Casos de uso em `src/server/academico/fichas.ts` e `src/server/academico/instituicao.ts`; toda criação de estudante cria a ficha na mesma transação.
-- Migração: tabelas, backfill das fichas dos estudantes existentes e sequência por ano.
+- Migração: tabelas, backfill das fichas dos estudantes existentes e sequência por ano. **Ajustado na implementação (2026-11-06):** a ficha nasce por um gatilho do banco na inserção do estudante (mesma regra de `numeroDeMatricula`), para valer em todo caminho de cadastro.
 
 ## 9. Contratos necessários
 
@@ -4401,7 +4402,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-034 — Busca e paginação
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -4464,12 +4465,12 @@ SPEC-010, SPEC-013, SPEC-022, SPEC-033.
 
 ## 7. Modelo de domínio envolvido
 
-Sem entidade nova. Índice para a busca sem acento (extensão `unaccent` não é exigida: a busca usa `mode: insensitive` e uma coluna normalizada do nome).
+Sem entidade nova. **Ajustado na implementação (2026-11-06):** a busca sem acento compara `translate(lower(nome))` na própria consulta, sem coluna nova (a coluna `nomeBusca` prevista não foi criada); o resultado para quem usa é o mesmo.
 
 ## 8. Impacto arquitetural
 
 - `paginar` e `normalizarBusca` puros em `src/domain/paginacao.ts`; componente `Paginacao` e `CampoBusca` em `src/components`.
-- Migração: coluna `nomeBusca` (nome sem acento, minúsculo) em `Usuario`, preenchida na criação e na edição, com índice.
+- Sem migração: a busca fica em `src/server/dados/busca.ts` (nome sem acento por `translate`, e-mail e número de matrícula).
 
 ## 9. Contratos necessários
 
@@ -4514,7 +4515,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-035 — Secretaria acadêmica no perfil Administrador
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 

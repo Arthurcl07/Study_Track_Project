@@ -135,7 +135,9 @@ describe("SPEC-019 — consulta e escopo (integração)", () => {
     expect(deA.registros[0].descricao).toContain("7,0");
   });
 
-  it("AC-019-04 / INV-019-04: administrador vê contas e períodos, nenhum registro acadêmico", async () => {
+  // SPEC-035 (INV-035-02, 2026-11-06): o administrador vê também os registros acadêmicos feitos pela secretaria (grupo
+  // Secretaria), nunca os de professores e coordenadores.
+  it("AC-019-04 / INV-019-04 / INV-035-02: administrador vê contas e períodos e nenhum registro acadêmico de professor ou coordenador", async () => {
     const { professor, estudante, turma, avaliacao } = await cenario();
     await registrarNotaApi(requisicaoJson(`${API}/notas`, { turmaId: turma.id, avaliacaoId: avaliacao.id, estudanteId: estudante.usuario.id, valor: 7 }, professor.token));
     const admin = await entrar("Administrador");
@@ -145,7 +147,9 @@ describe("SPEC-019 — consulta e escopo (integração)", () => {
     expect(categoria).toBe("Administrativa");
     expect(registros.some((r: { descricao: string }) => r.descricao.startsWith(periodo.nome))).toBe(true);
     const todos = await auditoria(admin.token);
-    expect(todos.registros.every((r: { acao: string }) => (ACOES as Record<string, { categoria: string }>)[r.acao].categoria === "Administrativa")).toBe(true);
+    const acoes = ACOES as Record<string, { categoria: string; grupo: string }>;
+    expect(todos.registros.every((r: { acao: string }) => acoes[r.acao].categoria === "Administrativa" || acoes[r.acao].grupo === "Secretaria")).toBe(true);
+    expect(todos.registros.some((r: { acao: string }) => r.acao.startsWith("nota."))).toBe(false);
   });
 
   it("AC-019-07: professor e estudante não consultam a auditoria", async () => {
