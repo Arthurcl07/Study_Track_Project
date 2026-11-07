@@ -73,14 +73,17 @@ export function turmasParaLancamento(professorId: string) {
       periodo: true,
       disciplina: { select: { nome: true } },
       avaliacoes: {
-        select: { id: true, nome: true, peso: true, data: true, notas: { select: { id: true, estudanteId: true, valor: true } } },
+        // SPEC-029: o tipo (substitutiva e exame têm regras próprias).
+        select: { id: true, nome: true, peso: true, data: true, tipo: true, notas: { select: { id: true, estudanteId: true, valor: true } } },
         orderBy: [{ data: "asc" }, { nome: "asc" }],
       },
       matriculas: {
         where: MATRICULA_CURSANDO,
-        select: { estudante: { select: { id: true, nome: true } } },
+        // SPEC-033: número de matrícula; SPEC-029: média e frequência para saber quem está em exame.
+        select: { estudante: { select: { id: true, nome: true, ficha: { select: { numeroMatricula: true } } } } },
         orderBy: { estudante: { nome: "asc" } },
       },
+      indicadores: { select: { estudanteId: true, media: true, frequenciaAtual: true } },
     },
     orderBy: [{ periodo: "desc" }, { nome: "asc" }],
   });

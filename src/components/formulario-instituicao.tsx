@@ -61,7 +61,6 @@ export function FormularioInstituicao({ instituicao }: { instituicao: Instituica
   }
 
   const quadroLogo = logotipo ? (
-    // eslint-disable-next-line @next/next/no-img-element -- prévia de data URL local.
     <img src={logotipo} alt="Logotipo" className="h-14 w-14 rounded-lg border border-traco object-contain" />
   ) : (
     <span className="flex h-14 w-14 items-center justify-center rounded-lg border border-dashed border-traco text-xs text-mudo">sem logo</span>

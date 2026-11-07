@@ -33,9 +33,10 @@ const RESUMO_TURMA = {
   curso: { select: { id: true, nome: true } },
 } satisfies Prisma.TurmaSelect;
 
+// SPEC-031: a situação da matrícula (Cursando, Trancada, Cancelada); SPEC-033: o número de matrícula.
 const ESTUDANTES_DA_TURMA = {
   matriculas: {
-    select: { estudante: { select: { id: true, nome: true, email: true } } },
+    select: { situacao: true, estudante: { select: { id: true, nome: true, email: true, ficha: { select: { numeroMatricula: true } } } } },
     orderBy: { estudante: { nome: "asc" } },
   },
 } satisfies Prisma.TurmaSelect;
@@ -45,16 +46,19 @@ function selecaoParaPerfil(sessao: Sessao) {
   return sessao.perfil === "Estudante" ? RESUMO_TURMA : { ...RESUMO_TURMA, ...ESTUDANTES_DA_TURMA };
 }
 
+export type EstudanteDaTurma = { id: string; nome: string; email: string; matricula: string | null; situacao: "Cursando" | "Trancada" | "Cancelada" };
 type TurmaConsultada = Prisma.TurmaGetPayload<{ select: typeof RESUMO_TURMA }> & {
-  estudantes?: { id: string; nome: string; email: string }[];
+  estudantes?: EstudanteDaTurma[];
 };
 
 function formatarTurma(turma: Record<string, unknown>): TurmaConsultada {
   const { matriculas, ...resto } = turma as Record<string, unknown> & {
-    matriculas?: { estudante: { id: string; nome: string; email: string } }[];
+    matriculas?: { situacao: EstudanteDaTurma["situacao"]; estudante: { id: string; nome: string; email: string; ficha: { numeroMatricula: string } | null } }[];
   };
   const base = resto as unknown as TurmaConsultada;
-  return matriculas ? { ...base, estudantes: matriculas.map((m) => m.estudante) } : base;
+  return matriculas
+    ? { ...base, estudantes: matriculas.map(({ situacao, estudante: { ficha, ...e } }) => ({ ...e, matricula: ficha?.numeroMatricula ?? null, situacao })) }
+    : base;
 }
 
 // SPEC-017: recorte opcional (ex.: períodos abertos ou um período), somado ao escopo.

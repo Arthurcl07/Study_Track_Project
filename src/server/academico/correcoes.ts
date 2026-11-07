@@ -161,6 +161,12 @@ export async function excluirTurma(turmaId: string, coordenadorId: string) {
   );
 }
 
+// Para a tela: o motivo pelo qual a turma não pode ser excluída (null = pode).
+export async function motivoParaExcluirTurmaDoCoordenador(coordenadorId: string, turmaId: string) {
+  const turma = await turmaDoCoordenador(coordenadorId, turmaId);
+  return turma ? motivoParaNaoExcluirTurma(turma._count) : "Turma não encontrada.";
+}
+
 // AC-026-08 / AC-026-09: tirar da turma só quem não tem nota, presença, entrega nem plano nela.
 export async function tirarDaTurma(turmaId: string, estudanteId: string, coordenadorId: string) {
   const matricula = await prisma.matricula.findFirst({

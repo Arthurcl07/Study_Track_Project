@@ -12,7 +12,8 @@ export const deData = (data: Date) => data.toISOString().slice(0, 10);
 // SPEC-031 (RB-30): só matrículas cursando nas listas de trabalho.
 const ESTUDANTES_DA_TURMA = {
   where: MATRICULA_CURSANDO,
-  select: { estudante: { select: { id: true, nome: true } } },
+  // SPEC-033 (RB-33): o professor vê nome e número de matrícula.
+  select: { estudante: { select: { id: true, nome: true, ficha: { select: { numeroMatricula: true } } } } },
   orderBy: { estudante: { nome: "asc" } },
 } as const;
 
@@ -47,8 +48,8 @@ export function turmasParaFrequencia(professorId: string) {
       matriculas: ESTUDANTES_DA_TURMA,
       frequencias: { select: { estudanteId: true, percentual: true } },
       indicadores: { select: { estudanteId: true, situacao: true } },
-      // SPEC-018: aulas com as presenças, para a tela de chamada.
-      aulas: { select: { data: true, presencas: { select: { estudanteId: true, presente: true } } }, orderBy: { data: "desc" } },
+      // SPEC-018: aulas com as presenças, para a tela de chamada. SPEC-028: número da aula na data.
+      aulas: { select: { id: true, data: true, numero: true, presencas: { select: { estudanteId: true, presente: true } } }, orderBy: [{ data: "desc" }, { numero: "asc" }] },
     },
     orderBy: [{ periodo: "desc" }, { nome: "asc" }],
   });

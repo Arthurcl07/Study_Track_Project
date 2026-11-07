@@ -50,7 +50,6 @@ export function FolhaDocumento({
           {instituicao ? (
             <div className="flex min-w-0 items-center gap-3">
               {instituicao.logotipo && (
-                // eslint-disable-next-line @next/next/no-img-element -- data URL guardada no banco (até 200 KB).
                 <img src={instituicao.logotipo} alt={`Logotipo de ${instituicao.nome}`} className="h-14 w-14 shrink-0 rounded-lg object-contain" />
               )}
               <div className="min-w-0">

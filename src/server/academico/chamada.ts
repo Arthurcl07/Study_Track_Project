@@ -45,7 +45,10 @@ export async function registrarChamada(entrada: Record<string, unknown>, profess
         autorId: professorId,
         acao: gravada.corrigida ? "chamada.corrigida" : "chamada.registrada",
         ...contexto,
-        descricao: `${contexto.rotulo} · ${dataBR(data)}${aulas.length > 1 ? ` (${aulas.length} aulas)` : ""}: ${presentesNa1} presente(s) na 1ª aula; ${faltas.length} estudante(s) com falta${lista}`,
+        descricao:
+          aulas.length === 1
+            ? `${contexto.rotulo} · ${dataBR(data)}: ${presentesNa1} presente(s), ${faltas.length} falta(s)${lista}`
+            : `${contexto.rotulo} · ${dataBR(data)} (${aulas.length} aulas): ${presentesNa1} presente(s) na 1ª aula; ${faltas.length} estudante(s) com falta${lista}`,
         depois: { data, aulas },
       });
       const indicadores = [];
