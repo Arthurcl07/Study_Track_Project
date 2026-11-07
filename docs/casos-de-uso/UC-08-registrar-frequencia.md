@@ -18,3 +18,5 @@
 
 **Pós-condições**: frequência e indicador atualizados; o histórico acadêmico mostra o valor vigente com a data da última atualização (OPEN-011).
 **Regras aplicadas**: RB-03, RB-05, RB-10.
+
+**Atualização (2026-11-06, SPEC-028 e SPEC-032):** a chamada de uma data registra de 1 a 4 aulas, cada uma com a própria presença; a falta abonada pela secretaria aparece como "Abonada" e conta como presença (RB-21, RB-31).

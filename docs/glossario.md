@@ -34,3 +34,20 @@
   
 - **Progresso do Plano**: percentual de conclusão das atividades previstas em um plano de recuperação.
 
+- **Secretaria acadêmica**: papel do perfil Administrador desde 2026-11-06 (OPEN-057): ficha e situação do estudante, abono de faltas, pedidos de senha, virada de semestre, dados da instituição e emissão de documentos, sem lançar dados acadêmicos.
+
+- **Número de matrícula**: identificador do estudante na instituição (ano + sequência de 4 dígitos), único e imutável (RB-33).
+
+- **Situação no curso**: Ativo, Trancado, Transferido, Cancelado ou Concluído; não confundir com a situação acadêmica (Normal/Atenção/Risco) da turma (RB-30).
+
+- **Matrícula trancada / cancelada**: matrícula numa turma que saiu das listas de trabalho por trancamento, transferência ou cancelamento, mas continua no histórico (RB-30).
+
+- **Abono de faltas**: registro da secretaria que faz a falta numa aula do intervalo contar como presença (RB-31).
+
+- **Prova substitutiva**: avaliação cuja nota troca a menor prova da turma quando isso aumenta a média (RB-28).
+
+- **Exame final**: avaliação de quem terminou com média menor que 6,0 e frequência de pelo menos 75%; nota final = (média + exame) ÷ 2, aprovado com 5,0 (RB-29).
+
+- **Virada de semestre**: cópia das turmas de um período para o período seguinte (RF-38).
+
+- **Pedido de redefinição de senha**: pedido feito em "Esqueci minha senha" e aprovado pela secretaria, que entrega uma senha provisória (RB-27).

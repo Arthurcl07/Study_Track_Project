@@ -63,5 +63,6 @@ Em todas as telas autenticadas: menu lateral do perfil, nome e perfil do usuári
 | Telas das SPEC-015 e SPEC-016 — `#admin-cursos`, `#admin-contas-curso`, `#coordenador-grade`, `#coordenador-turmas-curso`, `#dash-estudante`, `#dash-professor`, `#dash-coordenador`, `#dash-admin` | `aprovado` | Arthur | 2026-10-22 |
 | Telas das SPEC-017 a SPEC-022 — `#admin-periodos`, `#coord-turmas-periodo`, `#prof-chamada`, `#coord-auditoria`, `#admin-auditoria`, `#est-documentos`, `#doc-boletim`, `#doc-historico`, `#coord-importacao`, `#coord-importacao-ok`, `#notificacoes` | `aprovado` | Luiz | 2026-11-05 |
 | Telas das SPEC-023 a SPEC-025 — `#est-simulador`, `#prof-turma-simulador`, `#coord-comparativo`, `#est-documentos-semestres`, `#comunicados-estudante`, `#comunicados-publicar` | `aprovado` | Luiz | 2026-11-06 |
+| Telas das SPEC-026 a SPEC-035 (Nível 1: secretaria) — `#correcao-avaliacao`, `#avaliacao-tipos`, `#correcao-turma`, `#correcao-conta`, `#senha-esqueci`, `#senha-pedidos`, `#chamada-aulas`, `#boletim-exame`, `#virada-semestre`, `#estudantes-lista`, `#estudante-secretaria`, `#instituicao`, `#dashboard-secretaria`; link "Esqueci minha senha" em `#login` | `aguardando aprovação` | — | — |
 
 Ao aprovar: preencher esta tabela, a seção "Telas e evidência de layout" de cada Spec em `specs.md` e o campo "Aprovação humana" de `identidade-visual.md`.

@@ -97,8 +97,8 @@
 - WHEN um administrador encerra um período letivo, o sistema SHALL tornar somente leitura todas as turmas desse período, até que ele seja reaberto.
 - WHEN um coordenador cadastra uma turma, o sistema SHALL vinculá-la a exatamente 1 período letivo aberto.
 
-## RF-27 — Chamada por aula (incluído em 2026-11-05, OPEN-041; substitui o lançamento do percentual do RF-07)
-- WHEN um professor registra a chamada de uma aula de uma turma que leciona, o sistema SHALL gravar a presença ou a falta de cada estudante matriculado e recalcular a frequência e o indicador acadêmico de cada um.
+## RF-27 — Chamada por aula (incluído em 2026-11-05, OPEN-041; substitui o lançamento do percentual do RF-07; de 1 a 4 aulas na mesma data desde 2026-11-06, OPEN-050)
+- WHEN um professor registra a chamada de uma ou mais aulas (até 4) de uma data numa turma que leciona, o sistema SHALL gravar a presença ou a falta de cada estudante matriculado e recalcular a frequência e o indicador acadêmico de cada um.
 - WHEN um professor corrige a chamada de uma aula já registrada, o sistema SHALL substituir as presenças dessa aula e recalcular a frequência e o indicador.
 
 ## RF-28 — Auditoria (incluído em 2026-11-05, OPEN-039)
@@ -106,8 +106,8 @@
 - WHEN um coordenador consulta a auditoria, o sistema SHALL apresentar só as ações acadêmicas dos cursos que ele coordena; WHEN um administrador consulta, só as ações de contas, cursos e períodos.
 
 ## RF-29 — Boletim e histórico escolar (incluído em 2026-11-05, OPEN-038, OPEN-044)
-- WHEN um estudante ou um coordenador solicita o boletim de um período, o sistema SHALL apresentar um documento pronto para impressão e PDF com as turmas do estudante no período, as notas, a média, a frequência, a situação e o resultado.
-- WHEN um estudante ou um coordenador solicita o histórico escolar, o sistema SHALL apresentar o documento com todas as turmas do estudante, agrupadas por período, com carga horária, média, frequência e resultado.
+- WHEN um estudante, um coordenador ou o administrador (secretaria, desde 2026-11-06, OPEN-057) solicita o boletim de um período, o sistema SHALL apresentar um documento pronto para impressão e PDF com as turmas do estudante no período, as notas, a média, a frequência, a situação e o resultado.
+- WHEN um estudante, um coordenador ou o administrador solicita o histórico escolar, o sistema SHALL apresentar o documento com todas as turmas do estudante, agrupadas por período, com carga horária, média, frequência e resultado.
 
 ## RF-30 — Importação de estudantes por planilha (incluído em 2026-11-05, OPEN-042)
 - WHEN um coordenador envia uma planilha CSV de estudantes para uma turma de um curso que coordena, o sistema SHALL mostrar a prévia de cada linha, com o que será feito e os erros encontrados, sem gravar nada.
@@ -128,6 +128,39 @@
 ## RF-34 — Mural de comunicados (incluído em 2026-11-06, OPEN-047)
 - WHEN um professor publica um comunicado para uma turma que leciona, ou um coordenador para uma turma ou para todas as turmas de um curso que coordena, o sistema SHALL gravar o comunicado e notificar os estudantes alcançados (e os professores das turmas, quando o autor for o coordenador).
 - WHEN o autor apaga o próprio comunicado, o sistema SHALL retirá-lo do mural e registrar a ação na auditoria.
+
+## RF-35 — Correção de cadastros (incluído em 2026-11-06, OPEN-048)
+- WHEN o administrador edita o nome ou o e-mail de uma conta, o coordenador edita uma disciplina ou turma dos cursos que coordena, ou o professor edita uma avaliação, atividade ou aula de uma turma que leciona, o sistema SHALL gravar a alteração, recalcular o que depender dela e registrá-la na auditoria.
+- WHEN um desses usuários exclui um cadastro feito por engano que ainda não tem registro dependente, ou tira um estudante de uma turma, o sistema SHALL excluí-lo e registrar a exclusão na auditoria; IF houver registro dependente, THEN SHALL recusar e dizer o motivo.
+
+## RF-36 — Redefinição de senha por pedido (incluído em 2026-11-06, OPEN-049)
+- WHEN uma pessoa informa o e-mail em "Esqueci minha senha", o sistema SHALL registrar um pedido de redefinição para a conta ativa desse e-mail, se existir, e responder sempre com a mesma mensagem.
+- WHEN o administrador aprova um pedido, o sistema SHALL gerar uma senha provisória aleatória, mostrá-la uma única vez ao administrador e exigir que a pessoa defina uma senha nova no primeiro acesso; WHEN recusa, SHALL encerrar o pedido sem mudar a senha.
+
+## RF-37 — Prova substitutiva e exame final (incluído em 2026-11-06, OPEN-051)
+- WHEN o professor cadastra uma avaliação, o sistema SHALL registrar o tipo: Prova, Trabalho, Substitutiva ou Exame final.
+- WHEN o estudante tem nota na substitutiva, o sistema SHALL calcular a média trocando a menor nota entre as provas pela da substitutiva, se isso aumentar a média.
+- WHEN o professor lança a nota do exame final de um estudante com média menor que 6,0 e frequência de pelo menos 75%, o sistema SHALL calcular a nota final e usá-la no resultado do boletim e do histórico.
+
+## RF-38 — Virada de semestre (incluído em 2026-11-06, OPEN-052)
+- WHEN o administrador escolhe as turmas de um período e um período de destino aberto, o sistema SHALL criar no destino uma cópia de cada turma (nome, disciplina, curso e professor) e, quando pedido, matricular nela os estudantes ativos da turma de origem, numa única transação.
+
+## RF-39 — Situação do estudante no curso (incluído em 2026-11-06, OPEN-053)
+- WHEN o administrador muda a situação de um estudante no curso para Trancado, Transferido, Cancelado, Concluído ou Ativo, o sistema SHALL gravar a situação com a data e o motivo e, ao trancar, transferir ou cancelar, encerrar as matrículas em turmas de período aberto.
+- WHEN o administrador muda o curso de um estudante ativo sem matrícula em turma de período aberto, o sistema SHALL gravar o novo curso e manter o histórico anterior.
+
+## RF-40 — Abono de faltas (incluído em 2026-11-06, OPEN-054)
+- WHEN o administrador registra ou exclui um abono de faltas para um estudante num intervalo de datas, com o motivo, o sistema SHALL contar como presença as faltas do estudante nas aulas desse intervalo (ou deixar de contar, ao excluir) e recalcular a frequência e o indicador das turmas afetadas.
+
+## RF-41 — Ficha do estudante (incluído em 2026-11-06, OPEN-055)
+- WHEN um estudante é cadastrado, o sistema SHALL atribuir a ele um número de matrícula único.
+- WHEN o administrador edita a ficha de um estudante (CPF, data de nascimento, telefone e responsável), o sistema SHALL validar e gravar os dados; o coordenador do curso e o próprio estudante SHALL poder consultá-la.
+
+## RF-42 — Dados da instituição (incluído em 2026-11-06, OPEN-055)
+- WHEN o administrador grava os dados da instituição (nome, CNPJ, endereço, contato, responsável pela secretaria e logotipo), o sistema SHALL usá-los no cabeçalho e na assinatura do boletim e do histórico.
+
+## RF-43 — Busca e paginação (incluído em 2026-11-06, OPEN-056)
+- WHEN um usuário consulta uma lista de contas, estudantes, histórico de notas ou notificações, o sistema SHALL apresentá-la em páginas de 25 itens e permitir buscar por nome, e-mail ou número de matrícula.
 
 ---
 

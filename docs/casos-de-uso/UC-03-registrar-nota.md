@@ -19,3 +19,5 @@
 
 **Pós-condições**: nota registrada; média e indicador atualizados.
 **Regras aplicadas**: RB-06, RB-07, RB-10
+
+**Atualização (2026-11-06, SPEC-029):** a avaliação tem tipo (Prova, Trabalho, Substitutiva ou Exame final); a substitutiva troca a menor prova (RB-28) e a nota de exame só é aceita para estudante elegível (RB-29).
