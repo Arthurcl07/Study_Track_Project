@@ -53,6 +53,8 @@ Legenda de status da Spec:
 | SPEC-023 a SPEC-025 incluídas a pedido do grupo (Luiz), com OPEN-045 a OPEN-047 fechadas (decisão humana, Luiz); RF-32 a RF-34, RB-25 e RB-26; texto das Specs e layout aguardando aprovação | `especificada` | 2026-11-06 |
 | SPEC-023 a SPEC-025 e layout aprovados (Luiz) | `aprovada` | 2026-11-06 |
 | SPEC-023 a SPEC-025 marcadas como `implementadas`: 290 testes e verificação em `docs/verificacao/SPEC-023-025.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
+| SPEC-026 a SPEC-035 (Nível 1: secretaria) incluídas a pedido de Arthur, com OPEN-048 a OPEN-057 fechadas (decisão humana, Arthur); RF-35 a RF-43, RB-27 a RB-33; RB-01, RB-13, RB-15, RB-19, RB-20, RB-21, RB-24, RB-25, RF-27 e RF-29 ajustados | `especificada` | 2026-11-06 |
+| SPEC-026 a SPEC-035 e layout aprovados (Arthur) | `aprovada` | 2026-11-06 |
 
 ---
 
@@ -3428,7 +3430,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-026 — Correção de cadastros
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -3468,13 +3470,13 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Notas e avaliações — editar e excluir avaliação | [prototipo.html#correcao-avaliacao](layout/prototipo.html#correcao-avaliacao) | [ ] | [ ] | — | — |
-| Turma — editar, tirar estudante e excluir | [prototipo.html#correcao-turma](layout/prototipo.html#correcao-turma) | [ ] | [ ] | — | — |
-| Contas — editar conta | [prototipo.html#correcao-conta](layout/prototipo.html#correcao-conta) | [ ] | [ ] | — | — |
+| Notas e avaliações — editar e excluir avaliação | [prototipo.html#correcao-avaliacao](layout/prototipo.html#correcao-avaliacao) | [x] | [x] | Arthur | 2026-11-06 |
+| Turma — editar, tirar estudante e excluir | [prototipo.html#correcao-turma](layout/prototipo.html#correcao-turma) | [x] | [x] | Arthur | 2026-11-06 |
+| Contas — editar conta | [prototipo.html#correcao-conta](layout/prototipo.html#correcao-conta) | [x] | [x] | Arthur | 2026-11-06 |
 
 ## 4. Dependências
 
@@ -3563,7 +3565,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-027 — Redefinição de senha por pedido
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -3601,12 +3603,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Esqueci minha senha | [prototipo.html#senha-esqueci](layout/prototipo.html#senha-esqueci) | [ ] | [ ] | — | — |
-| Pedidos de senha (administrador) | [prototipo.html#senha-pedidos](layout/prototipo.html#senha-pedidos) | [ ] | [ ] | — | — |
+| Esqueci minha senha | [prototipo.html#senha-esqueci](layout/prototipo.html#senha-esqueci) | [x] | [x] | Arthur | 2026-11-06 |
+| Pedidos de senha (administrador) | [prototipo.html#senha-pedidos](layout/prototipo.html#senha-pedidos) | [x] | [x] | Arthur | 2026-11-06 |
 
 ## 4. Dependências
 
@@ -3688,7 +3690,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-028 — Várias aulas no mesmo dia
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -3725,11 +3727,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Chamada com 2 aulas e falta abonada | [prototipo.html#chamada-aulas](layout/prototipo.html#chamada-aulas) | [ ] | [ ] | — | — |
+| Chamada com 2 aulas e falta abonada | [prototipo.html#chamada-aulas](layout/prototipo.html#chamada-aulas) | [x] | [x] | Arthur | 2026-11-06 |
 
 ## 4. Dependências
 
@@ -3801,7 +3803,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-029 — Prova substitutiva e exame final
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -3841,12 +3843,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Avaliações com tipo e lançamento do exame | [prototipo.html#avaliacao-tipos](layout/prototipo.html#avaliacao-tipos) | [ ] | [ ] | — | — |
-| Boletim com exame e dados da instituição | [prototipo.html#boletim-exame](layout/prototipo.html#boletim-exame) | [ ] | [ ] | — | — |
+| Avaliações com tipo e lançamento do exame | [prototipo.html#avaliacao-tipos](layout/prototipo.html#avaliacao-tipos) | [x] | [x] | Arthur | 2026-11-06 |
+| Boletim com exame e dados da instituição | [prototipo.html#boletim-exame](layout/prototipo.html#boletim-exame) | [x] | [x] | Arthur | 2026-11-06 |
 
 ## 4. Dependências
 
@@ -3924,7 +3926,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-030 — Virada de semestre
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -3960,11 +3962,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Virada de semestre | [prototipo.html#virada-semestre](layout/prototipo.html#virada-semestre) | [ ] | [ ] | — | — |
+| Virada de semestre | [prototipo.html#virada-semestre](layout/prototipo.html#virada-semestre) | [x] | [x] | Arthur | 2026-11-06 |
 
 ## 4. Dependências
 
@@ -4038,7 +4040,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-031 — Situação do estudante no curso
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -4077,11 +4079,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Ficha do estudante — situação, abonos e documentos | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [ ] | [ ] | — | — |
+| Ficha do estudante — situação, abonos e documentos | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [x] | [x] | Arthur | 2026-11-06 |
 
 ## 4. Dependências
 
@@ -4158,7 +4160,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-032 — Abono de faltas
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -4196,12 +4198,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Ficha do estudante — abonos | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [ ] | [ ] | — | — |
-| Chamada com falta abonada | [prototipo.html#chamada-aulas](layout/prototipo.html#chamada-aulas) | [ ] | [ ] | — | — |
+| Ficha do estudante — abonos | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [x] | [x] | Arthur | 2026-11-06 |
+| Chamada com falta abonada | [prototipo.html#chamada-aulas](layout/prototipo.html#chamada-aulas) | [x] | [x] | Arthur | 2026-11-06 |
 
 ## 4. Dependências
 
@@ -4277,7 +4279,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-033 — Ficha do estudante e dados da instituição
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -4316,13 +4318,13 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Ficha do estudante | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [ ] | [ ] | — | — |
-| Dados da instituição | [prototipo.html#instituicao](layout/prototipo.html#instituicao) | [ ] | [ ] | — | — |
-| Boletim com os dados da instituição | [prototipo.html#boletim-exame](layout/prototipo.html#boletim-exame) | [ ] | [ ] | — | — |
+| Ficha do estudante | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [x] | [x] | Arthur | 2026-11-06 |
+| Dados da instituição | [prototipo.html#instituicao](layout/prototipo.html#instituicao) | [x] | [x] | Arthur | 2026-11-06 |
+| Boletim com os dados da instituição | [prototipo.html#boletim-exame](layout/prototipo.html#boletim-exame) | [x] | [x] | Arthur | 2026-11-06 |
 
 ## 4. Dependências
 
@@ -4399,7 +4401,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-034 — Busca e paginação
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -4435,11 +4437,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Estudantes com busca e paginação | [prototipo.html#estudantes-lista](layout/prototipo.html#estudantes-lista) | [ ] | [ ] | — | — |
+| Estudantes com busca e paginação | [prototipo.html#estudantes-lista](layout/prototipo.html#estudantes-lista) | [x] | [x] | Arthur | 2026-11-06 |
 
 ## 4. Dependências
 
@@ -4512,7 +4514,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-035 — Secretaria acadêmica no perfil Administrador
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -4551,13 +4553,13 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Dashboard da secretaria (administrador) | [prototipo.html#dashboard-secretaria](layout/prototipo.html#dashboard-secretaria) | [ ] | [ ] | — | — |
-| Estudantes (lista) | [prototipo.html#estudantes-lista](layout/prototipo.html#estudantes-lista) | [ ] | [ ] | — | — |
-| Ficha do estudante | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [ ] | [ ] | — | — |
+| Dashboard da secretaria (administrador) | [prototipo.html#dashboard-secretaria](layout/prototipo.html#dashboard-secretaria) | [x] | [x] | Arthur | 2026-11-06 |
+| Estudantes (lista) | [prototipo.html#estudantes-lista](layout/prototipo.html#estudantes-lista) | [x] | [x] | Arthur | 2026-11-06 |
+| Ficha do estudante | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [x] | [x] | Arthur | 2026-11-06 |
 
 ## 4. Dependências
 

@@ -13,6 +13,11 @@ export const ACOES = {
   "periodo.criado": { rotulo: "Período criado", categoria: "Administrativa", grupo: "Períodos" },
   "periodo.encerrado": { rotulo: "Período encerrado", categoria: "Administrativa", grupo: "Períodos" },
   "periodo.reaberto": { rotulo: "Período reaberto", categoria: "Administrativa", grupo: "Períodos" },
+  // SPEC-026, SPEC-027 e SPEC-033 (Nível 1).
+  "conta.editada": { rotulo: "Conta editada", categoria: "Administrativa", grupo: "Contas" },
+  "senha.aprovada": { rotulo: "Pedido de senha aprovado", categoria: "Administrativa", grupo: "Pedidos de senha" },
+  "senha.recusada": { rotulo: "Pedido de senha recusado", categoria: "Administrativa", grupo: "Pedidos de senha" },
+  "instituicao.alterada": { rotulo: "Dados da instituição alterados", categoria: "Administrativa", grupo: "Instituição" },
   // Acadêmicas: só o coordenador do curso vê (INV-019-03).
   "disciplina.criada": { rotulo: "Disciplina criada", categoria: "Academica", grupo: "Disciplinas e turmas" },
   "grade.adicionada": { rotulo: "Disciplina adicionada à grade", categoria: "Academica", grupo: "Disciplinas e turmas" },
@@ -35,6 +40,25 @@ export const ACOES = {
   // SPEC-025: comunicados publicados e apagados.
   "comunicado.publicado": { rotulo: "Comunicado publicado", categoria: "Academica", grupo: "Comunicados" },
   "comunicado.apagado": { rotulo: "Comunicado apagado", categoria: "Academica", grupo: "Comunicados" },
+  // SPEC-026: correção de cadastros (OPEN-048).
+  "disciplina.editada": { rotulo: "Disciplina editada", categoria: "Academica", grupo: "Disciplinas e turmas" },
+  "disciplina.excluida": { rotulo: "Disciplina excluída", categoria: "Academica", grupo: "Disciplinas e turmas" },
+  "turma.editada": { rotulo: "Turma editada", categoria: "Academica", grupo: "Disciplinas e turmas" },
+  "turma.excluida": { rotulo: "Turma excluída", categoria: "Academica", grupo: "Disciplinas e turmas" },
+  "matricula.excluida": { rotulo: "Estudante tirado da turma", categoria: "Academica", grupo: "Matrículas e importação" },
+  "avaliacao.editada": { rotulo: "Avaliação editada", categoria: "Academica", grupo: "Notas" },
+  "avaliacao.excluida": { rotulo: "Avaliação excluída", categoria: "Academica", grupo: "Notas" },
+  "atividade.editada": { rotulo: "Atividade editada", categoria: "Academica", grupo: "Atividades e entregas" },
+  "atividade.excluida": { rotulo: "Atividade excluída", categoria: "Academica", grupo: "Atividades e entregas" },
+  "aula.editada": { rotulo: "Data da aula alterada", categoria: "Academica", grupo: "Chamada" },
+  "aula.excluida": { rotulo: "Aula excluída", categoria: "Academica", grupo: "Chamada" },
+  // SPEC-030 a SPEC-033: secretaria (OPEN-052 a OPEN-055).
+  "turma.copiada": { rotulo: "Turma copiada (virada de semestre)", categoria: "Academica", grupo: "Secretaria" },
+  "estudante.situacao": { rotulo: "Situação no curso alterada", categoria: "Academica", grupo: "Secretaria" },
+  "estudante.curso": { rotulo: "Curso do estudante trocado", categoria: "Academica", grupo: "Secretaria" },
+  "abono.registrado": { rotulo: "Abono de faltas registrado", categoria: "Academica", grupo: "Secretaria" },
+  "abono.excluido": { rotulo: "Abono de faltas excluído", categoria: "Academica", grupo: "Secretaria" },
+  "ficha.alterada": { rotulo: "Ficha do estudante alterada", categoria: "Academica", grupo: "Secretaria" },
 } as const satisfies Record<string, { rotulo: string; categoria: CategoriaAuditoria; grupo: string }>;
 
 export type AcaoAuditoria = keyof typeof ACOES;
