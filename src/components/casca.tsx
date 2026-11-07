@@ -38,6 +38,8 @@ const MENUS: Record<Perfil, Entrada[]> = {
     { id: "inicio", rotulo: "Dashboard", href: "/coordenador", icone: "inicio" },
     { id: "disciplinas", rotulo: "Disciplinas", href: "/coordenador/disciplinas", icone: "livro" },
     { id: "turmas", rotulo: "Turmas e estudantes", href: "/coordenador/turmas", icone: "pessoas" },
+    // SPEC-034: estudantes dos cursos, com busca e a ficha (só leitura, RB-33).
+    { id: "estudantes", rotulo: "Estudantes", href: "/coordenador/estudantes", icone: "mochila" },
     { id: "relatorios", rotulo: "Relatórios", href: "/relatorios", icone: "grafico" },
     { id: "historico", rotulo: "Histórico de notas", href: "/historico-notas", icone: "relogio" },
     { id: "comunicados", rotulo: "Comunicados", href: "/comunicados", icone: "megafone" },

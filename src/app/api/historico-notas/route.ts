@@ -7,7 +7,8 @@ import { autorizarApi } from "@/server/auth/guardas";
 export async function GET(requisicao: Request) {
   const acesso = await autorizarApi(requisicao, RECURSOS.historicoNotas);
   if ("negado" in acesso) return acesso.negado;
-  const resultado = await consultarHistorico(acesso.sessao, new URL(requisicao.url).searchParams.get("turma"));
+  const p = new URL(requisicao.url).searchParams;
+  const resultado = await consultarHistorico(acesso.sessao, p.get("turma"), p.get("pagina"));
   if (!resultado.ok) return Response.json({ erro: "Acesso negado: esta turma não está no seu escopo." }, { status: 403 });
   return Response.json(resultado);
 }

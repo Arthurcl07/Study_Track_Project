@@ -163,7 +163,10 @@ model Matricula {
   turma       Turma   @relation(fields: [turmaId], references: [id], onDelete: Cascade)
 
   // SPEC-031 / RB-30: matrícula trancada ou cancelada sai das listas de trabalho e fica no histórico.
-  situacao SituacaoMatricula @default(Cursando)
+  situacao   SituacaoMatricula   @default(Cursando)
+  // SPEC-031: indicador e frequência pertencem à matrícula (filtro de matrícula cursando na própria query).
+  indicador  IndicadorAcademico?
+  frequencia Frequencia?
 
   @@id([estudanteId, turmaId])
   @@index([turmaId])
@@ -220,6 +223,8 @@ model Frequencia {
   percentual   Float
   atualizadaEm DateTime @updatedAt
 
+  matricula Matricula @relation(fields: [estudanteId, turmaId], references: [estudanteId, turmaId], onDelete: Cascade)
+
   @@unique([estudanteId, turmaId])
 }
 
@@ -236,6 +241,8 @@ model IndicadorAcademico {
   frequenciaAtual Float?
   situacao        Situacao
   atualizadoEm    DateTime
+
+  matricula Matricula @relation(fields: [estudanteId, turmaId], references: [estudanteId, turmaId], onDelete: Cascade)
 
   @@unique([estudanteId, turmaId])
   @@index([turmaId])

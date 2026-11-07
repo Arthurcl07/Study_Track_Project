@@ -2,6 +2,7 @@
 // vai dentro da própria query (ADR-003, RB-03): fora do escopo e inexistente dão o mesmo null.
 import type { DadosAvaliacao } from "@/domain/registro-notas";
 import type { ClienteBanco } from "./indicadores";
+import { MATRICULA_CURSANDO } from "./matriculas";
 import { prisma } from "./prisma";
 
 export function turmaLecionada(professorId: string, turmaId: string) {
@@ -11,7 +12,7 @@ export function turmaLecionada(professorId: string, turmaId: string) {
 export function criarAvaliacao(turmaId: string, dados: DadosAvaliacao, db: ClienteBanco = prisma) {
   return db.avaliacao.create({
     data: { ...dados, turmaId },
-    select: { id: true, turmaId: true, nome: true, peso: true, data: true },
+    select: { id: true, turmaId: true, nome: true, peso: true, data: true, tipo: true },
   });
 }
 
@@ -24,9 +25,9 @@ export function avaliacaoParaLancamento(
     where: {
       id: entrada.avaliacaoId,
       turmaId: entrada.turmaId,
-      turma: { professorId, matriculas: { some: { estudanteId: entrada.estudanteId } } },
+      turma: { professorId, matriculas: { some: { estudanteId: entrada.estudanteId, ...MATRICULA_CURSANDO } } },
     },
-    select: { id: true, turmaId: true },
+    select: { id: true, turmaId: true, tipo: true },
   });
 }
 
@@ -76,6 +77,7 @@ export function turmasParaLancamento(professorId: string) {
         orderBy: [{ data: "asc" }, { nome: "asc" }],
       },
       matriculas: {
+        where: MATRICULA_CURSANDO,
         select: { estudante: { select: { id: true, nome: true } } },
         orderBy: { estudante: { nome: "asc" } },
       },

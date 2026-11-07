@@ -1,11 +1,13 @@
 // Acesso a dados do painel do estudante (SPEC-007). Tudo filtrado pelo estudante dentro da própria
 // query (ADR-003, INV-007-01/03): turmas em que está matriculado, só as PRÓPRIAS notas e indicadores.
+import { MATRICULA_CURSANDO } from "./matriculas";
 import { prisma } from "./prisma";
 
 export function turmasDoPainel(estudanteId: string) {
   return prisma.turma.findMany({
     // SPEC-017 (INV-017-05): o painel mostra só turmas de períodos abertos; as anteriores ficam no histórico escolar.
-    where: { matriculas: { some: { estudanteId } }, periodoLetivo: { status: "Aberto" } },
+    // SPEC-031 (RB-30): só matrículas cursando.
+    where: { matriculas: { some: { estudanteId, ...MATRICULA_CURSANDO } }, periodoLetivo: { status: "Aberto" } },
     select: {
       id: true,
       nome: true,
@@ -14,7 +16,8 @@ export function turmasDoPainel(estudanteId: string) {
       professor: { select: { nome: true } },
       avaliacoes: {
         // SPEC-023: o peso entra no simulador de notas (RB-25).
-        select: { nome: true, data: true, peso: true, notas: { where: { estudanteId }, select: { valor: true } } },
+        // SPEC-029: o tipo separa substitutiva e exame do simulador e mostra a nota final.
+        select: { nome: true, data: true, peso: true, tipo: true, notas: { where: { estudanteId }, select: { valor: true } } },
       },
       indicadores: {
         where: { estudanteId },

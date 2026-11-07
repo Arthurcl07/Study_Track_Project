@@ -117,7 +117,7 @@ describe("SPEC-010 — gestão de contas", () => {
     await criarUsuarioDeTeste("Coordenador");
 
     const resposta = await listarApi(requisicaoComSessao(`${URL_CONTAS}?perfil=Coordenador`, token));
-    const contas = await resposta.json();
+    const contas = (await resposta.json()).itens;
 
     expect(resposta.status).toBe(200);
     expect(contas.length).toBeGreaterThan(0);

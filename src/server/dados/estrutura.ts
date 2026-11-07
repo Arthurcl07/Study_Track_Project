@@ -1,5 +1,6 @@
 // Acesso a dados da estrutura acadêmica (SPEC-002). Toda consulta filtra pelo usuário
 // autenticado dentro da própria query e nega por padrão (ADR-003, INV-002-06).
+import { MATRICULA_CURSANDO } from "./matriculas";
 import type { Prisma } from "@prisma/client";
 import type { DadosDisciplina, DadosTurma } from "@/domain/estrutura-academica";
 import type { Sessao } from "@/server/auth/token";
@@ -15,7 +16,7 @@ export function filtroTurmasDoEscopo(sessao: Sessao): Prisma.TurmaWhereInput {
     case "Professor":
       return { professorId: sessao.usuarioId };
     case "Estudante":
-      return { matriculas: { some: { estudanteId: sessao.usuarioId } } };
+      return { matriculas: { some: { estudanteId: sessao.usuarioId, ...MATRICULA_CURSANDO } } };
     default:
       return { id: { in: [] } };
   }

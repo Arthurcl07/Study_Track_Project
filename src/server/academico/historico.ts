@@ -1,14 +1,17 @@
 // Caso de uso "Consultar histórico de notas" (SPEC-013, UC-13, RF-20, RB-16).
+import { paginar } from "@/domain/secretaria";
 import type { Sessao } from "@/server/auth/token";
 import * as dados from "@/server/dados/historico";
 
-export async function consultarHistorico(sessao: Sessao, turmaPedida?: string | null) {
+export async function consultarHistorico(sessao: Sessao, turmaPedida?: string | null, paginaPedida?: unknown) {
   const turmas = (await dados.turmasDoHistorico(sessao)).map((t) => ({ id: t.id, rotulo: `${t.nome} · ${t.disciplina.nome}` }));
   // Turma pedida fora do escopo é bloqueada, não só escondida (mesmo critério do relatório, AC-009-03).
   if (turmaPedida && !turmas.some((t) => t.id === turmaPedida)) return { ok: false as const };
   const turmaId = turmaPedida || turmas[0]?.id || null;
+  // SPEC-034: páginas de 25 registros.
+  const pagina = paginar(turmaId ? await dados.contarHistoricoDaTurma(sessao, turmaId) : 0, paginaPedida);
   const registros = turmaId
-    ? (await dados.historicoDaTurma(sessao, turmaId)).map((r) => ({
+    ? (await dados.historicoDaTurma(sessao, turmaId, pagina.pular, pagina.porPagina)).map((r) => ({
         id: r.id,
         registradoEm: r.registradoEm.toISOString(),
         avaliacao: r.avaliacao.nome,
@@ -18,5 +21,5 @@ export async function consultarHistorico(sessao: Sessao, turmaPedida?: string | 
         autor: r.autor.nome,
       }))
     : [];
-  return { ok: true as const, turmas, turmaId, registros };
+  return { ok: true as const, turmas, turmaId, registros, pagina };
 }

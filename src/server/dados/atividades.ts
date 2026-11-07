@@ -1,5 +1,6 @@
 // Acesso a dados de frequência, atividades e entregas (SPEC-005). O escopo vai dentro da própria
 // query (ADR-003): professor só nas turmas que leciona (RB-03), estudante só no que é dele (RB-02).
+import { MATRICULA_CURSANDO } from "./matriculas";
 import type { DadosAtividade } from "@/domain/atividades";
 import type { ClienteBanco } from "./indicadores";
 import { prisma } from "./prisma";
@@ -8,7 +9,9 @@ import { prisma } from "./prisma";
 export const paraData = (texto: string) => new Date(`${texto}T00:00:00Z`);
 export const deData = (data: Date) => data.toISOString().slice(0, 10);
 
+// SPEC-031 (RB-30): só matrículas cursando nas listas de trabalho.
 const ESTUDANTES_DA_TURMA = {
+  where: MATRICULA_CURSANDO,
   select: { estudante: { select: { id: true, nome: true } } },
   orderBy: { estudante: { nome: "asc" } },
 } as const;
@@ -27,7 +30,7 @@ export function salvarFrequencia(estudanteId: string, turmaId: string, percentua
 // Turma lecionada pelo professor com o estudante matriculado nela (INV-005-05).
 export function turmaComEstudante(professorId: string, turmaId: string, estudanteId: string) {
   return prisma.turma.findFirst({
-    where: { id: turmaId, professorId, matriculas: { some: { estudanteId } } },
+    where: { id: turmaId, professorId, matriculas: { some: { estudanteId, ...MATRICULA_CURSANDO } } },
     select: { id: true },
   });
 }
@@ -68,7 +71,7 @@ export function turmasComAtividades(professorId: string) {
       nome: true,
       periodo: true,
       disciplina: { select: { nome: true } },
-      matriculas: { select: { estudanteId: true } },
+      matriculas: { where: MATRICULA_CURSANDO, select: { estudanteId: true } },
       atividades: {
         select: { id: true, descricao: true, prazo: true, entregas: { select: { estudanteId: true, dataEntrega: true } } },
         orderBy: [{ prazo: "asc" }, { descricao: "asc" }],
@@ -97,7 +100,7 @@ export function atividadeDoProfessor(professorId: string, atividadeId: string) {
 // Atividade numa turma lecionada pelo professor, com o estudante matriculado nela (INV-005-05).
 export function atividadeParaEntrega(professorId: string, atividadeId: string, estudanteId: string) {
   return prisma.atividade.findFirst({
-    where: { id: atividadeId, turma: { professorId, matriculas: { some: { estudanteId } } } },
+    where: { id: atividadeId, turma: { professorId, matriculas: { some: { estudanteId, ...MATRICULA_CURSANDO } } } },
     select: { id: true, prazo: true, descricao: true, turmaId: true },
   });
 }
@@ -126,7 +129,7 @@ export function removerEntrega(entregaId: string, db: ClienteBanco = prisma) {
 export function atividadesDoEstudante(estudanteId: string) {
   return prisma.atividade.findMany({
     // SPEC-017 (INV-017-05): só turmas de períodos abertos.
-    where: { turma: { matriculas: { some: { estudanteId } }, periodoLetivo: { status: "Aberto" } } },
+    where: { turma: { matriculas: { some: { estudanteId, ...MATRICULA_CURSANDO } }, periodoLetivo: { status: "Aberto" } } },
     select: {
       id: true,
       descricao: true,

@@ -1,16 +1,25 @@
 // Acesso a dados da gestão de contas (SPEC-010, RF-16). Nunca devolve o hash da senha.
 import type { Perfil } from "@/domain/perfil";
 import type { ClienteBanco } from "./indicadores";
+import { paginar } from "@/domain/secretaria";
+import { filtroDeBusca } from "./busca";
 import { prisma } from "./prisma";
 
 const CONTA = { id: true, nome: true, email: true, perfil: true, ativo: true, curso: { select: { nome: true } } } as const;
 
-export function listarContas(perfil?: Perfil) {
-  return prisma.usuario.findMany({
-    where: perfil ? { perfil } : {},
+// SPEC-034: com a busca (ids) e a página; o total vem da mesma condição (INV-034-02).
+export async function listarContas(perfil: Perfil | undefined, ids: string[] | null, pagina: unknown) {
+  const where = { ...(perfil ? { perfil } : {}), ...filtroDeBusca(ids) };
+  const total = await prisma.usuario.count({ where });
+  const paginacao = paginar(total, pagina);
+  const itens = await prisma.usuario.findMany({
+    where,
     select: CONTA,
-    orderBy: [{ perfil: "desc" }, { nome: "asc" }], // Administrador, Coordenador, Professor, Estudante
+    orderBy: [{ perfil: "desc" }, { nome: "asc" }, { id: "asc" }], // Administrador, Coordenador, Professor, Estudante
+    skip: paginacao.pular,
+    take: paginacao.porPagina,
   });
+  return { itens, pagina: paginacao };
 }
 
 // RB-15 (SPEC-011): conta criada pela tela começa com senha provisória.

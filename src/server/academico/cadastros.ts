@@ -23,6 +23,8 @@ import { travaDoPeriodo } from "./periodos";
 import { auditar, nomeDoUsuario, turmaParaAuditoria } from "@/server/dados/auditoria";
 import * as dados from "@/server/dados/estrutura";
 import { executarEmTransacao } from "@/server/dados/notas";
+import { prisma } from "@/server/dados/prisma";
+import { MENSAGEM_ESTUDANTE_NAO_ATIVO } from "@/domain/secretaria";
 
 export type Falha =
   | { tipo: "invalido"; erros: ErrosDeCampo }
@@ -188,6 +190,9 @@ export async function matricularEstudante(entrada: Record<string, unknown>, turm
   const estudante = await dados.buscarEstudantePorEmail(email);
   if (!estudante) return falha({ tipo: "nao-encontrado", erro: "Estudante não encontrado." });
   if (!podeMatricular(estudante.cursoId, turma.cursoId)) return falha({ tipo: "conflito", erro: MENSAGEM_ESTUDANTE_DE_OUTRO_CURSO });
+  // SPEC-031 / RB-30 (AC-031-04): só estudante Ativo no curso é matriculado.
+  const ficha = await prisma.fichaEstudante.findUnique({ where: { estudanteId: estudante.id }, select: { situacaoCurso: true } });
+  if (ficha && ficha.situacaoCurso !== "Ativo") return falha({ tipo: "conflito", erro: MENSAGEM_ESTUDANTE_NAO_ATIVO });
 
   await executarEmTransacao(async (tx) => {
     // Já matriculado: nada muda e nada é registrado (INV-002-04).

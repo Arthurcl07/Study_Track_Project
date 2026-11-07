@@ -48,7 +48,8 @@ export function lerCsv(texto: string): Leitura {
   return { ok: true, linhas: dados };
 }
 
-export type ContaExistente = { perfil: string; ativo: boolean; cursoId: string | null; matriculado: boolean };
+// SPEC-031 (RB-30): situacaoCurso diferente de Ativo também recusa a linha (opcional para contas que não são de estudante).
+export type ContaExistente = { perfil: string; ativo: boolean; cursoId: string | null; matriculado: boolean; situacaoCurso?: string | null };
 export type AcaoImportacao = "criar" | "matricular" | "ja-matriculado" | "erro";
 export type LinhaPrevia = LinhaCsv & { acao: AcaoImportacao; erro?: string };
 
@@ -67,6 +68,7 @@ export function preverImportacao(linhas: readonly LinhaCsv[], contas: ReadonlyMa
     if (conta.perfil !== "Estudante") return erro("E-mail de uma conta que não é de estudante");
     if (!conta.ativo) return erro("Conta desativada");
     if (conta.cursoId !== cursoDaTurma) return erro("Estudante de outro curso");
+    if (conta.situacaoCurso && conta.situacaoCurso !== "Ativo") return erro("Estudante não está Ativo no curso");
     return { ...l, acao: conta.matriculado ? "ja-matriculado" : "matricular" };
   });
 }
