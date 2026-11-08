@@ -23,10 +23,10 @@ export async function consultarAuditoria(sessao: Sessao, filtros: { grupo?: stri
     categoria === "Academica"
       ? acoesDoGrupo(categoria, grupo)
       : grupo === GRUPO_SECRETARIA
-        ? acoesDoGrupo("Academica", GRUPO_SECRETARIA)
+        ? [...acoesDoGrupo("Academica", GRUPO_SECRETARIA), ...acoesDoGrupo("Academica", "Requerimentos")]
         : grupo
           ? acoesDoGrupo(categoria, grupo)
-          : [...acoesDoGrupo(categoria, null), ...acoesDoGrupo("Academica", GRUPO_SECRETARIA)];
+          : [...acoesDoGrupo(categoria, null), ...acoesDoGrupo("Academica", GRUPO_SECRETARIA), ...acoesDoGrupo("Academica", "Requerimentos")];
   const { total, registros } = await listarRegistros(escopo, acoes, pagina);
   return {
     categoria,

@@ -52,7 +52,13 @@ export async function mudarStatusDoPeriodo(id: string, status: "Aberto" | "Encer
 }
 
 // RB-20: falha "conflito" quando a turma (identificada pelo filtro) é de período encerrado; null se pode escrever.
-export async function travaDoPeriodo(turma: Prisma.TurmaWhereInput): Promise<Falha | null> {
+// SPEC-039 / RB-37: também quando o diário da turma está fechado ou homologado (salvo nas ações do próprio diário).
+export async function travaDoPeriodo(turma: Prisma.TurmaWhereInput, opcoes: { ignorarDiario?: boolean } = {}): Promise<Falha | null> {
   const encerrado = await dados.periodoEncerradoDaTurma(turma);
-  return encerrado ? { tipo: "conflito", erro: mensagemPeriodoEncerrado(encerrado) } : null;
+  if (encerrado) return { tipo: "conflito", erro: mensagemPeriodoEncerrado(encerrado) };
+  if (opcoes.ignorarDiario) return null;
+  const diario = await dados.diarioTravadoDaTurma(turma);
+  return diario
+    ? { tipo: "conflito", erro: `O diário da ${diario.nome} está ${diario.diario === "Fechado" ? "fechado, aguardando homologação" : "homologado"}: a turma está somente leitura. Só a coordenação devolve ou reabre.` }
+    : null;
 }

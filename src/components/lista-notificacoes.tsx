@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CLASSE_BOTAO_SECUNDARIO, EstadoVazio, Mensagem } from "./ui";
 
-type Notificacao = { id: string; tipo: "Risco" | "Nota" | "Plano" | "Prazo" | "Comunicado"; titulo: string; texto: string; link: string; criadaEm: string; lidaEm: string | null };
+type Notificacao = { id: string; tipo: "Risco" | "Nota" | "Plano" | "Prazo" | "Comunicado" | "Requerimento" | "Diario"; titulo: string; texto: string; link: string; criadaEm: string; lidaEm: string | null };
 
 const ESTILO: Record<Notificacao["tipo"], { icone: string; classe: string }> = {
   Risco: { icone: "■", classe: "bg-risco-fundo text-risco" },
@@ -14,6 +14,9 @@ const ESTILO: Record<Notificacao["tipo"], { icone: string; classe: string }> = {
   Plano: { icone: "✓", classe: "bg-normal-fundo text-normal" },
   Prazo: { icone: "◷", classe: "bg-atencao-fundo text-atencao" },
   Comunicado: { icone: "✉", classe: "bg-azul-suave text-azul-escuro" },
+  // SPEC-036 e SPEC-039.
+  Requerimento: { icone: "📨", classe: "bg-info-fundo text-info" },
+  Diario: { icone: "📘", classe: "bg-atencao-fundo text-atencao" },
 };
 
 const quando = (iso: string) =>

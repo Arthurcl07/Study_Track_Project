@@ -26,7 +26,7 @@ async function estudanteDoDocumento(sessao: Sessao, estudantePedido?: string | n
 }
 
 // INV-020-01 / INV-020-03: só turmas do estudante, com média, frequência e situação do indicador vigente.
-async function turmasDoEstudante(estudanteId: string, periodo?: string) {
+export async function turmasDoEstudante(estudanteId: string, periodo?: string) {
   const turmas = await prisma.turma.findMany({
     where: { matriculas: { some: { estudanteId } }, ...(periodo ? { periodo } : {}) },
     select: {
@@ -34,7 +34,7 @@ async function turmasDoEstudante(estudanteId: string, periodo?: string) {
       nome: true,
       periodo: true,
       periodoLetivo: { select: { status: true } },
-      disciplina: { select: { nome: true, cargaHoraria: true } },
+      disciplina: { select: { id: true, nome: true, cargaHoraria: true } },
       professor: { select: { nome: true } },
       avaliacoes: { select: { nome: true, peso: true, tipo: true, data: true, notas: { where: { estudanteId }, select: { valor: true } } }, orderBy: [{ data: "asc" }, { nome: "asc" }] },
       indicadores: { where: { estudanteId }, select: { media: true, frequenciaAtual: true, situacao: true } },
@@ -58,6 +58,7 @@ async function turmasDoEstudante(estudanteId: string, periodo?: string) {
       periodo: t.periodo,
       encerrado,
       disciplina: t.disciplina.nome,
+      disciplinaId: t.disciplina.id,
       cargaHoraria: t.disciplina.cargaHoraria,
       professor: t.professor.nome,
       // O exame aparece na própria coluna (com a nota final), fora da lista das avaliações da média.
@@ -102,7 +103,24 @@ export async function consultarHistorico(sessao: Sessao, filtros: { estudante?: 
     const doPeriodo = linhas.filter((l) => l.periodo === nome);
     return { nome, encerrado: doPeriodo.every((l) => l.encerrado), linhas: doPeriodo };
   });
-  return { estudante, periodos: porPeriodo, resumo: resumoDoHistorico(linhas), emitidoEm: new Date().toISOString() };
+  // SPEC-042: aproveitamentos (contam na carga aprovada) e a data de conclusão do curso.
+  const [aproveitamentos, ficha] = await Promise.all([
+    prisma.aproveitamento.findMany({ where: { estudanteId: estudante.id }, select: { id: true, instituicaoOrigem: true, disciplinaOrigem: true, nota: true, cargaHoraria: true, disciplina: { select: { nome: true } } }, orderBy: { registradoEm: "asc" } }),
+    prisma.fichaEstudante.findUnique({ where: { estudanteId: estudante.id }, select: { situacaoCurso: true, situacaoDesde: true } }),
+  ]);
+  const resumo = resumoDoHistorico(linhas);
+  return {
+    estudante,
+    periodos: porPeriodo,
+    aproveitamentos: aproveitamentos.map((a) => ({ id: a.id, disciplina: a.disciplina.nome, origem: `${a.instituicaoOrigem} · ${a.disciplinaOrigem}`, nota: a.nota, cargaHoraria: a.cargaHoraria })),
+    concluidoEm: ficha?.situacaoCurso === "Concluido" ? ficha.situacaoDesde.toISOString().slice(0, 10) : null,
+    resumo: {
+      ...resumo,
+      disciplinasAprovadas: resumo.disciplinasAprovadas + aproveitamentos.length,
+      cargaHorariaAprovada: resumo.cargaHorariaAprovada + aproveitamentos.reduce((s, a) => s + a.cargaHoraria, 0),
+    },
+    emitidoEm: new Date().toISOString(),
+  };
 }
 
 // Página Documentos do estudante: períodos com o número de disciplinas, e o resumo do histórico.

@@ -58,3 +58,12 @@ export async function periodoEncerradoDaTurma(turma: Prisma.TurmaWhereInput) {
   });
   return encontrada?.periodo ?? null;
 }
+
+// SPEC-039 / RB-37: diário fechado ou homologado deixa a turma somente leitura.
+export async function diarioTravadoDaTurma(turma: Prisma.TurmaWhereInput) {
+  const encontrada = await prisma.turma.findFirst({
+    where: { AND: [turma, { diario: { in: ["Fechado", "Homologado"] } }] },
+    select: { nome: true, diario: true },
+  });
+  return encontrada ? { nome: encontrada.nome, diario: encontrada.diario } : null;
+}

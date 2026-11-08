@@ -56,6 +56,8 @@ Legenda de status da Spec:
 | SPEC-026 a SPEC-035 (Nível 1: secretaria) incluídas a pedido de Arthur, com OPEN-048 a OPEN-057 fechadas (decisão humana, Arthur); RF-35 a RF-43, RB-27 a RB-33; RB-01, RB-13, RB-15, RB-19, RB-20, RB-21, RB-24, RB-25, RF-27 e RF-29 ajustados | `especificada` | 2026-11-06 |
 | SPEC-026 a SPEC-035 e layout aprovados (Arthur) | `aprovada` | 2026-11-06 |
 | SPEC-026 a SPEC-035 marcadas como `implementadas`: 353 testes e verificação em `docs/verificacao/SPEC-026-035.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
+| SPEC-036 a SPEC-043 (Nível 3, sem os itens 28 e 30) incluídas a pedido de Arthur, com OPEN-058 a OPEN-065 fechadas (decisão humana, Arthur); RF-44 a RF-52 e RB-34 a RB-41; RB-20 e RB-30 ajustados | `especificada` | 2026-11-08 |
+| SPEC-036 a SPEC-043 e layout aprovados (Arthur) | `aprovada` | 2026-11-08 |
 
 ---
 
@@ -4633,7 +4635,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-036 — Requerimentos online
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -4672,12 +4674,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-08 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Requerimentos do estudante | [prototipo.html#requerimentos-estudante](layout/prototipo.html#requerimentos-estudante) | [ ] | [ ] | — | — |
-| Responder requerimentos (professor/secretaria) | [prototipo.html#requerimentos-responder](layout/prototipo.html#requerimentos-responder) | [ ] | [ ] | — | — |
+| Requerimentos do estudante | [prototipo.html#requerimentos-estudante](layout/prototipo.html#requerimentos-estudante) | [x] | [x] | Arthur | 2026-11-08 |
+| Responder requerimentos (professor/secretaria) | [prototipo.html#requerimentos-responder](layout/prototipo.html#requerimentos-responder) | [x] | [x] | Arthur | 2026-11-08 |
 
 ## 4. Dependências
 
@@ -4755,7 +4757,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-037 — Matriz curricular e integralização
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -4791,12 +4793,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-08 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Matriz do curso (coordenador) | [prototipo.html#matriz-coordenador](layout/prototipo.html#matriz-coordenador) | [ ] | [ ] | — | — |
-| Meu curso (estudante) | [prototipo.html#meu-curso](layout/prototipo.html#meu-curso) | [ ] | [ ] | — | — |
+| Matriz do curso (coordenador) | [prototipo.html#matriz-coordenador](layout/prototipo.html#matriz-coordenador) | [x] | [x] | Arthur | 2026-11-08 |
+| Meu curso (estudante) | [prototipo.html#meu-curso](layout/prototipo.html#meu-curso) | [x] | [x] | Arthur | 2026-11-08 |
 
 ## 4. Dependências
 
@@ -4869,7 +4871,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-038 — Rematrícula pelo estudante
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -4906,11 +4908,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-08 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Rematrícula (estudante) | [prototipo.html#rematricula](layout/prototipo.html#rematricula) | [ ] | [ ] | — | — |
+| Rematrícula (estudante) | [prototipo.html#rematricula](layout/prototipo.html#rematricula) | [x] | [x] | Arthur | 2026-11-08 |
 
 ## 4. Dependências
 
@@ -4987,7 +4989,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-039 — Diário de classe
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -5025,12 +5027,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-08 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Diário na turma do professor | [prototipo.html#diario-professor](layout/prototipo.html#diario-professor) | [ ] | [ ] | — | — |
-| Diários para homologar (coordenação) | [prototipo.html#diario-homologar](layout/prototipo.html#diario-homologar) | [ ] | [ ] | — | — |
+| Diário na turma do professor | [prototipo.html#diario-professor](layout/prototipo.html#diario-professor) | [x] | [x] | Arthur | 2026-11-08 |
+| Diários para homologar (coordenação) | [prototipo.html#diario-homologar](layout/prototipo.html#diario-homologar) | [x] | [x] | Arthur | 2026-11-08 |
 
 ## 4. Dependências
 
@@ -5105,7 +5107,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-040 — Calendário acadêmico
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -5141,12 +5143,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-08 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Calendário do mês e grade da semana | [prototipo.html#calendario](layout/prototipo.html#calendario) | [ ] | [ ] | — | — |
-| Calendário da secretaria | [prototipo.html#calendario-secretaria](layout/prototipo.html#calendario-secretaria) | [ ] | [ ] | — | — |
+| Calendário do mês e grade da semana | [prototipo.html#calendario](layout/prototipo.html#calendario) | [x] | [x] | Arthur | 2026-11-08 |
+| Calendário da secretaria | [prototipo.html#calendario-secretaria](layout/prototipo.html#calendario-secretaria) | [x] | [x] | Arthur | 2026-11-08 |
 
 ## 4. Dependências
 
@@ -5218,7 +5220,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-041 — Grade horária e salas
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -5255,12 +5257,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-08 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Horários e vagas da turma (coordenação) | [prototipo.html#turma-horarios](layout/prototipo.html#turma-horarios) | [ ] | [ ] | — | — |
-| Salas (secretaria) | [prototipo.html#salas](layout/prototipo.html#salas) | [ ] | [ ] | — | — |
+| Horários e vagas da turma (coordenação) | [prototipo.html#turma-horarios](layout/prototipo.html#turma-horarios) | [x] | [x] | Arthur | 2026-11-08 |
+| Salas (secretaria) | [prototipo.html#salas](layout/prototipo.html#salas) | [x] | [x] | Arthur | 2026-11-08 |
 
 ## 4. Dependências
 
@@ -5334,7 +5336,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-042 — Aproveitamento de estudos e conclusão de curso
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -5371,12 +5373,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-08 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Ficha — aproveitamento e integralização | [prototipo.html#aproveitamento](layout/prototipo.html#aproveitamento) | [ ] | [ ] | — | — |
-| Histórico final com conclusão | [prototipo.html#historico-final](layout/prototipo.html#historico-final) | [ ] | [ ] | — | — |
+| Ficha — aproveitamento e integralização | [prototipo.html#aproveitamento](layout/prototipo.html#aproveitamento) | [x] | [x] | Arthur | 2026-11-08 |
+| Histórico final com conclusão | [prototipo.html#historico-final](layout/prototipo.html#historico-final) | [x] | [x] | Arthur | 2026-11-08 |
 
 ## 4. Dependências
 
@@ -5448,7 +5450,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-043 — Exportação de apoio ao Censo
 
-**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -5484,11 +5486,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** layout `aguardando aprovação`.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-08 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Exportação do Censo | [prototipo.html#exportacao-censo](layout/prototipo.html#exportacao-censo) | [ ] | [ ] | — | — |
+| Exportação do Censo | [prototipo.html#exportacao-censo](layout/prototipo.html#exportacao-censo) | [x] | [x] | Arthur | 2026-11-08 |
 
 ## 4. Dependências
 
