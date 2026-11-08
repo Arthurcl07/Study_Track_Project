@@ -63,11 +63,12 @@ describe("SPEC-020 — regras de domínio (sem banco)", () => {
     expect(periodoPadrao([])).toBeNull();
   });
 
-  it("INV-020-05 / AC-020-08: professor e administrador não emitem documentos", () => {
+  // SPEC-035 (OPEN-057, 2026-11-06): a secretaria (Administrador) passou a emitir documentos (AC-035-01).
+  it("INV-020-05 / AC-020-08 / AC-035-01: professor não emite documentos; a secretaria emite", () => {
     expect(podeAcessar("Estudante", RECURSOS.documentos)).toBe(true);
     expect(podeAcessar("Coordenador", RECURSOS.documentos)).toBe(true);
     expect(podeAcessar("Professor", RECURSOS.documentos)).toBe(false);
-    expect(podeAcessar("Administrador", RECURSOS.documentos)).toBe(false);
+    expect(podeAcessar("Administrador", RECURSOS.documentos)).toBe(true);
   });
 });
 

@@ -1,5 +1,6 @@
 // Casos de uso do mural de comunicados (SPEC-025, RF-34, UC-23, UC-24). Alcance e escopo filtrados na própria query
 // (ADR-003, RB-26). Comunicado, notificações e auditoria na mesma transação (INV-025-04).
+import { MATRICULA_CURSANDO } from "@/server/dados/matriculas";
 import type { Prisma } from "@prisma/client";
 import { validarComunicado } from "@/domain/comunicados";
 import { notificacaoComunicado } from "@/domain/notificacoes";
@@ -20,7 +21,7 @@ async function filtroDoMural(sessao: Sessao): Promise<Prisma.ComunicadoWhereInpu
   const eu = sessao.usuarioId;
   if (sessao.perfil === "Estudante") {
     const conta = await prisma.usuario.findUnique({ where: { id: eu }, select: { cursoId: true } });
-    return { OR: [{ turma: { matriculas: { some: { estudanteId: eu } }, ...TURMA_DE_PERIODO_ABERTO } }, ...(conta?.cursoId ? [{ cursoId: conta.cursoId }] : [])] };
+    return { OR: [{ turma: { matriculas: { some: { estudanteId: eu, ...MATRICULA_CURSANDO } }, ...TURMA_DE_PERIODO_ABERTO } }, ...(conta?.cursoId ? [{ cursoId: conta.cursoId }] : [])] };
   }
   if (sessao.perfil === "Professor") {
     return { OR: [{ turma: { professorId: eu } }, { curso: { turmas: { some: { professorId: eu, ...TURMA_DE_PERIODO_ABERTO } } } }, { autorId: eu }] };
@@ -98,7 +99,7 @@ export async function publicarComunicado(sessao: Sessao, entrada: Record<string,
   }
 
   // Estudantes das turmas alcançadas e, quando o autor é o coordenador, os professores delas (sem o próprio autor).
-  const matriculas = await prisma.matricula.findMany({ where: { turmaId: { in: alvo.turmas.map((t) => t.id) } }, select: { estudanteId: true } });
+  const matriculas = await prisma.matricula.findMany({ where: { turmaId: { in: alvo.turmas.map((t) => t.id) }, ...MATRICULA_CURSANDO }, select: { estudanteId: true } });
   const destinatarios = new Set(matriculas.map((m) => m.estudanteId));
   if (sessao.perfil === "Coordenador") for (const t of alvo.turmas) destinatarios.add(t.professorId);
   destinatarios.delete(eu);

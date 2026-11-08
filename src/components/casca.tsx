@@ -2,13 +2,14 @@
 // A permissão continua sendo verificada no servidor por cada página (INV-001-03); o menu só orienta.
 import type { Perfil } from "@/domain/perfil";
 import { naoLidasDoMenu } from "@/server/academico/notificacoes";
+import { contarPedidosPendentes } from "@/server/auth/pedidos-senha";
 import type { Sessao } from "@/server/auth/token";
 import type { NomeIcone } from "./icones";
 import { NavegacaoCasca } from "./navegacao-casca";
 
 export type ItemMenu =
   | "inicio" | "notas" | "frequencia" | "atividades" | "relatorios" | "disciplinas" | "turmas" | "area" | "contas" | "cursos" | "senha" | "historico"
-  | "periodos" | "auditoria" | "documentos" | "notificacoes" | "comunicados";
+  | "periodos" | "auditoria" | "documentos" | "notificacoes" | "comunicados" | "estudantes" | "pedidos" | "virada" | "instituicao";
 
 type Entrada = { id: ItemMenu; rotulo: string; href: string; icone: NomeIcone };
 
@@ -37,6 +38,8 @@ const MENUS: Record<Perfil, Entrada[]> = {
     { id: "inicio", rotulo: "Dashboard", href: "/coordenador", icone: "inicio" },
     { id: "disciplinas", rotulo: "Disciplinas", href: "/coordenador/disciplinas", icone: "livro" },
     { id: "turmas", rotulo: "Turmas e estudantes", href: "/coordenador/turmas", icone: "pessoas" },
+    // SPEC-034: estudantes dos cursos, com busca e a ficha (só leitura, RB-33).
+    { id: "estudantes", rotulo: "Estudantes", href: "/coordenador/estudantes", icone: "mochila" },
     { id: "relatorios", rotulo: "Relatórios", href: "/relatorios", icone: "grafico" },
     { id: "historico", rotulo: "Histórico de notas", href: "/historico-notas", icone: "relogio" },
     { id: "comunicados", rotulo: "Comunicados", href: "/comunicados", icone: "megafone" },
@@ -44,21 +47,28 @@ const MENUS: Record<Perfil, Entrada[]> = {
     { id: "auditoria", rotulo: "Auditoria", href: "/coordenador/auditoria", icone: "escudo" },
     { id: "area", rotulo: "Área da coordenação", href: "/coordenador/area", icone: "cadeado" },
   ],
-  // SPEC-010 / RB-13: o Administrador só gerencia contas e, desde a SPEC-015, cursos; o dashboard é da SPEC-016.
+  // SPEC-010 / RB-13: contas e, desde a SPEC-015, cursos; o dashboard é da SPEC-016. SPEC-035 (OPEN-057): o
+  // Administrador é também a secretaria acadêmica (estudantes, pedidos de senha, virada e instituição).
   Administrador: [
     { id: "inicio", rotulo: "Dashboard", href: "/admin", icone: "inicio" },
     { id: "contas", rotulo: "Contas", href: "/admin/contas", icone: "pessoas" },
+    { id: "estudantes", rotulo: "Estudantes", href: "/admin/estudantes", icone: "mochila" },
+    { id: "pedidos", rotulo: "Pedidos de senha", href: "/admin/pedidos-senha", icone: "chave" },
     { id: "cursos", rotulo: "Cursos", href: "/admin/cursos", icone: "capelo" },
     // SPEC-017 e SPEC-019: períodos letivos e auditoria administrativa.
     { id: "periodos", rotulo: "Períodos letivos", href: "/admin/periodos", icone: "calendario" },
+    { id: "virada", rotulo: "Virada de semestre", href: "/admin/virada", icone: "repetir" },
+    { id: "instituicao", rotulo: "Instituição", href: "/admin/instituicao", icone: "predio" },
     { id: "auditoria", rotulo: "Auditoria", href: "/admin/auditoria", icone: "escudo" },
   ],
 };
 
 // SPEC-022: o item Notificações mostra o número de não lidas (estudante e professor, RB-23).
+// SPEC-027: o item Pedidos de senha mostra os pendentes (administrador).
 export async function Casca({ sessao, ativo, children }: { sessao: Sessao; ativo: ItemMenu; children: React.ReactNode }) {
-  const naoLidas = await naoLidasDoMenu(sessao);
-  const itens = MENUS[sessao.perfil].map((item) => (item.id === "notificacoes" ? { ...item, contador: naoLidas } : item));
+  const [naoLidas, pedidos] = await Promise.all([naoLidasDoMenu(sessao), sessao.perfil === "Administrador" ? contarPedidosPendentes() : 0]);
+  const contadores: Partial<Record<ItemMenu, number>> = { notificacoes: naoLidas, pedidos };
+  const itens = MENUS[sessao.perfil].map((item) => (contadores[item.id] ? { ...item, contador: contadores[item.id] } : item));
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[256px_minmax(0,1fr)]">
       <NavegacaoCasca itens={itens} ativo={ativo} nome={sessao.nome} perfil={sessao.perfil} />

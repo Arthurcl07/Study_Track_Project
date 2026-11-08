@@ -1,5 +1,6 @@
 // Acesso a dados das notificações (SPEC-022, RF-31, RB-23). Gravação dentro da transação do evento (INV-022-04);
 // consulta e leitura sempre filtradas pelo destinatário na própria query (ADR-003, INV-022-01).
+import { MATRICULA_CURSANDO } from "./matriculas";
 import { hojeEmBrasilia } from "@/domain/atividades";
 import {
   notificacaoPlano,
@@ -43,7 +44,7 @@ export async function gerarNotificacoesDePrazo(estudanteId: string, hoje = hojeE
   const atividades = await prisma.atividade.findMany({
     where: {
       prazo: { gte: new Date(`${hoje}T00:00:00Z`), lte: ate },
-      turma: { matriculas: { some: { estudanteId } }, periodoLetivo: { status: "Aberto" } },
+      turma: { matriculas: { some: { estudanteId, ...MATRICULA_CURSANDO } }, periodoLetivo: { status: "Aberto" } },
     },
     select: { id: true, descricao: true, prazo: true, turma: { select: { disciplina: { select: { nome: true } } } }, entregas: { where: { estudanteId }, select: { id: true } } },
   });
@@ -57,8 +58,13 @@ export function contarNaoLidas(usuarioId: string) {
   return prisma.notificacao.count({ where: { usuarioId, lidaEm: null } });
 }
 
-export function listarNotificacoes(usuarioId: string, quantidade = 100) {
+export function contarNotificacoes(usuarioId: string) {
+  return prisma.notificacao.count({ where: { usuarioId } });
+}
+
+export function listarNotificacoes(usuarioId: string, quantidade = 100, pular = 0) {
   return prisma.notificacao.findMany({
+    skip: pular,
     where: { usuarioId },
     select: { id: true, tipo: true, titulo: true, texto: true, link: true, criadaEm: true, lidaEm: true },
     orderBy: [{ criadaEm: "desc" }, { id: "asc" }],

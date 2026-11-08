@@ -142,6 +142,12 @@ export default async function DashboardEstudante() {
                 </div>
               ))}
             </dl>
+            {/* SPEC-029 (RB-29): com exame lançado, a nota final = (média + exame) ÷ 2; aprovação no exame com 5,0. */}
+            {t.exame !== null && t.notaFinal !== null && (
+              <p className="mb-3 rounded-[10px] bg-info-fundo px-3 py-2 text-sm text-info">
+                Exame final: <strong>{numero(t.exame)}</strong> · nota final <strong>{numero(t.notaFinal)}</strong> ({t.notaFinal >= 5 ? "acima" : "abaixo"} de 5,0)
+              </p>
+            )}
             <p className="mb-1 text-xs text-mudo">Evolução das notas</p>
             <GraficoEvolucao pontos={t.evolucao} />
             {/* SPEC-023 (RF-32): quanto precisa tirar e simulação; nada é gravado. */}

@@ -2,6 +2,7 @@
 // uma turma de exemplo da SPEC-002 ligando as três contas e uma avaliação de exemplo nessa turma
 // (SPEC-004, OPEN-017), sem nota, para o professor lançar pela tela, e duas atividades de exemplo
 // (SPEC-005), além de dados de demonstração fictícios (ver dadosDeDemonstracao). Apenas para ambiente local.
+import { exemplosDaSecretaria } from "./secretaria";
 import { hojeEmBrasilia } from "../src/domain/atividades";
 import { recalcularIndicador } from "../src/server/academico/indicador";
 import { salvarConta } from "../src/server/auth/contas";
@@ -81,6 +82,10 @@ async function main() {
   // SPEC-017 / OPEN-044: semestre anterior encerrado, para o histórico escolar ter Aprovado e Reprovado.
   await simularPeriodoAnterior({ cursoId: cursos.ECO, professorTesteId: professor.id });
   await exemplosDeNotificacoesEAuditoria({ professorId: professor.id, coordenadorId: coordenador.id, cursoId: cursos.ECO, hoje });
+  // SPEC-026 a SPEC-035 (Nível 1): instituição, substitutiva, exame, aula dupla, abono, trancamento e pedido de senha.
+  const administrador = contas.Administrador;
+  if (!administrador) throw new Error("Conta de administrador ausente.");
+  await exemplosDaSecretaria({ administradorId: administrador.id });
 }
 
 // Dados de demonstração (fictícios): estudantes em Normal, Atenção, Risco e sem dados, para os

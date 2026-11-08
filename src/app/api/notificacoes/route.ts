@@ -6,5 +6,5 @@ import { autorizarApi } from "@/server/auth/guardas";
 export async function GET(requisicao: Request) {
   const acesso = await autorizarApi(requisicao, RECURSOS.notificacoes);
   if ("negado" in acesso) return acesso.negado;
-  return Response.json(await consultarNotificacoes(acesso.sessao));
+  return Response.json(await consultarNotificacoes(acesso.sessao, new URL(requisicao.url).searchParams.get("pagina")));
 }

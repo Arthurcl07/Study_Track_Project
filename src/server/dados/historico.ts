@@ -12,8 +12,15 @@ export function turmasDoHistorico(sessao: Sessao) {
   });
 }
 
-export function historicoDaTurma(sessao: Sessao, turmaId: string) {
+export function contarHistoricoDaTurma(sessao: Sessao, turmaId: string) {
+  return prisma.historicoNota.count({ where: { avaliacao: { turma: { AND: [{ id: turmaId }, filtroTurmasDoEscopo(sessao)] } } } });
+}
+
+// SPEC-034: uma página de cada vez (pular e quantos), no mesmo escopo.
+export function historicoDaTurma(sessao: Sessao, turmaId: string, pular = 0, quantos = 10_000) {
   return prisma.historicoNota.findMany({
+    skip: pular,
+    take: quantos,
     where: { avaliacao: { turma: { AND: [{ id: turmaId }, filtroTurmasDoEscopo(sessao)] } } },
     select: {
       id: true,
@@ -24,6 +31,6 @@ export function historicoDaTurma(sessao: Sessao, turmaId: string) {
       estudante: { select: { nome: true } },
       autor: { select: { nome: true } },
     },
-    orderBy: { registradoEm: "desc" },
+    orderBy: [{ registradoEm: "desc" }, { id: "asc" }],
   });
 }

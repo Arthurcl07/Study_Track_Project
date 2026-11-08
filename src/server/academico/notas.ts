@@ -2,7 +2,9 @@
 // Quem pode: Professor (OPEN-001, OPEN-017), conferido na rota; aqui fica o escopo da turma (RB-03),
 // sempre dentro da própria query (ADR-003). Toda escrita de nota recalcula o indicador na MESMA
 // transação (INV-004-03, RB-10, AD-02): se o recálculo falhar, a nota anterior fica como estava.
-import { validarAvaliacao, validarValorNota } from "@/domain/registro-notas";
+import { ROTULO_TIPO, validarAvaliacao, validarValorNota } from "@/domain/registro-notas";
+import { MENSAGEM_NAO_ELEGIVEL_EXAME, elegivelAoExame } from "@/domain/situacao-academica";
+import { prisma } from "@/server/dados/prisma";
 import { recalcularIndicador } from "@/server/academico/indicador";
 import { numeroBR } from "@/domain/auditoria";
 import { notificacaoNota } from "@/domain/notificacoes";
@@ -28,14 +30,23 @@ export async function cadastrarAvaliacao(entrada: Record<string, unknown>, turma
 
   const validacao = validarAvaliacao(entrada);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
-  return sucesso(
-    await dados.executarEmTransacao(async (tx) => {
-      const avaliacao = await dados.criarAvaliacao(turmaId, validacao.dados, tx);
-      const contexto = await turmaParaAuditoria(turmaId, tx);
-      await auditar(tx, { autorId: professorId, acao: "avaliacao.criada", ...contexto, descricao: `${avaliacao.nome} (peso ${numeroBR(avaliacao.peso)}) em ${contexto.rotulo}` });
-      return avaliacao;
-    }),
-  );
+  try {
+    return sucesso(
+      await dados.executarEmTransacao(async (tx) => {
+        const avaliacao = await dados.criarAvaliacao(turmaId, validacao.dados, tx);
+        const contexto = await turmaParaAuditoria(turmaId, tx);
+        const detalhe = avaliacao.tipo === "Prova" || avaliacao.tipo === "Trabalho" ? `${ROTULO_TIPO[avaliacao.tipo]}, peso ${numeroBR(avaliacao.peso)}` : ROTULO_TIPO[avaliacao.tipo];
+        await auditar(tx, { autorId: professorId, acao: "avaliacao.criada", ...contexto, descricao: `${avaliacao.nome} (${detalhe}) em ${contexto.rotulo}` });
+        return avaliacao;
+      }),
+    );
+  } catch (erro) {
+    // SPEC-029 / INV-029-05: no máximo uma Substitutiva e um Exame por turma (índices parciais do banco).
+    if ((erro as { code?: string }).code === "P2002") {
+      return falha({ tipo: "conflito", erro: `Esta turma já tem uma avaliação do tipo ${ROTULO_TIPO[validacao.dados.tipo]}.` });
+    }
+    throw erro;
+  }
 }
 
 // Contrato "Registrar nota": turma, avaliação, estudante e valor.
@@ -53,6 +64,12 @@ export async function registrarNota(entrada: Record<string, unknown>, professorI
 
   const validacao = validarValorNota(entrada.valor);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
+
+  // SPEC-029 / RB-29 / AC-029-05: nota de exame só para quem está em exame (média < 6,0 e frequência ≥ 75%).
+  if (avaliacao.tipo === "Exame") {
+    const indicador = await prisma.indicadorAcademico.findUnique({ where: { estudanteId_turmaId: { estudanteId: alvo.estudanteId, turmaId: avaliacao.turmaId } }, select: { media: true, frequenciaAtual: true } });
+    if (!elegivelAoExame(indicador?.media ?? null, indicador?.frequenciaAtual ?? null)) return falha({ tipo: "invalido", erros: { valor: MENSAGEM_NAO_ELEGIVEL_EXAME } });
+  }
 
   try {
     return sucesso(

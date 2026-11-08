@@ -302,6 +302,56 @@ Cada uma entrou por pedido de Arthur ou sugestão aprovada, com a decisão regis
 - **Objetivo:** professor e coordenador publicam avisos para a turma ou o curso, com notificação e mural.
 - **RF / RB:** RF-34; RB-26. **Dependências:** SPEC-002, SPEC-015, SPEC-017, SPEC-019, SPEC-022. **OPEN:** OPEN-047.
 
+### SPEC-026 — Correção de cadastros
+
+- **Objetivo:** editar e excluir (sem registro dependente) contas, disciplinas, turmas, matrículas, avaliações, atividades e aulas.
+- **RF / RB:** RF-35; RB-20, RB-21, RB-32. **Dependências:** SPEC-002, SPEC-004, SPEC-005, SPEC-010, SPEC-015, SPEC-017, SPEC-018, SPEC-019. **OPEN:** OPEN-048.
+
+### SPEC-027 — Redefinição de senha por pedido
+
+- **Objetivo:** "Esqueci minha senha" no login; o administrador aprova e entrega uma senha provisória.
+- **RF / RB:** RF-36; RB-15, RB-27. **Dependências:** SPEC-001, SPEC-010, SPEC-011, SPEC-019. **OPEN:** OPEN-049.
+
+### SPEC-028 — Várias aulas no mesmo dia
+
+- **Objetivo:** chamada de 1 a 4 aulas por data, cada uma com a própria presença.
+- **RF / RB:** RF-27; RB-21. **Dependências:** SPEC-017, SPEC-018, SPEC-019. **OPEN:** OPEN-050.
+
+### SPEC-029 — Prova substitutiva e exame final
+
+- **Objetivo:** tipo da avaliação; substitutiva troca a menor prova; exame final dá a nota final no resultado.
+- **RF / RB:** RF-37; RB-24, RB-25, RB-28, RB-29. **Dependências:** SPEC-003, SPEC-004, SPEC-020, SPEC-023, SPEC-026. **OPEN:** OPEN-051.
+
+### SPEC-030 — Virada de semestre
+
+- **Objetivo:** copiar turmas (e, se pedido, estudantes ativos) para o período novo.
+- **RF / RB:** RF-38; RB-18, RB-20, RB-30. **Dependências:** SPEC-015, SPEC-017, SPEC-019, SPEC-031. **OPEN:** OPEN-052.
+
+### SPEC-031 — Situação do estudante no curso
+
+- **Objetivo:** trancamento, transferência, cancelamento, conclusão e troca de curso, com matrículas trancadas/canceladas fora das listas de trabalho.
+- **RF / RB:** RF-39; RB-19, RB-24, RB-30. **Dependências:** SPEC-015, SPEC-017, SPEC-019, SPEC-020, SPEC-033. **OPEN:** OPEN-053.
+
+### SPEC-032 — Abono de faltas
+
+- **Objetivo:** abono por intervalo de datas registrado pela secretaria; falta abonada conta como presença.
+- **RF / RB:** RF-40; RB-21, RB-31. **Dependências:** SPEC-017, SPEC-018, SPEC-019, SPEC-028, SPEC-033. **OPEN:** OPEN-054.
+
+### SPEC-033 — Ficha do estudante e dados da instituição
+
+- **Objetivo:** número de matrícula e dados pessoais do estudante; dados e logotipo da instituição nos documentos.
+- **RF / RB:** RF-41, RF-42; RB-33. **Dependências:** SPEC-002, SPEC-010, SPEC-015, SPEC-019, SPEC-020, SPEC-021. **OPEN:** OPEN-055.
+
+### SPEC-034 — Busca e paginação
+
+- **Objetivo:** busca por nome, e-mail ou matrícula e páginas de 25 itens nas listas grandes.
+- **RF / RB:** RF-43. **Dependências:** SPEC-010, SPEC-013, SPEC-022, SPEC-033. **OPEN:** OPEN-056.
+
+### SPEC-035 — Secretaria acadêmica no perfil Administrador
+
+- **Objetivo:** o administrador vira a secretaria (estudantes, pedidos de senha, virada, instituição e documentos), sem os dados de trabalho acadêmico.
+- **RF / RB:** RF-29; RB-01, RB-13. **Dependências:** SPEC-010, SPEC-016, SPEC-019, SPEC-020, SPEC-027, SPEC-030 a SPEC-034. **OPEN:** OPEN-057.
+
 ## Questões em aberto transversais
 
 - **OPEN-001:** definir permissões exatas para cada operação de cadastro e registro.

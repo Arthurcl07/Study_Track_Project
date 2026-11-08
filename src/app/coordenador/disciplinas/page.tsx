@@ -1,4 +1,5 @@
 import { Casca } from "@/components/casca";
+import { AcoesDisciplina } from "@/components/acoes-disciplina";
 import { FormularioApi } from "@/components/formulario-api";
 import { SeletorCurso } from "@/components/seletor-curso";
 import { CabecalhoPagina, Cartao, EstadoVazio, Etiqueta } from "@/components/ui";
@@ -8,7 +9,7 @@ import { cursosDoCoordenador, disciplinasDosCursos, disciplinasForaDaGrade } fro
 
 // SPEC-002 / RF-04 e SPEC-015 / RF-23 (UC-15): a grade de cada curso que o coordenador coordena, cadastro de
 // disciplina no curso e inclusão de disciplina que já existe em outro curso (OPEN-033).
-// Layout aprovado em docs/layout/prototipo.html#coordenador-grade.
+// Layout aprovado em docs/layout/prototipo.html#coordenador-grade. SPEC-026: editar e excluir disciplina (RB-32).
 export default async function Disciplinas({ searchParams }: { searchParams: Promise<{ curso?: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.cadastroAcademico);
   const cursos = await cursosDoCoordenador(sessao.usuarioId);
@@ -48,6 +49,7 @@ export default async function Disciplinas({ searchParams }: { searchParams: Prom
                   <th className="pb-2.5">Disciplina</th>
                   <th className="px-2 pb-2.5 text-right">Carga</th>
                   <th className="pb-2.5 pl-2">Também em</th>
+                  <th className="pb-2.5 pl-2"><span className="sr-only">Ações</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -63,6 +65,9 @@ export default async function Disciplinas({ searchParams }: { searchParams: Prom
                         ) : (
                           <span className="flex flex-wrap justify-end gap-1.5 sm:justify-start">{outros.map((c) => <Etiqueta key={c.id}>{c.nome}</Etiqueta>)}</span>
                         )}
+                      </td>
+                      <td data-rotulo="Ações" className="py-3 pl-2 text-right">
+                        <AcoesDisciplina id={d.id} nome={d.nome} cargaHoraria={d.cargaHoraria} />
                       </td>
                     </tr>
                   );

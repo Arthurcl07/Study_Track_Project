@@ -1,5 +1,6 @@
 // Casos de uso das notificações (SPEC-022, RF-31, UC-21). Só estudante e professor recebem (INV-022-05); cada um
 // vê e marca só as próprias (RB-23). As de prazo são geradas quando o estudante entra no sistema (OPEN-043).
+import { paginar } from "@/domain/secretaria";
 import type { Sessao } from "@/server/auth/token";
 import * as dados from "@/server/dados/notificacoes";
 import type { Resultado } from "./cadastros";
@@ -13,11 +14,13 @@ export async function naoLidasDoMenu(sessao: Sessao): Promise<number | undefined
   return dados.contarNaoLidas(sessao.usuarioId);
 }
 
-export async function consultarNotificacoes(sessao: Sessao) {
+export async function consultarNotificacoes(sessao: Sessao, paginaPedida?: unknown) {
   if (!recebe(sessao)) return null;
   if (sessao.perfil === "Estudante") await dados.gerarNotificacoesDePrazo(sessao.usuarioId);
-  const [notificacoes, naoLidas] = await Promise.all([dados.listarNotificacoes(sessao.usuarioId), dados.contarNaoLidas(sessao.usuarioId)]);
-  return { naoLidas, notificacoes: notificacoes.map((n) => ({ ...n, criadaEm: n.criadaEm.toISOString(), lidaEm: n.lidaEm?.toISOString() ?? null })) };
+  // SPEC-034: páginas de 25.
+  const pagina = paginar(await dados.contarNotificacoes(sessao.usuarioId), paginaPedida);
+  const [notificacoes, naoLidas] = await Promise.all([dados.listarNotificacoes(sessao.usuarioId, pagina.porPagina, pagina.pular), dados.contarNaoLidas(sessao.usuarioId)]);
+  return { naoLidas, pagina, notificacoes: notificacoes.map((n) => ({ ...n, criadaEm: n.criadaEm.toISOString(), lidaEm: n.lidaEm?.toISOString() ?? null })) };
 }
 
 export async function marcarComoLida(sessao: Sessao, id: string): Promise<Resultado<{ id: string; link: string }>> {

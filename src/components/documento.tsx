@@ -7,6 +7,9 @@ import { Logotipo } from "./marca";
 
 const COR_RESULTADO: Record<Resultado, string> = {
   Aprovado: "font-bold text-normal",
+  AprovadoExame: "font-bold text-normal",
+  Trancada: "font-semibold text-slate-600",
+  Cancelada: "font-semibold text-risco",
   ReprovadoNota: "font-bold text-risco",
   ReprovadoFrequencia: "font-bold text-risco",
   ReprovadoNotaFrequencia: "font-bold text-risco",
@@ -27,8 +30,11 @@ export function FolhaDocumento({
   dados,
   voltar,
   rodape,
+  instituicao,
   children,
 }: {
+  // SPEC-033 (RF-42): com os dados da instituição, o cabeçalho e a assinatura saem com eles.
+  instituicao?: { nome: string; cnpj: string | null; endereco: string | null; cidadeUf: string | null; responsavelSecretaria: string | null; logotipo: string | null } | null;
   titulo: string;
   subtitulo?: React.ReactNode;
   dados: { rotulo: string; valor: React.ReactNode }[];
@@ -41,10 +47,24 @@ export function FolhaDocumento({
       <BarraDocumento voltar={voltar} />
       <article className="folha-documento mx-auto my-5 max-w-[820px] bg-white px-4 py-6 text-[13px] shadow-[0_4px_18px_rgba(15,23,42,0.12)] sm:px-11 sm:py-10">
         <header className="flex flex-wrap items-start justify-between gap-4 border-b-2 border-marinho pb-3.5">
-          <div>
-            <Logotipo />
-            <p className="mt-1.5 text-mudo">Sistema de acompanhamento acadêmico</p>
-          </div>
+          {instituicao ? (
+            <div className="flex min-w-0 items-center gap-3">
+              {instituicao.logotipo && (
+                <img src={instituicao.logotipo} alt={`Logotipo de ${instituicao.nome}`} className="h-14 w-14 shrink-0 rounded-lg object-contain" />
+              )}
+              <div className="min-w-0">
+                <p className="text-[15px] font-bold">{instituicao.nome}</p>
+                <p className="mt-0.5 text-mudo">
+                  {[instituicao.cnpj && `CNPJ ${instituicao.cnpj}`, instituicao.endereco, instituicao.cidadeUf].filter(Boolean).join(" · ")}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <Logotipo />
+              <p className="mt-1.5 text-mudo">Sistema de acompanhamento acadêmico</p>
+            </div>
+          )}
           <div className="text-right">
             <h1 className="text-xl font-bold tracking-wide uppercase">{titulo}</h1>
             {subtitulo && <p className="mt-1">{subtitulo}</p>}
@@ -59,6 +79,13 @@ export function FolhaDocumento({
           ))}
         </dl>
         {children}
+        {instituicao?.responsavelSecretaria && (
+          <p className="mx-auto mt-10 w-72 max-w-full border-t border-texto pt-1.5 text-center text-xs">
+            {instituicao.responsavelSecretaria}
+            <br />
+            Secretaria acadêmica
+          </p>
+        )}
         <footer className="mt-6 flex flex-wrap justify-between gap-3 border-t border-traco pt-2.5 text-[11px] text-mudo">{rodape}</footer>
       </article>
     </div>

@@ -86,6 +86,13 @@ Entrar como `admin@studytrack.test`.
 - **Professor (`professor@`) → Dashboard → Turma MS-A**: coluna **Precisa (6,0)** para cada estudante. **Comunicados**: publicar um aviso para a turma; a Carla recebe a notificação.
 - **Coordenador (`coordenador@`) → Dashboard**: **Comparativo entre semestres** (2026/1 × 2026/2, com setas de tendência e média por disciplina). **Comunicados**: publicar para todas as turmas de Engenharia da Computação.
 
+## 4e. Secretaria e uso real (4 min) — SPEC-026 a SPEC-035
+
+- **Login → Esqueci minha senha**: informar `julia.reis@studytrack.test`; a resposta é sempre a mesma. **Administrador → Pedidos de senha**: aprovar o pedido da Júlia e mostrar a senha provisória (aparece uma vez); ela entra e é obrigada a criar outra (SPEC-027).
+- **Administrador → Estudantes**: buscar "amanda" (sem acento, por nome, e-mail ou matrícula), abrir a ficha da Amanda Barbosa (Trancada); abrir a de outro estudante e registrar um **abono** (a prévia diz quantas faltas serão abonadas) (SPEC-031 a SPEC-034). **Boletim** do João em 2026/1: cabeçalho da instituição, matrícula, exame, nota final e "Aprovado no exame" (SPEC-029/033). **Instituição** e **Virada de semestre** (prévia 2026/1 → 2026/2) (SPEC-030/033).
+- **Professor → Chamada → Turma SO-B**: a aula dupla do último dia (1ª e 2ª aula); corrigir, mudar a data ou excluir uma aula (SPEC-026/028). **Notas → Turma MS-A**: tipo de cada avaliação, a Substitutiva e Editar/Excluir (SPEC-026/029).
+- **Coordenador → Turmas e estudantes**: matrícula e situação de cada estudante, "Tirar da turma" (recusado se já tem nota) e Editar turma; **Disciplinas**: editar e excluir (SPEC-026).
+
 ## 5. Qualidade (2 min)
 
 | Mostrar | Onde |

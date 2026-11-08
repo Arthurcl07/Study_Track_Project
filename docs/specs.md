@@ -53,6 +53,9 @@ Legenda de status da Spec:
 | SPEC-023 a SPEC-025 incluídas a pedido do grupo (Luiz), com OPEN-045 a OPEN-047 fechadas (decisão humana, Luiz); RF-32 a RF-34, RB-25 e RB-26; texto das Specs e layout aguardando aprovação | `especificada` | 2026-11-06 |
 | SPEC-023 a SPEC-025 e layout aprovados (Luiz) | `aprovada` | 2026-11-06 |
 | SPEC-023 a SPEC-025 marcadas como `implementadas`: 290 testes e verificação em `docs/verificacao/SPEC-023-025.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
+| SPEC-026 a SPEC-035 (Nível 1: secretaria) incluídas a pedido de Arthur, com OPEN-048 a OPEN-057 fechadas (decisão humana, Arthur); RF-35 a RF-43, RB-27 a RB-33; RB-01, RB-13, RB-15, RB-19, RB-20, RB-21, RB-24, RB-25, RF-27 e RF-29 ajustados | `especificada` | 2026-11-06 |
+| SPEC-026 a SPEC-035 e layout aprovados (Arthur) | `aprovada` | 2026-11-06 |
+| SPEC-026 a SPEC-035 marcadas como `implementadas`: 353 testes e verificação em `docs/verificacao/SPEC-026-035.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
 
 ---
 
@@ -3419,6 +3422,1208 @@ Nova entidade **Comunicado** (id, título, texto, criadoEm), com exatamente 1 au
 ## 13. Questões em aberto
 
 Nenhuma. OPEN-047 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-026 — Correção de cadastros
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-026 |
+| **Nome** | Correção de cadastros (editar e excluir) |
+| **Objetivo** | Permitir corrigir o que foi digitado errado e excluir o que foi criado por engano, sem apagar nada que já tenha registro acadêmico. |
+| **Valor** | Hoje um nome errado, um peso errado ou uma chamada no dia errado não têm conserto; numa escola de verdade isso acontece toda semana. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-35 |
+| **RB** | RB-03, RB-04, RB-10, RB-13, RB-20, RB-21, RB-22, RB-32 |
+| **RNF** | RNF-02, RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-25 Corrigir cadastro |
+| **Entidades** | `Usuario`, `Disciplina`, `CursoDisciplina`, `Turma`, `Matricula`, `Avaliacao`, `Atividade`, `Aula`, `Presenca`, `RegistroAuditoria` |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-048 |
+
+## 3. Escopo
+
+**Incluído**
+- Administrador: **Editar** nome e e-mail de uma conta (Contas).
+- Coordenador (cursos que coordena): editar nome e carga horária da disciplina (só se todas as grades dela forem de cursos dele); **excluir** disciplina sem turma; editar o nome da turma; **excluir** turma sem matrícula, avaliação, aula ou atividade; **tirar estudante da turma** sem nota, presença, entrega nem plano.
+- Professor (turmas que leciona): editar avaliação (nome, peso, data e tipo, SPEC-029) e **excluir** avaliação sem nota; editar atividade (descrição e prazo) e **excluir** atividade sem entrega; mudar a data de uma aula e **excluir** a aula (com as presenças).
+- Editar o peso de uma avaliação, mudar a data ou excluir uma aula recalculam média, frequência e indicador na mesma transação (RB-10, RB-21).
+- Toda edição e exclusão vai para a auditoria com o antes e o depois (RB-22); toda exclusão pede confirmação na tela.
+
+**Fora do escopo**
+- Trocar o perfil de uma conta e excluir conta (continua a desativação, RB-14).
+- Excluir nota (o histórico de notas é imutável, RB-16), entrega já registrada (continua o "desfazer" da SPEC-005) ou plano.
+- Excluir curso ou período.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Notas e avaliações — editar e excluir avaliação | [prototipo.html#correcao-avaliacao](layout/prototipo.html#correcao-avaliacao) | [x] | [x] | Arthur | 2026-11-06 |
+| Turma — editar, tirar estudante e excluir | [prototipo.html#correcao-turma](layout/prototipo.html#correcao-turma) | [x] | [x] | Arthur | 2026-11-06 |
+| Contas — editar conta | [prototipo.html#correcao-conta](layout/prototipo.html#correcao-conta) | [x] | [x] | Arthur | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-002, SPEC-004, SPEC-005, SPEC-010, SPEC-015, SPEC-017, SPEC-018, SPEC-019.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** quem tem o cadastro no escopo abre a tela, clica em Editar, muda os campos e salva; ou clica em Excluir e confirma.
+
+**Exceções:** fora do escopo: não encontrado (404); período encerrado: 409 (RB-20); registro dependente: 409 com o motivo (RB-32); e-mail repetido ou campo inválido: 400 com o campo; disciplina compartilhada com curso de outro coordenador: 409.
+
+**Pós-condições:** cadastro alterado ou excluído, recálculos feitos e auditoria gravada na mesma transação.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-026-01 | Nada com nota, presença, entrega ou plano é excluído (RB-32). |
+| INV-026-02 | Mudar o peso de uma avaliação recalcula o indicador de todos os estudantes da turma na mesma transação. |
+| INV-026-03 | Excluir ou mudar a data de uma aula recalcula a frequência e o indicador dos estudantes da aula na mesma transação; a data nova não pode ser futura nem ter já 4 aulas (RB-21). |
+| INV-026-04 | Cada perfil só altera o que está no próprio escopo (ADR-003); o administrador não altera nada acadêmico (RB-13). |
+| INV-026-05 | Toda alteração e exclusão gera auditoria com antes e depois (RB-22). |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova. Exclusões só de registros sem dependentes; a aula leva junto as presenças.
+
+## 8. Impacto arquitetural
+
+- Validações puras em `src/domain/correcoes.ts` (campos editáveis e motivo de recusa da exclusão).
+- Casos de uso em `src/server/academico/correcoes.ts`, cada um com escopo na query, trava do período, recálculo e auditoria na transação.
+- Sem migração.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `PATCH /api/contas/:id` | nome, e-mail | conta | campo inválido, e-mail repetido, não encontrado |
+| `PATCH` / `DELETE /api/disciplinas/:id` | nome, carga horária | disciplina / excluída | campo inválido, compartilhada, tem turma, não encontrado |
+| `PATCH` / `DELETE /api/turmas/:id` | nome | turma / excluída | período encerrado, tem registros, não encontrado |
+| `DELETE /api/turmas/:id/matriculas/:estudanteId` | — | matrícula excluída | tem registros, período encerrado, não encontrado |
+| `PATCH` / `DELETE /api/avaliacoes/:id` | nome, peso, data, tipo | avaliação / excluída | campo inválido, tem nota, período encerrado, não encontrado |
+| `PATCH` / `DELETE /api/atividades/:id` | descrição, prazo | atividade / excluída | campo inválido, tem entrega, período encerrado, não encontrado |
+| `PATCH` / `DELETE /api/aulas/:id` | data | aula / excluída | data futura, 4 aulas na data, período encerrado, não encontrado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03 | Escopo na query; teste com outro professor e outro coordenador |
+| RNF-04, RNF-06 | Telas aprovadas; confirmação antes de excluir |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-026-01 | Administrador | Edita o nome e o e-mail de uma conta | Conta alterada; auditoria com antes e depois |
+| AC-026-02 | Administrador | Usa um e-mail que já existe | 400 com o campo e-mail |
+| AC-026-03 | Professor da turma | Muda o peso de uma avaliação com notas | Média e situação dos estudantes recalculadas |
+| AC-026-04 | Professor | Exclui avaliação com nota | 409 "a avaliação já tem notas" |
+| AC-026-05 | Professor | Exclui avaliação sem nota | Excluída; auditoria |
+| AC-026-06 | Professor | Exclui uma aula | Presenças excluídas; frequência e indicador recalculados |
+| AC-026-07 | Professor | Muda a data da aula para o futuro | 400 |
+| AC-026-08 | Coordenador | Tira da turma um estudante sem registros | Matrícula excluída |
+| AC-026-09 | Coordenador | Tira da turma um estudante com nota ou presença | 409 com o motivo |
+| AC-026-10 | Coordenador | Exclui disciplina com turma ou turma com matrícula | 409 com o motivo |
+| AC-026-11 | Coordenador | Edita disciplina que também está em curso de outro coordenador | 409 |
+| AC-026-12 | Professor de outra turma ou coordenador de outro curso | Tenta editar ou excluir | 404; nada muda |
+| AC-026-13 | Turma de período encerrado | Qualquer edição ou exclusão | 409 (RB-20) |
+| AC-026-14 | Professor | Edita e exclui atividade (sem entrega) | Alterada e excluída; com entrega, 409 |
+
+## 12. Casos de teste derivados
+
+1. Regras puras: campos editáveis, motivo de recusa da exclusão.
+2. Integração: cada rota com escopo, trava, recálculo e auditoria.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-048 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-027 — Redefinição de senha por pedido
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-027 |
+| **Nome** | Redefinição de senha por pedido ("Esqueci minha senha") |
+| **Objetivo** | Quem esqueceu a senha pede a redefinição na tela de login; o administrador aprova e entrega uma senha provisória, trocada no primeiro acesso. |
+| **Valor** | Hoje quem esquece a senha fica sem acesso para sempre, porque ninguém consegue redefini-la. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-36, RF-18 |
+| **RB** | RB-13, RB-14, RB-15, RB-22, RB-27 |
+| **RNF** | RNF-02, RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-26 Pedir redefinição de senha |
+| **Entidades** | `PedidoSenha` (nova), `Usuario`, `RegistroAuditoria` |
+| **ADRs** | ADR-001, ADR-002, ADR-004 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-026, OPEN-049 |
+
+## 3. Escopo
+
+**Incluído**
+- Link **Esqueci minha senha** no login, que abre uma página pública com o campo e-mail. A resposta é sempre: "Se o e-mail estiver cadastrado, o pedido foi enviado à secretaria. Procure a secretaria para receber a senha provisória."
+- O pedido só é gravado para conta **ativa** existente e sem outro pedido pendente; e-mail desconhecido, conta desativada ou pedido repetido não gravam nada e recebem a mesma resposta.
+- Página **Pedidos de senha** do administrador: pedidos pendentes (nome, e-mail, perfil, data do pedido) e os resolvidos nos últimos 30 dias; contador de pendentes no menu e no dashboard.
+- **Aprovar**: gera senha provisória aleatória (12 caracteres, mesmo gerador da importação), grava o hash, marca `trocarSenha`, encerra o pedido e mostra a senha **uma única vez** com o botão Copiar. **Recusar**: encerra o pedido sem mudar a senha.
+- Auditoria administrativa ("pedido de senha aprovado/recusado"), sem a senha.
+
+**Fora do escopo**
+- Envio por e-mail ou SMS; pergunta secreta; o próprio usuário escolher a senha sem a secretaria.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Esqueci minha senha | [prototipo.html#senha-esqueci](layout/prototipo.html#senha-esqueci) | [x] | [x] | Arthur | 2026-11-06 |
+| Pedidos de senha (administrador) | [prototipo.html#senha-pedidos](layout/prototipo.html#senha-pedidos) | [x] | [x] | Arthur | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-001, SPEC-010, SPEC-011, SPEC-019.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a pessoa pede pelo e-mail; a secretaria confere quem é (presencialmente ou por telefone), aprova e entrega a senha provisória; no primeiro acesso a pessoa define a senha nova (SPEC-011).
+
+**Exceções:** e-mail em formato inválido: 400 com o campo; pedido já resolvido: 409; administrador aprovando o próprio pedido: 409; perfil diferente de administrador: 403.
+
+**Pós-condições:** pedido Aprovado (senha provisória gravada e conta marcada) ou Recusado; auditoria na mesma transação.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-027-01 | A resposta do pedido é idêntica para conta existente, inexistente e desativada (RB-27). |
+| INV-027-02 | No máximo um pedido pendente por conta (índice único parcial). |
+| INV-027-03 | A senha provisória não é gravada em texto em lugar nenhum: nem no pedido nem na auditoria (RNF-02). |
+| INV-027-04 | Depois da aprovação a conta só define a senha nova e sai (RB-15). |
+| INV-027-05 | O administrador não aprova o próprio pedido. |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **PedidoSenha** (id, status Pendente/Aprovado/Recusado, criadoEm, resolvidoEm), de 1 Usuario, resolvida por 1 Administrador.
+
+## 8. Impacto arquitetural
+
+- Regras puras em `src/domain/pedido-senha.ts`; caso de uso em `src/server/auth/pedidos-senha.ts`.
+- Migração: tabela `PedidoSenha`, enum de status e índice único parcial (`WHERE status = 'Pendente'`).
+- A página `/esqueci-senha` e `POST /api/auth/esqueci` são públicas, como o login.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `POST /api/auth/esqueci` | e-mail | 202 com a mensagem padrão | e-mail inválido |
+| `GET /api/pedidos-senha` | sessão | pendentes e resolvidos recentes | sem permissão |
+| `POST /api/pedidos-senha/:id/aprovar` | — | senha provisória (uma vez) | já resolvido, próprio pedido, não encontrado |
+| `POST /api/pedidos-senha/:id/recusar` | — | recusado | já resolvido, não encontrado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-02 | Senha só em hash; teste confere que a auditoria e o pedido não têm a senha |
+| RNF-05 | Mesma resposta para qualquer e-mail (não revela quem está cadastrado) |
+| RNF-04, RNF-06 | Telas aprovadas |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-027-01 | Conta ativa | Pede a redefinição | Pedido pendente gravado; resposta padrão |
+| AC-027-02 | E-mail desconhecido ou conta desativada | Pede | Nada gravado; a mesma resposta |
+| AC-027-03 | Conta com pedido pendente | Pede de novo | Nenhum pedido novo; a mesma resposta |
+| AC-027-04 | Administrador | Aprova | Senha provisória mostrada uma vez; a senha antiga deixa de funcionar; a provisória entra e é obrigada a definir senha nova |
+| AC-027-05 | Administrador | Recusa | Pedido recusado; a senha antiga continua valendo |
+| AC-027-06 | Pedido já resolvido | Aprova de novo | 409 |
+| AC-027-07 | Administrador com pedido próprio | Aprova o próprio | 409 |
+| AC-027-08 | Coordenador | Abre os pedidos | 403 |
+| AC-027-09 | Aprovação | Consulta a auditoria | Registro sem a senha |
+
+## 12. Casos de teste derivados
+
+1. Regras puras do pedido (pode pedir, pode aprovar).
+2. Integração: pedido público, aprovação, login com a provisória, recusa, auditoria.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-049 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-028 — Várias aulas no mesmo dia
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-028 |
+| **Nome** | Várias aulas no mesmo dia (aula dupla) |
+| **Objetivo** | A chamada de uma data registra de 1 a 4 aulas, cada uma com a própria presença. |
+| **Valor** | Aulas seguidas são comuns; com uma aula só por dia a frequência sai errada. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-27 |
+| **RB** | RB-10, RB-20, RB-21, RB-22, RB-31 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-08 Registrar frequência |
+| **Entidades** | `Aula` (número), `Presenca`, `Frequencia`, `IndicadorAcademico` |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-041, OPEN-050 |
+
+## 3. Escopo
+
+**Incluído**
+- Na Chamada, o professor escolhe a data e a **quantidade de aulas (1 a 4)**; a tabela ganha uma coluna por aula ("1ª", "2ª"...). Marcar a 1ª aula copia a marcação para as outras; cada coluna pode ser mudada.
+- Aulas já registradas na data aparecem para correção; dá para acrescentar aulas até 4.
+- Falta abonada (SPEC-032) aparece como "Abonada" e não pode ser marcada.
+- Lista de aulas da turma com data, número e presentes, com Editar data e Excluir (SPEC-026).
+
+**Fora do escopo**
+- Horário de cada aula e grade horária; justificativa pelo professor.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Chamada com 2 aulas e falta abonada | [prototipo.html#chamada-aulas](layout/prototipo.html#chamada-aulas) | [x] | [x] | Arthur | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-017, SPEC-018, SPEC-019.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o professor escolhe turma, data e "2 aulas", marca as faltas e salva; frequência e indicador são recalculados.
+
+**Exceções:** data futura: 400; mais de 4 aulas na data: 400; turma de outro professor: 404; período encerrado: 409.
+
+**Pós-condições:** aulas e presenças gravadas; frequência e indicador recalculados; auditoria.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-028-01 | No máximo 4 aulas por turma e data, numeradas de 1 a 4 sem repetir (índice único). |
+| INV-028-02 | Frequência = (presenças + faltas abonadas) ÷ aulas em que o estudante constou × 100 (RB-21). |
+| INV-028-03 | Aulas, presenças, frequência, indicador e auditoria na mesma transação. |
+
+## 7. Modelo de domínio envolvido
+
+`Aula` ganha `numero` (1 a 4); o índice único passa de (turma, data) para (turma, data, número). Aulas existentes ficam com número 1.
+
+## 8. Impacto arquitetural
+
+- `frequenciaPelaChamada` passa a receber as faltas abonadas (`src/domain/frequencia.ts`).
+- Caso de uso da chamada (`src/server/academico/chamada.ts`) grava várias aulas; migração com a coluna e o índice novo.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `POST /api/aulas` | turmaId, data, aulas: lista (1 a 4) de presenças por estudante | aulas gravadas | data futura, mais de 4, período encerrado, não encontrado |
+| `GET /api/aulas?turmaId=` | — | aulas da turma com número e presenças | não encontrado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Chamada de 4 aulas com 40 estudantes em menos de 3 s |
+| RNF-04, RNF-06 | Tela aprovada, celular inclusive |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-028-01 | Turma com 3 estudantes | Registra 2 aulas na data, um estudante falta só na 2ª | Esse estudante fica com 50% naquela data; os outros com 100% |
+| AC-028-02 | Data com 2 aulas | Acrescenta mais 2 | 4 aulas na data |
+| AC-028-03 | Data com 4 aulas | Tenta a 5ª | 400 |
+| AC-028-04 | Aula já registrada | Corrige a presença | Frequência recalculada |
+| AC-028-05 | Aulas antigas (antes da Spec) | Abre a chamada | Aparecem como 1ª aula da data |
+
+## 12. Casos de teste derivados
+
+1. Frequência com várias aulas e com abono (unitário).
+2. Integração: registro, acréscimo, limite, correção.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-050 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-029 — Prova substitutiva e exame final
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-029 |
+| **Nome** | Prova substitutiva e exame final |
+| **Objetivo** | A avaliação ganha tipo; a substitutiva troca a menor prova e o exame final dá a nota final de quem ficou abaixo de 6,0. |
+| **Valor** | Recuperação de nota é regra em quase toda instituição; sem ela o resultado do histórico sai errado. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-37, RF-05, RF-29, RF-32 |
+| **RB** | RB-05, RB-06, RB-07, RB-09, RB-10, RB-24, RB-25, RB-28, RB-29 |
+| **RNF** | RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-03 Registrar nota; UC-19 Emitir boletim e histórico |
+| **Entidades** | `Avaliacao` (tipo), `Nota`, `IndicadorAcademico` |
+| **ADRs** | ADR-001, ADR-002 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-002, OPEN-044, OPEN-051 |
+
+## 3. Escopo
+
+**Incluído**
+- Cadastro e edição de avaliação com **tipo**: Prova, Trabalho, Substitutiva ou Exame final (no máximo uma Substitutiva e um Exame por turma). Substitutiva e Exame não pedem peso (o campo some).
+- **Média** (`calcularMedia`, OPEN-002 + RB-28): média ponderada das provas e trabalhos com nota; com nota na substitutiva, a menor prova (sem nota = 0) é trocada pela substitutiva quando isso aumenta a média. A situação Normal/Atenção/Risco usa essa média (DA-02).
+- **Exame final** (RB-29): o lançamento só lista estudantes elegíveis (média < 6,0 e frequência ≥ 75%) e recusa os demais; nota final = (média + exame) ÷ 2.
+- Painel do estudante e dashboard da turma: "Substitutiva" e "Exame" aparecem nas notas; com exame, "Nota final".
+- Boletim e histórico: coluna Exame e resultado **Aprovado no exame** ou Reprovado pela nota final (RB-24).
+- Simulador: Substitutiva e Exame não contam como avaliação restante (RB-25).
+- Migração: avaliações existentes viram Prova quando o nome começa com "Prova", senão Trabalho.
+
+**Fora do escopo**
+- Mudar a média 6,0 e a frequência de 75% (continuam fixas, decisão de 2026-11-06); mais de uma substitutiva; exame que mude a situação Normal/Atenção/Risco.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Avaliações com tipo e lançamento do exame | [prototipo.html#avaliacao-tipos](layout/prototipo.html#avaliacao-tipos) | [x] | [x] | Arthur | 2026-11-06 |
+| Boletim com exame e dados da instituição | [prototipo.html#boletim-exame](layout/prototipo.html#boletim-exame) | [x] | [x] | Arthur | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-003, SPEC-004, SPEC-020, SPEC-023, SPEC-026.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o professor cadastra "Substitutiva" e lança as notas; as médias são recalculadas. No fim do semestre cadastra "Exame final" e lança a nota só de quem ficou abaixo de 6,0 com frequência suficiente.
+
+**Exceções:** segunda substitutiva ou segundo exame: 409; nota de exame de estudante não elegível: 400 com o motivo; período encerrado: 409.
+
+**Pós-condições:** notas gravadas, indicador recalculado (a substitutiva muda a média; o exame não muda a situação), histórico de notas e auditoria.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-029-01 | A substitutiva só troca uma prova, e só quando aumenta a média (RB-28). |
+| INV-029-02 | A nota de exame só existe para estudante elegível no momento do lançamento (RB-29). |
+| INV-029-03 | Nota final = (média + exame) ÷ 2; aprovação no exame com nota final ≥ 5,0 e frequência ≥ 75%. |
+| INV-029-04 | A classificação Normal/Atenção/Risco continua só em `situacao-academica.ts` e não usa o exame (DA-02). |
+| INV-029-05 | No máximo uma Substitutiva e um Exame por turma (índice único parcial). |
+
+## 7. Modelo de domínio envolvido
+
+`Avaliacao` ganha `tipo` {Prova, Trabalho, Substitutiva, Exame}.
+
+## 8. Impacto arquitetural
+
+- `calcularMedia` (`src/domain/situacao-academica.ts`) recebe o tipo de cada avaliação; nova `notaFinalComExame` e `elegivelAoExame` no mesmo arquivo.
+- `resultadoDaTurma` (`src/domain/documentos.ts`) passa a considerar o exame.
+- Migração: enum, coluna com backfill e índices únicos parciais por turma para Substitutiva e Exame.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `POST /api/turmas/:id/avaliacoes` | nome, tipo, peso (Prova e Trabalho), data | avaliação | campo inválido, segunda substitutiva/exame, período encerrado |
+| `POST /api/notas` | avaliação, estudante, valor | nota | estudante não elegível ao exame, demais erros da SPEC-004 |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03 | Mesmo escopo da SPEC-004 |
+| RNF-04, RNF-06 | Telas aprovadas |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-029-01 | P1 (peso 2) = 3,0, P2 (peso 2) = 7,0, Trabalho (peso 1) = 8,0 | Lança Substitutiva = 9,0 | Média passa de 5,6 para 8,0 (a P1 é trocada) |
+| AC-029-02 | Estudante sem a P2 | Lança Substitutiva | A P2 (zero) é trocada |
+| AC-029-03 | Substitutiva menor que todas as provas | Lança | Média não muda |
+| AC-029-04 | Média 4,0 e frequência 80% | Lança exame 7,0 | Nota final 5,5; resultado no encerramento: Aprovado no exame |
+| AC-029-05 | Média 6,5 ou frequência 70% | Lança exame | 400 "estudante não está em exame" |
+| AC-029-06 | Turma já com substitutiva | Cadastra outra | 409 |
+| AC-029-07 | Exame lançado | Consulta a situação | Situação continua a da média (não muda com o exame) |
+| AC-029-08 | Avaliações sem nota: Prova 2 e Substitutiva | Abre o simulador | Só a Prova 2 conta como restante |
+
+## 12. Casos de teste derivados
+
+1. `calcularMedia` com substitutiva (troca, zero, sem ganho); elegibilidade e nota final (unitário).
+2. Integração: cadastro com tipo, unicidade, lançamento do exame, boletim.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-051 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-030 — Virada de semestre
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-030 |
+| **Nome** | Virada de semestre (copiar turmas para o período novo) |
+| **Objetivo** | A secretaria copia as turmas de um período para o período novo de uma vez, com a opção de levar os estudantes. |
+| **Valor** | Hoje cada turma é recriada à mão a cada semestre. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-38, RF-26 |
+| **RB** | RB-13, RB-14, RB-18, RB-19, RB-20, RB-22, RB-30 |
+| **RNF** | RNF-01, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-27 Virar o semestre |
+| **Entidades** | `Turma`, `Matricula`, `PeriodoLetivo`, `RegistroAuditoria` |
+| **ADRs** | ADR-001, ADR-002 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-040, OPEN-052 |
+
+## 3. Escopo
+
+**Incluído**
+- Página **Virada de semestre** do administrador: período de origem (qualquer) e período de destino (aberto); lista das turmas de origem agrupadas por curso, com professor, número de estudantes e o que vai acontecer ("será copiada", "já existe no destino", "professor desativado").
+- Marcar ou desmarcar turmas e, por turma, "levar os estudantes" (só os Ativos no curso).
+- Confirmar cria tudo numa transação e mostra o resumo (turmas criadas, matrículas, puladas com o motivo); auditoria por turma criada.
+
+**Fora do escopo**
+- Copiar avaliações, atividades, notas ou chamadas; mudar professor ou nome na hora da cópia (fica para a edição, SPEC-026); rematrícula por matriz curricular.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Virada de semestre | [prototipo.html#virada-semestre](layout/prototipo.html#virada-semestre) | [x] | [x] | Arthur | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-015, SPEC-017, SPEC-019, SPEC-031.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a secretaria cria o período 2027/1, abre a Virada, escolhe 2026/2 → 2027/1, revisa e confirma.
+
+**Exceções:** destino encerrado ou igual à origem: 400; nenhuma turma marcada: 400; perfil diferente de administrador: 403.
+
+**Pós-condições:** turmas e matrículas criadas no destino; auditoria.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-030-01 | Só se copia para período aberto (RB-20). |
+| INV-030-02 | A cópia mantém disciplina e curso; a disciplina continua na grade do curso (RB-18). |
+| INV-030-03 | Turma com mesmo nome e disciplina no curso de destino não é duplicada. |
+| INV-030-04 | Só estudantes Ativos no curso são levados (RB-30). |
+| INV-030-05 | Tudo ou nada: uma transação. |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- Plano da cópia em `src/domain/virada.ts` (puro: o que copiar, o que pular e por quê); caso de uso em `src/server/academico/virada.ts`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/virada?origem=&destino=` | — | prévia por turma | período inválido |
+| `POST /api/virada` | origem, destino, turmas (id, levarEstudantes) | resumo | período inválido, nenhuma turma, sem permissão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Virada de 15 turmas e 70 estudantes em menos de 3 s |
+| RNF-04, RNF-06 | Tela aprovada |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-030-01 | 3 turmas em 2026/2 e 2027/1 aberto | Copia as 3 sem estudantes | 3 turmas em 2027/1 com o mesmo professor, disciplina e curso |
+| AC-030-02 | Turma com 10 estudantes, 1 trancado | Copia levando os estudantes | 9 matrículas na turma nova |
+| AC-030-03 | Turma já copiada | Copia de novo | Pulada: "já existe no destino" |
+| AC-030-04 | Professor desativado | Prévia | "professor desativado"; não é copiada |
+| AC-030-05 | Destino encerrado | Confirma | 400 |
+| AC-030-06 | Coordenador | Abre a virada | 403 |
+
+## 12. Casos de teste derivados
+
+1. Plano da cópia (unitário).
+2. Integração: cópia, estudantes, duplicada, transação.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-052 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-031 — Situação do estudante no curso
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-031 |
+| **Nome** | Situação do estudante no curso (trancamento, transferência, cancelamento, conclusão e troca de curso) |
+| **Objetivo** | A secretaria registra a situação do estudante no curso, e matrículas trancadas ou canceladas saem das listas de trabalho sem sumir do histórico. |
+| **Valor** | Aluno que tranca ou sai continuaria aparecendo na chamada, nas notas e nos alertas como se estivesse cursando. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-39 |
+| **RB** | RB-13, RB-19, RB-20, RB-22, RB-24, RB-30 |
+| **RNF** | RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-28 Alterar situação do estudante |
+| **Entidades** | `FichaEstudante` (situação), `Matricula` (situação), `Usuario` (curso) |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-032, OPEN-053 |
+
+## 3. Escopo
+
+**Incluído**
+- Na ficha do estudante (SPEC-033), bloco **Situação no curso**: situação atual, desde quando e motivo; ação **Alterar situação** (Ativo, Trancado, Transferido, Cancelado, Concluído) com data e motivo obrigatório.
+- Trancar: matrículas em turmas de período aberto viram **Trancada**; transferir ou cancelar: **Cancelada**. Concluir e reativar não mexem nas matrículas.
+- Matrícula trancada ou cancelada sai da chamada, do lançamento de notas e entregas, dos planos, dos dashboards, dos alertas e dos relatórios; o boletim e o histórico mostram "Trancada" ou "Cancelada" (RB-24).
+- Estudante não Ativo não é matriculado nem importado (RB-30); o painel dele mostra a situação.
+- **Trocar curso** (só Ativo sem matrícula cursando em período aberto, RB-19).
+- Auditoria acadêmica com o curso.
+
+**Fora do escopo**
+- Reativar matrícula trancada automaticamente; prazos e taxas de trancamento; documento de transferência.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Ficha do estudante — situação, abonos e documentos | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [x] | [x] | Arthur | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-015, SPEC-017, SPEC-019, SPEC-020, SPEC-033.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o estudante pede trancamento na secretaria; a secretaria abre a ficha, escolhe Trancado, informa data e motivo e confirma.
+
+**Exceções:** motivo vazio ou data futura: 400; mesma situação atual: 400; troca de curso com matrícula cursando: 409; perfil diferente de administrador: 403.
+
+**Pós-condições:** situação gravada, matrículas abertas ajustadas e auditoria na mesma transação.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-031-01 | Matrícula de período encerrado nunca muda de situação. |
+| INV-031-02 | Matrícula não Cursando não aparece em nenhuma lista de trabalho nem nos números dos dashboards (RB-30). |
+| INV-031-03 | Só estudante Ativo recebe matrícula nova (RB-30). |
+| INV-031-04 | O histórico continua completo depois da troca de curso. |
+
+## 7. Modelo de domínio envolvido
+
+`FichaEstudante` ganha `situacaoCurso`, `situacaoDesde`, `situacaoMotivo`; `Matricula` ganha `situacao` {Cursando, Trancada, Cancelada}.
+
+## 8. Impacto arquitetural
+
+- Regras puras em `src/domain/situacao-curso.ts` (transições e efeito nas matrículas).
+- Filtro único `MATRICULA_CURSANDO` em `src/server/dados/` usado por todas as consultas de trabalho (chamada, notas, entregas, planos, dashboards, alertas, relatórios, comunicados, importação).
+- Migração: enum e coluna em `Matricula` (padrão Cursando). **Ajustado na implementação (2026-11-06):** `IndicadorAcademico` e `Frequencia` ganharam chave estrangeira para a `Matricula` (migração `nivel_1_vinculos_matricula`), para os dashboards filtrarem a matrícula cursando na própria query.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `PUT /api/estudantes/:id/situacao` | situação, data, motivo | ficha | campo inválido, sem permissão, não encontrado |
+| `PUT /api/estudantes/:id/curso` | cursoId | estudante | matrícula cursando, curso inexistente |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03 | Só o administrador altera; filtro de matrícula na query |
+| RNF-04, RNF-06 | Tela aprovada |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-031-01 | Estudante com 3 turmas em 2026/2 e 2 em 2026/1 | Trancado | As 3 de 2026/2 ficam Trancadas; as de 2026/1 não mudam |
+| AC-031-02 | Matrícula trancada | Professor abre a chamada e as notas | O estudante não aparece |
+| AC-031-03 | Matrícula trancada | Coordenador abre o dashboard e o relatório | Não conta nos números |
+| AC-031-04 | Estudante trancado | Coordenador tenta matricular | 409 |
+| AC-031-05 | Estudante cancelado | Abre o histórico | Turma com resultado "Cancelada" |
+| AC-031-06 | Estudante Ativo sem turma aberta | Troca de curso | Curso novo; histórico mantido |
+| AC-031-07 | Estudante com matrícula cursando | Troca de curso | 409 |
+| AC-031-08 | Coordenador | Tenta alterar a situação | 403 |
+
+## 12. Casos de teste derivados
+
+1. Transições e efeito nas matrículas (unitário).
+2. Integração: trancar, listas de trabalho, matrícula recusada, troca de curso.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-053 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-032 — Abono de faltas
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-032 |
+| **Nome** | Abono de faltas |
+| **Objetivo** | A secretaria registra um abono por um intervalo de datas e as faltas desse período passam a contar como presença. |
+| **Valor** | Atestados e regimes especiais (exercícios domiciliares, licença-maternidade, serviço militar) mudam a frequência e hoje não têm onde ser registrados. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-40 |
+| **RB** | RB-10, RB-13, RB-20, RB-21, RB-22, RB-31 |
+| **RNF** | RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-29 Registrar abono de faltas |
+| **Entidades** | `Abono` (nova), `Presenca`, `Frequencia`, `IndicadorAcademico` |
+| **ADRs** | ADR-001, ADR-002 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-041, OPEN-054 |
+
+## 3. Escopo
+
+**Incluído**
+- Na ficha do estudante, bloco **Abonos de faltas**: lista (período, motivo, faltas abonadas, quem registrou) e **Novo abono** (data inicial, data final, motivo, observação). A secretaria vê quantas faltas serão abonadas antes de salvar.
+- Excluir um abono (com confirmação) devolve as faltas.
+- Frequência e indicador recalculados nas turmas de período aberto com aula no intervalo; turmas de período encerrado não mudam (RB-20).
+- Na chamada, a falta abonada aparece como "Abonada" para o professor; no painel do estudante, a frequência já vem com o abono.
+- Auditoria acadêmica por turma afetada.
+
+**Fora do escopo**
+- Anexar o atestado; pedido de abono feito pelo estudante; compensação de ausência com atividades.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Ficha do estudante — abonos | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [x] | [x] | Arthur | 2026-11-06 |
+| Chamada com falta abonada | [prototipo.html#chamada-aulas](layout/prototipo.html#chamada-aulas) | [x] | [x] | Arthur | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-017, SPEC-018, SPEC-019, SPEC-028, SPEC-033.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o estudante entrega o atestado na secretaria; a secretaria abre a ficha, registra o abono de 03/11 a 07/11 por atestado médico e salva.
+
+**Exceções:** data final antes da inicial ou intervalo maior que 180 dias: 400; motivo inválido: 400; perfil diferente de administrador: 403.
+
+**Pós-condições:** abono gravado; frequência e indicador recalculados; auditoria na mesma transação.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-032-01 | Falta abonada conta como presença; presença continua presença (RB-31). |
+| INV-032-02 | Abonos sobrepostos não contam a mesma falta duas vezes. |
+| INV-032-03 | Só turmas de período aberto são recalculadas. |
+| INV-032-04 | Abono, recálculo e auditoria na mesma transação. |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **Abono** (id, início, fim, motivo, observação, criadoEm), de 1 estudante, registrada por 1 administrador.
+
+## 8. Impacto arquitetural
+
+- `frequenciaPelaChamada` recebe as datas abonadas (`src/domain/frequencia.ts`); `faltaAbonada(data, abonos)` puro.
+- Caso de uso em `src/server/academico/abonos.ts`; migração com a tabela e o enum de motivo.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/estudantes/:id/abonos` | — | abonos | não encontrado |
+| `POST /api/estudantes/:id/abonos` | início, fim, motivo, observação | abono e faltas abonadas | intervalo inválido, motivo inválido |
+| `DELETE /api/abonos/:id` | — | excluído | não encontrado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03, RNF-05 | Só o administrador registra; o professor vê só "Abonada" |
+| RNF-04, RNF-06 | Telas aprovadas |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-032-01 | 10 aulas, 4 faltas, 2 delas entre 03/11 e 07/11 | Abono de 03/11 a 07/11 | Frequência de 60% para 80%; indicador recalculado |
+| AC-032-02 | Abono registrado | Excluído | Frequência volta a 60% |
+| AC-032-03 | Dois abonos sobrepostos | Registrados | A mesma falta conta uma vez |
+| AC-032-04 | Fim antes do início ou mais de 180 dias | Salva | 400 |
+| AC-032-05 | Falta abonada | Professor abre a chamada | Aparece "Abonada" |
+| AC-032-06 | Turma de período encerrado no intervalo | Abono | Frequência dela não muda |
+| AC-032-07 | Coordenador ou professor | Tenta registrar | 403 |
+
+## 12. Casos de teste derivados
+
+1. Frequência com abono, sobreposição e limites (unitário).
+2. Integração: registrar, excluir, período encerrado, chamada.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-054 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-033 — Ficha do estudante e dados da instituição
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-033 |
+| **Nome** | Ficha do estudante e dados da instituição |
+| **Objetivo** | Todo estudante ganha número de matrícula e dados pessoais; a instituição ganha nome, CNPJ, endereço e logotipo, que saem nos documentos. |
+| **Valor** | Escola identifica o aluno pela matrícula e emite documento com os próprios dados, não com "StudyTrack". |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-41, RF-42, RF-29 |
+| **RB** | RB-02, RB-03, RB-04, RB-13, RB-22, RB-33 |
+| **RNF** | RNF-02, RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-30 Manter ficha do estudante; UC-31 Manter dados da instituição |
+| **Entidades** | `FichaEstudante` (nova), `Instituicao` (nova), `Usuario` |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-055 |
+
+## 3. Escopo
+
+**Incluído**
+- **Número de matrícula**: ano de criação da conta + sequência de 4 dígitos (ex.: 20260042), gerado para todo estudante novo (tela, coordenação, importação, seed) e para os existentes na migração, em ordem de criação. Aparece nas listas, no lançamento de notas, na chamada e nos documentos.
+- **Ficha** (página do estudante na secretaria): CPF (validado, único), data de nascimento, telefone, responsável (nome e telefone), todos opcionais; editada pelo administrador.
+- Leitura da ficha: coordenador do curso (na turma e na lista de estudantes) e o próprio estudante ("Meus dados" em Documentos). O professor vê só nome e matrícula (RB-33).
+- **Dados da instituição** (administrador): nome, CNPJ (validado), endereço, cidade/UF, telefone, e-mail, responsável pela secretaria e logotipo (PNG ou JPG até 200 KB). Sem dados gravados, os documentos continuam com "StudyTrack".
+- Boletim e histórico: cabeçalho com logotipo, nome, CNPJ e endereço; número de matrícula do estudante; rodapé com a linha de assinatura do responsável pela secretaria.
+- Auditoria administrativa (instituição) e acadêmica (ficha, com o curso), sem o CPF completo (só os 3 últimos dígitos).
+
+**Fora do escopo**
+- Endereço do estudante, documentos digitalizados, foto; vários campi; o estudante editar a própria ficha.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Ficha do estudante | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [x] | [x] | Arthur | 2026-11-06 |
+| Dados da instituição | [prototipo.html#instituicao](layout/prototipo.html#instituicao) | [x] | [x] | Arthur | 2026-11-06 |
+| Boletim com os dados da instituição | [prototipo.html#boletim-exame](layout/prototipo.html#boletim-exame) | [x] | [x] | Arthur | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-002, SPEC-010, SPEC-015, SPEC-019, SPEC-020, SPEC-021.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a secretaria abre o estudante, completa CPF, nascimento e responsável e salva; preenche uma vez os dados da instituição; os documentos passam a sair com eles.
+
+**Exceções:** CPF inválido ou de outro estudante: 400 com o campo; data de nascimento futura: 400; logotipo de outro formato ou maior que 200 KB: 400; perfil sem permissão: 403; estudante de outro curso para o coordenador: 404.
+
+**Pós-condições:** ficha ou instituição gravadas com auditoria.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-033-01 | Todo estudante tem exatamente uma ficha e um número de matrícula único que não muda. |
+| INV-033-02 | CPF único entre estudantes (índice único parcial). |
+| INV-033-03 | Professor nunca recebe CPF, nascimento, telefone ou responsável (RB-33). |
+| INV-033-04 | Existe no máximo um registro de instituição. |
+
+## 7. Modelo de domínio envolvido
+
+Novas entidades **FichaEstudante** (1:1 com o estudante) e **Instituicao** (registro único).
+
+## 8. Impacto arquitetural
+
+- Validações puras em `src/domain/ficha.ts` (CPF, CNPJ, número de matrícula, logotipo).
+- Casos de uso em `src/server/academico/fichas.ts` e `src/server/academico/instituicao.ts`; toda criação de estudante cria a ficha na mesma transação.
+- Migração: tabelas, backfill das fichas dos estudantes existentes e sequência por ano. **Ajustado na implementação (2026-11-06):** a ficha nasce por um gatilho do banco na inserção do estudante (mesma regra de `numeroDeMatricula`), para valer em todo caminho de cadastro.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET` / `PUT /api/estudantes/:id/ficha` | CPF, nascimento, telefone, responsável | ficha | campo inválido, CPF repetido, não encontrado |
+| `GET` / `PUT /api/instituicao` | nome, CNPJ, endereço, contato, responsável, logotipo | instituição | campo inválido, logotipo inválido, sem permissão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-05 | Professor recebe só nome e matrícula; teste da resposta |
+| RNF-04, RNF-06 | Telas aprovadas; documento impresso com cabeçalho |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-033-01 | Estudante novo criado em 2026 | Cadastrado | Recebe 2026NNNN, um a mais que o último de 2026 |
+| AC-033-02 | Ficha | Salva CPF inválido ou de outro estudante | 400 com o campo CPF |
+| AC-033-03 | Coordenador do curso | Abre a ficha | Vê os dados, sem editar |
+| AC-033-04 | Professor | Consulta estudante da turma | Só nome e matrícula |
+| AC-033-05 | Estudante | Abre "Meus dados" | Vê a própria ficha |
+| AC-033-06 | Instituição preenchida | Emite o boletim | Cabeçalho com logotipo, nome, CNPJ e endereço; assinatura da secretaria |
+| AC-033-07 | Logotipo de 500 KB | Salva | 400 |
+| AC-033-08 | Estudantes existentes | Migração | Todos com ficha e matrícula, sem repetir |
+
+## 12. Casos de teste derivados
+
+1. CPF, CNPJ, número de matrícula, logotipo (unitário).
+2. Integração: ficha, privacidade por perfil, instituição nos documentos.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-055 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-034 — Busca e paginação
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-034 |
+| **Nome** | Busca e paginação |
+| **Objetivo** | As listas que crescem com o número de alunos ganham busca por nome, e-mail ou matrícula e páginas de 25 itens. |
+| **Valor** | Com milhares de contas, uma lista sem busca nem página fica lenta e inútil. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-43, RF-16, RF-20, RF-31 |
+| **RB** | RB-02, RB-03, RB-04, RB-13, RB-23 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-11 Gerenciar contas; UC-13 Consultar histórico de notas; UC-21 Consultar notificações; UC-30 Manter ficha do estudante |
+| **Entidades** | leitura de `Usuario`, `FichaEstudante`, `HistoricoNota`, `Notificacao` |
+| **ADRs** | ADR-001, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-056 |
+
+## 3. Escopo
+
+**Incluído**
+- Componente único de **busca** (campo com "Buscar por nome, e-mail ou matrícula") e **paginação** ("1–25 de 312", Anterior/Próxima), com a busca e a página no endereço (`?q=&pagina=`).
+- Listas: **Contas** (administrador, junto com o filtro de perfil), **Estudantes** (administrador: todos; coordenador: os dos cursos dele), **Histórico de notas** e **Notificações**.
+- A busca ignora maiúsculas e acentos e aceita parte do nome.
+
+**Fora do escopo**
+- Busca global no menu; ordenação por coluna; exportar a lista.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Estudantes com busca e paginação | [prototipo.html#estudantes-lista](layout/prototipo.html#estudantes-lista) | [x] | [x] | Arthur | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-010, SPEC-013, SPEC-022, SPEC-033.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a secretaria digita "joão" e vê as contas e estudantes que batem, 25 por página.
+
+**Exceções:** página fora do intervalo: mostra a última; busca sem resultado: "Nenhum resultado para …".
+
+**Pós-condições:** nada é gravado.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-034-01 | Busca e página dentro da mesma query que filtra o escopo (ADR-003). |
+| INV-034-02 | Página de no máximo 25 itens; o total vem da mesma condição. |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova. **Ajustado na implementação (2026-11-06):** a busca sem acento compara `translate(lower(nome))` na própria consulta, sem coluna nova (a coluna `nomeBusca` prevista não foi criada); o resultado para quem usa é o mesmo.
+
+## 8. Impacto arquitetural
+
+- `paginar` e `normalizarBusca` puros em `src/domain/paginacao.ts`; componente `Paginacao` e `CampoBusca` em `src/components`.
+- Sem migração: a busca fica em `src/server/dados/busca.ts` (nome sem acento por `translate`, e-mail e número de matrícula).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/contas` | perfil, q, pagina | itens, total, página | sem permissão |
+| `GET /api/estudantes` | q, pagina, cursoId | itens, total, página | sem permissão |
+| `GET /api/historico-notas` | filtros atuais, pagina | itens, total, página | sem permissão |
+| `GET /api/notificacoes` | pagina | itens, total, página | sem permissão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Lista de 2.000 contas respondendo em menos de 3 s |
+| RNF-04, RNF-06 | Tela aprovada |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-034-01 | 60 contas | Abre Contas | 25 na página 1; "1–25 de 60" |
+| AC-034-02 | Conta "João Pereira" | Busca "joao" | Encontra |
+| AC-034-03 | Estudante com matrícula 20260042 | Busca "0042" | Encontra |
+| AC-034-04 | Coordenador | Busca um estudante de outro curso | Não aparece |
+| AC-034-05 | Página 9 de 3 | Abre | Mostra a página 3 |
+
+## 12. Casos de teste derivados
+
+1. `paginar` e `normalizarBusca` (unitário).
+2. Integração: cada lista com busca, página e escopo.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-056 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-035 — Secretaria acadêmica no perfil Administrador
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-035 |
+| **Nome** | Secretaria acadêmica no perfil Administrador |
+| **Objetivo** | O administrador vira a secretaria: ganha as telas de estudantes, pedidos de senha, virada de semestre, instituição e emissão de documentos, sem abrir os dados acadêmicos de trabalho. |
+| **Valor** | O sistema passa a ter quem faz o papel da secretaria sem criar um quinto perfil. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-29, RF-02, RF-25 |
+| **RB** | RB-01, RB-13, RB-22 |
+| **RNF** | RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-19 Emitir boletim e histórico; UC-18 Consultar auditoria |
+| **Entidades** | leitura de `Usuario`, `FichaEstudante`, `RegistroAuditoria`, `PedidoSenha` |
+| **ADRs** | ADR-001, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-025, OPEN-034, OPEN-057 |
+
+## 3. Escopo
+
+**Incluído**
+- Menu do administrador: Dashboard, Contas, **Estudantes**, **Pedidos de senha** (com contador), Cursos, Períodos letivos, **Virada de semestre**, **Instituição**, Auditoria.
+- Página **Estudantes** (lista com busca, SPEC-034) e a **ficha** de cada estudante: dados (SPEC-033), situação no curso (SPEC-031), abonos (SPEC-032) e **Emitir boletim / histórico** (SPEC-020).
+- Recurso `documentos` passa a incluir o Administrador para qualquer estudante.
+- Dashboard do administrador ganha "Pedidos de senha pendentes" e "Estudantes por situação no curso" (contagens, sem nota).
+- Auditoria do administrador: registros administrativos e os acadêmicos feitos por administradores.
+- Os recursos de trabalho acadêmico (lançamentos, dashboards acadêmicos, relatórios, alertas, planos, histórico de notas) continuam negados ao administrador (RB-13).
+
+**Fora do escopo**
+- Perfil novo; o administrador lançar ou corrigir nota, chamada ou atividade.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-06 por Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Dashboard da secretaria (administrador) | [prototipo.html#dashboard-secretaria](layout/prototipo.html#dashboard-secretaria) | [x] | [x] | Arthur | 2026-11-06 |
+| Estudantes (lista) | [prototipo.html#estudantes-lista](layout/prototipo.html#estudantes-lista) | [x] | [x] | Arthur | 2026-11-06 |
+| Ficha do estudante | [prototipo.html#estudante-secretaria](layout/prototipo.html#estudante-secretaria) | [x] | [x] | Arthur | 2026-11-06 |
+
+## 4. Dependências
+
+SPEC-010, SPEC-016, SPEC-019, SPEC-020, SPEC-027, SPEC-030 a SPEC-034.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a secretaria entra, vê os pedidos pendentes no dashboard, busca o estudante, abre a ficha e emite o histórico.
+
+**Exceções:** administrador em página de trabalho acadêmico (lançar notas, relatórios, dashboard de turma): acesso negado (RB-13).
+
+**Pós-condições:** nada novo é gravado por esta Spec além do que as Specs 027 e 030 a 033 gravam.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-035-01 | O administrador emite documentos de qualquer estudante; continua negado nos recursos de trabalho acadêmico (RB-13). |
+| INV-035-02 | O administrador vê na auditoria os registros administrativos e os acadêmicos de autoria de administradores, nunca os de professores e coordenadores. |
+| INV-035-03 | Os números do dashboard da secretaria são contagens de contas, pedidos e situações no curso, sem nota nem frequência. |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- `src/domain/autorizacao.ts`: recursos novos `secretaria` e `pedidosSenha` (Administrador) e `documentos` com Administrador; `fichaEstudante` (Administrador, Coordenador, Estudante).
+- Menu e dashboard do administrador; filtro da auditoria do administrador.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /documentos/boletim?estudanteId=&periodo=` | — | boletim | estudante inexistente |
+| `GET /documentos/historico?estudanteId=` | — | histórico | estudante inexistente |
+| `GET /api/auditoria` | filtros, página | registros do escopo | sem permissão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03, RNF-05 | Teste de cada recurso acadêmico negado ao administrador; documentos permitidos |
+| RNF-04, RNF-06 | Telas aprovadas |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-035-01 | Administrador | Emite o histórico de qualquer estudante | Documento completo |
+| AC-035-02 | Administrador | Abre lançamento de notas, relatórios, dashboard da turma ou histórico de notas | Acesso negado |
+| AC-035-03 | Administrador | Abre a auditoria | Vê os registros administrativos e os acadêmicos que ele (ou outro administrador) fez; não vê lançamento de nota |
+| AC-035-04 | 2 pedidos pendentes | Abre o dashboard | "Pedidos de senha: 2" com link |
+| AC-035-05 | Estudantes com situações diferentes | Abre o dashboard | Contagem por situação no curso |
+
+## 12. Casos de teste derivados
+
+1. Mapa de autorização (unitário): recursos novos e negação dos acadêmicos.
+2. Integração: documentos pelo administrador, auditoria filtrada, dashboard.
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-057 fechada.
 
 ## 14. Definition of Done
 

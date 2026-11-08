@@ -1,4 +1,5 @@
 // Acesso a dados do indicador acadêmico (SPEC-003). Consultas filtradas por escopo na própria query (ADR-003).
+import { MATRICULA_CURSANDO } from "./matriculas";
 import type { Prisma, PrismaClient } from "@prisma/client";
 import type { Situacao } from "@/domain/situacao-academica";
 import type { Sessao } from "@/server/auth/token";
@@ -11,13 +12,15 @@ export function estaMatriculado(estudanteId: string, turmaId: string, db: Client
   return db.matricula.findUnique({ where: { estudanteId_turmaId: { estudanteId, turmaId } }, select: { turmaId: true } });
 }
 
-// Notas do estudante nas avaliações da turma, com o peso de cada avaliação.
-export async function notasPonderadas(estudanteId: string, turmaId: string, db: ClienteBanco = prisma) {
-  const notas = await db.nota.findMany({
-    where: { estudanteId, avaliacao: { turmaId } },
-    select: { valor: true, avaliacao: { select: { peso: true } } },
+// SPEC-029: todas as avaliações da turma com tipo, peso e a nota do estudante (null = sem nota), para a média
+// com substitutiva (RB-28); a prova sem nota conta como zero só na troca pela substitutiva.
+export async function avaliacoesDaMedia(estudanteId: string, turmaId: string, db: ClienteBanco = prisma) {
+  const avaliacoes = await db.avaliacao.findMany({
+    where: { turmaId },
+    select: { tipo: true, peso: true, notas: { where: { estudanteId }, select: { valor: true } } },
+    orderBy: [{ data: "asc" }, { id: "asc" }],
   });
-  return notas.map((n) => ({ valor: n.valor, peso: n.avaliacao.peso }));
+  return avaliacoes.map((a) => ({ tipo: a.tipo, peso: a.peso, valor: a.notas[0]?.valor ?? null }));
 }
 
 export async function frequenciaAtual(estudanteId: string, turmaId: string, db: ClienteBanco = prisma) {
@@ -61,7 +64,7 @@ function filtroIndicadoresDoEscopo(sessao: Sessao): Prisma.IndicadorAcademicoWhe
 export function indicadoresEmAlertaDoEscopo(sessao: Sessao) {
   return prisma.indicadorAcademico.findMany({
     // SPEC-017 (INV-017-05): alertas só de turmas de períodos abertos.
-    where: { AND: [filtroIndicadoresDoEscopo(sessao), { situacao: { in: ["Atencao", "Risco"] } }, { turma: { periodoLetivo: { status: "Aberto" } } }] },
+    where: { AND: [filtroIndicadoresDoEscopo(sessao), { situacao: { in: ["Atencao", "Risco"] } }, { turma: { periodoLetivo: { status: "Aberto" } } }, { matricula: MATRICULA_CURSANDO }] },
     select: {
       media: true,
       frequenciaAtual: true,

@@ -51,6 +51,21 @@ flowchart LR
     Estudante --> UC24[UC-24 Consultar o Mural]
     Professor --> UC24
     Coordenador --> UC24
+    Administrador --> UC25[UC-25 Corrigir Cadastro]
+    Coordenador --> UC25
+    Professor --> UC25
+    Estudante --> UC26[UC-26 Pedir Redefinição de Senha]
+    Professor --> UC26
+    Coordenador --> UC26
+    Administrador --> UC26
+    Administrador --> UC27[UC-27 Virar o Semestre]
+    Administrador --> UC28[UC-28 Alterar Situação do Estudante]
+    Administrador --> UC29[UC-29 Registrar Abono de Faltas]
+    Administrador --> UC30[UC-30 Manter Ficha do Estudante]
+    Coordenador --> UC30
+    Estudante --> UC30
+    Administrador --> UC31[UC-31 Manter Dados da Instituição]
+    UC29 -.include.-> REC
 
     UC3 -.include.-> REC[Recalcular Indicador Acadêmico]
     UC8 -.include.-> REC
@@ -58,6 +73,6 @@ flowchart LR
     UC10 -.extend.-> UC4
 ```
 
-Os casos de uso completos estão em arquivos individuais nesta pasta: `UC-01-autenticar.md`, `UC-02-consultar-situacao-academica.md`, `UC-03-registrar-nota.md`, `UC-04-criar-plano-recuperacao.md`, `UC-05-consultar-relatorios.md`, `UC-06-cadastrar-estudante.md`, `UC-07-cadastrar-disciplina-turma.md`, `UC-08-registrar-frequencia.md`, `UC-09-cadastrar-atividade-registrar-entrega.md` `UC-10-consultar-dashboard-turma.md`, `UC-11-gerenciar-contas.md`, `UC-12-definir-alterar-senha.md`, `UC-13-consultar-historico-notas.md`, `UC-14-gerenciar-cursos.md`, `UC-15-montar-grade-curso.md` e `UC-16-consultar-dashboard.md`.
+Os casos de uso completos estão em arquivos individuais nesta pasta: `UC-01-autenticar.md`, `UC-02-consultar-situacao-academica.md`, `UC-03-registrar-nota.md`, `UC-04-criar-plano-recuperacao.md`, `UC-05-consultar-relatorios.md`, `UC-06-cadastrar-estudante.md`, `UC-07-cadastrar-disciplina-turma.md`, `UC-08-registrar-frequencia.md`, `UC-09-cadastrar-atividade-registrar-entrega.md` `UC-10-consultar-dashboard-turma.md`, `UC-11-gerenciar-contas.md`, `UC-12-definir-alterar-senha.md`, `UC-13-consultar-historico-notas.md`, `UC-14-gerenciar-cursos.md`, `UC-15-montar-grade-curso.md`, `UC-16-consultar-dashboard.md` e os UC-17 a UC-31 (um arquivo por caso de uso, mesmo padrão de nome; UC-25 a UC-31 incluídos em 2026-11-06 com as SPEC-026 a SPEC-035).
 
 Todo RF tem caso de uso (ver `docs/rastreabilidade.md`). Diagramas de sequência dos UC-03 e UC-04 em `docs/uml/sequencias.md`.

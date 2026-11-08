@@ -10,18 +10,19 @@ import { exigirAcessoPagina } from "@/server/auth/guardas";
 
 // SPEC-010 / RF-16 (UC-11): contas do sistema, só para o Administrador. Não mostra dados acadêmicos (RB-13).
 // Layout aprovado em docs/layout/prototipo.html#admin-contas, #admin-contas-erro e #admin-contas-curso (SPEC-015).
-export default async function Contas({ searchParams }: { searchParams: Promise<{ perfil?: string }> }) {
+// SPEC-026 / SPEC-034: editar conta, busca e paginação (#correcao-conta).
+export default async function Contas({ searchParams }: { searchParams: Promise<{ perfil?: string; q?: string; pagina?: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.gestaoContas);
-  const { perfil } = await searchParams;
+  const { perfil, q, pagina } = await searchParams;
   const filtro = ehPerfilValido(perfil) ? perfil : "";
-  const [contas, cursos] = await Promise.all([listarContas(filtro || undefined), listarCursosResumidos()]);
+  const [contas, cursos] = await Promise.all([listarContas(filtro || undefined, { q, pagina }), listarCursosResumidos()]);
 
   return (
     <Casca sessao={sessao} ativo="contas">
       <CabecalhoPagina titulo="Contas" subtitulo="Crie contas, escolha o perfil de cada uma e controle quem pode entrar. Dados acadêmicos não aparecem aqui." />
       <div className="grid items-start gap-5 xl:grid-cols-[1.6fr_1fr]">
         <Cartao>
-          <ListaContas contas={contas} perfil={filtro} usuarioId={sessao.usuarioId} />
+          <ListaContas contas={contas.itens} pagina={contas.pagina} usuarioId={sessao.usuarioId} />
         </Cartao>
         <Cartao titulo="Nova conta">
           <FormularioApi

@@ -1,6 +1,21 @@
-# Verificação de qualidade e segurança — SPEC-001 a SPEC-025
+# Verificação de qualidade e segurança — SPEC-001 a SPEC-035
 
-**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) em 2026-10-22 com as SPEC-015 e 016 (seção 000) em 2026-11-06 com as SPEC-017 a 022 (seção 0000) e, no mesmo dia, com as **SPEC-023 a 025** (seção 00000).
+**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) em 2026-10-22 com as SPEC-015 e 016 (seção 000) em 2026-11-06 com as SPEC-017 a 022 (seção 0000) e, no mesmo dia, com as SPEC-023 a 025 (seção 00000) e com as **SPEC-026 a 035** (seção 000000).
+
+## 000000. Reverificação de 2026-11-06 (depois das SPEC-026 a SPEC-035, Nível 1: secretaria)
+
+| Verificação | Resultado |
+|---|---|
+| Testes | 38 arquivos, **353 testes aprovados** (`npm test`); `tsc --noEmit` sem erros |
+| Critérios AC (SPEC-001 a 035) | **258** na documentação (75 novos); 255 com teste, o AC-016-12 e o AC-033-06 verificados no navegador e o AC-033-08 conferido no banco depois da migração |
+| Invariantes INV | **165** (40 novos), todos com teste ou garantidos por constraint testada (índices parciais, CHECKs e gatilho) |
+| Regras RB-01 a RB-33 | 33, todas com teste (RB-27 a RB-33 nas `spec-026` a `spec-033`; RB-13, RB-21 e RB-24 também nas novas) |
+| Guardas | toda rota nova usa `autorizarApi` e toda página nova `exigirAcessoPagina`; `/esqueci-senha` e `/api/auth/esqueci` são públicas como o login e respondem sempre a mesma mensagem |
+| Escopo (ADR-003) | correções com o escopo na query (404 fora dele); lista e ficha de estudantes por perfil; busca junta os ids ao filtro de escopo; matrícula cursando (`MATRICULA_CURSANDO`) em todas as listas de trabalho |
+| Privacidade (RNF-05) | professor recebe só nome e número de matrícula; CPF mascarado na auditoria; a senha provisória não vai para o banco nem para a auditoria |
+| Integridade (ADR-002) | índices parciais (uma substitutiva, um exame, um pedido pendente), CHECKs (aulas 1 a 4, intervalo do abono, instituição única), chaves estrangeiras do indicador e da frequência para a matrícula, gatilho da ficha |
+| Transações | correção, recálculo e auditoria na mesma transação; abono, situação no curso e virada idem |
+| Dependências | nenhuma nova |
 
 ## 00000. Reverificação de 2026-11-06 (depois das SPEC-023 a SPEC-025)
 
