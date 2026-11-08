@@ -1,6 +1,22 @@
-# Verificação de qualidade e segurança — SPEC-001 a SPEC-035
+# Verificação de qualidade e segurança — SPEC-001 a SPEC-043
 
-**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) em 2026-10-22 com as SPEC-015 e 016 (seção 000) em 2026-11-06 com as SPEC-017 a 022 (seção 0000) e, no mesmo dia, com as SPEC-023 a 025 (seção 00000) e com as **SPEC-026 a 035** (seção 000000).
+**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) em 2026-10-22 com as SPEC-015 e 016 (seção 000) em 2026-11-06 com as SPEC-017 a 022 (seção 0000) e, no mesmo dia, com as SPEC-023 a 025 (seção 00000) e com as SPEC-026 a 035 (seção 000000); em 2026-11-08 com as **SPEC-036 a 043** (seção 0000000).
+
+## 0000000. Reverificação de 2026-11-08 (depois das SPEC-036 a SPEC-043, Nível 3: acadêmico)
+
+| Verificação | Resultado |
+|---|---|
+| Testes | 46 arquivos, **395 testes aprovados** (`npm test`); `tsc --noEmit` e `next build` sem erros |
+| Critérios AC (SPEC-001 a 043) | **308** na documentação (50 novos), todos os novos com teste |
+| Invariantes INV | **187** (22 novos), todos com teste ou garantidos por constraint testada (protocolo único, aproveitamento único, nome de sala único, CHECKs) |
+| Regras RB-01 a RB-41 | 41, todas com teste (RB-34 a RB-41 nas `spec-036` a `spec-042`) |
+| Guardas | toda rota nova usa `autorizarApi` (o diário confere a conta e decide professor ou coordenação no caso de uso) e toda página nova `exigirAcessoPagina`; calendário e requerimentos são de todos os perfis, cada um com o próprio escopo |
+| Escopo (ADR-003) | requerimentos por perfil na query (estudante os próprios, professor os das turmas dele, secretaria os dela, coordenação os do curso sem responder); matriz, horários, vagas e diário só no curso do coordenador (404 fora); rematrícula só no curso do estudante; calendário com prazos só das turmas do usuário |
+| Concorrência | rematrícula confere a vaga com a turma bloqueada (`FOR UPDATE`); o protocolo do requerimento usa bloqueio consultivo do ano; testado com dois pedidos simultâneos pela última vaga |
+| Privacidade (RNF-05) | a auditoria da exportação do Censo guarda só período e número de linhas (INV-043-02); o CSV sai só para a secretaria |
+| Integridade (ADR-002) | chaves compostas do pré-requisito para a grade do curso; horário com sala `Restrict`; CHECKs de vagas, dia da semana, intervalo de horário e de evento, janela de rematrícula e status do diário |
+| Transações | toda escrita nova grava e audita na mesma transação; requerimento respondido e diário devolvido notificam na mesma transação |
+| Dependências | nenhuma nova |
 
 ## 000000. Reverificação de 2026-11-06 (depois das SPEC-026 a SPEC-035, Nível 1: secretaria)
 

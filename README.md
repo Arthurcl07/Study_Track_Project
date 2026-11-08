@@ -40,7 +40,10 @@ entre semestres (SPEC-024) e mural de comunicados (SPEC-025). Nível 1, para uso
 cadastros, "Esqueci minha senha" com aprovação da secretaria, várias aulas no mesmo dia, prova substitutiva e exame final,
 virada de semestre, situação do estudante no curso (trancamento, transferência, conclusão), abono de faltas, ficha do
 estudante com número de matrícula, dados da instituição nos documentos, busca e paginação, e o perfil Administrador como
-secretaria acadêmica.
+secretaria acadêmica. Nível 3, sistema acadêmico completo (SPEC-036 a SPEC-043): requerimentos online com protocolo e prazo,
+matriz curricular com pré-requisitos e integralização, rematrícula pelo próprio estudante (vagas, pré-requisito e choque
+de horário), diário de classe com fechamento e homologação, calendário acadêmico, grade horária e salas, aproveitamento de
+estudos com conclusão de curso e exportação de apoio ao Censo.
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 

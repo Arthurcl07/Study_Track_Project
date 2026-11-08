@@ -48,7 +48,7 @@ describe("SPEC-035 — secretaria (integração)", () => {
   it("AC-035-03 / INV-035-02: a auditoria do administrador mostra o que a secretaria fez, não os lançamentos do professor", async () => {
     const admin = await entrar("Administrador");
     const { estudantes: [e] } = await turmaComEstudantes(1);
-    await situacaoApi(requisicao(`${API}/estudantes/${e.id}/situacao`, "PUT", admin.token, { situacao: "Concluido", data: "2026-11-01", motivo: "Formatura" }), contexto({ id: e.id }));
+    await situacaoApi(requisicao(`${API}/estudantes/${e.id}/situacao`, "PUT", admin.token, { situacao: "Transferido", data: "2026-11-01", motivo: "Mudança de cidade" }), contexto({ id: e.id }));
     const sessao = { usuarioId: admin.usuario.id, nome: "A", perfil: "Administrador" } as Sessao;
     const secretaria = await consultarAuditoria(sessao, { grupo: "Secretaria" });
     expect(secretaria!.registros.some((r) => r.acao === "estudante.situacao" && r.autor === admin.usuario.nome)).toBe(true);

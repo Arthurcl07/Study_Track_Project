@@ -31,6 +31,8 @@ const RESUMO_TURMA = {
   disciplina: { select: { id: true, nome: true, cargaHoraria: true } },
   professor: { select: { id: true, nome: true } },
   curso: { select: { id: true, nome: true } },
+  // SPEC-038: vagas para a rematrícula.
+  vagas: true,
 } satisfies Prisma.TurmaSelect;
 
 // SPEC-031: a situação da matrícula (Cursando, Trancada, Cancelada); SPEC-033: o número de matrícula.

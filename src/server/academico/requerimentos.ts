@@ -90,6 +90,13 @@ function escopo(sessao: Sessao): Prisma.RequerimentoWhereInput | null {
 
 const podeResponder = (sessao: Sessao) => sessao.perfil === "Professor" || sessao.perfil === "Administrador";
 
+// Contador do menu: requerimentos ainda não decididos de quem responde (professor e secretaria).
+export function contarRequerimentosPendentes(sessao: Sessao) {
+  const where = escopo(sessao);
+  if (!where || !podeResponder(sessao)) return Promise.resolve(0);
+  return prisma.requerimento.count({ where: { AND: [where, { status: { in: ["Aberto", "EmAnalise"] } }] } });
+}
+
 export async function listarRequerimentos(sessao: Sessao, hoje = hojeEmBrasilia()) {
   const where = escopo(sessao);
   if (!where) return null;

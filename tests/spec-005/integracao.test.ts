@@ -20,6 +20,7 @@ import {
   requisicaoComSessao,
   requisicaoJson,
   cursoPadraoDeTeste,
+  periodoAbertoDeTeste,
 } from "../apoio";
 
 // INV-005-04: permite simular falha no recálculo para provar que frequência e indicador ficam na mesma transação.
@@ -60,7 +61,7 @@ async function cenario() {
   const estudanteB = await criarUsuarioDeTeste("Estudante");
   const disciplina = await prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 60 } });
   const turma = await prisma.turma.create({
-    data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, cursoId: await cursoPadraoDeTeste() },
+    data: { nome: "T", periodo: await periodoAbertoDeTeste(), disciplinaId: disciplina.id, professorId: professor.id, cursoId: await cursoPadraoDeTeste() },
   });
   await prisma.matricula.createMany({
     data: [estudanteA, estudanteB].map((e) => ({ estudanteId: e.id, turmaId: turma.id })),

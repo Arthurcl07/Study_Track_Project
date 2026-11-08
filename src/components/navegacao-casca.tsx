@@ -62,7 +62,7 @@ export function NavegacaoCasca({ itens, ativo, nome, perfil }: { itens: Item[]; 
               {item.rotulo}
               {/* SPEC-022: contador de não lidas. */}
               {item.contador ? (
-                <span className="ml-auto rounded-full bg-risco px-2 py-px text-xs font-bold text-white" aria-label={`${item.contador} ${item.id === "pedidos" ? "pendente(s)" : "não lida(s)"}`}>{item.contador}</span>
+                <span className="ml-auto rounded-full bg-risco px-2 py-px text-xs font-bold text-white" aria-label={`${item.contador} ${item.id === "notificacoes" ? "não lida(s)" : "pendente(s)"}`}>{item.contador}</span>
               ) : null}
             </Link>
           );

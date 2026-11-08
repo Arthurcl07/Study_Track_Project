@@ -11,7 +11,7 @@ export const TURMA_DE_PERIODO_ABERTO: Prisma.TurmaWhereInput = { periodoLetivo: 
 
 export function listarPeriodos() {
   return prisma.periodoLetivo.findMany({
-    select: { id: true, nome: true, status: true, encerradoEm: true, _count: { select: { turmas: true } } },
+    select: { id: true, nome: true, status: true, encerradoEm: true, rematriculaInicio: true, rematriculaFim: true, _count: { select: { turmas: true } } },
     orderBy: { nome: "desc" },
   });
 }

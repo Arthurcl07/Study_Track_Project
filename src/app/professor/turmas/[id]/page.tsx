@@ -1,13 +1,15 @@
 import { notFound } from "next/navigation";
 import { Casca } from "@/components/casca";
+import { DiarioDoProfessor } from "@/components/coordenacao-n3";
 import { DashboardTurmaProfessor } from "@/components/dashboard-turma";
 import { CabecalhoPagina } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
+import { pendenciasDoDiario } from "@/server/academico/diario";
 import { consultarTurmaDoProfessor } from "@/server/academico/planos";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 
 // SPEC-008 / RF-13: dashboard de uma turma que o professor leciona (fora do escopo: não encontrada).
-// Layout aprovado em docs/layout/prototipo.html#professor-turma.
+// Layout aprovado em docs/layout/prototipo.html#professor-turma. SPEC-039: cartão do diário (#diario-professor).
 const CONTADORES = [
   { chave: "Normal", rotulo: "● Normal", cor: "text-normal" },
   { chave: "Atencao", rotulo: "▲ Atenção", cor: "text-atencao" },
@@ -20,6 +22,7 @@ export default async function DashboardDaTurma({ params }: { params: Promise<{ i
   const { id } = await params;
   const turma = await consultarTurmaDoProfessor(sessao.usuarioId, id);
   if (!turma) notFound();
+  const diario = (await pendenciasDoDiario(id))!;
 
   return (
     <Casca sessao={sessao} ativo="inicio">
@@ -35,6 +38,9 @@ export default async function DashboardDaTurma({ params }: { params: Promise<{ i
             <strong className={`mt-1 block text-3xl font-bold tabular-nums ${c.cor}`}>{turma.contagem[c.chave]}</strong>
           </div>
         ))}
+      </div>
+      <div className="mb-5 max-w-xl">
+        <DiarioDoProfessor turmaId={id} status={diario.status} pendencias={diario.pendencias} observacao={diario.observacao} semAvaliacao={diario.semAvaliacao} />
       </div>
       <DashboardTurmaProfessor turma={turma} />
     </Casca>

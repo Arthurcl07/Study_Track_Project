@@ -5,7 +5,7 @@ import { hojeEmBrasilia } from "@/domain/atividades";
 import { MENSAGEM_QUANTIDADE_AULAS, frequenciaPelaChamada, presencasEfetivas, validarChamada } from "@/domain/frequencia";
 import { POST as chamadaApi } from "@/app/api/aulas/route";
 import { prisma } from "@/server/dados/prisma";
-import { PREFIXO_DISCIPLINA_TESTE, criarUsuarioDeTeste, cursoPadraoDeTeste, entrarComo, removerUsuariosDeTeste, requisicaoJson } from "../apoio";
+import { PREFIXO_DISCIPLINA_TESTE, criarUsuarioDeTeste, cursoPadraoDeTeste, entrarComo, removerUsuariosDeTeste, requisicaoJson, periodoAbertoDeTeste } from "../apoio";
 
 const API = "http://localhost/api";
 
@@ -18,7 +18,7 @@ async function cenario() {
   const professor = await criarUsuarioDeTeste("Professor");
   const estudantes = [await criarUsuarioDeTeste("Estudante"), await criarUsuarioDeTeste("Estudante"), await criarUsuarioDeTeste("Estudante")];
   const disciplina = await prisma.disciplina.create({ data: { nome: `${PREFIXO_DISCIPLINA_TESTE}${randomUUID()}`, cargaHoraria: 60 } });
-  const turma = await prisma.turma.create({ data: { nome: "T", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.id, cursoId: await cursoPadraoDeTeste() } });
+  const turma = await prisma.turma.create({ data: { nome: "T", periodo: await periodoAbertoDeTeste(), disciplinaId: disciplina.id, professorId: professor.id, cursoId: await cursoPadraoDeTeste() } });
   await prisma.matricula.createMany({ data: estudantes.map((e) => ({ estudanteId: e.id, turmaId: turma.id })) });
   return { estudantes, turma, token: await entrarComo(professor.email, professor.senha) };
 }

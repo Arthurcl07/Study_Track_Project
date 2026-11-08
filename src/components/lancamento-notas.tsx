@@ -24,6 +24,7 @@ import {
 export type TurmaParaLancamento = {
   id: string;
   rotulo: string;
+  diario: "Aberto" | "Fechado" | "Homologado";
   avaliacoes: { id: string; nome: string; peso: number; data: string; tipo: TipoAvaliacao; notas: { id: string; estudanteId: string; valor: number }[] }[];
   estudantes: { id: string; nome: string; matricula: string | null; media: number | null; frequencia: number | null }[];
 };
@@ -146,6 +147,7 @@ export function LancamentoNotas({ turmas }: { turmas: TurmaParaLancamento[] }) {
 
   return (
     <div className="space-y-5">
+      {turma && turma.diario !== "Aberto" && <Mensagem tipo="info">O diário desta turma está {turma.diario === "Fechado" ? "fechado, aguardando a homologação da coordenação" : "homologado"}: a turma está somente leitura. Só a coordenação devolve ou reabre o diário.</Mensagem>}
       <Cartao>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>

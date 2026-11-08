@@ -2,7 +2,8 @@ import { Casca } from "@/components/casca";
 import { AcoesDisciplina } from "@/components/acoes-disciplina";
 import { FormularioApi } from "@/components/formulario-api";
 import { SeletorCurso } from "@/components/seletor-curso";
-import { CabecalhoPagina, Cartao, EstadoVazio, Etiqueta } from "@/components/ui";
+import Link from "next/link";
+import { CLASSE_BOTAO_PRIMARIO, CLASSE_BOTAO_SECUNDARIO, CabecalhoPagina, Cartao, EstadoVazio, Etiqueta } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 import { cursosDoCoordenador, disciplinasDosCursos, disciplinasForaDaGrade } from "@/server/dados/estrutura";
@@ -29,7 +30,16 @@ export default async function Disciplinas({ searchParams }: { searchParams: Prom
   const [grade, foraDaGrade] = await Promise.all([disciplinasDosCursos([curso.id]), disciplinasForaDaGrade(curso.id)]);
   return (
     <Casca sessao={sessao} ativo="disciplinas">
-      <CabecalhoPagina titulo="Disciplinas" subtitulo="A grade de cada curso que você coordena. Uma disciplina pode estar em mais de um curso." />
+      <CabecalhoPagina
+        titulo="Disciplinas"
+        subtitulo="A grade de cada curso que você coordena. Uma disciplina pode estar em mais de um curso."
+        acao={
+          <span className="flex gap-2">
+            <span className={CLASSE_BOTAO_PRIMARIO} aria-current="page">Grade</span>
+            <Link href={`/coordenador/matriz?curso=${curso.id}`} className={CLASSE_BOTAO_SECUNDARIO}>Matriz</Link>
+          </span>
+        }
+      />
       {cursos.length > 1 && (
         <Cartao className="mb-5">
           <div className="flex flex-wrap items-center gap-3">

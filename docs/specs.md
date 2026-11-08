@@ -58,6 +58,7 @@ Legenda de status da Spec:
 | SPEC-026 a SPEC-035 marcadas como `implementadas`: 353 testes e verificação em `docs/verificacao/SPEC-026-035.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-06 |
 | SPEC-036 a SPEC-043 (Nível 3, sem os itens 28 e 30) incluídas a pedido de Arthur, com OPEN-058 a OPEN-065 fechadas (decisão humana, Arthur); RF-44 a RF-52 e RB-34 a RB-41; RB-20 e RB-30 ajustados | `especificada` | 2026-11-08 |
 | SPEC-036 a SPEC-043 e layout aprovados (Arthur) | `aprovada` | 2026-11-08 |
+| SPEC-036 a SPEC-043 marcadas como `implementadas`: 395 testes e verificação em `docs/verificacao/SPEC-036-043.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-08 |
 
 ---
 
@@ -4635,7 +4636,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-036 — Requerimentos online
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -4757,7 +4758,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-037 — Matriz curricular e integralização
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -4871,7 +4872,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-038 — Rematrícula pelo estudante
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -4989,7 +4990,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-039 — Diário de classe
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -5107,7 +5108,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-040 — Calendário acadêmico
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -5220,7 +5221,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-041 — Grade horária e salas
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -5336,7 +5337,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-042 — Aproveitamento de estudos e conclusão de curso
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -5450,7 +5451,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-043 — Exportação de apoio ao Censo
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 

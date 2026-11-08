@@ -19,6 +19,7 @@ export default async function HistoricoEscolar({ searchParams }: { searchParams:
   return (
     <FolhaDocumento
       titulo="Histórico escolar"
+      subtitulo={historico.concluidoEm ? <strong>Curso concluído em {historico.concluidoEm.split("-").reverse().join("/")}</strong> : undefined}
       voltar={voltar}
       instituicao={instituicao}
       dados={[
@@ -56,6 +57,22 @@ export default async function HistoricoEscolar({ searchParams }: { searchParams:
             </TabelaDocumento>
           </section>
         ))
+      )}
+      {/* SPEC-042: aproveitamento de estudos (conta na carga aprovada). */}
+      {historico.aproveitamentos.length > 0 && (
+        <section className="mt-5">
+          <h2 className="mb-2 text-sm font-semibold text-marinho">Aproveitamento de estudos</h2>
+          <TabelaDocumento cabecalho={[{ texto: "Disciplina" }, { texto: "Origem" }, { texto: "Nota", numero: true }, { texto: "CH", numero: true }]}>
+            {historico.aproveitamentos.map((a) => (
+              <tr key={a.id} className="border-t border-traco">
+                <td className="px-2 py-2">{a.disciplina}</td>
+                <td className="px-2 py-2">{a.origem}</td>
+                <td className="px-2 py-2 text-right tabular-nums">{a.nota === null ? "—" : formatarNumero(a.nota)}</td>
+                <td className="px-2 py-2 text-right tabular-nums">{a.cargaHoraria} h</td>
+              </tr>
+            ))}
+          </TabelaDocumento>
+        </section>
       )}
     </FolhaDocumento>
   );

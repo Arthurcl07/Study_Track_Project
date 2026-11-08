@@ -46,6 +46,8 @@ export async function removerUsuariosDeTeste() {
   const deTeste = { email: { endsWith: DOMINIO_TESTE } };
   const cursoDeTeste = { OR: [{ nome: { startsWith: PREFIXO_DISCIPLINA_TESTE } }, { coordenador: deTeste }] };
   await prisma.turma.deleteMany({ where: { OR: [{ professor: deTeste }, { curso: cursoDeTeste }] } });
+  // SPEC-041: salas de teste, já sem horários (a chave do horário para a sala é Restrict).
+  await prisma.sala.deleteMany({ where: { nome: { startsWith: PREFIXO_DISCIPLINA_TESTE } } });
   // SPEC-017: períodos de teste ("19xx/N"), já sem turmas.
   await prisma.periodoLetivo.deleteMany({ where: { nome: { startsWith: "19" } } });
   await prisma.usuario.deleteMany({ where: { ...deTeste, perfil: "Estudante" } });
@@ -90,6 +92,12 @@ export async function entrarComo(email: string, senha: string): Promise<string> 
 export function requisicaoComSessao(url: string, token?: string) {
   const headers = token ? { cookie: `${NOME_COOKIE_SESSAO}=${token}` } : undefined;
   return new Request(url, { headers });
+}
+
+// SPEC-040: turma de teste que registra chamada com a data de hoje fica num período de teste, sem eventos no
+// calendário — feriados e o fim das aulas do 2026/2 do seed não fazem o teste depender do dia em que roda.
+export async function periodoAbertoDeTeste() {
+  return (await criarPeriodoDeTeste()).nome;
 }
 
 // SPEC-017: período de teste com nome único "19xx/1" ou "19xx/2" (apagado em removerUsuariosDeTeste).

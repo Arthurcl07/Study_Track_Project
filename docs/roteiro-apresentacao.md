@@ -93,11 +93,19 @@ Entrar como `admin@studytrack.test`.
 - **Professor → Chamada → Turma SO-B**: a aula dupla do último dia (1ª e 2ª aula); corrigir, mudar a data ou excluir uma aula (SPEC-026/028). **Notas → Turma MS-A**: tipo de cada avaliação, a Substitutiva e Editar/Excluir (SPEC-026/029).
 - **Coordenador → Turmas e estudantes**: matrícula e situação de cada estudante, "Tirar da turma" (recusado se já tem nota) e Editar turma; **Disciplinas**: editar e excluir (SPEC-026).
 
+## 4f. Sistema acadêmico completo (5 min) — SPEC-036 a SPEC-043
+
+- **Estudante (`estudante@`) → Meu curso**: integralização (20%) e a matriz por semestre — Aprovada, Cursando, Pendente e Bloqueada com o pré-requisito que falta (SPEC-037). **Rematrícula 2027/1**: vagas, "Falta pré-requisito" em Cálculo II; matricular em Inteligência Artificial e mostrar que Empreendedorismo passa a ter choque de horário; cancelar (SPEC-038). **Calendário**: feriados, semana de provas, prazos e a grade da semana com salas (SPEC-040/041). **Requerimentos**: abrir uma revisão de prova (protocolo e prazo de 5 dias úteis) e abrir a declaração de matrícula já deferida (SPEC-036).
+- **Professor (`professor@`) → Requerimentos**: deferir a revisão de prova do João (ele recebe a notificação). **Chamada → Turma MS-A**: o conteúdo de cada aula; **Turma ER-B**: diário fechado, sem lançamento (SPEC-039).
+- **Coordenador (`coordenador@`) → Diários**: homologar ou devolver o diário da Turma ER-B (devolver avisa o professor). **Disciplinas → Matriz**: tentar pôr Algoritmos como pré-requisito de Lógica (recusado: ciclo). **Turmas → Turma MS-A**: horários com sala e vagas; um horário que bate com outra turma na mesma sala é recusado (SPEC-037/039/041).
+- **Administrador (`admin@`) → Estudantes → Henrique Dias**: integralização e o aproveitamento de Introdução à Computação; tentar marcar Concluído (recusado com o que falta); **Histórico** com a seção de aproveitamento (SPEC-042). **Calendário**, **Salas**, **Períodos letivos** (janela de rematrícula) e **Exportação do Censo** (prévia e CSV de apoio) (SPEC-040/041/043).
+- A rematrícula de 2027/1 está aberta de 03/11 a 30/11/2026. Se a apresentação for depois, ajuste a janela em **Administrador → Períodos letivos**.
+
 ## 5. Qualidade (2 min)
 
 | Mostrar | Onde |
 |---|---|
-| 290 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
+| 395 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
 | CI verde em todo PR, obrigatória na `main` | aba Actions do GitHub; `.github/workflows/ci.yml` |
 | Verificação de cada Spec (testes + navegador, desktop e celular) | `docs/verificacao/` |
 | Segurança: escopo na própria consulta, hash de senha, JWT em cookie httpOnly | `docs/seguranca-ssdlc.md`, ADR-003 e ADR-004 |
