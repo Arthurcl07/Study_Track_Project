@@ -1,6 +1,8 @@
 // Dados de demonstração do Nível 1 (SPEC-026 a SPEC-035), fictícios e idempotentes: dados da instituição, tipos das
 // avaliações, uma substitutiva e um exame final, um dia com aula dupla, um abono, um estudante trancado e um pedido de
 // senha pendente. Frequência e situação saem das regras do sistema (recalcularFrequencia e recalcularIndicador).
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { recalcularIndicador } from "../src/server/academico/indicador";
 import { auditar } from "../src/server/dados/auditoria";
 import { paraData } from "../src/server/dados/atividades";
@@ -30,6 +32,12 @@ export async function exemplosDaSecretaria(base: { administradorId: string }) {
       responsavelSecretaria: "Renata Duarte",
     },
   });
+  // Logotipo fictício (prisma/assets), só quando a instituição ainda não tem um: o enviado pela tela não é trocado.
+  const semLogo = await prisma.instituicao.findFirst({ where: { id: 1, logotipo: null }, select: { id: true } });
+  if (semLogo) {
+    const png = readFileSync(join(process.cwd(), "prisma", "assets", "logo-faculdade-exemplo.png"));
+    await prisma.instituicao.update({ where: { id: 1 }, data: { logotipo: `data:image/png;base64,${png.toString("base64")}` } });
+  }
   console.log("Instituição pronta: Faculdade Exemplo de Tecnologia");
 
   // SPEC-029: substitutiva (ainda sem notas) em Modelagem de Software e exame final do João em Cálculo Básico (2026/1).
