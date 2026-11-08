@@ -123,7 +123,7 @@ Aplicada por: RF-03, RF-16, RF-39.
 RB-20 — Período encerrado
 Descrição: Turma de período letivo encerrado é somente leitura (OPEN-040).
 Cláusula EARS:
-  IF a turma pertencer a um período letivo encerrado, THEN o sistema SHALL impedir avaliação, nota, chamada, atividade, entrega, plano de recuperação, matrícula, importação, troca de professor, edição e exclusão de cadastros e abono de faltas nessa turma (os dois últimos incluídos em 2026-11-06, OPEN-048, OPEN-054).
+  IF a turma pertencer a um período letivo encerrado (ou, desde 2026-11-08, tiver o diário fechado ou homologado, RB-37), THEN o sistema SHALL impedir avaliação, nota, chamada, atividade, entrega, plano de recuperação, matrícula, importação, troca de professor, edição e exclusão de cadastros e abono de faltas nessa turma (os dois últimos incluídos em 2026-11-06, OPEN-048, OPEN-054).
   WHEN um período letivo for reaberto, o sistema SHALL voltar a permitir essas operações.
 Aplicada por: RF-26.
 
@@ -205,6 +205,7 @@ RB-30 — Situação do estudante no curso
 Descrição: O estudante está Ativo, Trancado, Transferido, Cancelado ou Concluído no curso; só o administrador muda a situação, e só estudante ativo é matriculado (OPEN-053).
 Cláusula EARS:
   IF a situação do estudante no curso não for Ativo, THEN o sistema SHALL impedir novas matrículas e importações dele.
+  IF a nova situação for Concluído e a integralização for menor que 100%, THEN o sistema SHALL recusar (RB-40, 2026-11-08).
   WHEN o estudante for trancado, o sistema SHALL marcar como Trancadas as matrículas dele em turmas de período aberto; WHEN for transferido ou cancelado, SHALL marcá-las como Canceladas.
   IF a matrícula estiver trancada ou cancelada, THEN o sistema SHALL tirá-la da chamada, do lançamento de notas, das entregas, dos planos, dos dashboards, dos alertas e dos relatórios, mantendo-a no boletim e no histórico.
 Aplicada por: RF-39.
@@ -231,6 +232,66 @@ Cláusula EARS:
   IF quem consulta for professor, THEN o sistema SHALL apresentar apenas o nome e o número de matrícula.
 Aplicada por: RF-41.
 
+RB-34 — Requerimento
+Descrição: Revisão de prova e segunda chamada são respondidas pelo professor da turma; declaração de matrícula, trancamento e outros, pela secretaria. Todo requerimento tem protocolo, prazo de 5 dias úteis e status Aberto, Em análise, Deferido ou Indeferido (OPEN-058).
+Cláusula EARS:
+  WHEN um estudante abrir um requerimento de revisão de prova ou segunda chamada, o sistema SHALL exigir uma turma em que ele esteja cursando e encaminhá-lo ao professor dessa turma.
+  WHEN um requerimento for aberto, o sistema SHALL calcular o prazo somando 5 dias úteis, sem sábados, domingos, feriados e recessos do calendário.
+  IF quem responde não for o responsável pelo requerimento, THEN o sistema SHALL impedir a resposta.
+  IF o requerimento for indeferido sem resposta escrita, THEN o sistema SHALL recusar.
+  IF o requerimento já estiver deferido ou indeferido, THEN o sistema SHALL impedir nova mudança de status.
+Aplicada por: RF-44.
+
+RB-35 — Integralização do curso
+Descrição: A integralização é o percentual de horas das disciplinas obrigatórias da matriz do curso que o estudante já tem aprovadas ou aproveitadas (OPEN-059).
+Cláusula EARS:
+  WHEN a integralização for consultada, o sistema SHALL calculá-la como horas das obrigatórias com resultado Aprovado, Aprovado no exame ou aproveitamento ÷ horas obrigatórias da matriz × 100.
+  IF a matriz não tiver disciplina obrigatória, THEN o sistema SHALL apresentar a integralização como não definida.
+Aplicada por: RF-45, RF-51.
+
+RB-36 — Rematrícula
+Descrição: O estudante ativo se matricula sozinho, durante a janela de rematrícula, em turmas do próprio curso com vaga, pré-requisitos cumpridos, sem aprovação anterior na disciplina e sem choque de horário (OPEN-060).
+Cláusula EARS:
+  IF a data de hoje estiver fora da janela de rematrícula do período, THEN o sistema SHALL impedir a matrícula e o cancelamento pelo estudante.
+  IF a turma não tiver vaga, algum pré-requisito não estiver aprovado nem aproveitado, o estudante já tiver aprovação na disciplina ou houver choque de horário com outra turma dele no período, THEN o sistema SHALL recusar a matrícula e informar o motivo.
+  WHEN duas matrículas disputarem a última vaga, o sistema SHALL aceitar só uma.
+Aplicada por: RF-46.
+
+RB-37 — Diário de classe
+Descrição: O diário só é fechado completo; fechado ou homologado, a turma fica somente leitura até a coordenação devolver ou reabrir (OPEN-061).
+Cláusula EARS:
+  IF alguma Prova ou Trabalho estiver sem nota de um estudante cursando, ou o exame estiver sem nota de um estudante em exame, THEN o sistema SHALL impedir o fechamento e listar o que falta.
+  IF o diário da turma estiver fechado ou homologado, THEN o sistema SHALL impedir avaliação, nota, chamada, atividade, entrega, plano, matrícula, abono e correções na turma.
+  WHEN a coordenação devolver o diário, o sistema SHALL reabri-lo, gravar a observação e notificar o professor.
+Aplicada por: RF-47.
+
+RB-38 — Calendário e chamada
+Descrição: Não há aula em feriado nem recesso, nem fora do intervalo de aulas do período, quando ele está no calendário (OPEN-062).
+Cláusula EARS:
+  IF a data da chamada cair em feriado ou recesso do período da turma, THEN o sistema SHALL recusar a chamada.
+  IF o período tiver início e fim das aulas e a data da chamada estiver fora desse intervalo, THEN o sistema SHALL recusar a chamada.
+Aplicada por: RF-27, RF-48.
+
+RB-39 — Horário sem choque
+Descrição: No mesmo período e dia, uma sala e um professor não têm dois horários sobrepostos, e as vagas da turma cabem na sala (OPEN-063).
+Cláusula EARS:
+  IF um horário novo se sobrepuser a outro da mesma sala ou do mesmo professor no mesmo período e dia da semana, THEN o sistema SHALL recusar o horário.
+  IF as vagas da turma passarem da capacidade de uma sala dos horários dela, THEN o sistema SHALL recusar.
+  IF o fim do horário não for depois do início, THEN o sistema SHALL recusar.
+Aplicada por: RF-49.
+
+RB-40 — Conclusão de curso
+Descrição: O estudante só é marcado como Concluído com integralização de 100% (OPEN-064).
+Cláusula EARS:
+  IF a integralização do estudante for menor que 100%, THEN o sistema SHALL impedir a situação Concluído e informar as obrigatórias que faltam.
+Aplicada por: RF-50, RF-51.
+
+RB-41 — Pré-requisito
+Descrição: Pré-requisito é uma disciplina da mesma matriz; não existe ciclo de pré-requisitos (OPEN-059).
+Cláusula EARS:
+  IF o pré-requisito não estiver na matriz do curso, for a própria disciplina ou criar um ciclo, THEN o sistema SHALL recusar.
+Aplicada por: RF-45, RF-46.
+
 
 ## Resumo das regras
 
@@ -241,3 +302,4 @@ Aplicada por: RF-41.
 - O sistema deve acompanhar desempenho, frequência e prazos para gerar alertas e planos de recuperação.
 - O sistema deve organizar as turmas por período letivo, travar os períodos encerrados e registrar quem fez cada alteração.
 - O sistema deve apoiar a secretaria acadêmica (ficha, situação no curso, abono, documentos e senhas) sem abrir dados acadêmicos além do necessário.
+- O sistema deve organizar a vida acadêmica do curso: matriz, rematrícula, horários, calendário, diário e requerimentos.

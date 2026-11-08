@@ -71,6 +71,8 @@ export function turmasParaLancamento(professorId: string) {
       id: true,
       nome: true,
       periodo: true,
+      // SPEC-039: diário fechado ou homologado deixa a turma somente leitura.
+      diario: true,
       disciplina: { select: { nome: true } },
       avaliacoes: {
         // SPEC-029: o tipo (substitutiva e exame têm regras próprias).

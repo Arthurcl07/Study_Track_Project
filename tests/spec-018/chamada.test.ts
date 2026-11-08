@@ -14,6 +14,7 @@ import {
   removerUsuariosDeTeste,
   requisicaoComSessao,
   requisicaoJson,
+  periodoAbertoDeTeste,
 } from "../apoio";
 
 const API = "http://localhost/api";
@@ -29,7 +30,8 @@ function dias(base: string, quantos: number) {
   return data.toISOString().slice(0, 10);
 }
 
-async function cenario(quantos = 3, periodo = "2026/2") {
+async function cenario(quantos = 3, periodoPedido?: string) {
+  const periodo = periodoPedido ?? (await periodoAbertoDeTeste());
   const professor = await criarUsuarioDeTeste("Professor");
   const estudantes = [];
   for (let i = 0; i < quantos; i++) estudantes.push(await criarUsuarioDeTeste("Estudante"));

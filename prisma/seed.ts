@@ -3,6 +3,7 @@
 // (SPEC-004, OPEN-017), sem nota, para o professor lançar pela tela, e duas atividades de exemplo
 // (SPEC-005), além de dados de demonstração fictícios (ver dadosDeDemonstracao). Apenas para ambiente local.
 import { exemplosDaSecretaria } from "./secretaria";
+import { exemplosDoNivel3 } from "./nivel3";
 import { hojeEmBrasilia } from "../src/domain/atividades";
 import { recalcularIndicador } from "../src/server/academico/indicador";
 import { salvarConta } from "../src/server/auth/contas";
@@ -86,6 +87,9 @@ async function main() {
   const administrador = contas.Administrador;
   if (!administrador) throw new Error("Conta de administrador ausente.");
   await exemplosDaSecretaria({ administradorId: administrador.id });
+  // SPEC-036 a SPEC-043 (Nível 3): calendário, salas e grade, matriz, rematrícula de 2027/1, requerimentos,
+  // aproveitamento e diário fechado (prisma/nivel3.ts).
+  await exemplosDoNivel3({ administradorId: administrador.id, professorId: professor.id, cursoId: cursos.ECO });
 }
 
 // Dados de demonstração (fictícios): estudantes em Normal, Atenção, Risco e sem dados, para os

@@ -1,6 +1,7 @@
 import { AcaoPeriodo } from "@/components/acao-periodo";
 import { Casca } from "@/components/casca";
 import { FormularioApi } from "@/components/formulario-api";
+import { JanelaRematricula } from "@/components/gestao-secretaria-n3";
 import { SeloPeriodo } from "@/components/selo-periodo";
 import { CabecalhoPagina, Cartao, EstadoVazio } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
@@ -61,6 +62,21 @@ export default async function Periodos() {
             campos={[{ nome: "nome", rotulo: "Nome (AAAA/1 ou AAAA/2)" }]}
           />
           <p className="mt-3 text-sm text-mudo">O período nasce aberto. Encerrar e reabrir ficam registrados na auditoria.</p>
+        </Cartao>
+        {/* SPEC-038: janela em que o estudante faz a própria rematrícula. */}
+        <Cartao titulo="Rematrícula pelo estudante" className="xl:col-start-2">
+          <div className="space-y-4">
+            {periodos.filter((p) => p.status === "Aberto").map((p) => (
+              <JanelaRematricula
+                key={p.id}
+                periodoId={p.id}
+                nome={p.nome}
+                inicio={p.rematriculaInicio ? p.rematriculaInicio.toISOString().slice(0, 10) : null}
+                fim={p.rematriculaFim ? p.rematriculaFim.toISOString().slice(0, 10) : null}
+              />
+            ))}
+          </div>
+          <p className="mt-3 text-sm text-mudo">Dentro da janela, o estudante escolhe as turmas do curso com vaga, pré-requisitos e sem choque de horário.</p>
         </Cartao>
       </div>
     </Casca>

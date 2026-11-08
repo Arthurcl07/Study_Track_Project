@@ -28,6 +28,8 @@ import type { ClienteBanco } from "@/server/dados/indicadores";
 import { executarEmTransacao } from "@/server/dados/notas";
 import { prisma } from "@/server/dados/prisma";
 import type { Falha, Resultado } from "./cadastros";
+import { motivoParaNaoConcluir } from "@/domain/matriz";
+import { integralizacaoDoEstudante, listarAproveitamentos } from "./matriz";
 import { recalcularIndicador } from "./indicador";
 
 const sucesso = <T>(valor: T): Resultado<T> => ({ ok: true, valor });
@@ -93,10 +95,13 @@ export async function consultarFicha(sessao: Sessao, estudanteId: string) {
   });
   if (!estudante?.ficha) return null;
   const f = estudante.ficha;
-  const [abonos, cursando, cursos] = await Promise.all([
+  const [abonos, cursando, cursos, curso, aproveitamentos] = await Promise.all([
     listarAbonos(estudanteId),
     prisma.matricula.count({ where: { estudanteId, situacao: "Cursando", turma: { periodoLetivo: { status: "Aberto" } } } }),
     sessao.perfil === "Administrador" ? prisma.curso.findMany({ select: { id: true, nome: true }, orderBy: { nome: "asc" } }) : Promise.resolve([]),
+    // SPEC-037 / SPEC-042: integralização e aproveitamentos na ficha.
+    estudante.curso ? integralizacaoDoEstudante(estudanteId, estudante.curso.id) : Promise.resolve(null),
+    listarAproveitamentos(estudanteId),
   ]);
   return {
     id: estudante.id,
@@ -116,6 +121,10 @@ export async function consultarFicha(sessao: Sessao, estudanteId: string) {
     matriculasCursandoAbertas: cursando,
     abonos,
     cursos: cursos.filter((c) => c.id !== estudante.curso?.id),
+    integralizacao: curso?.integralizacao ?? null,
+    // Disciplinas da matriz ainda não aprovadas nem aproveitadas (opções do aproveitamento).
+    disciplinasParaAproveitar: (curso?.matriz ?? []).filter((d) => !curso!.historico.aprovadas.has(d.disciplinaId) && !curso!.historico.aproveitadas.has(d.disciplinaId)).map((d) => ({ id: d.disciplinaId, nome: d.nome, cargaHoraria: d.cargaHoraria })),
+    aproveitamentos,
   };
 }
 
@@ -168,6 +177,13 @@ export async function mudarSituacao(estudanteId: string, entrada: Record<string,
   const validacao = validarMudancaDeSituacao(entrada, atual, hoje);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
   const { situacao, data, motivo } = validacao.dados;
+  // SPEC-042 / RB-40 (AC-042-03): Concluído só com integralização de 100%.
+  if (situacao === "Concluido") {
+    if (!estudante.cursoId) return falha({ tipo: "invalido", erros: { situacao: "O estudante não tem curso." } });
+    const { integralizacao: resumo } = await integralizacaoDoEstudante(estudanteId, estudante.cursoId);
+    const motivoConclusao = motivoParaNaoConcluir(resumo);
+    if (motivoConclusao) return falha({ tipo: "invalido", erros: { situacao: motivoConclusao } });
+  }
   const efeito = efeitoNasMatriculas(situacao);
   return sucesso(
     await executarEmTransacao(async (tx) => {
@@ -212,9 +228,10 @@ export async function trocarCurso(estudanteId: string, entrada: Record<string, u
 async function faltasNoIntervalo(estudanteId: string, inicio: string, fim: string, db: ClienteBanco = prisma) {
   const faltas = await db.presenca.findMany({
     where: { estudanteId, presente: false, aula: { data: { gte: paraData(inicio), lte: paraData(fim) } } },
-    select: { aula: { select: { turmaId: true, turma: { select: { periodoLetivo: { select: { status: true } } } } } } },
+    select: { aula: { select: { turmaId: true, turma: { select: { diario: true, periodoLetivo: { select: { status: true } } } } } } },
   });
-  return faltas.map((f) => ({ turmaId: f.aula.turmaId, aberta: f.aula.turma.periodoLetivo.status === "Aberto" }));
+  // RB-20 / RB-37: só turma de período aberto e com diário aberto é recalculada.
+  return faltas.map((f) => ({ turmaId: f.aula.turmaId, aberta: f.aula.turma.periodoLetivo.status === "Aberto" && f.aula.turma.diario === "Aberto" }));
 }
 
 export async function listarAbonos(estudanteId: string) {

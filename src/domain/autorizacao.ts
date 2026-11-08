@@ -55,6 +55,16 @@ export const RECURSOS = {
   // SPEC-033 / SPEC-034 (RB-33): lista de estudantes e ficha — Administrador (todos), Coordenador (cursos dele).
   // O próprio estudante vê a ficha pela página Documentos.
   estudantes: "estudantes",
+  // Nível 3 (SPEC-036 a SPEC-043). Calendário: todos consultam; quem altera é a secretaria (recurso secretaria).
+  calendario: "calendario",
+  // SPEC-036: requerimentos — estudante abre; professor e secretaria respondem; coordenador consulta (escopo na query).
+  requerimentos: "requerimentos",
+  // SPEC-037: "Meu curso" (matriz e integralização) do próprio estudante.
+  meuCurso: "meu-curso",
+  // SPEC-038: rematrícula pelo próprio estudante.
+  rematricula: "rematricula",
+  // SPEC-039: homologação de diários pela coordenação (o professor fecha pelo recurso de registro).
+  diarios: "diarios",
 } as const;
 
 export type Recurso = (typeof RECURSOS)[keyof typeof RECURSOS];
@@ -87,6 +97,11 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "pedidos-senha": ["Administrador"],
   secretaria: ["Administrador"],
   estudantes: ["Administrador", "Coordenador"],
+  calendario: ["Estudante", "Professor", "Coordenador", "Administrador"],
+  requerimentos: ["Estudante", "Professor", "Coordenador", "Administrador"],
+  "meu-curso": ["Estudante"],
+  rematricula: ["Estudante"],
+  diarios: ["Coordenador"],
 };
 
 export function podeAcessar(perfil: unknown, recurso: unknown): boolean {

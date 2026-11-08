@@ -24,7 +24,8 @@ const dataAntes = (dias: number) => {
 // 10 aulas nos últimos 10 dias; o estudante falta nas 4 primeiras (frequência 60%).
 async function cenario() {
   const admin = await entrar("Administrador");
-  const dados = await turmaComEstudantes(1);
+  // Período de teste, sem calendário: as 10 datas nunca caem em feriado do 2026/2 (SPEC-040).
+  const dados = await turmaComEstudantes(1, (await criarPeriodoDeTeste()).nome);
   const [estudante] = dados.estudantes;
   const token = await entrarComo(dados.professor.email, dados.professor.senha);
   for (let i = 10; i >= 1; i--) {

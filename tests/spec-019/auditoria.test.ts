@@ -23,6 +23,7 @@ import {
   removerUsuariosDeTeste,
   requisicaoComSessao,
   requisicaoJson,
+  periodoAbertoDeTeste,
 } from "../apoio";
 
 const API = "http://localhost/api";
@@ -45,7 +46,7 @@ async function cenario() {
   const disciplina = await prisma.disciplina.create({
     data: { nome: `${PREFIXO_DISCIPLINA_TESTE}Modelagem-${randomUUID().slice(0, 4)}`, cargaHoraria: 60, cursos: { create: { cursoId: coordenador.usuario.cursoId } } },
   });
-  const turma = await prisma.turma.create({ data: { nome: "ES-A", periodo: "2026/2", disciplinaId: disciplina.id, professorId: professor.usuario.id, cursoId: coordenador.usuario.cursoId } });
+  const turma = await prisma.turma.create({ data: { nome: "ES-A", periodo: await periodoAbertoDeTeste(), disciplinaId: disciplina.id, professorId: professor.usuario.id, cursoId: coordenador.usuario.cursoId } });
   await prisma.matricula.create({ data: { estudanteId: estudante.usuario.id, turmaId: turma.id } });
   const avaliacao = await prisma.avaliacao.create({ data: { turmaId: turma.id, nome: "Prova 1", peso: 1, data: new Date() } });
   return { coordenador, professor, estudante, disciplina, turma, avaliacao };
@@ -66,7 +67,8 @@ describe("SPEC-019 — regras de domínio (sem banco)", () => {
 
   it("RB-22: toda ação tem categoria; grupos de cada perfil não se misturam", () => {
     // SPEC-027 e SPEC-033 (2026-11-06): pedidos de senha e instituição também são administrativos.
-    expect(gruposDaCategoria("Administrativa")).toEqual(["Contas", "Cursos", "Períodos", "Pedidos de senha", "Instituição"]);
+    // SPEC-040, SPEC-041 e SPEC-043 (2026-11-08): calendário, salas e exportação do Censo também.
+    expect(gruposDaCategoria("Administrativa")).toEqual(["Contas", "Cursos", "Períodos", "Pedidos de senha", "Instituição", "Calendário e salas", "Exportações"]);
     expect(gruposDaCategoria("Academica")).not.toContain("Contas");
     // SPEC-026: editar e excluir avaliação também ficam no grupo Notas.
     expect(acoesDoGrupo("Academica", "Notas").sort()).toEqual(["avaliacao.criada", "avaliacao.editada", "avaliacao.excluida", "nota.alterada", "nota.lancada"]);

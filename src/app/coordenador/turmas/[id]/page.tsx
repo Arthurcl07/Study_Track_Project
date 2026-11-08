@@ -3,12 +3,14 @@ import { notFound } from "next/navigation";
 import { Casca } from "@/components/casca";
 import { FormularioApi } from "@/components/formulario-api";
 import { CorrigirCadastro } from "@/components/corrigir-cadastro";
+import { HorariosDaTurma } from "@/components/coordenacao-n3";
 import { ImportacaoPlanilha } from "@/components/importacao-planilha";
 import { TirarDaTurma } from "@/components/tirar-da-turma";
 import { CabecalhoPagina, Cartao, CLASSE_LINK, EstadoVazio, Mensagem } from "@/components/ui";
 import { mensagemPeriodoEncerrado } from "@/domain/periodos";
 import { RECURSOS } from "@/domain/autorizacao";
 import { motivoParaExcluirTurmaDoCoordenador } from "@/server/academico/correcoes";
+import { horariosDaTurma, listarSalas } from "@/server/academico/horarios";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 import { buscarTurmaDoEscopo, listarProfessores } from "@/server/dados/estrutura";
 
@@ -29,6 +31,9 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
   const outrosProfessores = (await listarProfessores()).filter((p) => p.id !== turma.professor.id);
   const encerrada = turma.periodoLetivo.status === "Encerrado";
   const motivoExclusao = encerrada ? null : await motivoParaExcluirTurmaDoCoordenador(sessao.usuarioId, turma.id);
+  // SPEC-041 / SPEC-038: horários, salas e vagas.
+  const [horarios, salas] = await Promise.all([horariosDaTurma(turma.id), listarSalas()]);
+  const cursando = estudantes.filter((e) => e.situacao === "Cursando").length;
   const SELO_MATRICULA = {
     Cursando: "bg-normal-fundo text-normal",
     Trancada: "bg-slate-200 text-slate-600",
@@ -79,6 +84,16 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
             </table>
           )}
         </Cartao>
+        <div className="lg:col-start-2 lg:row-span-2">
+          <HorariosDaTurma
+            turmaId={turma.id}
+            horarios={horarios}
+            salas={salas.map((s) => ({ id: s.id, nome: s.nome, capacidade: s.capacidade }))}
+            vagas={turma.vagas ?? null}
+            cursando={cursando}
+            editavel={!encerrada}
+          />
+        </div>
         {encerrada ? (
           <Mensagem tipo="info">{mensagemPeriodoEncerrado(turma.periodo)} Cadastro, matrícula e troca de professor ficam bloqueados até o administrador reabrir o período.</Mensagem>
         ) : (

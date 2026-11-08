@@ -47,6 +47,15 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | RF-41 | Ficha do estudante | RB-13, RB-22, RB-33 | UC-30 | SPEC-033, SPEC-035 | — | `tests/spec-033/` | SPEC-026-035.md |
 | RF-42 | Dados da instituição | RB-13, RB-22 | UC-31, UC-19 | SPEC-033 | — | `tests/spec-033/` | SPEC-026-035.md |
 | RF-43 | Busca e paginação | RB-02, RB-03, RB-04, RB-13, RB-23 | UC-11, UC-13, UC-21, UC-30 | SPEC-034 | — | `tests/spec-034/` | SPEC-026-035.md |
+| RF-44 | Requerimentos | RB-02, RB-03, RB-22, RB-23, RB-34 | UC-32, UC-33 | SPEC-036 | — | `tests/spec-036/` | SPEC-036-043.md |
+| RF-45 | Matriz curricular e integralização | RB-04, RB-24, RB-35, RB-41 | UC-34 | SPEC-037 | — | `tests/spec-037/` | SPEC-036-043.md |
+| RF-46 | Rematrícula pelo estudante | RB-30, RB-32, RB-36, RB-39 | UC-35 | SPEC-038 | — | `tests/spec-038/` | SPEC-036-043.md |
+| RF-47 | Diário de classe | RB-20, RB-23, RB-37 | UC-36 | SPEC-039 | — | `tests/spec-039/` | SPEC-036-043.md |
+| RF-48 | Calendário acadêmico | RB-22, RB-38 | UC-37 | SPEC-040 | — | `tests/spec-040/` | SPEC-036-043.md |
+| RF-49 | Grade horária e salas | RB-22, RB-39 | UC-38 | SPEC-041 | — | `tests/spec-041/` | SPEC-036-043.md |
+| RF-50 | Aproveitamento de estudos | RB-22, RB-35 | UC-39 | SPEC-042 | — | `tests/spec-042/` | SPEC-036-043.md |
+| RF-51 | Conclusão de curso | RB-30, RB-40 | UC-39 | SPEC-042 | — | `tests/spec-042/` | SPEC-036-043.md |
+| RF-52 | Exportação de apoio ao Censo | RB-13, RB-22 | UC-40 | SPEC-043 | — | `tests/spec-043/` | SPEC-036-043.md |
 
 ## Lacunas conhecidas
 
@@ -54,6 +63,7 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 - RF-26 a RF-31 (SPEC-017 a SPEC-022) sem issue: pedido do grupo (Luiz) em 2026-11-05, registrado nos OPEN-038 a OPEN-044.
 - RF-32 a RF-34 (SPEC-023 a SPEC-025) sem issue: pedido do grupo (Luiz) em 2026-11-06, registrado nos OPEN-045 a OPEN-047.
 - RF-35 a RF-43 (SPEC-026 a SPEC-035) sem issue: pedido de Arthur em 2026-11-06 ("Nível 1" para uso real), registrado nos OPEN-048 a OPEN-057.
+- RF-44 a RF-52 (SPEC-036 a SPEC-043) sem issue: pedido de Arthur em 2026-11-08 (Nível 3, sem os itens 28 e 30), registrado nos OPEN-058 a OPEN-065.
 
 - Todo RF tem caso de uso: RF-03, RF-04, RF-07, RF-08 e RF-13 ganharam os UC-06 a UC-10 em 2026-10-17.
 - RB-08 (atraso) e RB-12 (progresso do plano) viraram contrato com o fechamento do OPEN-010, do OPEN-003 e do OPEN-021.
@@ -98,3 +108,11 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | SPEC-033 | FichaEstudante, Instituicao |
 | SPEC-034 | leitura de Usuario, FichaEstudante, HistoricoNota, Notificacao |
 | SPEC-035 | leitura de Usuario, FichaEstudante, RegistroAuditoria, PedidoSenha |
+| SPEC-036 | Requerimento, Notificacao, RegistroAuditoria |
+| SPEC-037 | CursoDisciplina (semestre, obrigatoria), PreRequisito |
+| SPEC-038 | PeriodoLetivo (janela), Turma (vagas), Matricula |
+| SPEC-039 | Aula (conteudo), Turma (diario), Notificacao |
+| SPEC-040 | EventoCalendario |
+| SPEC-041 | Sala, HorarioTurma |
+| SPEC-042 | Aproveitamento, FichaEstudante |
+| SPEC-043 | leitura de Usuario, FichaEstudante, Turma, Matricula, IndicadorAcademico |

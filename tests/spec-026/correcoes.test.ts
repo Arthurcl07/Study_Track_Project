@@ -15,7 +15,7 @@ import { POST as chamadaApi } from "@/app/api/aulas/route";
 import { recalcularIndicador } from "@/server/academico/indicador";
 import { NOME_COOKIE_SESSAO } from "@/server/auth/token";
 import { prisma } from "@/server/dados/prisma";
-import { PREFIXO_DISCIPLINA_TESTE, criarPeriodoDeTeste, criarUsuarioDeTeste, entrarComo, parametros, removerUsuariosDeTeste, requisicaoJson } from "../apoio";
+import { PREFIXO_DISCIPLINA_TESTE, criarPeriodoDeTeste, criarUsuarioDeTeste, entrarComo, parametros, removerUsuariosDeTeste, requisicaoJson, periodoAbertoDeTeste } from "../apoio";
 
 const API = "http://localhost/api";
 
@@ -34,7 +34,8 @@ async function entrar(perfil: "Estudante" | "Professor" | "Coordenador" | "Admin
 }
 
 // Turma do curso do coordenador com o professor e dois estudantes.
-async function cenario(periodo = "2026/2") {
+async function cenario(periodoPedido?: string) {
+  const periodo = periodoPedido ?? (await periodoAbertoDeTeste());
   const coordenador = await entrar("Coordenador");
   const professor = await entrar("Professor");
   const cursoId = coordenador.usuario.cursoId;

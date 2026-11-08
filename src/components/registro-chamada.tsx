@@ -13,8 +13,9 @@ import { Cartao, CLASSE_BOTAO_PRIMARIO, CLASSE_BOTAO_SECUNDARIO, CLASSE_CAMPO, C
 export type TurmaParaChamada = {
   id: string;
   rotulo: string;
+  diario: "Aberto" | "Fechado" | "Homologado";
   estudantes: { id: string; nome: string; matricula: string | null; percentual: number | null; situacao: "Normal" | "Atencao" | "Risco" | null }[];
-  aulas: { id: string; data: string; numero: number; presencas: { estudanteId: string; presente: boolean }[] }[];
+  aulas: { id: string; data: string; numero: number; conteudo: string | null; presencas: { estudanteId: string; presente: boolean }[] }[];
   abonos: { estudanteId: string; inicio: string; fim: string }[];
 };
 
@@ -43,6 +44,8 @@ export function RegistroChamada({ turmas, hoje }: { turmas: TurmaParaChamada[]; 
   const [quantidade, setQuantidade] = useState(() => presencasDaData(hoje).quantidade);
   // presentes[estudanteId][i] = presença na (i+1)ª aula.
   const [presentes, setPresentes] = useState<Record<string, boolean[]>>(() => presencasDaData(hoje).presentes);
+  // SPEC-039: conteúdo da aula (gravado nas aulas da data).
+  const [conteudo, setConteudo] = useState(() => turma?.aulas.find((a) => a.data === hoje)?.conteudo ?? "");
   const [erro, setErro] = useState<string | null>(null);
   const [errosCampo, setErrosCampo] = useState<Record<string, string>>({});
   const [sucesso, setSucesso] = useState<string | null>(null);
@@ -58,6 +61,7 @@ export function RegistroChamada({ turmas, hoje }: { turmas: TurmaParaChamada[]; 
     setData(novaData);
     setQuantidade(estado.quantidade);
     setPresentes(estado.presentes);
+    setConteudo((t?.aulas ?? []).find((a) => a.data === novaData)?.conteudo ?? "");
     setErro(null);
     setErrosCampo({});
   }
@@ -82,6 +86,7 @@ export function RegistroChamada({ turmas, hoje }: { turmas: TurmaParaChamada[]; 
       const corpo = {
         turmaId,
         data,
+        conteudo,
         aulas: Array.from({ length: quantidade }, (_, i) => estudantes.map((e) => ({ estudanteId: e.id, presente: abonada(e.id, data) ? false : presente(e.id, i) }))),
       };
       const resposta = await fetch("/api/aulas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) });
@@ -202,7 +207,7 @@ export function RegistroChamada({ turmas, hoje }: { turmas: TurmaParaChamada[]; 
                   {aulas.map((a) => (
                     <tr key={a.id} className={`border-t border-traco ${a.data === data && corrigindo ? "bg-azul-suave" : ""}`}>
                       <td data-rotulo="Data" className="px-2 py-3">{formatarDataCurta(a.data)}</td>
-                      <td data-rotulo="Aula" className="px-2 py-3">{a.numero}ª</td>
+                      <td data-rotulo="Aula" className="px-2 py-3">{a.numero}ª{a.conteudo && <span className="block max-w-56 text-xs text-mudo">{a.conteudo}</span>}</td>
                       <td data-rotulo="Presentes" className="px-2 py-3 text-right tabular-nums">{a.presencas.filter((p) => p.presente).length} de {a.presencas.length}</td>
                       <td className="px-2 py-3 text-right">
                         <span className="inline-flex flex-wrap justify-end gap-3 text-sm">
@@ -223,6 +228,8 @@ export function RegistroChamada({ turmas, hoje }: { turmas: TurmaParaChamada[]; 
         <Cartao titulo={corrigindo ? `Chamada de ${formatarDataCurta(data)} · corrigir ou acrescentar aulas` : "Nova chamada"}>
           {estudantes.length === 0 ? (
             <p className="text-sm text-mudo">Matricule estudantes na turma para fazer a chamada.</p>
+          ) : turma && turma.diario !== "Aberto" ? (
+            <Mensagem tipo="info">O diário desta turma está {turma.diario === "Fechado" ? "fechado, aguardando a homologação da coordenação" : "homologado"}: a turma está somente leitura. Só a coordenação devolve ou reabre o diário.</Mensagem>
           ) : (
             <form onSubmit={salvar} className="space-y-4" noValidate>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -238,6 +245,11 @@ export function RegistroChamada({ turmas, hoje }: { turmas: TurmaParaChamada[]; 
                   </select>
                   <ErroCampo mensagem={errosCampo.aulas} />
                 </div>
+              </div>
+              <div>
+                <label htmlFor="conteudo" className={CLASSE_ROTULO}>Conteúdo da aula</label>
+                <textarea id="conteudo" rows={2} maxLength={500} value={conteudo} onChange={(e) => setConteudo(e.target.value)} placeholder="Ex.: Escalonamento de processos: FIFO e Round Robin" className={CLASSE_CAMPO} />
+                <ErroCampo mensagem={errosCampo.conteudo} />
               </div>
               <p className="text-sm text-mudo">Todos começam presentes. Desmarcar na 1ª aula desmarca as seguintes; depois dá para mudar cada uma.</p>
               <div className="overflow-x-auto">

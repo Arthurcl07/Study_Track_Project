@@ -2,7 +2,7 @@
 import { numeroBR } from "./auditoria";
 import type { Situacao } from "./situacao-academica";
 
-export type TipoNotificacao = "Risco" | "Nota" | "Plano" | "Prazo" | "Comunicado";
+export type TipoNotificacao = "Risco" | "Nota" | "Plano" | "Prazo" | "Comunicado" | "Requerimento" | "Diario";
 export type NovaNotificacao = { tipo: TipoNotificacao; titulo: string; texto: string; link: string; chave?: string };
 
 export const DIAS_DE_AVISO_DO_PRAZO = 2;
@@ -85,4 +85,15 @@ export function notificacaoPrazo(atividadeId: string, estudanteId: string, descr
     link: "/estudante/atividades",
     chave: chavePrazo(atividadeId, estudanteId),
   };
+}
+
+// SPEC-036 (RF-44): a cada mudança de status do requerimento, o estudante é avisado.
+const ROTULO_STATUS_REQ: Record<string, string> = { Aberto: "aberto", EmAnalise: "em análise", Deferido: "deferido", Indeferido: "indeferido" };
+export function notificacaoRequerimento(protocolo: string, tipo: string, status: string, resposta: string | null): NovaNotificacao {
+  return { tipo: "Requerimento", titulo: `Requerimento ${protocolo} ${ROTULO_STATUS_REQ[status] ?? status}`, texto: resposta ? `${tipo}: ${resposta}` : tipo, link: "/requerimentos" };
+}
+
+// SPEC-039 (RB-37): diário devolvido pela coordenação.
+export function notificacaoDiarioDevolvido(turma: string, observacao: string): NovaNotificacao {
+  return { tipo: "Diario", titulo: `Diário devolvido: ${turma}`, texto: observacao, link: "/professor" };
 }

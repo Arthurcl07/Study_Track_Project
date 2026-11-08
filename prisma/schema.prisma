@@ -46,29 +46,34 @@ model Usuario {
   cursoId     String?
   curso       Curso?   @relation("EstudanteDoCurso", fields: [cursoId], references: [id], onDelete: Restrict)
 
-  turmasLecionadas       Turma[]              @relation("ProfessorDaTurma")
-  cursosCoordenados      Curso[]              @relation("CoordenadorDoCurso")
-  matriculas             Matricula[]
-  notas                  Nota[]
-  frequencias            Frequencia[]
-  indicadores            IndicadorAcademico[]
-  entregas               Entrega[]
-  presencas              Presenca[]
-  registrosAuditoria     RegistroAuditoria[]
-  notificacoes           Notificacao[]
-  comunicados            Comunicado[]
-  historicoComoEstudante HistoricoNota[]      @relation("EstudanteDoHistorico")
-  historicoComoAutor     HistoricoNota[]      @relation("AutorDoHistorico")
-  planosComoEstudante    PlanoRecuperacao[]   @relation("EstudanteDoPlano")
-  planosComoProfessor    PlanoRecuperacao[]   @relation("ProfessorDoPlano")
+  turmasLecionadas           Turma[]              @relation("ProfessorDaTurma")
+  cursosCoordenados          Curso[]              @relation("CoordenadorDoCurso")
+  matriculas                 Matricula[]
+  notas                      Nota[]
+  frequencias                Frequencia[]
+  indicadores                IndicadorAcademico[]
+  entregas                   Entrega[]
+  presencas                  Presenca[]
+  registrosAuditoria         RegistroAuditoria[]
+  notificacoes               Notificacao[]
+  comunicados                Comunicado[]
+  historicoComoEstudante     HistoricoNota[]      @relation("EstudanteDoHistorico")
+  historicoComoAutor         HistoricoNota[]      @relation("AutorDoHistorico")
+  planosComoEstudante        PlanoRecuperacao[]   @relation("EstudanteDoPlano")
+  planosComoProfessor        PlanoRecuperacao[]   @relation("ProfessorDoPlano")
   // SPEC-033 / RB-33: ficha (número de matrícula e dados pessoais) só de estudante; criada por gatilho no banco.
-  ficha                  FichaEstudante?
+  ficha                      FichaEstudante?
   // SPEC-032 / RB-31: abonos do estudante e os registrados pela secretaria.
-  abonos                 Abono[]              @relation("AbonosDoEstudante")
-  abonosRegistrados      Abono[]              @relation("AbonosRegistrados")
+  abonos                     Abono[]              @relation("AbonosDoEstudante")
+  abonosRegistrados          Abono[]              @relation("AbonosRegistrados")
   // SPEC-027 / RB-27: pedidos de redefinição de senha.
-  pedidosSenha           PedidoSenha[]        @relation("PedidosDaConta")
-  pedidosResolvidos      PedidoSenha[]        @relation("PedidosResolvidos")
+  pedidosSenha               PedidoSenha[]        @relation("PedidosDaConta")
+  pedidosResolvidos          PedidoSenha[]        @relation("PedidosResolvidos")
+  // SPEC-036 / SPEC-042: requerimentos abertos e respondidos; aproveitamentos do estudante e os registrados.
+  requerimentos              Requerimento[]       @relation("RequerimentosDoEstudante")
+  requerimentosRespondidos   Requerimento[]       @relation("RequerimentosRespondidos")
+  aproveitamentos            Aproveitamento[]     @relation("AproveitamentosDoEstudante")
+  aproveitamentosRegistrados Aproveitamento[]     @relation("AproveitamentosRegistrados")
 
   @@index([cursoId])
 }
@@ -85,6 +90,7 @@ model Curso {
   estudantes    Usuario[]           @relation("EstudanteDoCurso")
   auditoria     RegistroAuditoria[]
   comunicados   Comunicado[]
+  preRequisitos PreRequisito[]
 
   @@index([coordenadorId])
 }
@@ -97,43 +103,59 @@ model CursoDisciplina {
   disciplinaId String
   disciplina   Disciplina @relation(fields: [disciplinaId], references: [id], onDelete: Cascade)
 
+  // SPEC-037 (OPEN-059): matriz do curso — semestre sugerido (1 a 10) e obrigatória ou optativa.
+  semestre    Int?
+  obrigatoria Boolean        @default(true)
+  requisitos  PreRequisito[] @relation("RequisitosDaDisciplina")
+  exigidaPor  PreRequisito[] @relation("DisciplinaExigida")
+
   @@id([cursoId, disciplinaId])
   @@index([disciplinaId])
 }
 
 model Disciplina {
-  id           String            @id @default(uuid())
-  nome         String
+  id              String            @id @default(uuid())
+  nome            String
   // Inteiro maior que zero (OPEN-009); garantido também por CHECK na migração.
-  cargaHoraria Int
-  turmas       Turma[]
-  cursos       CursoDisciplina[]
+  cargaHoraria    Int
+  turmas          Turma[]
+  cursos          CursoDisciplina[]
+  aproveitamentos Aproveitamento[]
 }
 
 // INV-002-02: toda turma tem exatamente 1 disciplina e 1 professor responsável.
 // SPEC-015 / RB-18 (INV-015-03): exatamente 1 curso, cuja grade contém a disciplina da turma. O coordenador
 // responsável é o do curso (substitui o coordenador gravado na turma, OPEN-030).
 model Turma {
-  id            String               @id @default(uuid())
-  nome          String
+  id                 String               @id @default(uuid())
+  nome               String
   // SPEC-017 / INV-017-01: exatamente 1 período letivo (o nome, que não muda, é a chave).
-  periodo       String
-  periodoLetivo PeriodoLetivo        @relation(fields: [periodo], references: [nome], onDelete: Restrict, onUpdate: Cascade)
-  disciplinaId  String
-  disciplina    Disciplina           @relation(fields: [disciplinaId], references: [id], onDelete: Restrict)
-  professorId   String
-  professor     Usuario              @relation("ProfessorDaTurma", fields: [professorId], references: [id], onDelete: Restrict)
-  cursoId       String
-  curso         Curso                @relation(fields: [cursoId], references: [id], onDelete: Restrict)
-  matriculas    Matricula[]
-  avaliacoes    Avaliacao[]
-  frequencias   Frequencia[]
-  indicadores   IndicadorAcademico[]
-  atividades    Atividade[]
-  planos        PlanoRecuperacao[]
-  aulas         Aula[]
-  auditoria     RegistroAuditoria[]
-  comunicados   Comunicado[]
+  periodo            String
+  periodoLetivo      PeriodoLetivo        @relation(fields: [periodo], references: [nome], onDelete: Restrict, onUpdate: Cascade)
+  disciplinaId       String
+  disciplina         Disciplina           @relation(fields: [disciplinaId], references: [id], onDelete: Restrict)
+  professorId        String
+  professor          Usuario              @relation("ProfessorDaTurma", fields: [professorId], references: [id], onDelete: Restrict)
+  cursoId            String
+  curso              Curso                @relation(fields: [cursoId], references: [id], onDelete: Restrict)
+  matriculas         Matricula[]
+  avaliacoes         Avaliacao[]
+  frequencias        Frequencia[]
+  indicadores        IndicadorAcademico[]
+  atividades         Atividade[]
+  planos             PlanoRecuperacao[]
+  aulas              Aula[]
+  auditoria          RegistroAuditoria[]
+  comunicados        Comunicado[]
+  // SPEC-038 (OPEN-060): vagas para a rematrícula (vazio = sem limite).
+  vagas              Int?
+  // SPEC-039 (OPEN-061): diário de classe. Fechado ou homologado = turma somente leitura (RB-37).
+  diario             StatusDiario         @default(Aberto)
+  diarioFechadoEm    DateTime?
+  diarioHomologadoEm DateTime?
+  diarioObservacao   String?
+  horarios           HorarioTurma[]
+  requerimentos      Requerimento[]
 
   @@index([professorId])
   @@index([cursoId])
@@ -147,12 +169,16 @@ enum StatusPeriodo {
 
 // SPEC-017 / RB-20 (OPEN-040): turma de período encerrado é somente leitura. INV-017-02: nome único, AAAA/1 ou AAAA/2.
 model PeriodoLetivo {
-  id          String        @id @default(uuid())
-  nome        String        @unique
-  status      StatusPeriodo @default(Aberto)
-  criadoEm    DateTime      @default(now())
-  encerradoEm DateTime?
-  turmas      Turma[]
+  id                String             @id @default(uuid())
+  nome              String             @unique
+  status            StatusPeriodo      @default(Aberto)
+  criadoEm          DateTime           @default(now())
+  encerradoEm       DateTime?
+  turmas            Turma[]
+  // SPEC-038 (OPEN-060): janela de rematrícula definida pela secretaria.
+  rematriculaInicio DateTime?          @db.Date
+  rematriculaFim    DateTime?          @db.Date
+  eventos           EventoCalendario[]
 }
 
 // INV-002-04: matrícula N:M entre estudantes e turmas, sem duplicidade.
@@ -181,17 +207,18 @@ enum Situacao {
 
 // Estrutura usada pelo cálculo da média (OPEN-002). O cadastro de avaliações é da SPEC-004.
 model Avaliacao {
-  id        String          @id @default(uuid())
-  turmaId   String
-  turma     Turma           @relation(fields: [turmaId], references: [id], onDelete: Cascade)
-  nome      String
+  id            String          @id @default(uuid())
+  turmaId       String
+  turma         Turma           @relation(fields: [turmaId], references: [id], onDelete: Cascade)
+  nome          String
   // Peso maior que zero (OPEN-002); garantido também por CHECK na migração.
-  peso      Float
+  peso          Float
   // SPEC-029 / RB-28 / RB-29: no máximo uma Substitutiva e um Exame por turma (índices parciais na migração).
-  tipo      TipoAvaliacao   @default(Prova)
-  data      DateTime
-  notas     Nota[]
-  historico HistoricoNota[]
+  tipo          TipoAvaliacao   @default(Prova)
+  data          DateTime
+  notas         Nota[]
+  historico     HistoricoNota[]
+  requerimentos Requerimento[]
 
   @@index([turmaId])
 }
@@ -341,6 +368,8 @@ model Aula {
   data         DateTime   @db.Date
   // SPEC-028 / RB-21: de 1 a 4 aulas na mesma data (CHECK na migração).
   numero       Int        @default(1)
+  // SPEC-039 (OPEN-061): conteúdo da aula.
+  conteudo     String?
   registradaEm DateTime   @default(now())
   presencas    Presenca[]
 
@@ -392,6 +421,9 @@ enum TipoNotificacao {
   Plano
   Prazo
   Comunicado
+  // SPEC-036 e SPEC-039.
+  Requerimento
+  Diario
 }
 
 // SPEC-022 / RB-23 (OPEN-043): notificação gravada, de exatamente 1 destinatário, o único que a vê e marca como
@@ -526,4 +558,132 @@ model Instituicao {
   // Data URL (PNG ou JPG, até 200 KB).
   logotipo              String?
   atualizadaEm          DateTime @updatedAt
+}
+
+// SPEC-037 / RB-41 (OPEN-059): pré-requisito dentro da matriz de um curso (sem ciclo, conferido no domínio).
+model PreRequisito {
+  cursoId      String
+  curso        Curso           @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  disciplinaId String
+  requisitoId  String
+  disciplina   CursoDisciplina @relation("RequisitosDaDisciplina", fields: [cursoId, disciplinaId], references: [cursoId, disciplinaId], onDelete: Cascade)
+  requisito    CursoDisciplina @relation("DisciplinaExigida", fields: [cursoId, requisitoId], references: [cursoId, disciplinaId], onDelete: Cascade)
+
+  @@id([cursoId, disciplinaId, requisitoId])
+}
+
+// SPEC-039 (OPEN-061).
+enum StatusDiario {
+  Aberto
+  Fechado
+  Homologado
+}
+
+// SPEC-040 / RB-38 (OPEN-062).
+enum TipoEvento {
+  InicioAulas
+  FimAulas
+  Feriado
+  Recesso
+  SemanaProvas
+  Outro
+}
+
+model EventoCalendario {
+  id            String        @id @default(uuid())
+  periodo       String
+  periodoLetivo PeriodoLetivo @relation(fields: [periodo], references: [nome], onDelete: Cascade, onUpdate: Cascade)
+  tipo          TipoEvento
+  titulo        String
+  inicio        DateTime      @db.Date
+  fim           DateTime      @db.Date
+
+  @@index([periodo])
+  @@index([inicio])
+}
+
+// SPEC-041 / RB-39 (OPEN-063).
+model Sala {
+  id         String         @id @default(uuid())
+  nome       String         @unique
+  capacidade Int
+  horarios   HorarioTurma[]
+}
+
+model HorarioTurma {
+  id        String @id @default(uuid())
+  turmaId   String
+  turma     Turma  @relation(fields: [turmaId], references: [id], onDelete: Cascade)
+  // 1 = segunda ... 6 = sábado; horas "HH:MM".
+  diaSemana Int
+  inicio    String
+  fim       String
+  salaId    String
+  sala      Sala   @relation(fields: [salaId], references: [id], onDelete: Restrict)
+
+  @@index([turmaId])
+  @@index([salaId, diaSemana])
+}
+
+// SPEC-036 / RB-34 (OPEN-058).
+enum TipoRequerimento {
+  RevisaoProva
+  SegundaChamada
+  DeclaracaoMatricula
+  Trancamento
+  Outro
+}
+
+enum DestinoRequerimento {
+  Professor
+  Secretaria
+}
+
+enum StatusRequerimento {
+  Aberto
+  EmAnalise
+  Deferido
+  Indeferido
+}
+
+model Requerimento {
+  id            String              @id @default(uuid())
+  protocolo     String              @unique
+  estudanteId   String
+  estudante     Usuario             @relation("RequerimentosDoEstudante", fields: [estudanteId], references: [id], onDelete: Cascade)
+  tipo          TipoRequerimento
+  destino       DestinoRequerimento
+  turmaId       String?
+  turma         Turma?              @relation(fields: [turmaId], references: [id], onDelete: SetNull)
+  avaliacaoId   String?
+  avaliacao     Avaliacao?          @relation(fields: [avaliacaoId], references: [id], onDelete: SetNull)
+  descricao     String
+  status        StatusRequerimento  @default(Aberto)
+  resposta      String?
+  prazo         DateTime            @db.Date
+  criadoEm      DateTime            @default(now())
+  respondidoEm  DateTime?
+  responsavelId String?
+  responsavel   Usuario?            @relation("RequerimentosRespondidos", fields: [responsavelId], references: [id], onDelete: SetNull)
+
+  @@index([estudanteId])
+  @@index([status, prazo])
+}
+
+// SPEC-042 / RB-35 (OPEN-064): no máximo um por estudante e disciplina.
+model Aproveitamento {
+  id                String     @id @default(uuid())
+  estudanteId       String
+  estudante         Usuario    @relation("AproveitamentosDoEstudante", fields: [estudanteId], references: [id], onDelete: Cascade)
+  disciplinaId      String
+  disciplina        Disciplina @relation(fields: [disciplinaId], references: [id], onDelete: Restrict)
+  instituicaoOrigem String
+  disciplinaOrigem  String
+  nota              Float?
+  cargaHoraria      Int
+  registradoEm      DateTime   @default(now())
+  autorId           String
+  autor             Usuario    @relation("AproveitamentosRegistrados", fields: [autorId], references: [id], onDelete: Cascade)
+
+  @@unique([estudanteId, disciplinaId])
 }
