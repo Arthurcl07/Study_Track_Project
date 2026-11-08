@@ -4628,3 +4628,926 @@ Nenhuma. OPEN-057 fechada.
 ## 14. Definition of Done
 
 Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-036 — Requerimentos online
+
+**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-036 |
+| **Nome** | Requerimentos online |
+| **Objetivo** | O estudante abre pedidos formais (revisão de prova, segunda chamada, declaração, trancamento, outro) que chegam a quem resolve, com protocolo, prazo e resposta. |
+| **Valor** | Substitui o papel e o e-mail da secretaria por um fluxo com prazo e histórico. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-44 |
+| **RB** | RB-02, RB-03, RB-13, RB-22, RB-23, RB-34 |
+| **RNF** | RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-32 Abrir requerimento; UC-33 Responder requerimento |
+| **Entidades** | `Requerimento` (nova), `Notificacao` (tipo Requerimento), `RegistroAuditoria` |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-058, OPEN-062 |
+
+## 3. Escopo
+
+**Incluído**
+- Página **Requerimentos** do estudante: lista dos próprios (protocolo, tipo, status, prazo) e **Novo requerimento** (tipo; turma cursando para revisão e segunda chamada, avaliação opcional; descrição até 1.000 caracteres).
+- Protocolo `AAAA-NNNNNN` (sequência do ano); prazo de 5 dias úteis sem sábados, domingos e feriados/recessos do calendário (SPEC-040).
+- Página **Requerimentos** do professor (os das turmas que leciona, de revisão e segunda chamada) e da secretaria (declaração, trancamento e outro): pendentes primeiro, atrasados em destaque; **Em análise**, **Deferir** e **Indeferir** com resposta (obrigatória ao indeferir).
+- Coordenação: os requerimentos do curso, só leitura.
+- Notificação ao estudante a cada mudança de status; auditoria acadêmica com o curso.
+- **Declaração de matrícula** deferida: o estudante abre uma página pronta para imprimir com os dados da instituição, curso, situação e turmas cursando (sem código de verificação, item 28 fora do escopo).
+
+**Fora do escopo**
+- Anexos; taxa; trancamento automático (a secretaria registra na ficha, SPEC-031); reabrir requerimento decidido.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout `aguardando aprovação`.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Requerimentos do estudante | [prototipo.html#requerimentos-estudante](layout/prototipo.html#requerimentos-estudante) | [ ] | [ ] | — | — |
+| Responder requerimentos (professor/secretaria) | [prototipo.html#requerimentos-responder](layout/prototipo.html#requerimentos-responder) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-019, SPEC-022, SPEC-031, SPEC-033, SPEC-035, SPEC-040.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o estudante pede revisão da Prova 1; o professor analisa e defere com a resposta; o estudante é notificado.
+
+**Exceções:** tipo inválido, descrição vazia ou turma que não cursa: 400; responder requerimento de outro: 404; indeferir sem resposta: 400; requerimento já decidido: 409.
+
+**Pós-condições:** requerimento e auditoria gravados na mesma transação; notificação ao estudante.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-036-01 | Protocolo único; prazo = 5 dias úteis depois da abertura (RB-34). |
+| INV-036-02 | Só o responsável (professor da turma ou secretaria) muda o status. |
+| INV-036-03 | Estudante vê só os próprios; coordenador só os do curso, sem responder. |
+| INV-036-04 | Deferido e indeferido são finais. |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **Requerimento**; `TipoNotificacao` ganha Requerimento.
+
+## 8. Impacto arquitetural
+
+- Regras puras em `src/domain/requerimentos.ts` (destino, dias úteis, transições, protocolo).
+- Casos de uso em `src/server/academico/requerimentos.ts`; migração com tabela, enums e índice do protocolo.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/requerimentos` | sessão | requerimentos do escopo | sem permissão |
+| `POST /api/requerimentos` | tipo, turmaId?, avaliacaoId?, descrição | requerimento com protocolo e prazo | campo inválido |
+| `PATCH /api/requerimentos/:id` | status (EmAnalise, Deferido, Indeferido), resposta | requerimento | não responsável, já decidido, resposta faltando |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03, RNF-05 | Escopo na query; estudante não vê requerimento de outro |
+| RNF-04, RNF-06 | Telas aprovadas |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-036-01 | Estudante cursando a turma | Pede revisão de prova | Protocolo, prazo de 5 dias úteis, destino professor da turma; aparece para o professor |
+| AC-036-02 | Pedido aberto numa sexta, feriado na terça seguinte | Calcula o prazo | O prazo pula sábado, domingo e o feriado |
+| AC-036-03 | Professor da turma | Defere com resposta | Status Deferido; estudante notificado; auditoria |
+| AC-036-04 | Secretaria | Indefere sem resposta | 400 |
+| AC-036-05 | Outro professor | Tenta responder | 404 |
+| AC-036-06 | Requerimento deferido | Muda de novo | 409 |
+| AC-036-07 | Declaração de matrícula deferida | Estudante abre a declaração | Documento com instituição, curso e turmas cursando |
+| AC-036-08 | Estudante de outra turma | Pede segunda chamada nela | 400 |
+| AC-036-09 | Coordenador | Abre os requerimentos | Vê os do curso, sem os botões de resposta |
+
+## 12. Casos de teste derivados
+
+1. Destino, dias úteis, transições, protocolo (unitário).
+2. Abertura, resposta, escopo, notificação e declaração (integração).
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-058 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-037 — Matriz curricular e integralização
+
+**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-037 |
+| **Nome** | Matriz curricular e integralização |
+| **Objetivo** | A grade do curso vira matriz (semestre, obrigatória/optativa, pré-requisitos) e o estudante vê quanto já concluiu. |
+| **Valor** | É o "mapa do curso": mostra o caminho até a formatura e alimenta a rematrícula e a conclusão. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-45, RF-23 |
+| **RB** | RB-04, RB-18, RB-22, RB-24, RB-35, RB-41 |
+| **RNF** | RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-34 Montar matriz curricular |
+| **Entidades** | `CursoDisciplina` (semestre, obrigatoria), `PreRequisito` (nova) |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-033, OPEN-059 |
+
+## 3. Escopo
+
+**Incluído**
+- Em **Disciplinas** do coordenador, aba **Matriz**: por disciplina da grade, semestre sugerido (1 a 10 ou sem semestre), obrigatória ou optativa, e pré-requisitos (escolhidos entre as disciplinas da mesma matriz).
+- Página **Meu curso** do estudante: matriz por semestre com a situação de cada disciplina (Aprovada, Aproveitada, Cursando, Reprovada, Pendente, Bloqueada por pré-requisito), horas obrigatórias concluídas e o percentual de integralização (RB-35).
+- Na ficha do estudante (secretaria e coordenação), o mesmo resumo de integralização.
+
+**Fora do escopo**
+- Versões de matriz por ano de ingresso; equivalências entre disciplinas; créditos.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout `aguardando aprovação`.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Matriz do curso (coordenador) | [prototipo.html#matriz-coordenador](layout/prototipo.html#matriz-coordenador) | [ ] | [ ] | — | — |
+| Meu curso (estudante) | [prototipo.html#meu-curso](layout/prototipo.html#meu-curso) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-015, SPEC-019, SPEC-020, SPEC-029, SPEC-033.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o coordenador marca Cálculo I no 1º semestre, obrigatória, e Cálculo II com pré-requisito Cálculo I; o estudante vê Cálculo II bloqueada até ser aprovado em Cálculo I.
+
+**Exceções:** semestre fora de 1 a 10: 400; pré-requisito fora da matriz, a própria disciplina ou ciclo: 400 (RB-41); disciplina de curso de outro coordenador: 404.
+
+**Pós-condições:** matriz gravada com auditoria; integralização calculada na leitura (nada é gravado).
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-037-01 | Integralização = horas obrigatórias aprovadas ou aproveitadas ÷ horas obrigatórias × 100 (RB-35). |
+| INV-037-02 | Pré-requisito é da mesma matriz e não forma ciclo (RB-41). |
+| INV-037-03 | A integralização usa o resultado da regra única do histórico (RB-24). |
+
+## 7. Modelo de domínio envolvido
+
+`CursoDisciplina` ganha `semestre` e `obrigatoria`; nova entidade **PreRequisito** (curso, disciplina, requisito).
+
+## 8. Impacto arquitetural
+
+- `src/domain/matriz.ts` (situação por disciplina, integralização, detecção de ciclo).
+- Casos de uso em `src/server/academico/matriz.ts`; migração com colunas e tabela.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `PUT /api/cursos/:id/matriz/:disciplinaId` | semestre, obrigatoria, preRequisitos[] | linha da matriz | campo inválido, ciclo, fora do escopo |
+| `GET /api/estudantes/:id/curso` | — | matriz com situação e integralização | não encontrado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03 | Escopo do coordenador na query |
+| RNF-04, RNF-06 | Telas aprovadas |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-037-01 | Disciplina da grade | Coordenador define semestre 2, obrigatória, pré-requisito X | Gravado; auditoria |
+| AC-037-02 | A exige B | Coordenador põe A como pré-requisito de B | 400 (ciclo) |
+| AC-037-03 | Matriz com 300 h obrigatórias; estudante aprovado em 120 h e com 60 h aproveitadas | Abre Meu curso | 60% |
+| AC-037-04 | Pré-requisito não aprovado | Estudante abre Meu curso | Disciplina aparece Bloqueada, com o que falta |
+| AC-037-05 | Optativa aprovada | Calcula | Não entra na integralização |
+| AC-037-06 | Coordenador de outro curso | Tenta editar a matriz | 404 |
+
+## 12. Casos de teste derivados
+
+1. Situação por disciplina, integralização e ciclo (unitário).
+2. Edição da matriz e consulta do curso (integração).
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-059 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-038 — Rematrícula pelo estudante
+
+**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-038 |
+| **Nome** | Rematrícula pelo estudante |
+| **Objetivo** | O estudante escolhe as próprias turmas do período, dentro da janela da secretaria, com vagas, pré-requisitos e sem choque de horário. |
+| **Valor** | Tira da coordenação a matrícula turma a turma e mostra na hora por que uma turma não pode ser escolhida. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-46 |
+| **RB** | RB-19, RB-20, RB-22, RB-30, RB-32, RB-36, RB-39, RB-41 |
+| **RNF** | RNF-01, RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-35 Rematricular-se |
+| **Entidades** | `PeriodoLetivo` (janela), `Turma` (vagas), `Matricula`, `HorarioTurma` |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-060 |
+
+## 3. Escopo
+
+**Incluído**
+- Em **Períodos letivos**, a secretaria define a janela de rematrícula (início e fim) de cada período aberto.
+- Na turma, o coordenador define as **vagas** (vazio = sem limite; não passa da menor capacidade das salas, RB-39).
+- Página **Rematrícula** do estudante: períodos com janela aberta hoje; turmas do curso com disciplina, semestre sugerido, horários, vagas restantes e, quando não pode, o motivo (sem vaga, pré-requisito pendente, já aprovado, choque com outra turma, já matriculado). Botões **Matricular** e **Cancelar** (só na janela e sem registros, RB-32).
+- Vaga conferida na transação, com bloqueio da turma; auditoria acadêmica.
+
+**Fora do escopo**
+- Lista de espera; aprovação da coordenação; quebra de pré-requisito.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout `aguardando aprovação`.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Rematrícula (estudante) | [prototipo.html#rematricula](layout/prototipo.html#rematricula) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-017, SPEC-026, SPEC-031, SPEC-037, SPEC-041.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** com a janela aberta, o estudante vê Banco de Dados com 3 vagas e se matricula; a turma passa a 2 vagas.
+
+**Exceções:** fora da janela: 409; sem vaga, pré-requisito, já aprovado, choque: 409 com o motivo; turma de outro curso: 404; estudante não Ativo: 409.
+
+**Pós-condições:** matrícula e auditoria gravadas na mesma transação.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-038-01 | Matrículas cursando de uma turma nunca passam das vagas (RB-36). |
+| INV-038-02 | O estudante não fica com duas turmas em horário sobreposto no mesmo período. |
+| INV-038-03 | Só turmas do curso do estudante e de período com janela aberta. |
+
+## 7. Modelo de domínio envolvido
+
+`PeriodoLetivo` ganha `rematriculaInicio` e `rematriculaFim`; `Turma` ganha `vagas`.
+
+## 8. Impacto arquitetural
+
+- `src/domain/rematricula.ts` (motivos de recusa, sobreposição de horários).
+- Caso de uso em `src/server/academico/rematricula.ts` com `SELECT ... FOR UPDATE` na turma.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/rematricula` | sessão | períodos com janela e turmas com motivo | sem permissão |
+| `POST /api/rematricula` | turmaId | matrícula | fora da janela, motivo de recusa |
+| `DELETE /api/rematricula/:turmaId` | — | cancelada | fora da janela, tem registros |
+| `PUT /api/periodos/:id/rematricula` | início, fim | período | datas inválidas, período encerrado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Lista do período com 20 turmas em menos de 3 s |
+| RNF-04, RNF-06 | Tela aprovada |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-038-01 | Janela aberta, turma com vaga | Estudante se matricula | Matrícula Cursando; vagas restantes −1 |
+| AC-038-02 | Turma com 1 vaga, dois pedidos ao mesmo tempo | Ambos confirmam | Só um entra |
+| AC-038-03 | Pré-requisito não aprovado | Tenta matricular | 409 "pré-requisito pendente: …" |
+| AC-038-04 | Choque com outra turma dele | Tenta matricular | 409 "choque com …" |
+| AC-038-05 | Fora da janela | Tenta matricular ou cancelar | 409 |
+| AC-038-06 | Matrícula sem registros, na janela | Cancela | Matrícula excluída |
+| AC-038-07 | Já aprovado na disciplina | Abre a lista | Turma marcada "já aprovado" |
+| AC-038-08 | Secretaria | Define janela com fim antes do início | 400 |
+
+## 12. Casos de teste derivados
+
+1. Motivos de recusa e sobreposição (unitário).
+2. Matrícula, concorrência, cancelamento e janela (integração).
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-060 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-039 — Diário de classe
+
+**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-039 |
+| **Nome** | Diário de classe (conteúdo, fechamento e homologação) |
+| **Objetivo** | O professor registra o conteúdo de cada aula e fecha o diário completo; a coordenação homologa, devolve ou reabre. |
+| **Valor** | Dá o "carimbo" oficial de que a turma terminou, e congela notas e frequência depois disso. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-47, RF-27 |
+| **RB** | RB-03, RB-04, RB-20, RB-22, RB-23, RB-29, RB-37 |
+| **RNF** | RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-36 Fechar e homologar diário |
+| **Entidades** | `Aula` (conteúdo), `Turma` (diário), `Notificacao` (tipo Diario) |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-061 |
+
+## 3. Escopo
+
+**Incluído**
+- Campo **Conteúdo da aula** na chamada (até 500 caracteres), gravado nas aulas da data; lista de aulas mostra o conteúdo.
+- No dashboard da turma do professor, cartão **Diário**: status, o que falta para fechar e o botão **Fechar diário**.
+- Página **Diários** da coordenação: diários fechados para homologar e homologados; **Homologar**, **Devolver** (com observação, notifica o professor) e **Reabrir**.
+- Diário fechado ou homologado: a turma fica somente leitura (a trava do período passa a considerar o diário, RB-20/RB-37); telas mostram o aviso.
+- Auditoria acadêmica de fechar, homologar, devolver e reabrir.
+
+**Fora do escopo**
+- Diário impresso e assinatura (item 30 fora do escopo); fechamento automático no encerramento do período.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout `aguardando aprovação`.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Diário na turma do professor | [prototipo.html#diario-professor](layout/prototipo.html#diario-professor) | [ ] | [ ] | — | — |
+| Diários para homologar (coordenação) | [prototipo.html#diario-homologar](layout/prototipo.html#diario-homologar) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-017, SPEC-018, SPEC-019, SPEC-022, SPEC-028, SPEC-029.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** com todas as notas lançadas, o professor fecha o diário; a coordenadora homologa; a turma fica somente leitura.
+
+**Exceções:** nota faltando: 409 com a lista; fechar diário já fechado: 409; homologar diário aberto: 409; devolver sem observação: 400; outro professor ou coordenador de outro curso: 404.
+
+**Pós-condições:** estado do diário e auditoria gravados na mesma transação; notificação na devolução.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-039-01 | Só fecha completo (RB-37). |
+| INV-039-02 | Fechado ou homologado, nenhuma escrita acadêmica na turma. |
+| INV-039-03 | Transições: Aberto → Fechado (professor); Fechado → Homologado ou Aberto (coordenação); Homologado → Aberto (coordenação). |
+
+## 7. Modelo de domínio envolvido
+
+`Aula` ganha `conteudo`; `Turma` ganha `diario`, `diarioFechadoEm`, `diarioHomologadoEm`, `diarioObservacao`.
+
+## 8. Impacto arquitetural
+
+- `src/domain/diario.ts` (pendências para fechar e transições).
+- `travaDoPeriodo` passa a recusar também turma com diário fechado ou homologado.
+- Casos de uso em `src/server/academico/diario.ts`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `POST /api/turmas/:id/diario` | ação: fechar, homologar, devolver, reabrir; observação | estado do diário | pendências, transição inválida, fora do escopo |
+| `GET /api/diarios` | sessão (coordenador) | diários dos cursos | sem permissão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03 | Professor da turma e coordenador do curso, na query |
+| RNF-04, RNF-06 | Telas aprovadas |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-039-01 | Turma com nota faltando | Professor fecha | 409 com o que falta |
+| AC-039-02 | Turma completa | Professor fecha | Diário Fechado; nota e chamada recusadas (409) |
+| AC-039-03 | Diário fechado | Coordenador homologa | Homologado; auditoria |
+| AC-039-04 | Diário fechado | Coordenador devolve com observação | Aberto; professor notificado |
+| AC-039-05 | Diário homologado | Coordenador reabre | Aberto; lançamentos voltam a ser aceitos |
+| AC-039-06 | Chamada com conteúdo | Registra | Conteúdo gravado nas aulas da data |
+| AC-039-07 | Estudante em exame sem nota de exame | Fecha | 409 |
+
+## 12. Casos de teste derivados
+
+1. Pendências e transições (unitário).
+2. Fechar, travar, homologar, devolver, reabrir (integração).
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-061 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-040 — Calendário acadêmico
+
+**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-040 |
+| **Nome** | Calendário acadêmico |
+| **Objetivo** | A secretaria publica as datas do período e todos veem o mês com os eventos e os próprios prazos; a chamada respeita feriados. |
+| **Valor** | Um lugar só para saber quando há aula, prova e feriado. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-48, RF-27 |
+| **RB** | RB-02, RB-03, RB-13, RB-22, RB-38 |
+| **RNF** | RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-37 Manter calendário acadêmico |
+| **Entidades** | `EventoCalendario` (nova) |
+| **ADRs** | ADR-001, ADR-002 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-062 |
+
+## 3. Escopo
+
+**Incluído**
+- Secretaria: página **Calendário** com o mês e o formulário de evento (período, tipo, título, início, fim); editar e excluir.
+- Todos os perfis: página **Calendário** com o mês (navegar entre meses) e os eventos; estudante e professor veem também os prazos das atividades e as avaliações das próprias turmas de período aberto; a **grade da semana** (SPEC-041) fica na mesma página.
+- Chamada recusa data em feriado ou recesso do período da turma, e fora do intervalo início/fim das aulas quando ele existe (RB-38).
+
+**Fora do escopo**
+- Exportar para Google Agenda/ICS; eventos por curso.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout `aguardando aprovação`.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Calendário do mês e grade da semana | [prototipo.html#calendario](layout/prototipo.html#calendario) | [ ] | [ ] | — | — |
+| Calendário da secretaria | [prototipo.html#calendario-secretaria](layout/prototipo.html#calendario-secretaria) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-017, SPEC-018, SPEC-019, SPEC-028.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a secretaria cadastra o feriado de 20/11; o professor tenta fazer chamada em 20/11 e o sistema recusa.
+
+**Exceções:** fim antes do início, tipo inválido ou período inexistente: 400; perfil sem permissão: 403.
+
+**Pós-condições:** evento e auditoria gravados.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-040-01 | Chamada nunca em feriado ou recesso do período (RB-38). |
+| INV-040-02 | Cada perfil vê só os prazos das próprias turmas. |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **EventoCalendario** (período, tipo, título, início, fim).
+
+## 8. Impacto arquitetural
+
+- `src/domain/calendario.ts` (dia letivo, montagem do mês, dias úteis usados pela SPEC-036).
+- Casos de uso em `src/server/academico/calendario.ts`; a chamada consulta os eventos do período da turma.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/calendario?mes=AAAA-MM` | sessão | eventos e prazos do mês | — |
+| `POST /api/calendario` | período, tipo, título, início, fim | evento | campo inválido |
+| `PATCH` / `DELETE /api/calendario/:id` | campos | evento / excluído | não encontrado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03 | Prazos filtrados pelas turmas do usuário |
+| RNF-04, RNF-06 | Telas aprovadas, celular inclusive |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-040-01 | Feriado em 20/11 | Professor registra chamada em 20/11 | 400 "feriado" |
+| AC-040-02 | Período com aulas de 11/08 a 12/12 | Chamada em 15/12 | 400 |
+| AC-040-03 | Secretaria | Cadastra evento com fim antes do início | 400 |
+| AC-040-04 | Estudante | Abre o mês | Eventos e os prazos das próprias atividades, não os de outras turmas |
+| AC-040-05 | Professor ou coordenador | Tenta cadastrar evento | 403 |
+
+## 12. Casos de teste derivados
+
+1. Dia letivo, dias úteis e mês (unitário).
+2. Cadastro, consulta por perfil e bloqueio da chamada (integração).
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-062 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-041 — Grade horária e salas
+
+**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-041 |
+| **Nome** | Grade horária e salas |
+| **Objetivo** | Cada turma ganha horários e sala, sem choque de sala ou professor; estudante e professor veem a grade da semana. |
+| **Valor** | Mostra onde e quando é cada aula e evita sala ou professor em dois lugares ao mesmo tempo. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-49 |
+| **RB** | RB-04, RB-13, RB-20, RB-22, RB-39 |
+| **RNF** | RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-38 Montar grade horária |
+| **Entidades** | `Sala`, `HorarioTurma` (novas), `Turma` (vagas) |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-063 |
+
+## 3. Escopo
+
+**Incluído**
+- Secretaria: página **Salas** (nome, capacidade; editar; excluir só sem horário).
+- Coordenador, na turma: **Horários** (dia, início, fim, sala; incluir e excluir) e **Vagas** (SPEC-038).
+- Choque de sala e de professor no mesmo período e dia; vagas ≤ menor capacidade das salas da turma (RB-39).
+- **Grade da semana** de estudante e professor (na página Calendário, SPEC-040); horários também na rematrícula.
+
+**Fora do escopo**
+- Geração automática de horários; reserva avulsa de sala.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout `aguardando aprovação`.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Horários e vagas da turma (coordenação) | [prototipo.html#turma-horarios](layout/prototipo.html#turma-horarios) | [ ] | [ ] | — | — |
+| Salas (secretaria) | [prototipo.html#salas](layout/prototipo.html#salas) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-015, SPEC-017, SPEC-019, SPEC-026.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o coordenador põe a Turma BD-A na segunda, 19:00–20:40, Sala 101; outra turma na mesma sala e horário é recusada.
+
+**Exceções:** fim não depois do início, dia fora de 1 a 6, sala inexistente: 400; choque de sala ou professor: 409 com a turma que choca; vagas acima da capacidade: 409; turma fora do escopo: 404; período encerrado: 409.
+
+**Pós-condições:** horário e auditoria gravados.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-041-01 | Sem sobreposição de sala nem de professor no mesmo período e dia (RB-39). |
+| INV-041-02 | Vagas ≤ menor capacidade das salas da turma. |
+| INV-041-03 | Nome de sala único. |
+
+## 7. Modelo de domínio envolvido
+
+Novas entidades **Sala** e **HorarioTurma**.
+
+## 8. Impacto arquitetural
+
+- `src/domain/horarios.ts` (sobreposição, validação de hora, grade da semana).
+- Casos de uso em `src/server/academico/horarios.ts`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET` / `POST /api/salas`, `PATCH` / `DELETE /api/salas/:id` | nome, capacidade | sala | campo inválido, nome repetido, sala em uso |
+| `POST /api/turmas/:id/horarios`, `DELETE /api/horarios/:id` | dia, início, fim, salaId | horário | choque, capacidade, campo inválido |
+| `GET /api/grade` | sessão | grade da semana | — |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03 | Coordenador do curso na query |
+| RNF-04, RNF-06 | Telas aprovadas |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-041-01 | Sala 101 ocupada segunda 19:00–20:40 | Outra turma na Sala 101 segunda 20:00–21:00 | 409 choque de sala |
+| AC-041-02 | Professor com aula segunda 19:00–20:40 | Outra turma dele segunda 19:30 em outra sala | 409 choque de professor |
+| AC-041-03 | Sala de 30 lugares | Vagas da turma = 40 | 409 |
+| AC-041-04 | Estudante com 2 turmas com horário | Abre a grade | Os horários da semana, com sala |
+| AC-041-05 | Horário 20:00–19:00 | Salva | 400 |
+| AC-041-06 | Sala com horário | Secretaria exclui | 409 |
+
+## 12. Casos de teste derivados
+
+1. Sobreposição, validação e grade (unitário).
+2. Salas, horários, choques e vagas (integração).
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-063 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-042 — Aproveitamento de estudos e conclusão de curso
+
+**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-042 |
+| **Nome** | Aproveitamento de estudos e conclusão de curso |
+| **Objetivo** | A secretaria dispensa disciplinas cursadas fora e só conclui o curso com 100% de integralização; o histórico final mostra a conclusão. |
+| **Valor** | Fecha o ciclo do estudante: entra, cursa, aproveita o que já fez e se forma. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-50, RF-51, RF-29 |
+| **RB** | RB-13, RB-22, RB-24, RB-30, RB-35, RB-40 |
+| **RNF** | RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-39 Registrar aproveitamento e concluir curso |
+| **Entidades** | `Aproveitamento` (nova), `FichaEstudante` |
+| **ADRs** | ADR-001, ADR-002 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-053, OPEN-064 |
+
+## 3. Escopo
+
+**Incluído**
+- Na ficha do estudante, bloco **Aproveitamento de estudos**: lista e **Novo aproveitamento** (disciplina da matriz do curso, instituição e disciplina de origem, nota 0–10 opcional, carga horária); excluir.
+- Bloco **Integralização** na ficha (SPEC-037), com as obrigatórias que faltam.
+- Mudar a situação para **Concluído** só com 100% (RB-40).
+- Histórico escolar: seção **Aproveitamento de estudos** e "Curso concluído em DD/MM/AAAA" quando Concluído; a carga aprovada inclui o aproveitamento.
+
+**Fora do escopo**
+- Diploma; colação de grau com ata.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout `aguardando aprovação`.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Ficha — aproveitamento e integralização | [prototipo.html#aproveitamento](layout/prototipo.html#aproveitamento) | [ ] | [ ] | — | — |
+| Histórico final com conclusão | [prototipo.html#historico-final](layout/prototipo.html#historico-final) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-020, SPEC-031, SPEC-033, SPEC-035, SPEC-037.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a secretaria registra o aproveitamento de Cálculo I; a integralização chega a 100%; ela marca Concluído; o histórico mostra a conclusão.
+
+**Exceções:** disciplina fora da matriz ou já aprovada/aproveitada: 409; carga ≤ 0 ou nota fora de 0–10: 400; Concluído com menos de 100%: 400 com as que faltam.
+
+**Pós-condições:** aproveitamento ou situação e auditoria gravados na mesma transação.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-042-01 | No máximo um aproveitamento por estudante e disciplina. |
+| INV-042-02 | Concluído só com integralização de 100% (RB-40). |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **Aproveitamento**.
+
+## 8. Impacto arquitetural
+
+- Integralização de `src/domain/matriz.ts`; `mudarSituacao` confere RB-40.
+- Histórico (`consultarHistorico`) inclui aproveitamentos e a conclusão.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `POST /api/estudantes/:id/aproveitamentos` | disciplinaId, instituição, disciplina de origem, nota, carga | aproveitamento | campo inválido, fora da matriz, repetido |
+| `DELETE /api/aproveitamentos/:id` | — | excluído | não encontrado |
+| `PUT /api/estudantes/:id/situacao` | Concluido | ficha | integralização < 100% |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03, RNF-05 | Só a secretaria registra |
+| RNF-04, RNF-06 | Telas aprovadas |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-042-01 | Disciplina da matriz | Secretaria registra aproveitamento | Gravado; integralização sobe; auditoria |
+| AC-042-02 | Disciplina já aprovada | Registra aproveitamento | 409 |
+| AC-042-03 | Integralização 80% | Marca Concluído | 400 com as que faltam |
+| AC-042-04 | Integralização 100% | Marca Concluído | Concluído; histórico com a data |
+| AC-042-05 | Aproveitamento | Abre o histórico | Seção com origem, nota e carga |
+
+## 12. Casos de teste derivados
+
+1. Integralização com aproveitamento (unitário).
+2. Registro, exclusão, conclusão e histórico (integração).
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-064 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-043 — Exportação de apoio ao Censo
+
+**Status:** `especificada` (aguardando aprovação humana do texto e do layout)
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-043 |
+| **Nome** | Exportação de apoio ao Censo Escolar |
+| **Objetivo** | A secretaria baixa um CSV com os dados que o Censo pede dos estudantes e das turmas de um período. |
+| **Valor** | Mostra como o sistema alimentaria a obrigação anual com o INEP, sem prometer o layout oficial. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-52 |
+| **RB** | RB-13, RB-22, RB-24, RB-33 |
+| **RNF** | RNF-02, RNF-03, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-40 Exportar dados de apoio ao Censo |
+| **Entidades** | leitura de `Usuario`, `FichaEstudante`, `Turma`, `Matricula`, `IndicadorAcademico`; `RegistroAuditoria` |
+| **ADRs** | ADR-001, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-065 |
+
+## 3. Escopo
+
+**Incluído**
+- Página **Exportação do Censo** da secretaria: escolha do período, prévia (número de estudantes e de linhas), aviso "arquivo de apoio, não é o layout oficial do Educacenso/INEP" e **Baixar CSV**.
+- Uma linha por matrícula do período: matrícula, nome, CPF, nascimento, curso, situação no curso, período, disciplina, turma, carga horária, frequência e resultado (RB-24). Separador `;`, vírgula decimal, UTF-8 com BOM.
+- Auditoria administrativa da exportação (período e número de linhas, sem dados pessoais).
+
+**Fora do escopo**
+- Layout oficial; envio ao INEP; dados de docentes e escola.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** layout `aguardando aprovação`.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Exportação do Censo | [prototipo.html#exportacao-censo](layout/prototipo.html#exportacao-censo) | [ ] | [ ] | — | — |
+
+## 4. Dependências
+
+SPEC-020, SPEC-031, SPEC-033, SPEC-035.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a secretaria escolhe 2026/1 e baixa o CSV.
+
+**Exceções:** período inexistente: 400; outro perfil: 403.
+
+**Pós-condições:** auditoria gravada; nada mais muda.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-043-01 | Só a secretaria exporta (RB-13). |
+| INV-043-02 | A auditoria da exportação não guarda dados pessoais. |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- `src/domain/censo.ts` (linhas e CSV); caso de uso em `src/server/academico/censo.ts`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/censo?periodo=` | — | CSV | período inválido, sem permissão |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-05 | Só a secretaria; auditoria sem dados pessoais |
+| RNF-06 | Tela aprovada |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-043-01 | Período com 12 matrículas | Exporta | CSV com cabeçalho e 12 linhas |
+| AC-043-02 | Estudante sem CPF | Exporta | Coluna CPF vazia |
+| AC-043-03 | Coordenador | Tenta exportar | 403 |
+| AC-043-04 | Exportação | Consulta a auditoria | Registro com período e número de linhas, sem nomes |
+
+## 12. Casos de teste derivados
+
+1. Linhas e CSV (unitário).
+2. Exportação, permissão e auditoria (integração).
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-065 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).

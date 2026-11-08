@@ -51,3 +51,15 @@
 - **Virada de semestre**: cópia das turmas de um período para o período seguinte (RF-38).
 
 - **Pedido de redefinição de senha**: pedido feito em "Esqueci minha senha" e aprovado pela secretaria, que entrega uma senha provisória (RB-27).
+
+- **Requerimento**: pedido formal do estudante, com protocolo, prazo de 5 dias úteis e resposta do professor ou da secretaria (RB-34).
+
+- **Matriz curricular**: grade do curso com semestre sugerido, disciplinas obrigatórias e optativas e pré-requisitos (RB-41).
+
+- **Integralização**: percentual das horas obrigatórias da matriz que o estudante já tem aprovadas ou aproveitadas (RB-35).
+
+- **Rematrícula**: matrícula feita pelo próprio estudante, na janela definida pela secretaria (RB-36).
+
+- **Diário de classe**: registro das aulas, da chamada e das notas da turma; fechado pelo professor e homologado pela coordenação (RB-37).
+
+- **Aproveitamento de estudos**: dispensa de disciplina já cursada em outra instituição, registrada pela secretaria.

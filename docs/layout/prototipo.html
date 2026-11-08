@@ -168,6 +168,28 @@
   .logo-inst { width: 54px; height: 54px; border-radius: 10px; background: linear-gradient(135deg, #1E3A5F, #2563EB); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; flex: none; }
   @container (max-width: 720px) { .ficha { grid-template-columns: 1fr; } .aulas-grade { font-size: 13px; } }
 
+  /* SPEC-036 a SPEC-043 (Nível 3) */
+  .status-req { display: inline-flex; border-radius: 999px; padding: 2px 10px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .st-aberto { background: var(--info-bg); color: var(--info); } .st-analise { background: var(--atencao-bg); color: var(--atencao); }
+  .st-deferido { background: var(--normal-bg); color: var(--normal); } .st-indeferido { background: var(--risco-bg); color: var(--risco); }
+  .atrasado { color: var(--risco); font-weight: 600; }
+  .semestre { border: 1px solid var(--traco); border-radius: 14px; padding: 12px; background: #fff; }
+  .semestre h3 { margin: 0 0 8px; font-size: 14px; color: var(--marinho); }
+  .disc { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 7px 0; border-top: 1px solid var(--traco); font-size: 14px; }
+  .disc:first-of-type { border-top: 0; }
+  .d-aprovada { color: var(--normal); } .d-cursando { color: var(--info); } .d-bloqueada { color: var(--mudo); } .d-pendente { color: var(--texto); }
+  .integral { height: 14px; border-radius: 999px; background: var(--traco); overflow: hidden; } .integral span { display: block; height: 100%; background: var(--normal); }
+  .mes { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; font-size: 12px; }
+  .mes .cab { text-align: center; color: var(--mudo); font-weight: 600; padding: 4px 0; }
+  .mes .dia { min-height: 74px; border: 1px solid var(--traco); border-radius: 8px; padding: 4px; background: #fff; }
+  .mes .dia.fora { background: var(--nevoa); color: #94A3B8; } .mes .dia.feriado { background: var(--risco-bg); }
+  .mes .ev { display: block; margin-top: 3px; border-radius: 5px; padding: 1px 4px; font-size: 11px; line-height: 1.3; }
+  .ev-feriado { background: #FECACA; color: var(--risco); } .ev-prova { background: var(--atencao-bg); color: var(--atencao); } .ev-prazo { background: var(--info-bg); color: var(--info); } .ev-inicio { background: var(--normal-bg); color: var(--normal); }
+  .semana { display: grid; grid-template-columns: 56px repeat(6, minmax(0, 1fr)); gap: 4px; font-size: 12px; }
+  .semana .h { color: var(--mudo); text-align: right; padding-right: 6px; }
+  .semana .bloco { background: var(--azul-suave, #DBEAFE); border-left: 3px solid var(--azul); border-radius: 6px; padding: 4px 6px; }
+  @container (max-width: 720px) { .mes .dia { min-height: 48px; } .mes .ev { font-size: 9px; } .semana { grid-template-columns: 40px repeat(6, minmax(0, 1fr)); } }
+
   /* Login */
   .login { display: grid; grid-template-columns: 1fr 1fr; min-height: 100%; }
   .login .painel { background: var(--marinho); color: #fff; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; }
@@ -215,10 +237,10 @@ const logoClaro = (t = 22) => `<span style="display:inline-flex;align-items:cent
 // SPEC-016: o primeiro item de todo perfil passa a ser o Dashboard; o Administrador ganha Dashboard e Cursos (SPEC-015).
 // SPEC-017 a SPEC-022: Chamada substitui Frequência; Notificações (com contador), Documentos, Auditoria e Períodos letivos.
 const MENUS = {
-  Estudante: [["inicio", "🏠", "Dashboard"], ["atividades", "🗓️", "Minhas atividades"], ["documentos", "📄", "Documentos"], ["comunicados", "📣", "Comunicados"], ["notificacoes", "🔔", "Notificações", 3]],
-  Professor: [["inicio", "🏠", "Dashboard"], ["notas", "📝", "Notas e avaliações"], ["frequencia", "✅", "Chamada"], ["atividades", "🗓️", "Atividades"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"], ["comunicados", "📣", "Comunicados"], ["notificacoes", "🔔", "Notificações", 2]],
-  Coordenador: [["inicio", "🏠", "Dashboard"], ["disciplinas", "📚", "Disciplinas"], ["turmas", "👥", "Turmas e estudantes"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"], ["comunicados", "📣", "Comunicados"], ["auditoria", "🛡️", "Auditoria"], ["area", "🔒", "Área da coordenação"]],
-  Administrador: [["inicio", "🏠", "Dashboard"], ["contas", "👤", "Contas"], ["estudantes", "🎒", "Estudantes"], ["pedidos", "🔑", "Pedidos de senha", 2], ["cursos", "🎓", "Cursos"], ["periodos", "📅", "Períodos letivos"], ["virada", "🔁", "Virada de semestre"], ["instituicao", "🏫", "Instituição"], ["auditoria", "🛡️", "Auditoria"]],
+  Estudante: [["inicio", "🏠", "Dashboard"], ["atividades", "🗓️", "Minhas atividades"], ["meucurso", "🧭", "Meu curso"], ["rematricula", "🗂️", "Rematrícula"], ["calendario", "📆", "Calendário"], ["requerimentos", "📨", "Requerimentos"], ["documentos", "📄", "Documentos"], ["comunicados", "📣", "Comunicados"], ["notificacoes", "🔔", "Notificações", 3]],
+  Professor: [["inicio", "🏠", "Dashboard"], ["notas", "📝", "Notas e avaliações"], ["frequencia", "✅", "Chamada"], ["atividades", "🗓️", "Atividades"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"], ["calendario", "📆", "Calendário"], ["requerimentos", "📨", "Requerimentos", 2], ["comunicados", "📣", "Comunicados"], ["notificacoes", "🔔", "Notificações", 2]],
+  Coordenador: [["inicio", "🏠", "Dashboard"], ["disciplinas", "📚", "Disciplinas"], ["turmas", "👥", "Turmas e estudantes"], ["relatorios", "📊", "Relatórios"], ["historico", "🕘", "Histórico de notas"], ["diarios", "📘", "Diários", 3], ["calendario", "📆", "Calendário"], ["requerimentos", "📨", "Requerimentos"], ["comunicados", "📣", "Comunicados"], ["auditoria", "🛡️", "Auditoria"], ["area", "🔒", "Área da coordenação"]],
+  Administrador: [["inicio", "🏠", "Dashboard"], ["contas", "👤", "Contas"], ["estudantes", "🎒", "Estudantes"], ["pedidos", "🔑", "Pedidos de senha", 2], ["cursos", "🎓", "Cursos"], ["periodos", "📅", "Períodos letivos"], ["requerimentos", "📨", "Requerimentos", 4], ["calendario", "📆", "Calendário"], ["salas", "🚪", "Salas"], ["virada", "🔁", "Virada de semestre"], ["censo", "📤", "Exportação do Censo"], ["instituicao", "🏫", "Instituição"], ["auditoria", "🛡️", "Auditoria"]],
 };
 const USUARIOS = { Estudante: "Ana Souza", Professor: "Prof. Carlos Lima", Coordenador: "Marina Alves", Administrador: "Renata Duarte" };
 
@@ -1183,6 +1205,191 @@ Simulado da prova substitutiva</textarea></div>
       <div class="cartao"><h2>Contas por perfil</h2>${barrasH([["Estudantes", 79], ["Professores", 8, "#1D4ED8"], ["Coordenadores", 6, "#1E3A5F"], ["Administradores", 1, "#64748B"]])}</div>
     </div>
     <p style="color:var(--mudo);font-size:14px">… contas recentes e cursos, como no dashboard atual (SPEC-016).</p>`)],
+
+  // ---------------------------------------------------------------- SPEC-036 a SPEC-043 (Nível 3)
+  "requerimentos-estudante": ["SPEC-036 · Estudante — Requerimentos", () => casca("Estudante", "requerimentos", `
+    ${cab("Requerimentos", "Peça revisão de prova, segunda chamada, declaração ou trancamento. Prazo de resposta: 5 dias úteis.")}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Meus requerimentos (3)</h2>
+        <table class="tabela-resp"><thead><tr><th>Protocolo</th><th>Tipo</th><th>Status</th><th>Prazo</th></tr></thead><tbody>
+          <tr><td data-r="Protocolo">2026-000118</td><td data-r="Tipo">Revisão de prova · Prova 1 de Banco de Dados</td><td data-r="Status"><span class="status-req st-analise">Em análise</span></td><td data-r="Prazo">13/11</td></tr>
+          <tr><td data-r="Protocolo">2026-000102</td><td data-r="Tipo">Declaração de matrícula</td><td data-r="Status"><span class="status-req st-deferido">✓ Deferido</span><br><a class="link" href="#" style="font-size:13px">Abrir declaração →</a></td><td data-r="Prazo">—</td></tr>
+          <tr><td data-r="Protocolo">2026-000087</td><td data-r="Tipo">Segunda chamada · Modelagem de Software</td><td data-r="Status"><span class="status-req st-indeferido">✕ Indeferido</span><br><small style="color:var(--mudo)">"A prova foi remarcada para todos em 26/11."</small></td><td data-r="Prazo">—</td></tr>
+        </tbody></table></div>
+      <div class="cartao"><h2>Novo requerimento</h2><div class="pilha">
+        ${lista("Tipo", ["Revisão de prova", "Segunda chamada", "Declaração de matrícula", "Trancamento", "Outro"], "Revisão de prova")}
+        ${lista("Turma", ["Turma BD-A · Banco de Dados", "Turma MS-A · Modelagem de Software"], "Turma BD-A · Banco de Dados")}
+        ${lista("Avaliação (opcional)", ["Prova 1", "Trabalho"], "Prova 1")}
+        <div><label class="rotulo">Descrição</label><textarea class="campo" rows="4">Na questão 3, a resposta considerou só o primeiro caso…</textarea></div>
+        <p style="margin:0;font-size:13px;color:var(--mudo)">Vai para a professora Júlia Reis. Resposta até 13/11 (5 dias úteis).</p>
+        <button class="btn btn-primario btn-bloco">Enviar requerimento</button></div></div>
+    </div>`)],
+
+  "requerimentos-responder": ["SPEC-036 · Secretaria/Professor — Responder requerimentos", () => casca("Administrador", "requerimentos", `
+    ${cab("Requerimentos", "Declarações, trancamentos e outros pedidos. Os atrasados aparecem primeiro.")}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Pendentes (4)</h2>
+        <table class="tabela-resp"><thead><tr><th>Protocolo</th><th>Estudante</th><th>Tipo</th><th>Prazo</th><th>Status</th></tr></thead><tbody>
+          ${[["2026-000095", "Carla Mendes · 20260012", "Trancamento", "04/11", "Aberto", 1], ["2026-000110", "Bruno Costa · 20260007", "Declaração de matrícula", "12/11", "Em análise", 0], ["2026-000114", "Elisa Rocha · 20260011", "Outro", "13/11", "Aberto", 0]].map(([p, e, ti, pz, s, at]) =>
+            `<tr><td data-r="Protocolo"><a class="link" href="#">${p}</a></td><td data-r="Estudante">${e}</td><td data-r="Tipo">${ti}</td><td data-r="Prazo" class="${at ? "atrasado" : ""}">${pz}${at ? " · atrasado" : ""}</td><td data-r="Status"><span class="status-req ${s === "Aberto" ? "st-aberto" : "st-analise"}">${s}</span></td></tr>`).join("")}
+        </tbody></table></div>
+      <div class="cartao"><h2>2026-000095 · Trancamento</h2>
+        <p style="margin:0 0 6px;font-size:14px"><strong>Carla Mendes</strong> · Engenharia da Computação · aberto em 28/10</p>
+        <p style="margin:0 0 12px;font-size:14px;color:var(--mudo)">"Preciso trancar o semestre por motivo de trabalho."</p>
+        <div class="pilha"><div><label class="rotulo">Resposta</label><textarea class="campo" rows="3">Trancamento registrado na sua ficha a partir de 06/11.</textarea></div>
+          <div class="acoes-linha" style="justify-content:flex-start"><button class="btn btn-secundario">Em análise</button><button class="btn btn-primario">Deferir</button><button class="btn btn-perigo">Indeferir</button></div>
+          <p style="margin:0;font-size:13px;color:var(--mudo)">Deferir o trancamento não tranca sozinho: registre na <a class="link" href="#">ficha da estudante</a>.</p></div></div>
+    </div>`)],
+
+  "matriz-coordenador": ["SPEC-037 · Coordenador — Matriz do curso", () => casca("Coordenador", "disciplinas", `
+    ${cab("Disciplinas", "Engenharia da Computação · aba Matriz: semestre, obrigatória e pré-requisitos.")}
+    <div class="cartao" style="margin-bottom:16px"><div class="acoes-linha" style="justify-content:flex-start"><a class="btn btn-secundario" href="#">Grade</a><a class="btn btn-primario" href="#">Matriz</a></div></div>
+    <div class="grade g-form">
+      <div class="cartao"><h2>Matriz · 10 disciplinas · 640 h obrigatórias</h2>
+        <table class="tabela-resp"><thead><tr><th>Semestre</th><th>Disciplina</th><th class="num">CH</th><th>Caráter</th><th>Pré-requisitos</th><th></th></tr></thead><tbody>
+          ${[["1º", "Introdução à Computação", 80, "Obrigatória", "—"], ["1º", "Cálculo Básico", 60, "Obrigatória", "—"], ["2º", "Cálculo I", 60, "Obrigatória", "Cálculo Básico"], ["3º", "Banco de Dados", 60, "Obrigatória", "Introdução à Computação"], ["4º", "Sistemas Operacionais", 60, "Obrigatória", "Introdução à Computação"], ["—", "Tópicos em IA", 40, "Optativa", "Banco de Dados"]].map(([s, d, ch, c, pr]) =>
+            `<tr><td data-r="Semestre">${s}</td><td data-r="Disciplina">${d}</td><td data-r="CH" class="num">${ch} h</td><td data-r="Caráter"><span class="etiqueta">${c}</span></td><td data-r="Pré-requisitos">${pr}</td><td><a class="link" href="#">Editar</a></td></tr>`).join("")}
+        </tbody></table></div>
+      <div class="cartao"><h2>Editar · Banco de Dados</h2><div class="pilha">
+        ${lista("Semestre sugerido", ["Sem semestre", "1º", "2º", "3º", "4º", "5º"], "3º")}${lista("Caráter", ["Obrigatória", "Optativa"], "Obrigatória")}
+        <div><label class="rotulo">Pré-requisitos</label>${["Introdução à Computação", "Cálculo Básico", "Lógica"].map((d, i) => `<label class="chamada" style="padding:6px 2px"><input type="checkbox" ${i === 0 ? "checked" : ""}> ${d}</label>`).join("")}</div>
+        <div class="msg msg-erro">Sistemas Operacionais já exige Banco de Dados: isso criaria um ciclo.</div>
+        <button class="btn btn-primario btn-bloco">Salvar</button></div></div>
+    </div>`)],
+
+  "meu-curso": ["SPEC-037 · Estudante — Meu curso (integralização)", () => casca("Estudante", "meucurso", `
+    ${cab("Meu curso", "Engenharia da Computação · matrícula 20260075")}
+    <div class="cartao" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap"><div><small style="color:var(--mudo)">Integralização</small><div style="font-size:30px;font-weight:700">38%</div></div><span style="color:var(--mudo);font-size:14px">240 de 640 h obrigatórias · 1 aproveitamento</span></div><div class="integral" style="margin-top:10px"><span style="width:38%"></span></div></div>
+    <div class="grade g2">
+      ${[["1º semestre", [["Introdução à Computação", "✓ Aprovada", "d-aprovada"], ["Cálculo Básico", "✓ Aproveitada", "d-aprovada"], ["Lógica", "✓ Aprovada", "d-aprovada"]]], ["2º semestre", [["Cálculo I", "● Cursando", "d-cursando"], ["Modelagem de Software", "● Cursando", "d-cursando"]]], ["3º semestre", [["Banco de Dados", "● Cursando", "d-cursando"], ["Engenharia de Requisitos", "○ Pendente", "d-pendente"]]], ["4º semestre", [["Sistemas Operacionais", "● Cursando", "d-cursando"], ["Cálculo II", "🔒 Falta Cálculo I", "d-bloqueada"]]]].map(([s, ds]) =>
+        `<div class="semestre"><h3>${s}</h3>${ds.map(([d, st, cl]) => `<div class="disc"><span>${d}</span><span class="${cl}" style="font-size:13px;font-weight:600;white-space:nowrap">${st}</span></div>`).join("")}</div>`).join("")}
+    </div>`)],
+
+  "rematricula": ["SPEC-038 · Estudante — Rematrícula", () => casca("Estudante", "rematricula", `
+    ${cab("Rematrícula 2027/1", "Aberta de 01/12 a 10/12. Escolha as turmas: a matrícula vale na hora.")}
+    <div class="msg msg-info" style="margin-bottom:16px">Você está em 2 turmas · Seg 19:00–20:40 e Qua 19:00–20:40</div>
+    <div class="cartao"><table class="tabela-resp"><thead><tr><th>Disciplina</th><th>Turma e horários</th><th class="num">Vagas</th><th></th></tr></thead><tbody>
+      ${[["Cálculo II · 3º sem.", "CAL2-A · Ter 19:00–20:40 · Sala 101", "12", "ok"], ["Engenharia de Requisitos · 3º sem.", "ER-C · Seg 19:00–20:40 · Sala 204", "5", "Choque com Banco de Dados (Seg 19:00)"], ["Sistemas Distribuídos · 5º sem.", "SD-A · Qui 21:00–22:40 · Lab 2", "8", "Falta pré-requisito: Sistemas Operacionais"], ["Banco de Dados II · 4º sem.", "BD2-A · Sex 19:00–20:40 · Lab 1", "0", "Sem vaga"], ["Modelagem de Software", "MS-A · Qua 19:00–20:40", "—", "matriculado"]].map(([d, tu, v, s]) =>
+        `<tr><td data-r="Disciplina">${d}</td><td data-r="Turma e horários">${tu}</td><td data-r="Vagas" class="num">${v}</td><td>${s === "ok" ? '<button class="btn btn-primario">Matricular</button>' : s === "matriculado" ? '<span class="selo s-normal">● Matriculado</span> <a class="link-perigo" href="#">Cancelar</a>' : `<span style="font-size:13px;color:var(--mudo)">${s}</span>`}</td></tr>`).join("")}
+    </tbody></table></div>`)],
+
+  "diario-professor": ["SPEC-039 · Professor — Diário da turma", () => casca("Professor", "inicio", `
+    ${cab("Turma SO-B · Sistemas Operacionais", "2026/2 · 11 estudantes", "", '<a href="#">Dashboard</a> / Turma SO-B')}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Aulas e conteúdo</h2>
+        <table class="tabela-resp"><thead><tr><th>Data</th><th>Aula</th><th>Conteúdo</th><th class="num">Presentes</th></tr></thead><tbody>
+          ${[["15/10", "1ª", "Escalonamento de processos: FIFO e Round Robin", 10], ["15/10", "2ª", "Exercícios de escalonamento", 10], ["13/10", "1ª", "Threads e concorrência", 11]].map(([d, a, c, n]) => `<tr><td data-r="Data">${d}</td><td data-r="Aula">${a}</td><td data-r="Conteúdo">${c}</td><td data-r="Presentes" class="num">${n} de 11</td></tr>`).join("")}
+        </tbody></table></div>
+      <div class="cartao"><h2>Diário</h2>
+        <p style="margin:0 0 10px"><span class="status-req st-aberto">Aberto</span></p>
+        <div class="msg msg-erro" style="margin-bottom:12px">Faltam 3 notas para fechar: Prova 2 (Gustavo Cardoso, Rafael Ferreira) e Exame final (Beatriz Carvalho, em exame).</div>
+        <button class="btn btn-primario btn-bloco" disabled>Fechar diário</button>
+        <p style="margin:10px 0 0;font-size:13px;color:var(--mudo)">Depois de fechado, a turma fica somente leitura até a coordenação homologar ou devolver.</p></div>
+    </div>`)],
+
+  "diario-homologar": ["SPEC-039 · Coordenador — Diários para homologar", () => casca("Coordenador", "diarios", `
+    ${cab("Diários", "Diários fechados pelos professores esperando homologação. Homologado, a turma fica somente leitura.")}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Para homologar (3)</h2>
+        <table class="tabela-resp"><thead><tr><th>Turma</th><th>Professor</th><th>Fechado em</th><th></th></tr></thead><tbody>
+          ${[["Turma BD-A · Banco de Dados", "Júlia Reis", "05/12"], ["Turma CAL-ECO · Cálculo I", "Paulo Souza", "06/12"], ["Turma ER-B · Eng. de Requisitos", "Carlos Lima", "06/12"]].map(([tu, p, d]) => `<tr><td data-r="Turma">${tu}</td><td data-r="Professor">${p}</td><td data-r="Fechado em">${d}</td><td><div class="acoes-linha"><button class="btn btn-primario">Homologar</button><button class="btn btn-secundario">Devolver</button></div></td></tr>`).join("")}
+        </tbody></table>
+        <h3 style="font-size:15px;margin:18px 0 8px">Homologados</h3>
+        <p style="margin:0;font-size:14px">Turma MS-A · Modelagem de Software · homologado em 04/12 · <a class="link" href="#">Reabrir</a></p></div>
+      <div class="cartao"><h2>Devolver · Turma ER-B</h2><div class="pilha">
+        <div><label class="rotulo">Observação para o professor</label><textarea class="campo" rows="3">A chamada de 28/10 está sem conteúdo.</textarea></div>
+        <button class="btn btn-perigo btn-bloco">Devolver ao professor</button></div></div>
+    </div>`)],
+
+  "calendario": ["SPEC-040/041 · Calendário do mês e grade da semana", () => casca("Estudante", "calendario", `
+    ${cab("Calendário", "Novembro de 2026 · eventos da instituição e prazos das suas turmas", '<div class="acoes-linha"><button class="btn btn-secundario">← Outubro</button><button class="btn btn-secundario">Dezembro →</button></div>')}
+    <div class="cartao" style="margin-bottom:16px"><div class="mes">
+      ${["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d) => `<div class="cab">${d}</div>`).join("")}
+      ${Array.from({ length: 35 }, (_, i) => { const d = i - 6; const fora = d < 1 || d > 30; const ev = { 2: ["ev-feriado", "Finados"], 13: ["ev-prazo", "Projeto final (SO)"], 15: ["ev-feriado", "Proclamação"], 20: ["ev-feriado", "Consciência Negra"], 23: ["ev-prova", "Semana de provas"], 26: ["ev-prova", "Prova 2 · MS"] }[d];
+        return `<div class="dia ${fora ? "fora" : ""} ${ev && ev[0] === "ev-feriado" ? "feriado" : ""}">${fora ? "" : d}${ev ? `<span class="ev ${ev[0]}">${ev[1]}</span>` : ""}</div>`; }).join("")}
+    </div></div>
+    <div class="cartao"><h2>Grade da semana</h2><div class="semana">
+      <div></div>${["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d) => `<div class="cab" style="text-align:center;color:var(--mudo);font-weight:600">${d}</div>`).join("")}
+      <div class="h">19:00</div><div class="bloco"><strong>Banco de Dados</strong><br>Sala 101</div><div></div><div class="bloco"><strong>Modelagem</strong><br>Sala 204</div><div></div><div class="bloco"><strong>SO</strong><br>Lab 2</div><div></div>
+      <div class="h">21:00</div><div></div><div class="bloco"><strong>Cálculo I</strong><br>Sala 102</div><div></div><div></div><div></div><div></div>
+    </div></div>`)],
+
+  "calendario-secretaria": ["SPEC-040 · Secretaria — Calendário acadêmico", () => casca("Administrador", "calendario", `
+    ${cab("Calendário acadêmico", "Eventos do período. Feriado e recesso bloqueiam a chamada; fora do início e fim das aulas também.")}
+    <div class="grade g-form">
+      <div class="cartao"><h2>2026/2 · eventos (6)</h2>
+        <table class="tabela-resp"><thead><tr><th>Datas</th><th>Tipo</th><th>Título</th><th></th></tr></thead><tbody>
+          ${[["11/08", "Início das aulas", "Início do semestre"], ["02/11", "Feriado", "Finados"], ["15/11", "Feriado", "Proclamação da República"], ["20/11", "Feriado", "Consciência Negra"], ["23/11 a 28/11", "Semana de provas", "Provas finais"], ["12/12", "Fim das aulas", "Fim do semestre"]].map(([d, ti, tt]) => `<tr><td data-r="Datas">${d}</td><td data-r="Tipo"><span class="etiqueta">${ti}</span></td><td data-r="Título">${tt}</td><td><div class="acoes-linha"><a class="link" href="#">Editar</a><a class="link-perigo" href="#">Excluir</a></div></td></tr>`).join("")}
+        </tbody></table></div>
+      <div class="cartao"><h2>Novo evento</h2><div class="pilha">
+        ${lista("Período", ["2026/2", "2027/1"], "2026/2")}${lista("Tipo", ["Início das aulas", "Fim das aulas", "Feriado", "Recesso", "Semana de provas", "Outro"], "Recesso")}
+        ${campo("Título", "text", "Recesso de fim de ano")}<div class="grade g2">${campo("De", "date", "2026-12-21")}${campo("Até", "date", "2027-01-08")}</div>
+        <button class="btn btn-primario btn-bloco">Cadastrar evento</button></div></div>
+    </div>`)],
+
+  "turma-horarios": ["SPEC-041/038 · Coordenador — Horários e vagas da turma", () => casca("Coordenador", "turmas", `
+    ${cab("Turma BD-A · Banco de Dados", "Período 2026/2 · Professora: Júlia Reis", "", '<a href="#">Turmas e estudantes</a> / Turma BD-A')}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Horários</h2>
+        <table class="tabela-resp"><thead><tr><th>Dia</th><th>Horário</th><th>Sala</th><th></th></tr></thead><tbody>
+          <tr><td data-r="Dia">Segunda</td><td data-r="Horário">19:00–20:40</td><td data-r="Sala">Sala 101 (40 lugares)</td><td><a class="link-perigo" href="#">Excluir</a></td></tr>
+          <tr><td data-r="Dia">Quinta</td><td data-r="Horário">19:00–20:40</td><td data-r="Sala">Lab 1 (30 lugares)</td><td><a class="link-perigo" href="#">Excluir</a></td></tr>
+        </tbody></table>
+        <h3 style="font-size:15px;margin:18px 0 8px">Novo horário</h3>
+        <div class="grade g2">${lista("Dia", ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"], "Terça")}${lista("Sala", ["Sala 101", "Sala 204", "Lab 1"], "Sala 204")}${campo("Início", "time", "19:00")}${campo("Fim", "time", "20:40")}</div>
+        <div class="msg msg-erro" style="margin:12px 0">Choque de professor: Júlia Reis dá aula na Turma LOG-ECO na terça, 19:00–20:40.</div>
+        <button class="btn btn-primario">Incluir horário</button></div>
+      <div class="cartao"><h2>Vagas</h2><div class="pilha">${campo("Vagas da turma", "number", "30")}<p style="margin:0;font-size:13px;color:var(--mudo)">Máximo 30: a menor sala da turma (Lab 1) tem 30 lugares. 15 matriculados.</p><button class="btn btn-secundario btn-bloco">Salvar vagas</button></div></div>
+    </div>`)],
+
+  "salas": ["SPEC-041 · Secretaria — Salas", () => casca("Administrador", "salas", `
+    ${cab("Salas", "Salas usadas nos horários das turmas. A capacidade limita as vagas.")}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Salas (5)</h2><table class="tabela-resp"><thead><tr><th>Sala</th><th class="num">Capacidade</th><th class="num">Horários</th><th></th></tr></thead><tbody>
+        ${[["Sala 101", 40, 6], ["Sala 102", 40, 4], ["Sala 204", 35, 5], ["Lab 1", 30, 3], ["Lab 2", 25, 2]].map(([s, c, h]) => `<tr><td data-r="Sala">${s}</td><td data-r="Capacidade" class="num">${c}</td><td data-r="Horários" class="num">${h}</td><td><div class="acoes-linha"><a class="link" href="#">Editar</a></div></td></tr>`).join("")}
+      </tbody></table></div>
+      <div class="cartao"><h2>Nova sala</h2><div class="pilha">${campo("Nome", "text", "Auditório")}${campo("Capacidade", "number", "120")}<button class="btn btn-primario btn-bloco">Cadastrar sala</button></div></div>
+    </div>`)],
+
+  "aproveitamento": ["SPEC-042 · Secretaria — Ficha: integralização e aproveitamento", () => casca("Administrador", "estudantes", `
+    ${cab("João Pereira", "Matrícula 20260075 · Engenharia da Computação", "", '<a href="#">Estudantes</a> / João Pereira')}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Aproveitamento de estudos (1)</h2>
+        <table class="tabela-resp"><thead><tr><th>Disciplina da matriz</th><th>Origem</th><th class="num">Nota</th><th class="num">CH</th><th></th></tr></thead><tbody>
+          <tr><td data-r="Disciplina da matriz">Cálculo Básico</td><td data-r="Origem">Universidade X · Cálculo A</td><td data-r="Nota" class="num">8,0</td><td data-r="CH" class="num">60 h</td><td><a class="link-perigo" href="#">Excluir</a></td></tr>
+        </tbody></table>
+        <h3 style="font-size:15px;margin:18px 0 8px">Novo aproveitamento</h3>
+        <div class="grade g2">${lista("Disciplina da matriz", ["Lógica", "Engenharia de Requisitos"], "Lógica")}${campo("Instituição de origem", "text", "Faculdade Y")}${campo("Disciplina de origem", "text", "Lógica Matemática")}${campo("Nota", "text", "7,5")}${campo("Carga horária", "number", "60")}</div>
+        <button class="btn btn-primario" style="margin-top:12px">Registrar aproveitamento</button></div>
+      <div class="pilha" style="margin:0">
+        <div class="cartao"><h2>Integralização</h2><div style="font-size:28px;font-weight:700">38%</div><div class="integral" style="margin:8px 0"><span style="width:38%"></span></div>
+          <p style="margin:0;font-size:13px;color:var(--mudo)">Faltam 7 obrigatórias (400 h): Cálculo I, Banco de Dados, Engenharia de Requisitos…</p></div>
+        <div class="cartao"><h2>Situação no curso</h2><div class="msg msg-erro">Concluído só com 100% de integralização. Faltam 7 obrigatórias.</div></div>
+      </div>
+    </div>`)],
+
+  "historico-final": ["SPEC-042 · Histórico final com conclusão", () => `<div style="background:#E9EDF3;min-height:100%">
+    <div class="doc-barra"><a class="btn btn-secundario" href="#">← Voltar</a><button class="btn btn-primario">⬇ Baixar PDF</button></div>
+    <div class="folha">
+      <div class="topo-doc"><div style="display:flex;gap:12px;align-items:center"><div class="logo-inst">FT</div><div><strong style="font-size:15px">Faculdade Exemplo de Tecnologia</strong><p style="margin:2px 0 0;color:var(--mudo)">CNPJ 12.345.678/0001-95 · Campinas/SP</p></div></div><div style="text-align:right"><h1>Histórico escolar</h1><p style="margin:4px 0 0"><strong>Curso concluído em 18/12/2029</strong></p></div></div>
+      <div class="dados"><div><small>Estudante</small>Ana Souza</div><div><small>Matrícula</small>20260073</div><div><small>Integralização</small>100% (640 h)</div></div>
+      <h2>Período 2029/2 · encerrado</h2>
+      <div class="larga"><table><thead><tr><th>Disciplina</th><th class="num">CH</th><th class="num">Média</th><th class="num">Frequência</th><th>Resultado</th></tr></thead><tbody><tr><td>Trabalho de Conclusão</td><td class="num">80 h</td><td class="num">9,0</td><td class="num">100%</td><td class="res-ok">Aprovado</td></tr></tbody></table></div>
+      <h2>Aproveitamento de estudos</h2>
+      <div class="larga"><table><thead><tr><th>Disciplina</th><th>Origem</th><th class="num">Nota</th><th class="num">CH</th></tr></thead><tbody><tr><td>Cálculo Básico</td><td>Universidade X · Cálculo A</td><td class="num">8,0</td><td class="num">60 h</td></tr></tbody></table></div>
+      <div class="assinatura">Renata Duarte<br>Secretaria acadêmica</div>
+    </div></div>`],
+
+  "exportacao-censo": ["SPEC-043 · Secretaria — Exportação de apoio ao Censo", () => casca("Administrador", "censo", `
+    ${cab("Exportação do Censo", "Arquivo de apoio com os dados dos estudantes e das turmas do período.")}
+    <div class="msg msg-info" style="margin-bottom:16px">Este é um <strong>arquivo de apoio</strong>, não o layout oficial do Educacenso/INEP. Use-o para conferir e preencher o Censo.</div>
+    <div class="grade g-form">
+      <div class="cartao"><h2>Prévia · 2026/2</h2>
+        <table class="tabela-resp"><thead><tr><th>Matrícula</th><th>Nome</th><th>CPF</th><th>Curso</th><th>Disciplina</th><th>Resultado</th></tr></thead><tbody>
+          ${[["20260001", "Lucas Oliveira", "529.982.247-25", "Eng. Computação", "Banco de Dados", "Em curso"], ["20260007", "Bruno Costa", "—", "Eng. Computação", "Cálculo I", "Em curso"], ["20260040", "Amanda Barbosa", "—", "Administração", "Marketing", "Trancada"]].map((l) => `<tr>${l.map((v, i) => `<td data-r="${["Matrícula", "Nome", "CPF", "Curso", "Disciplina", "Resultado"][i]}">${v}</td>`).join("")}</tr>`).join("")}
+        </tbody></table><p style="margin:10px 0 0;font-size:13px;color:var(--mudo)">… 186 linhas de 79 estudantes.</p></div>
+      <div class="cartao"><h2>Exportar</h2><div class="pilha">${lista("Período", ["2026/1", "2026/2"], "2026/2")}<p style="margin:0;font-size:13px;color:var(--mudo)">CSV com ponto e vírgula, UTF-8. A exportação fica registrada na auditoria.</p><button class="btn btn-primario btn-bloco">⬇ Baixar CSV</button></div></div>
+    </div>`)],
 
   "acesso-negado": ["SPEC-001 · Acesso negado", () => `<div class="simples"><div style="max-width:420px">
     <div style="margin-bottom:24px">${logoClaro(24)}</div><div style="font-size:40px">🔒</div><h1 style="margin:8px 0">Acesso negado</h1>

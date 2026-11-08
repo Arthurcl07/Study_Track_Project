@@ -5,13 +5,13 @@
 
 - **Usuario** — id, nome, email, senhaHash, perfil {Estudante, Professor, Coordenador, Administrador}, ativo. Representa qualquer pessoa que acessa o sistema; o atributo `perfil` define o papel (um usuário, não classes separadas). `ativo` (padrão: sim) é alterado só pelo Administrador (RB-14, OPEN-025); conta inativa não entra no sistema, mas seus dados permanecem. `trocarSenha` (padrão: não) marca conta criada pela tela que ainda não definiu a própria senha (RB-15, OPEN-026). `criadaEm` registra quando a conta foi criada (dashboard do administrador, OPEN-034).
 - **Curso** — id, nome (único). Organiza a grade de disciplinas, as turmas e os estudantes; tem exatamente 1 coordenador (RB-17, OPEN-030).
-- **PeriodoLetivo** — id, nome (AAAA/1 ou AAAA/2, único), status {Aberto, Encerrado}, criadoEm, encerradoEm. Período encerrado torna as turmas dele somente leitura (RB-20, OPEN-040).
-- **Turma** — id, nome. Pertence a exatamente 1 Curso (RB-18, OPEN-031) e a exatamente 1 PeriodoLetivo (OPEN-040; antes o período era um texto).
+- **PeriodoLetivo** — id, nome (AAAA/1 ou AAAA/2, único), status {Aberto, Encerrado}, criadoEm, encerradoEm, rematriculaInicio e rematriculaFim (janela de rematrícula, OPEN-060). Período encerrado torna as turmas dele somente leitura (RB-20, OPEN-040).
+- **Turma** — id, nome, vagas (OPEN-060), diario {Aberto, Fechado, Homologado} com as datas e a observação da devolução (OPEN-061). Pertence a exatamente 1 Curso (RB-18, OPEN-031) e a exatamente 1 PeriodoLetivo (OPEN-040; antes o período era um texto).
 - **Disciplina** — id, nome, cargaHoraria.
 - **Avaliacao** — id, nome, tipo {Prova, Trabalho, Substitutiva, Exame}, peso, data. No máximo uma Substitutiva e um Exame por turma; a Substitutiva troca a menor prova (RB-28) e o Exame dá a nota final (RB-29) (OPEN-051).
 - **Nota** — id, valor, dataRegistro.
 - **Frequencia** — id, percentual, atualizadaEm. Desde a SPEC-018 o percentual é calculado pela chamada (RB-21, OPEN-041).
-- **Aula** — id, data, numero (1 a 4), registradaEm. De 1 a 4 aulas por turma e data (OPEN-041, OPEN-050).
+- **Aula** — id, data, numero (1 a 4), conteudo (OPEN-061), registradaEm. De 1 a 4 aulas por turma e data (OPEN-041, OPEN-050).
 - **Presenca** — presente (sim/não). Uma por estudante e aula.
 - **Atividade** — id, descrição, prazo.
 - **Entrega** — id, dataEntrega, status {NoPrazo, Atrasada, Pendente}. O status é **derivado** de prazo, data da entrega e data atual (OPEN-010); só a entrega registrada é persistida, e "Pendente"/"Atrasada" sem entrega não geram registro.
@@ -26,6 +26,11 @@
 - **Abono** — id, inicio, fim, motivo {AtestadoMedico, ExerciciosDomiciliares, LicencaMaternidade, ServicoMilitar, Outro}, observacao, criadoEm. Registrado pela secretaria; a falta numa aula do intervalo conta como presença (RB-31, OPEN-054).
 - **PedidoSenha** — id, status {Pendente, Aprovado, Recusado}, criadoEm, resolvidoEm. No máximo 1 pendente por conta; a senha provisória nunca é guardada nele (RB-27, OPEN-049).
 - **Instituicao** — nome, cnpj, endereco, cidadeUf, telefone, email, responsavelSecretaria, logotipo, atualizadaEm. Registro único usado no cabeçalho e na assinatura dos documentos (OPEN-055).
+- **Requerimento** — id, protocolo (único: ano + 6 dígitos), tipo {RevisaoProva, SegundaChamada, DeclaracaoMatricula, Trancamento, Outro}, destino {Professor, Secretaria}, descricao, status {Aberto, EmAnalise, Deferido, Indeferido}, resposta, prazo, criadoEm, respondidoEm. De 1 estudante; revisão e segunda chamada têm 1 Turma (e, se houver, 1 Avaliacao) (RB-34, OPEN-058).
+- **PreRequisito** — par (disciplina, requisito) dentro da matriz de 1 Curso, sem ciclo (RB-41, OPEN-059). A matriz é a grade (CursoDisciplina) com semestre sugerido e obrigatória/optativa.
+- **EventoCalendario** — id, tipo {InicioAulas, FimAulas, Feriado, Recesso, SemanaProvas, Outro}, titulo, inicio, fim. De 1 PeriodoLetivo (RB-38, OPEN-062).
+- **Sala** — id, nome (único), capacidade. **HorarioTurma** — diaSemana (1 = segunda a 6 = sábado), inicio, fim ("HH:MM"). De 1 Turma e 1 Sala; sem choque de sala ou de professor (RB-39, OPEN-063).
+- **Aproveitamento** — id, instituicaoOrigem, disciplinaOrigem, nota, cargaHoraria, registradoEm. De 1 estudante e 1 Disciplina da matriz do curso dele; conta na integralização (RB-35, OPEN-064).
 - **Notificacao** — id, tipo {Risco, Nota, Plano, Prazo, Comunicado}, título, texto, link, chave, criadaEm, lidaEm. Só o destinatário vê e marca como lida (RB-23, OPEN-043).
 
 
@@ -50,6 +55,10 @@
 - Uma Turma tem de 0 a N Aulas; cada Aula tem 1 Presenca por estudante matriculado no momento da chamada (OPEN-041).
 - Um Usuario é autor de 0 a N RegistroAuditoria; o registro acadêmico refere-se a 1 Curso e, quando houver, a 1 Turma (OPEN-039).
 - Um Usuario (Estudante ou Professor) recebe de 0 a N Notificacoes; cada Notificacao tem exatamente 1 destinatário (OPEN-043).
+- Um Curso tem a matriz: cada CursoDisciplina ganha semestre (1 a 10) e obrigatoria; de 0 a N PreRequisito entre disciplinas da matriz (OPEN-059).
+- Um Usuario (Estudante) abre de 0 a N Requerimentos; um Usuario (Professor ou Administrador) responde de 0 a N (OPEN-058).
+- Um PeriodoLetivo tem de 0 a N EventoCalendario; uma Turma tem de 0 a N HorarioTurma, cada um em 1 Sala (OPEN-062, OPEN-063).
+- Um Usuario (Estudante) tem de 0 a N Aproveitamentos, cada um de 1 Disciplina (OPEN-064).
 - Um Usuario (Estudante) tem exatamente 1 FichaEstudante e de 0 a N Abonos; cada Abono tem 1 Usuario autor (Administrador) (OPEN-054, OPEN-055).
 - Um Usuario tem de 0 a N PedidoSenha; o pedido resolvido guarda o Administrador que o resolveu (OPEN-049).
 - Um Usuario (Professor ou Coordenador) publica de 0 a N Comunicados; cada Comunicado tem 1 autor e alcança exatamente 1 Turma ou 1 Curso (OPEN-047).
@@ -183,4 +192,10 @@ classDiagram
     Usuario "1" --> "1" FichaEstudante : ficha (Estudante)
     Usuario "1" --> "0..*" Abono : recebe (Estudante)
     Usuario "1" --> "0..*" PedidoSenha : solicita
+    Usuario "1" --> "0..*" Requerimento : abre (Estudante)
+    Turma "1" --> "0..*" HorarioTurma : horarios
+    Sala "1" --> "0..*" HorarioTurma : ocupa
+    PeriodoLetivo "1" --> "0..*" EventoCalendario : calendario
+    Usuario "1" --> "0..*" Aproveitamento : aproveita (Estudante)
+    Disciplina "1" --> "0..*" PreRequisito : exige
 ```
