@@ -5,6 +5,8 @@ import { Icone } from "@/components/icones";
 import { CabecalhoPagina, Cartao, CartaoNumero, CLASSE_BOTAO_PRIMARIO, CLASSE_LINK, EstadoVazio, Etiqueta } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { consultarDashboardAdministrador } from "@/server/academico/dashboard";
+import { contagemDaSecretaria } from "@/server/academico/secretaria";
+import { ROTULO_SITUACAO_CURSO, SITUACOES_CURSO } from "@/domain/secretaria";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 
 // SPEC-016 / RF-25 (UC-16): dashboard do administrador, só com contas e estrutura dos cursos. Nenhuma nota,
@@ -13,7 +15,11 @@ const dataCurta = (iso: string) => new Date(iso).toLocaleDateString("pt-BR", { t
 
 export default async function DashboardAdministrador() {
   const sessao = await exigirAcessoPagina(RECURSOS.painelAdministrador);
-  const { contas, recentes, cursos, coordenadores } = await consultarDashboardAdministrador();
+  // SPEC-035 (INV-035-03): secretaria — pedidos de senha pendentes e estudantes por situação no curso, só contagens
+  // (#dashboard-secretaria).
+  const [{ contas, recentes, cursos, coordenadores }, secretaria] = await Promise.all([consultarDashboardAdministrador(), contagemDaSecretaria()]);
+  const COR_SITUACAO = { Ativo: "bg-normal", Trancado: "bg-mudo", Concluido: "bg-info", Transferido: "bg-atencao", Cancelado: "bg-risco" } as const;
+  const porSituacao = SITUACOES_CURSO.map((s) => ({ rotulo: ROTULO_SITUACAO_CURSO[s], valor: secretaria.situacoes[s], cor: COR_SITUACAO[s] }));
   const porPerfil = [
     { rotulo: "Estudantes", valor: contas.ativasPorPerfil.Estudante, cor: "bg-azul" },
     { rotulo: "Professores", valor: contas.ativasPorPerfil.Professor, cor: "bg-azul-escuro" },
@@ -25,7 +31,7 @@ export default async function DashboardAdministrador() {
     <Casca sessao={sessao} ativo="inicio">
       <CabecalhoPagina
         titulo={`Olá, ${sessao.nome.split(" ")[0]}`}
-        subtitulo="Contas e cursos do StudyTrack. Dados acadêmicos (notas, frequência, situação) não aparecem para o administrador."
+        subtitulo="Secretaria acadêmica: contas, estudantes, períodos e documentos. Notas e frequência só aparecem nos documentos."
         acao={
           <Link href="/admin/contas" className={CLASSE_BOTAO_PRIMARIO}>
             <Icone nome="pessoas" className="h-4 w-4" /> Nova conta
@@ -33,13 +39,16 @@ export default async function DashboardAdministrador() {
         }
       />
       <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <CartaoNumero rotulo="Contas ativas" valor={contas.ativas} href="/admin/contas" />
-        <CartaoNumero rotulo="Desativadas" valor={contas.desativadas} cor="text-mudo" />
+        <CartaoNumero rotulo="Pedidos de senha" valor={secretaria.pedidosPendentes} cor={secretaria.pedidosPendentes > 0 ? "text-atencao" : ""} detalhe="pendentes" href="/admin/pedidos-senha" />
+        <CartaoNumero rotulo="Contas ativas" valor={contas.ativas} detalhe={`${contas.desativadas} desativada(s)`} href="/admin/contas" />
         <CartaoNumero rotulo="Aguardando troca de senha" valor={contas.aguardandoSenha} cor={contas.aguardandoSenha > 0 ? "text-atencao" : ""} detalhe="senha provisória ainda em uso" />
         <CartaoNumero rotulo="Cursos" valor={cursos.length} detalhe={`${coordenadores} coordenador(es)`} href="/admin/cursos" />
       </div>
 
       <div className="mb-5 grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
+        <Cartao titulo="Estudantes por situação no curso" acao={<Link href="/admin/estudantes" className={CLASSE_LINK}>Ver estudantes →</Link>}>
+          <BarrasHorizontais itens={porSituacao} />
+        </Cartao>
         <Cartao titulo="Contas por perfil">
           <BarrasHorizontais itens={porPerfil} />
           <p className="mt-4 text-[13px] text-mudo">Contando só as contas ativas.</p>

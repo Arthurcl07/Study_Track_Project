@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_CAMPO, CLASSE_ROTULO, Mensagem } from "@/components/ui";
@@ -52,6 +53,10 @@ export function FormularioLogin() {
       >
         {enviando ? "Entrando..." : "Entrar"}
       </button>
+      {/* SPEC-027: pedido de redefinição de senha à secretaria. */}
+      <p className="text-center text-sm">
+        <Link href="/esqueci-senha" className="font-medium text-azul hover:underline">Esqueci minha senha</Link>
+      </p>
     </form>
   );
 }

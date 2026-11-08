@@ -8,10 +8,10 @@
 - **PeriodoLetivo** — id, nome (AAAA/1 ou AAAA/2, único), status {Aberto, Encerrado}, criadoEm, encerradoEm. Período encerrado torna as turmas dele somente leitura (RB-20, OPEN-040).
 - **Turma** — id, nome. Pertence a exatamente 1 Curso (RB-18, OPEN-031) e a exatamente 1 PeriodoLetivo (OPEN-040; antes o período era um texto).
 - **Disciplina** — id, nome, cargaHoraria.
-- **Avaliacao** — id, nome/tipo, peso, data.
+- **Avaliacao** — id, nome, tipo {Prova, Trabalho, Substitutiva, Exame}, peso, data. No máximo uma Substitutiva e um Exame por turma; a Substitutiva troca a menor prova (RB-28) e o Exame dá a nota final (RB-29) (OPEN-051).
 - **Nota** — id, valor, dataRegistro.
 - **Frequencia** — id, percentual, atualizadaEm. Desde a SPEC-018 o percentual é calculado pela chamada (RB-21, OPEN-041).
-- **Aula** — id, data, registradaEm. Uma aula por turma e data (OPEN-041).
+- **Aula** — id, data, numero (1 a 4), registradaEm. De 1 a 4 aulas por turma e data (OPEN-041, OPEN-050).
 - **Presenca** — presente (sim/não). Uma por estudante e aula.
 - **Atividade** — id, descrição, prazo.
 - **Entrega** — id, dataEntrega, status {NoPrazo, Atrasada, Pendente}. O status é **derivado** de prazo, data da entrega e data atual (OPEN-010); só a entrega registrada é persistida, e "Pendente"/"Atrasada" sem entrega não geram registro.
@@ -21,6 +21,11 @@
 - **HistoricoNota** — id, valorAnterior (vazio no lançamento), valorNovo, registradoEm. Um registro por lançamento ou alteração de nota, com o autor; nunca editado nem apagado (RB-16, OPEN-028).
 - **RegistroAuditoria** — id, categoria {Administrativa, Acadêmica}, ação, descrição, antes, depois, registradoEm. Um por escrita, gravado na mesma transação; nunca editado nem apagado (RB-22, OPEN-039).
 - **Comunicado** — id, título, texto, criadoEm. Aviso de um professor ou coordenador para exatamente um alcance: 1 Turma ou 1 Curso; só o autor apaga (RB-26, OPEN-047).
+- **Matricula** — situacao {Cursando, Trancada, Cancelada}. Liga 1 Estudante a 1 Turma; trancada ou cancelada sai das listas de trabalho e fica no histórico (RB-30, OPEN-053).
+- **FichaEstudante** — numeroMatricula (único, imutável), cpf, dataNascimento, telefone, responsavelNome, responsavelTelefone, situacaoCurso {Ativo, Trancado, Transferido, Cancelado, Concluído}, situacaoDesde, situacaoMotivo. Exatamente 1 por estudante; dados pessoais só para administrador, coordenador do curso e o próprio estudante (RB-33, OPEN-055).
+- **Abono** — id, inicio, fim, motivo {AtestadoMedico, ExerciciosDomiciliares, LicencaMaternidade, ServicoMilitar, Outro}, observacao, criadoEm. Registrado pela secretaria; a falta numa aula do intervalo conta como presença (RB-31, OPEN-054).
+- **PedidoSenha** — id, status {Pendente, Aprovado, Recusado}, criadoEm, resolvidoEm. No máximo 1 pendente por conta; a senha provisória nunca é guardada nele (RB-27, OPEN-049).
+- **Instituicao** — nome, cnpj, endereco, cidadeUf, telefone, email, responsavelSecretaria, logotipo, atualizadaEm. Registro único usado no cabeçalho e na assinatura dos documentos (OPEN-055).
 - **Notificacao** — id, tipo {Risco, Nota, Plano, Prazo, Comunicado}, título, texto, link, chave, criadaEm, lidaEm. Só o destinatário vê e marca como lida (RB-23, OPEN-043).
 
 
@@ -45,6 +50,8 @@
 - Uma Turma tem de 0 a N Aulas; cada Aula tem 1 Presenca por estudante matriculado no momento da chamada (OPEN-041).
 - Um Usuario é autor de 0 a N RegistroAuditoria; o registro acadêmico refere-se a 1 Curso e, quando houver, a 1 Turma (OPEN-039).
 - Um Usuario (Estudante ou Professor) recebe de 0 a N Notificacoes; cada Notificacao tem exatamente 1 destinatário (OPEN-043).
+- Um Usuario (Estudante) tem exatamente 1 FichaEstudante e de 0 a N Abonos; cada Abono tem 1 Usuario autor (Administrador) (OPEN-054, OPEN-055).
+- Um Usuario tem de 0 a N PedidoSenha; o pedido resolvido guarda o Administrador que o resolveu (OPEN-049).
 - Um Usuario (Professor ou Coordenador) publica de 0 a N Comunicados; cada Comunicado tem 1 autor e alcança exatamente 1 Turma ou 1 Curso (OPEN-047).
 
 
@@ -79,8 +86,38 @@ classDiagram
     class Avaliacao {
       +id
       +nome
+      +tipo
       +peso
       +data
+    }
+    class FichaEstudante {
+      +numeroMatricula
+      +cpf
+      +dataNascimento
+      +telefone
+      +responsavelNome
+      +situacaoCurso
+      +situacaoDesde
+    }
+    class Abono {
+      +id
+      +inicio
+      +fim
+      +motivo
+      +observacao
+    }
+    class PedidoSenha {
+      +id
+      +status
+      +criadoEm
+      +resolvidoEm
+    }
+    class Instituicao {
+      +nome
+      +cnpj
+      +endereco
+      +responsavelSecretaria
+      +logotipo
     }
     class Nota {
       +id
@@ -143,4 +180,7 @@ classDiagram
     Curso "0..*" -- "1..*" Disciplina : grade
     Curso "1" --> "0..*" Turma : oferece
     Curso "1" --> "0..*" Usuario : pertence (Estudante)
+    Usuario "1" --> "1" FichaEstudante : ficha (Estudante)
+    Usuario "1" --> "0..*" Abono : recebe (Estudante)
+    Usuario "1" --> "0..*" PedidoSenha : solicita
 ```

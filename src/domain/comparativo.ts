@@ -1,9 +1,9 @@
 // Comparativo entre semestres (SPEC-024, RF-33, OPEN-046). Funções puras: sem Next.js nem Prisma.
 // O resultado de cada matrícula usa a regra única do histórico (RB-24, resultadoDaTurma).
-import { resultadoDaTurma } from "./documentos";
+import { ehAprovado, resultadoDaTurma } from "./documentos";
 import type { Situacao } from "./situacao-academica";
 
-export type LinhaComparativo = { periodo: string; encerrado: boolean; disciplina: string; media: number | null; frequencia: number | null; situacao: Situacao | null };
+export type LinhaComparativo = { periodo: string; encerrado: boolean; disciplina: string; media: number | null; frequencia: number | null; situacao: Situacao | null; exame?: number | null };
 
 export type ResumoPeriodo = {
   periodo: string;
@@ -37,7 +37,7 @@ export function resumoPorPeriodo(linhas: readonly LinhaComparativo[]): ResumoPer
       media: mediaSimples(doPeriodo.map((l) => l.media)),
       frequencia: mediaSimples(doPeriodo.map((l) => l.frequencia)),
       percentualRisco: percentual(comSituacao.filter((l) => l.situacao === "Risco").length, comSituacao.length),
-      percentualAprovacao: encerrado ? percentual(resultados.filter((r) => r === "Aprovado").length, resultados.length) : null,
+      percentualAprovacao: encerrado ? percentual(resultados.filter(ehAprovado).length, resultados.length) : null,
     };
   });
 }

@@ -72,13 +72,19 @@ describe("SPEC-010 — regras de domínio", () => {
 
   // SPEC-015 / SPEC-016 (OPEN-034): o Administrador também gerencia cursos e tem o próprio dashboard; nada acadêmico.
   // SPEC-017 e SPEC-019: períodos letivos e auditoria administrativa também são estrutura, não dado acadêmico.
-  it("RB-13 / INV-010-02 / INV-010-03: Administrador só tem contas, cursos, períodos, auditoria administrativa e o próprio dashboard; os outros perfis não os têm", () => {
-    const doAdministrador: string[] = [RECURSOS.gestaoContas, RECURSOS.gestaoCursos, RECURSOS.painelAdministrador, RECURSOS.gestaoPeriodos, RECURSOS.auditoriaAdministrativa];
+  // RB-13 reescrita em 2026-11-06 (SPEC-035, OPEN-057): o Administrador é também a secretaria — documentos,
+  // pedidos de senha, secretaria e lista de estudantes. Os recursos de trabalho acadêmico continuam negados.
+  it("RB-13 / INV-010-02 / INV-010-03 / INV-035-01: Administrador tem contas, cursos, períodos, auditoria administrativa, dashboard e secretaria; nada de trabalho acadêmico", () => {
+    const doAdministrador: string[] = [
+      RECURSOS.gestaoContas, RECURSOS.gestaoCursos, RECURSOS.painelAdministrador, RECURSOS.gestaoPeriodos, RECURSOS.auditoriaAdministrativa,
+      RECURSOS.documentos, RECURSOS.pedidosSenha, RECURSOS.secretaria, RECURSOS.estudantes,
+    ];
+    const compartilhados: string[] = [RECURSOS.documentos, RECURSOS.estudantes];
     for (const recurso of Object.values(RECURSOS)) {
       expect(podeAcessar("Administrador", recurso)).toBe(doAdministrador.includes(recurso));
     }
     for (const perfil of ["Estudante", "Professor", "Coordenador"]) {
-      for (const recurso of doAdministrador) expect(podeAcessar(perfil, recurso)).toBe(false);
+      for (const recurso of doAdministrador.filter((r) => !compartilhados.includes(r))) expect(podeAcessar(perfil, recurso)).toBe(false);
     }
   });
 });
@@ -117,7 +123,7 @@ describe("SPEC-010 — gestão de contas", () => {
     await criarUsuarioDeTeste("Coordenador");
 
     const resposta = await listarApi(requisicaoComSessao(`${URL_CONTAS}?perfil=Coordenador`, token));
-    const contas = await resposta.json();
+    const contas = (await resposta.json()).itens;
 
     expect(resposta.status).toBe(200);
     expect(contas.length).toBeGreaterThan(0);

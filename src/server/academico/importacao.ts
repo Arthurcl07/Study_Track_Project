@@ -36,9 +36,11 @@ export async function importarEstudantes(entrada: Record<string, unknown>, turma
   const emails = [...new Set(leitura.linhas.map((l) => l.email))];
   const existentes = await prisma.usuario.findMany({
     where: { email: { in: emails } },
-    select: { email: true, perfil: true, ativo: true, cursoId: true, matriculas: { where: { turmaId }, select: { turmaId: true } } },
+    select: { email: true, perfil: true, ativo: true, cursoId: true, matriculas: { where: { turmaId }, select: { turmaId: true } }, ficha: { select: { situacaoCurso: true } } },
   });
-  const contas = new Map<string, ContaExistente>(existentes.map((c) => [c.email, { perfil: c.perfil, ativo: c.ativo, cursoId: c.cursoId, matriculado: c.matriculas.length > 0 }]));
+  const contas = new Map<string, ContaExistente>(
+    existentes.map((c) => [c.email, { perfil: c.perfil, ativo: c.ativo, cursoId: c.cursoId, matriculado: c.matriculas.length > 0, situacaoCurso: c.ficha?.situacaoCurso ?? null }]),
+  );
   const linhas = preverImportacao(leitura.linhas, contas, turma.cursoId);
   const resumo = resumoDaPrevia(linhas);
 

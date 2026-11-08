@@ -371,7 +371,7 @@ export async function registrarChamadaSimulada(turmaId: string, estudanteId: str
   const deslocamento = [...estudanteId].reduce((s, c) => s + c.charCodeAt(0), 0) % n;
   const presencas: boolean[] = [];
   for (const [k, data] of datas.entries()) {
-    const aula = await prisma.aula.upsert({ where: { turmaId_data: { turmaId, data: paraData(data) } }, update: {}, create: { turmaId, data: paraData(data) } });
+    const aula = await prisma.aula.upsert({ where: { turmaId_data_numero: { turmaId, data: paraData(data), numero: 1 } }, update: {}, create: { turmaId, data: paraData(data) } });
     const presente = (k * 7 + deslocamento) % n >= faltas;
     presencas.push(presente);
     await prisma.presenca.upsert({ where: { aulaId_estudanteId: { aulaId: aula.id, estudanteId } }, update: { presente }, create: { aulaId: aula.id, estudanteId, presente } });

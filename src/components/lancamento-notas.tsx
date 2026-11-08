@@ -4,8 +4,12 @@
 // Também cadastra avaliação na turma escolhida (OPEN-017). Toda validação vale no servidor; aqui só
 // mostramos a mensagem de correção que a API devolve (AC-004-02).
 // Layout aprovado em docs/layout/prototipo.html#professor-notas.
+// SPEC-026/029: tipo da avaliação; editar e excluir avaliação; no exame final só aparecem os estudantes em exame
+// (média < 6,0 e frequência ≥ 75%, RB-29), com a nota final (#correcao-avaliacao e #avaliacao-tipos).
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { ROTULO_TIPO, TIPOS_AVALIACAO, temPeso, type TipoAvaliacao } from "@/domain/registro-notas";
+import { elegivelAoExame, notaFinalComExame } from "@/domain/situacao-academica";
 import {
   Cartao,
   CLASSE_BOTAO_PRIMARIO,
@@ -20,8 +24,8 @@ import {
 export type TurmaParaLancamento = {
   id: string;
   rotulo: string;
-  avaliacoes: { id: string; nome: string; peso: number; data: string; notas: { id: string; estudanteId: string; valor: number }[] }[];
-  estudantes: { id: string; nome: string }[];
+  avaliacoes: { id: string; nome: string; peso: number; data: string; tipo: TipoAvaliacao; notas: { id: string; estudanteId: string; valor: number }[] }[];
+  estudantes: { id: string; nome: string; matricula: string | null; media: number | null; frequencia: number | null }[];
 };
 
 type Retorno = { erro: string | null; campos: Record<string, string>; sucesso: string | null };
@@ -30,9 +34,11 @@ const SEM_RETORNO: Retorno = { erro: null, campos: {}, sucesso: null };
 const formatarNota = (valor: number) => valor.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
 const formatarData = (iso: string) => new Date(iso).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 
-async function enviar(url: string, metodo: "POST" | "PATCH", corpo: unknown): Promise<Retorno & { ok: boolean }> {
+const descreverAvaliacao = (a: { tipo: TipoAvaliacao; peso: number }) => (temPeso(a.tipo) ? `${ROTULO_TIPO[a.tipo]}, peso ${formatarNota(a.peso)}` : ROTULO_TIPO[a.tipo]);
+
+async function enviar(url: string, metodo: "POST" | "PATCH" | "DELETE", corpo?: unknown): Promise<Retorno & { ok: boolean }> {
   try {
-    const resposta = await fetch(url, { method: metodo, headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) });
+    const resposta = await fetch(url, { method: metodo, headers: { "Content-Type": "application/json" }, body: corpo === undefined ? undefined : JSON.stringify(corpo) });
     const retorno = await resposta.json().catch(() => ({}));
     if (!resposta.ok) return { ok: false, erro: retorno.erro ?? "Não foi possível salvar.", campos: retorno.campos ?? {}, sucesso: null };
     return { ok: true, ...SEM_RETORNO };
@@ -59,6 +65,10 @@ export function LancamentoNotas({ turmas }: { turmas: TurmaParaLancamento[] }) {
   const [retornoNota, setRetornoNota] = useState<Retorno>(SEM_RETORNO);
   const [retornoAvaliacao, setRetornoAvaliacao] = useState<Retorno>(SEM_RETORNO);
   const [enviando, setEnviando] = useState(false);
+  const [tipoNova, setTipoNova] = useState<TipoAvaliacao>("Prova");
+  const [editando, setEditando] = useState<string | null>(null);
+  const [tipoEdicao, setTipoEdicao] = useState<TipoAvaliacao>("Prova");
+  const [retornoEdicao, setRetornoEdicao] = useState<Retorno>(SEM_RETORNO);
 
   const turma = turmas.find((t) => t.id === turmaId);
   const avaliacao = turma?.avaliacoes.find((a) => a.id === avaliacaoId);
@@ -103,7 +113,32 @@ export function LancamentoNotas({ turmas }: { turmas: TurmaParaLancamento[] }) {
     setEnviando(false);
     if (!resultado.ok) return setRetornoAvaliacao(resultado);
     formulario.reset();
+    setTipoNova("Prova");
     setRetornoAvaliacao({ ...SEM_RETORNO, sucesso: "Avaliação cadastrada." });
+    router.refresh();
+  }
+
+  // SPEC-026 (AC-026-03): mudar peso ou tipo recalcula a média da turma no servidor.
+  async function salvarEdicao(evento: FormEvent<HTMLFormElement>, id: string) {
+    evento.preventDefault();
+    setEnviando(true);
+    const resultado = await enviar(`/api/avaliacoes/${id}`, "PATCH", Object.fromEntries(new FormData(evento.currentTarget)));
+    setEnviando(false);
+    if (!resultado.ok) return setRetornoEdicao(resultado);
+    setEditando(null);
+    setRetornoEdicao({ ...SEM_RETORNO, sucesso: "Avaliação alterada. Médias e situações recalculadas." });
+    router.refresh();
+  }
+
+  // SPEC-026 (AC-026-04/05): só sem nota; com nota o servidor explica o motivo.
+  async function excluirAvaliacao(a: TurmaParaLancamento["avaliacoes"][number]) {
+    if (!window.confirm(`Excluir "${a.nome}"? A exclusão fica registrada na auditoria.`)) return;
+    setEnviando(true);
+    const resultado = await enviar(`/api/avaliacoes/${a.id}`, "DELETE");
+    setEnviando(false);
+    if (!resultado.ok) return setRetornoEdicao(resultado);
+    if (avaliacaoId === a.id) setAvaliacaoId("");
+    setRetornoEdicao({ ...SEM_RETORNO, sucesso: `"${a.nome}" excluída.` });
     router.refresh();
   }
 
@@ -129,7 +164,7 @@ export function LancamentoNotas({ turmas }: { turmas: TurmaParaLancamento[] }) {
             >
               <option value="">Selecione...</option>
               {turma?.avaliacoes.map((a) => (
-                <option key={a.id} value={a.id}>{a.nome} (peso {formatarNota(a.peso)})</option>
+                <option key={a.id} value={a.id}>{a.nome} ({descreverAvaliacao(a)})</option>
               ))}
             </select>
           </div>
@@ -137,7 +172,13 @@ export function LancamentoNotas({ turmas }: { turmas: TurmaParaLancamento[] }) {
       </Cartao>
 
       <div className="grid items-start gap-5 lg:grid-cols-[1.6fr_1fr]">
-        <Cartao titulo={avaliacao ? `${avaliacao.nome} · peso ${formatarNota(avaliacao.peso)} · ${formatarData(avaliacao.data)}` : "Notas da avaliação"}>
+        <Cartao titulo={avaliacao ? `${avaliacao.nome} · ${descreverAvaliacao(avaliacao)} · ${formatarData(avaliacao.data)}` : "Notas da avaliação"}>
+          {avaliacao?.tipo === "Exame" && (
+            <p className="mb-3 text-sm text-mudo">Só aparecem os estudantes em exame: média menor que 6,0 e frequência de pelo menos 75%. Nota final = (média + exame) ÷ 2; aprovado com 5,0.</p>
+          )}
+          {avaliacao?.tipo === "Substitutiva" && (
+            <p className="mb-3 text-sm text-mudo">A nota da substitutiva troca a menor prova de cada estudante (prova sem nota conta como zero), se isso aumentar a média.</p>
+          )}
           {!turma || turma.avaliacoes.length === 0 ? (
             <EstadoVazio>Esta turma ainda não tem avaliações. Cadastre uma ao lado.</EstadoVazio>
           ) : !avaliacao ? (
@@ -154,12 +195,18 @@ export function LancamentoNotas({ turmas }: { turmas: TurmaParaLancamento[] }) {
                 </tr>
               </thead>
               <tbody>
-                {turma.estudantes.map((e) => {
+                {turma.estudantes.filter((e) => avaliacao.tipo !== "Exame" || elegivelAoExame(e.media, e.frequencia) || avaliacao.notas.some((n) => n.estudanteId === e.id)).map((e) => {
                   const nota = avaliacao.notas.find((n) => n.estudanteId === e.id);
                   const selecionado = e.id === estudanteId;
                   return (
                     <tr key={e.id} className={`border-t border-traco ${selecionado ? "bg-azul-suave" : ""}`}>
-                      <td data-rotulo="Estudante" className="px-2 py-3">{e.nome}</td>
+                      <td data-rotulo="Estudante" className="px-2 py-3">
+                        {e.nome}
+                        {e.matricula && <span className="block text-xs text-mudo">{e.matricula}</span>}
+                        {avaliacao.tipo === "Exame" && e.media !== null && (
+                          <span className="block text-xs text-mudo">média {formatarNota(e.media)}{nota ? ` · nota final ${formatarNota(notaFinalComExame(e.media, nota.valor))}` : ""}</span>
+                        )}
+                      </td>
                       <td data-rotulo="Nota" className={`px-2 py-3 text-right tabular-nums ${nota ? "" : "text-mudo"}`}>
                         {nota ? formatarNota(nota.valor) : "—"}
                       </td>
@@ -215,12 +262,22 @@ export function LancamentoNotas({ turmas }: { turmas: TurmaParaLancamento[] }) {
                 <input id="nome-avaliacao" name="nome" aria-invalid={Boolean(retornoAvaliacao.campos.nome)} className={CLASSE_CAMPO} />
                 <ErroCampo mensagem={retornoAvaliacao.campos.nome} />
               </div>
+              <div>
+                <label htmlFor="tipo-avaliacao" className={CLASSE_ROTULO}>Tipo</label>
+                <select id="tipo-avaliacao" name="tipo" value={tipoNova} onChange={(e) => setTipoNova(e.target.value as TipoAvaliacao)} className={CLASSE_CAMPO}>
+                  {TIPOS_AVALIACAO.map((t) => <option key={t} value={t}>{ROTULO_TIPO[t]}</option>)}
+                </select>
+                <ErroCampo mensagem={retornoAvaliacao.campos.tipo} />
+              </div>
+              {!temPeso(tipoNova) && <p className="text-sm text-mudo">Substitutiva e exame final não têm peso. Cada turma tem no máximo uma de cada.</p>}
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                <div>
-                  <label htmlFor="peso-avaliacao" className={CLASSE_ROTULO}>Peso (maior que zero)</label>
-                  <input id="peso-avaliacao" name="peso" inputMode="decimal" aria-invalid={Boolean(retornoAvaliacao.campos.peso)} className={CLASSE_CAMPO} />
-                  <ErroCampo mensagem={retornoAvaliacao.campos.peso} />
-                </div>
+                {temPeso(tipoNova) && (
+                  <div>
+                    <label htmlFor="peso-avaliacao" className={CLASSE_ROTULO}>Peso (maior que zero)</label>
+                    <input id="peso-avaliacao" name="peso" inputMode="decimal" aria-invalid={Boolean(retornoAvaliacao.campos.peso)} className={CLASSE_CAMPO} />
+                    <ErroCampo mensagem={retornoAvaliacao.campos.peso} />
+                  </div>
+                )}
                 <div>
                   <label htmlFor="data-avaliacao" className={CLASSE_ROTULO}>Data</label>
                   <input id="data-avaliacao" name="data" type="date" aria-invalid={Boolean(retornoAvaliacao.campos.data)} className={CLASSE_CAMPO} />
@@ -233,6 +290,62 @@ export function LancamentoNotas({ turmas }: { turmas: TurmaParaLancamento[] }) {
               </button>
             </form>
           </Cartao>
+
+          {turma && turma.avaliacoes.length > 0 && (
+            <Cartao titulo={`Avaliações da turma (${turma.avaliacoes.length})`}>
+              <div className="mb-3"><Mensagens retorno={retornoEdicao} /></div>
+              <ul className="space-y-2">
+                {turma.avaliacoes.map((a) =>
+                  editando === a.id ? (
+                    <li key={a.id}>
+                      <form onSubmit={(e) => salvarEdicao(e, a.id)} noValidate className="space-y-3 rounded-xl border border-azul-suave bg-nevoa p-3">
+                        <div>
+                          <label htmlFor={`nome-${a.id}`} className={CLASSE_ROTULO}>Nome</label>
+                          <input id={`nome-${a.id}`} name="nome" defaultValue={a.nome} className={CLASSE_CAMPO} />
+                          <ErroCampo mensagem={retornoEdicao.campos.nome} />
+                        </div>
+                        <div>
+                          <label htmlFor={`tipo-${a.id}`} className={CLASSE_ROTULO}>Tipo</label>
+                          <select id={`tipo-${a.id}`} name="tipo" value={tipoEdicao} onChange={(e) => setTipoEdicao(e.target.value as TipoAvaliacao)} className={CLASSE_CAMPO}>
+                            {TIPOS_AVALIACAO.map((t) => <option key={t} value={t}>{ROTULO_TIPO[t]}</option>)}
+                          </select>
+                        </div>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {temPeso(tipoEdicao) && (
+                            <div>
+                              <label htmlFor={`peso-${a.id}`} className={CLASSE_ROTULO}>Peso</label>
+                              <input id={`peso-${a.id}`} name="peso" inputMode="decimal" defaultValue={String(a.peso).replace(".", ",")} className={CLASSE_CAMPO} />
+                              <ErroCampo mensagem={retornoEdicao.campos.peso} />
+                            </div>
+                          )}
+                          <div>
+                            <label htmlFor={`data-${a.id}`} className={CLASSE_ROTULO}>Data</label>
+                            <input id={`data-${a.id}`} name="data" type="date" defaultValue={a.data.slice(0, 10)} className={CLASSE_CAMPO} />
+                          </div>
+                        </div>
+                        {a.notas.length > 0 && temPeso(tipoEdicao) && <p className="text-xs text-mudo">Mudar o peso recalcula a média e a situação de {a.notas.length} estudante(s).</p>}
+                        <div className="flex flex-wrap gap-2">
+                          <button type="submit" disabled={enviando} className={CLASSE_BOTAO_PRIMARIO}>Salvar</button>
+                          <button type="button" onClick={() => { setEditando(null); setRetornoEdicao(SEM_RETORNO); }} className={CLASSE_BOTAO_SECUNDARIO}>Cancelar</button>
+                        </div>
+                      </form>
+                    </li>
+                  ) : (
+                    <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 border-t border-traco pt-2 first:border-t-0 first:pt-0">
+                      <span className="min-w-0">
+                        <span className="font-medium">{a.nome}</span>
+                        <span className="block text-xs text-mudo">{descreverAvaliacao(a)} · {formatarData(a.data)} · {a.notas.length} nota(s)</span>
+                      </span>
+                      <span className="flex gap-3 text-sm">
+                        <button type="button" onClick={() => { setEditando(a.id); setTipoEdicao(a.tipo); setRetornoEdicao(SEM_RETORNO); }} className="font-medium text-azul hover:underline">Editar</button>
+                        <button type="button" disabled={enviando} onClick={() => excluirAvaliacao(a)} className="font-medium text-risco hover:underline disabled:opacity-60" title={a.notas.length > 0 ? "Já tem notas" : undefined}>Excluir</button>
+                      </span>
+                    </li>
+                  ),
+                )}
+              </ul>
+            </Cartao>
+          )}
         </div>
       </div>
     </div>

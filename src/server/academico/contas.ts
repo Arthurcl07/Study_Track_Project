@@ -4,6 +4,7 @@ import { motivoParaNaoDesativar, validarNovaConta } from "@/domain/contas";
 import { ehPerfilValido } from "@/domain/perfil";
 import { gerarHashSenha } from "@/server/auth/senha";
 import * as dados from "@/server/dados/contas";
+import { idsQueBatem } from "@/server/dados/busca";
 import { buscarCurso } from "@/server/dados/cursos";
 import { emailJaCadastrado } from "@/server/dados/estrutura";
 import { auditar } from "@/server/dados/auditoria";
@@ -12,8 +13,9 @@ import type { Resultado } from "./cadastros";
 
 const sucesso = <T>(valor: T): Resultado<T> => ({ ok: true, valor });
 
-export function listarContas(perfil: unknown) {
-  return dados.listarContas(ehPerfilValido(perfil) ? perfil : undefined);
+// SPEC-034 (RF-43): filtro de perfil, busca por nome, e-mail ou matrícula e páginas de 25.
+export async function listarContas(perfil: unknown, filtros: { q?: unknown; pagina?: unknown } = {}) {
+  return dados.listarContas(ehPerfilValido(perfil) ? perfil : undefined, await idsQueBatem(filtros.q), filtros.pagina);
 }
 
 // AC-010-01 / AC-010-02: conta ativa com exatamente o perfil escolhido; senha só como hash (RNF-02).

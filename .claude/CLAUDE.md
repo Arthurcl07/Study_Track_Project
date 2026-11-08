@@ -31,7 +31,14 @@ tela só é implementada depois do layout `aprovado` (OPEN-020).
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 a SPEC-025 implementadas)
+- `src/` — código-fonte (SPEC-001 a SPEC-035 implementadas)
+  Nível 1 / secretaria (SPEC-026 a 035, RB-27 a RB-33): o Administrador é a secretaria acadêmica (RB-13 reescrita; recursos
+  `secretaria`, `pedidosSenha`, `estudantes`), sem lançar dado acadêmico. Matrícula trancada/cancelada sai de toda lista de
+  trabalho pelo filtro único `MATRICULA_CURSANDO` (`src/server/dados/matriculas.ts`); consulta nova de trabalho também usa.
+  Média com substitutiva e exame em `calcularMediaDaTurma`/`notaFinalComExame` (`situacao-academica.ts`); o exame não muda a
+  situação. Frequência = (presenças + faltas abonadas) ÷ aulas (`presencasEfetivas`, `recalcularFrequencia`); até 4 aulas por
+  data. A ficha (número de matrícula) nasce por gatilho do banco na inserção do estudante. Busca em `src/server/dados/busca.ts`.
+  Correções (editar/excluir sem registro dependente, RB-32) em `src/server/academico/correcoes.ts`.
   Simulador (SPEC-023, RB-25): `notaNecessaria`/`mediaSimulada` em `src/domain/simulador.ts`, usadas no servidor e no navegador;
   nada é gravado. Comparativo (SPEC-024): `resumoPorPeriodo` em `src/domain/comparativo.ts`. Comunicados (SPEC-025, RB-26):
   `src/server/academico/comunicados.ts`; alcance é turma ou curso (CHECK no banco), notificação e auditoria na transação.

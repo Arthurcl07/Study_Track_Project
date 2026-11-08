@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Paginacao } from "@/components/busca-paginacao";
 import { Casca } from "@/components/casca";
 import {
   CabecalhoPagina, Cartao, CLASSE_BOTAO_PRIMARIO, CLASSE_BOTAO_SECUNDARIO, CLASSE_CAMPO, CLASSE_ROTULO, EstadoVazio,
@@ -10,13 +11,14 @@ import { exigirAcessoPagina } from "@/server/auth/guardas";
 
 // SPEC-013 / RF-20 (UC-13): histórico de notas, para Professor e Coordenador, no escopo de cada um.
 // Os registros não podem ser editados nem apagados (RB-16). Layout aprovado em docs/layout/prototipo.html#historico-notas.
+// SPEC-034: páginas de 25 registros.
 const quando = (iso: string) =>
   new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" });
 
-export default async function HistoricoDeNotas({ searchParams }: { searchParams: Promise<{ turma?: string }> }) {
+export default async function HistoricoDeNotas({ searchParams }: { searchParams: Promise<{ turma?: string; pagina?: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.historicoNotas);
-  const { turma } = await searchParams;
-  const resultado = await consultarHistorico(sessao, turma || null);
+  const { turma, pagina } = await searchParams;
+  const resultado = await consultarHistorico(sessao, turma || null, pagina);
   const subtitulo = "Cada lançamento e cada alteração de nota fica registrado. Os registros não podem ser editados nem apagados.";
 
   if (!resultado.ok) {
@@ -29,7 +31,7 @@ export default async function HistoricoDeNotas({ searchParams }: { searchParams:
     );
   }
 
-  const { turmas, turmaId, registros } = resultado;
+  const { turmas, turmaId, registros, pagina: paginacao } = resultado;
   return (
     <Casca sessao={sessao} ativo="historico">
       <CabecalhoPagina titulo="Histórico de notas" subtitulo={subtitulo} />
@@ -48,7 +50,7 @@ export default async function HistoricoDeNotas({ searchParams }: { searchParams:
               <button type="submit" className={CLASSE_BOTAO_PRIMARIO}>Ver histórico</button>
             </form>
           </Cartao>
-          <Cartao titulo={`Registros (${registros.length})`}>
+          <Cartao titulo={`Registros (${paginacao.total})`}>
             {registros.length === 0 ? (
               <EstadoVazio>Nenhuma nota lançada ou alterada nesta turma desde que o histórico passou a ser registrado.</EstadoVazio>
             ) : (
@@ -77,6 +79,7 @@ export default async function HistoricoDeNotas({ searchParams }: { searchParams:
                 </tbody>
               </table>
             )}
+            <Paginacao pagina={paginacao} unidade="registro(s)" />
           </Cartao>
         </div>
       )}

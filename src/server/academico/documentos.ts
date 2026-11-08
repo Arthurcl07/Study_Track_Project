@@ -1,9 +1,11 @@
 // Casos de uso do boletim e do histórico escolar (SPEC-020, RF-29, UC-19). Só leitura.
 // Estudante: só os próprios documentos (o estudante pedido é ignorado, AC-020-06, RB-02). Coordenador: estudante de
-// curso que coordena (AC-020-07, RB-04), filtrado na própria query (ADR-003). Outros perfis: nada (INV-020-05).
+// curso que coordena (AC-020-07, RB-04), filtrado na própria query (ADR-003). SPEC-035: a secretaria (Administrador)
+// emite de qualquer estudante (RB-13). Professor: nada (INV-020-05).
+// SPEC-029: exame e nota final; SPEC-031: matrícula trancada/cancelada; SPEC-032: a frequência já conta o abono.
 import { resumoPorPeriodo } from "@/domain/comparativo";
 import { periodoPadrao, resultadoDaTurma, resumoDoHistorico, type Resultado } from "@/domain/documentos";
-import type { Situacao } from "@/domain/situacao-academica";
+import { notaFinalComExame, type Situacao } from "@/domain/situacao-academica";
 import type { Sessao } from "@/server/auth/token";
 import { prisma } from "@/server/dados/prisma";
 
@@ -13,9 +15,14 @@ async function estudanteDoDocumento(sessao: Sessao, estudantePedido?: string | n
       ? { id: sessao.usuarioId, perfil: "Estudante" as const }
       : sessao.perfil === "Coordenador" && estudantePedido
         ? { id: estudantePedido, perfil: "Estudante" as const, curso: { coordenadorId: sessao.usuarioId } }
-        : null;
+        : sessao.perfil === "Administrador" && estudantePedido
+          ? { id: estudantePedido, perfil: "Estudante" as const }
+          : null;
   if (!where) return null;
-  return prisma.usuario.findFirst({ where, select: { id: true, nome: true, email: true, curso: { select: { nome: true } } } });
+  const estudante = await prisma.usuario.findFirst({ where, select: { id: true, nome: true, email: true, curso: { select: { nome: true } }, ficha: { select: { numeroMatricula: true } } } });
+  if (!estudante) return null;
+  const { ficha, ...resto } = estudante;
+  return { ...resto, numeroMatricula: ficha?.numeroMatricula ?? null };
 }
 
 // INV-020-01 / INV-020-03: só turmas do estudante, com média, frequência e situação do indicador vigente.
@@ -29,9 +36,10 @@ async function turmasDoEstudante(estudanteId: string, periodo?: string) {
       periodoLetivo: { select: { status: true } },
       disciplina: { select: { nome: true, cargaHoraria: true } },
       professor: { select: { nome: true } },
-      avaliacoes: { select: { nome: true, peso: true, data: true, notas: { where: { estudanteId }, select: { valor: true } } }, orderBy: [{ data: "asc" }, { nome: "asc" }] },
+      avaliacoes: { select: { nome: true, peso: true, tipo: true, data: true, notas: { where: { estudanteId }, select: { valor: true } } }, orderBy: [{ data: "asc" }, { nome: "asc" }] },
       indicadores: { where: { estudanteId }, select: { media: true, frequenciaAtual: true, situacao: true } },
       aulas: { where: { presencas: { some: { estudanteId } } }, select: { presencas: { where: { estudanteId }, select: { presente: true } } } },
+      matriculas: { where: { estudanteId }, select: { situacao: true } },
     },
     orderBy: [{ periodo: "asc" }, { disciplina: { nome: "asc" } }],
   });
@@ -40,6 +48,10 @@ async function turmasDoEstudante(estudanteId: string, periodo?: string) {
     const encerrado = t.periodoLetivo.status === "Encerrado";
     const media = indicador?.media ?? null;
     const frequencia = indicador?.frequenciaAtual ?? null;
+    const exame = t.avaliacoes.find((a) => a.tipo === "Exame")?.notas[0]?.valor ?? null;
+    const matricula = t.matriculas[0]?.situacao ?? "Cursando";
+    // Presenças vêm da frequência gravada (que já conta as faltas abonadas, RB-31), para bater com o percentual.
+    const presentes = frequencia !== null ? Math.round((frequencia * t.aulas.length) / 100) : t.aulas.filter((a) => a.presencas[0]?.presente).length;
     return {
       id: t.id,
       turma: t.nome,
@@ -48,13 +60,17 @@ async function turmasDoEstudante(estudanteId: string, periodo?: string) {
       disciplina: t.disciplina.nome,
       cargaHoraria: t.disciplina.cargaHoraria,
       professor: t.professor.nome,
-      avaliacoes: t.avaliacoes.map((a) => ({ nome: a.nome, peso: a.peso, nota: a.notas[0]?.valor ?? null })),
+      // O exame aparece na própria coluna (com a nota final), fora da lista das avaliações da média.
+      avaliacoes: t.avaliacoes.filter((a) => a.tipo !== "Exame").map((a) => ({ nome: a.nome, peso: a.peso, tipo: a.tipo, nota: a.notas[0]?.valor ?? null })),
       media,
       frequencia,
+      exame,
+      notaFinal: media !== null && exame !== null ? notaFinalComExame(media, exame) : null,
+      matricula,
       aulas: t.aulas.length,
-      presencas: t.aulas.filter((a) => a.presencas[0]?.presente).length,
+      presencas: presentes,
       situacao: (indicador?.situacao ?? null) as Situacao | null,
-      resultado: resultadoDaTurma({ encerrado, media, frequencia }) as Resultado,
+      resultado: resultadoDaTurma({ encerrado, media, frequencia, exame, matricula }) as Resultado,
     };
   });
 }

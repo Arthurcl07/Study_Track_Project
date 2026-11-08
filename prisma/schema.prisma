@@ -30,21 +30,21 @@ enum Perfil {
 }
 
 model Usuario {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   nome        String
-  email       String  @unique
+  email       String   @unique
   // INV-001-02: somente o hash bcrypt é armazenado, nunca a senha em texto puro (RNF-02).
   senhaHash   String
   perfil      Perfil
   // SPEC-010 / RB-14: conta inativa não entra nem usa sessão já emitida; os dados permanecem.
-  ativo       Boolean @default(true)
+  ativo       Boolean  @default(true)
   // SPEC-011 / RB-15: conta criada pela tela usa senha provisória até o dono definir a própria.
-  trocarSenha Boolean @default(false)
+  trocarSenha Boolean  @default(false)
   // SPEC-016 / RF-25: data de criação da conta (contas criadas recentemente no dashboard do administrador).
   criadaEm    DateTime @default(now())
   // SPEC-015 / RB-19 (INV-015-05): preenchido se e somente se o perfil for Estudante (CHECK na migração).
   cursoId     String?
-  curso       Curso?  @relation("EstudanteDoCurso", fields: [cursoId], references: [id], onDelete: Restrict)
+  curso       Curso?   @relation("EstudanteDoCurso", fields: [cursoId], references: [id], onDelete: Restrict)
 
   turmasLecionadas       Turma[]              @relation("ProfessorDaTurma")
   cursosCoordenados      Curso[]              @relation("CoordenadorDoCurso")
@@ -61,6 +61,14 @@ model Usuario {
   historicoComoAutor     HistoricoNota[]      @relation("AutorDoHistorico")
   planosComoEstudante    PlanoRecuperacao[]   @relation("EstudanteDoPlano")
   planosComoProfessor    PlanoRecuperacao[]   @relation("ProfessorDoPlano")
+  // SPEC-033 / RB-33: ficha (número de matrícula e dados pessoais) só de estudante; criada por gatilho no banco.
+  ficha                  FichaEstudante?
+  // SPEC-032 / RB-31: abonos do estudante e os registrados pela secretaria.
+  abonos                 Abono[]              @relation("AbonosDoEstudante")
+  abonosRegistrados      Abono[]              @relation("AbonosRegistrados")
+  // SPEC-027 / RB-27: pedidos de redefinição de senha.
+  pedidosSenha           PedidoSenha[]        @relation("PedidosDaConta")
+  pedidosResolvidos      PedidoSenha[]        @relation("PedidosResolvidos")
 
   @@index([cursoId])
 }
@@ -68,13 +76,13 @@ model Usuario {
 // SPEC-015 / RB-17 (INV-015-01, INV-015-02): nome único e exatamente 1 coordenador; um coordenador
 // pode coordenar vários cursos (OPEN-030).
 model Curso {
-  id            String            @id @default(uuid())
-  nome          String            @unique
+  id            String              @id @default(uuid())
+  nome          String              @unique
   coordenadorId String
-  coordenador   Usuario           @relation("CoordenadorDoCurso", fields: [coordenadorId], references: [id], onDelete: Restrict)
+  coordenador   Usuario             @relation("CoordenadorDoCurso", fields: [coordenadorId], references: [id], onDelete: Restrict)
   grade         CursoDisciplina[]
   turmas        Turma[]
-  estudantes    Usuario[]         @relation("EstudanteDoCurso")
+  estudantes    Usuario[]           @relation("EstudanteDoCurso")
   auditoria     RegistroAuditoria[]
   comunicados   Comunicado[]
 
@@ -94,7 +102,7 @@ model CursoDisciplina {
 }
 
 model Disciplina {
-  id           String  @id @default(uuid())
+  id           String            @id @default(uuid())
   nome         String
   // Inteiro maior que zero (OPEN-009); garantido também por CHECK na migração.
   cargaHoraria Int
@@ -154,6 +162,12 @@ model Matricula {
   turmaId     String
   turma       Turma   @relation(fields: [turmaId], references: [id], onDelete: Cascade)
 
+  // SPEC-031 / RB-30: matrícula trancada ou cancelada sai das listas de trabalho e fica no histórico.
+  situacao   SituacaoMatricula   @default(Cursando)
+  // SPEC-031: indicador e frequência pertencem à matrícula (filtro de matrícula cursando na própria query).
+  indicador  IndicadorAcademico?
+  frequencia Frequencia?
+
   @@id([estudanteId, turmaId])
   @@index([turmaId])
 }
@@ -173,6 +187,8 @@ model Avaliacao {
   nome      String
   // Peso maior que zero (OPEN-002); garantido também por CHECK na migração.
   peso      Float
+  // SPEC-029 / RB-28 / RB-29: no máximo uma Substitutiva e um Exame por turma (índices parciais na migração).
+  tipo      TipoAvaliacao   @default(Prova)
   data      DateTime
   notas     Nota[]
   historico HistoricoNota[]
@@ -207,6 +223,8 @@ model Frequencia {
   percentual   Float
   atualizadaEm DateTime @updatedAt
 
+  matricula Matricula @relation(fields: [estudanteId, turmaId], references: [estudanteId, turmaId], onDelete: Cascade)
+
   @@unique([estudanteId, turmaId])
 }
 
@@ -223,6 +241,8 @@ model IndicadorAcademico {
   frequenciaAtual Float?
   situacao        Situacao
   atualizadoEm    DateTime
+
+  matricula Matricula @relation(fields: [estudanteId, turmaId], references: [estudanteId, turmaId], onDelete: Cascade)
 
   @@unique([estudanteId, turmaId])
   @@index([turmaId])
@@ -319,10 +339,12 @@ model Aula {
   turmaId      String
   turma        Turma      @relation(fields: [turmaId], references: [id], onDelete: Cascade)
   data         DateTime   @db.Date
+  // SPEC-028 / RB-21: de 1 a 4 aulas na mesma data (CHECK na migração).
+  numero       Int        @default(1)
   registradaEm DateTime   @default(now())
   presencas    Presenca[]
 
-  @@unique([turmaId, data])
+  @@unique([turmaId, data, numero])
 }
 
 // SPEC-018 / INV-018-02: uma presença (ou falta) por estudante e aula.
@@ -375,16 +397,16 @@ enum TipoNotificacao {
 // SPEC-022 / RB-23 (OPEN-043): notificação gravada, de exatamente 1 destinatário, o único que a vê e marca como
 // lida. A chave (só para prazo) garante no máximo uma notificação por estudante e atividade (INV-022-03).
 model Notificacao {
-  id         String          @id @default(uuid())
-  usuarioId  String
-  usuario    Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  tipo       TipoNotificacao
-  titulo     String
-  texto      String
-  link       String
-  chave      String?         @unique
-  criadaEm   DateTime        @default(now())
-  lidaEm     DateTime?
+  id        String          @id @default(uuid())
+  usuarioId String
+  usuario   Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  tipo      TipoNotificacao
+  titulo    String
+  texto     String
+  link      String
+  chave     String?         @unique
+  criadaEm  DateTime        @default(now())
+  lidaEm    DateTime?
 
   @@index([usuarioId, lidaEm])
 }
@@ -405,4 +427,103 @@ model Comunicado {
 
   @@index([turmaId])
   @@index([cursoId])
+}
+
+// SPEC-031 / RB-30 (OPEN-053).
+enum SituacaoMatricula {
+  Cursando
+  Trancada
+  Cancelada
+}
+
+// SPEC-029 (OPEN-051).
+enum TipoAvaliacao {
+  Prova
+  Trabalho
+  Substitutiva
+  Exame
+}
+
+// SPEC-031 / RB-30 (OPEN-053): situação do estudante no curso.
+enum SituacaoCurso {
+  Ativo
+  Trancado
+  Transferido
+  Cancelado
+  Concluido   @map("Concluído")
+}
+
+// SPEC-033 / RB-33 (OPEN-055): exatamente 1 por estudante, criada por gatilho na inserção do Usuario Estudante
+// (número = ano + sequência de 4 dígitos, único e imutável). Dados pessoais opcionais; CPF único.
+model FichaEstudante {
+  estudanteId         String        @id
+  estudante           Usuario       @relation(fields: [estudanteId], references: [id], onDelete: Cascade)
+  numeroMatricula     String        @unique
+  cpf                 String?       @unique
+  dataNascimento      DateTime?     @db.Date
+  telefone            String?
+  responsavelNome     String?
+  responsavelTelefone String?
+  situacaoCurso       SituacaoCurso @default(Ativo)
+  situacaoDesde       DateTime      @default(now()) @db.Date
+  situacaoMotivo      String?
+}
+
+// SPEC-032 / RB-31 (OPEN-054).
+enum MotivoAbono {
+  AtestadoMedico
+  ExerciciosDomiciliares
+  LicencaMaternidade
+  ServicoMilitar
+  Outro
+}
+
+model Abono {
+  id          String      @id @default(uuid())
+  estudanteId String
+  estudante   Usuario     @relation("AbonosDoEstudante", fields: [estudanteId], references: [id], onDelete: Cascade)
+  inicio      DateTime    @db.Date
+  fim         DateTime    @db.Date
+  motivo      MotivoAbono
+  observacao  String?
+  autorId     String
+  autor       Usuario     @relation("AbonosRegistrados", fields: [autorId], references: [id], onDelete: Cascade)
+  criadoEm    DateTime    @default(now())
+
+  @@index([estudanteId])
+}
+
+// SPEC-027 / RB-27 (OPEN-049): no máximo 1 pendente por conta (índice parcial na migração); a senha nunca é guardada aqui.
+enum StatusPedidoSenha {
+  Pendente
+  Aprovado
+  Recusado
+}
+
+model PedidoSenha {
+  id             String            @id @default(uuid())
+  usuarioId      String
+  usuario        Usuario           @relation("PedidosDaConta", fields: [usuarioId], references: [id], onDelete: Cascade)
+  status         StatusPedidoSenha @default(Pendente)
+  criadoEm       DateTime          @default(now())
+  resolvidoEm    DateTime?
+  resolvidoPorId String?
+  resolvidoPor   Usuario?          @relation("PedidosResolvidos", fields: [resolvidoPorId], references: [id], onDelete: SetNull)
+
+  @@index([status, criadoEm])
+}
+
+// SPEC-033 (OPEN-055): registro único (id = 1, CHECK na migração) usado no cabeçalho dos documentos.
+model Instituicao {
+  id                    Int      @id @default(1)
+  nome                  String
+  cnpj                  String?
+  endereco              String?
+  cidadeUf              String?
+  telefone              String?
+  email                 String?
+  responsavelSecretaria String?
+  // Data URL (PNG ou JPG, até 200 KB).
+  logotipo              String?
+  atualizadaEm          DateTime @updatedAt
 }

@@ -9,6 +9,8 @@ import { turmasDoPainel } from "@/server/dados/painel";
 import { planosDoEstudante } from "@/server/dados/planos";
 import { progressoDoPlano, type Progresso } from "@/domain/plano";
 import { METAS, notaNecessaria, type AvaliacaoSimulada, type NotaNecessaria } from "@/domain/simulador";
+import { temPeso } from "@/domain/registro-notas";
+import { notaFinalComExame } from "@/domain/situacao-academica";
 import { consultarAtividades } from "./atividades";
 
 export type Alerta = {
@@ -54,6 +56,8 @@ export type TurmaDoPainel = {
   evolucao: PontoEvolucao[];
   // SPEC-023 (RF-32): avaliações com peso e nota (do próprio estudante) e a nota necessária para 6,0 e 5,0.
   avaliacoes: AvaliacaoSimulada[];
+  exame: number | null;
+  notaFinal: number | null;
   necessaria: { normal: NotaNecessaria; saidaDoRisco: NotaNecessaria };
 };
 
@@ -108,7 +112,8 @@ export async function consultarPainel(sessao: Sessao): Promise<Painel> {
         alerta: nivelDoAlerta(indicador?.situacao),
         avaliacoesComNota: evolucao.length,
         evolucao,
-        ...simulador(t.avaliacoes.map((a) => ({ nome: a.nome, peso: a.peso, nota: a.notas[0]?.valor ?? null }))),
+        ...simulador(t.avaliacoes.filter((a) => temPeso(a.tipo)).map((a) => ({ nome: a.nome, peso: a.peso, nota: a.notas[0]?.valor ?? null }))),
+        ...exameDaTurma(indicador?.media ?? null, t.avaliacoes.find((a) => a.tipo === "Exame")?.notas[0]?.valor ?? null),
       };
     }),
     alertas,
@@ -130,7 +135,12 @@ export async function consultarPainel(sessao: Sessao): Promise<Painel> {
   };
 }
 
-// SPEC-023 / RB-25: nada é gravado; só se calcula na leitura (INV-023-03).
+// SPEC-029 / RB-29: com nota de exame, a nota final = (média + exame) ÷ 2.
+function exameDaTurma(media: number | null, exame: number | null) {
+  return { exame, notaFinal: media !== null && exame !== null ? notaFinalComExame(media, exame) : null };
+}
+
+// SPEC-023 / RB-25: nada é gravado; só se calcula na leitura (INV-023-03). Substitutiva e exame não entram.
 function simulador(avaliacoes: AvaliacaoSimulada[]) {
   return { avaliacoes, necessaria: { normal: notaNecessaria(avaliacoes, METAS.normal), saidaDoRisco: notaNecessaria(avaliacoes, METAS.saidaDoRisco) } };
 }

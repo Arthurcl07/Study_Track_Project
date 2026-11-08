@@ -3,6 +3,7 @@
 import { MENSAGEM_FORA_DE_RISCO, podeReceberPlano, progressoDoPlano, validarItensPlano, type Progresso } from "@/domain/plano";
 import type { Situacao } from "@/domain/situacao-academica";
 import { METAS, notaNecessaria, type NotaNecessaria } from "@/domain/simulador";
+import { temPeso } from "@/domain/registro-notas";
 import { auditar, nomeDoUsuario, turmaParaAuditoria } from "@/server/dados/auditoria";
 import { executarEmTransacao } from "@/server/dados/notas";
 import { notificarPlano } from "@/server/dados/notificacoes";
@@ -52,7 +53,8 @@ export async function consultarTurmaDoProfessor(professorId: string, turmaId: st
       frequencia: indicador?.frequenciaAtual ?? null,
       situacao: indicador?.situacao ?? null,
       plano: plano ? { id: plano.id, status: plano.status, progresso: progressoDoPlano(plano.itens) } : null,
-      precisa: notaNecessaria(turma.avaliacoes.map((a) => ({ nome: a.nome, peso: a.peso, nota: a.notas.find((n) => n.estudanteId === estudante.id)?.valor ?? null })), METAS.normal),
+      // SPEC-029 / RB-25: substitutiva e exame não contam como avaliação restante.
+      precisa: notaNecessaria(turma.avaliacoes.filter((a) => temPeso(a.tipo)).map((a) => ({ nome: a.nome, peso: a.peso, nota: a.notas.find((n) => n.estudanteId === estudante.id)?.valor ?? null })), METAS.normal),
     };
   });
   return { id: turma.id, nome: turma.nome, periodo: turma.periodo, disciplina: turma.disciplina.nome, contagem, estudantes };

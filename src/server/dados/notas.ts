@@ -2,6 +2,7 @@
 // vai dentro da própria query (ADR-003, RB-03): fora do escopo e inexistente dão o mesmo null.
 import type { DadosAvaliacao } from "@/domain/registro-notas";
 import type { ClienteBanco } from "./indicadores";
+import { MATRICULA_CURSANDO } from "./matriculas";
 import { prisma } from "./prisma";
 
 export function turmaLecionada(professorId: string, turmaId: string) {
@@ -11,7 +12,7 @@ export function turmaLecionada(professorId: string, turmaId: string) {
 export function criarAvaliacao(turmaId: string, dados: DadosAvaliacao, db: ClienteBanco = prisma) {
   return db.avaliacao.create({
     data: { ...dados, turmaId },
-    select: { id: true, turmaId: true, nome: true, peso: true, data: true },
+    select: { id: true, turmaId: true, nome: true, peso: true, data: true, tipo: true },
   });
 }
 
@@ -24,9 +25,9 @@ export function avaliacaoParaLancamento(
     where: {
       id: entrada.avaliacaoId,
       turmaId: entrada.turmaId,
-      turma: { professorId, matriculas: { some: { estudanteId: entrada.estudanteId } } },
+      turma: { professorId, matriculas: { some: { estudanteId: entrada.estudanteId, ...MATRICULA_CURSANDO } } },
     },
-    select: { id: true, turmaId: true },
+    select: { id: true, turmaId: true, tipo: true },
   });
 }
 
@@ -72,13 +73,17 @@ export function turmasParaLancamento(professorId: string) {
       periodo: true,
       disciplina: { select: { nome: true } },
       avaliacoes: {
-        select: { id: true, nome: true, peso: true, data: true, notas: { select: { id: true, estudanteId: true, valor: true } } },
+        // SPEC-029: o tipo (substitutiva e exame têm regras próprias).
+        select: { id: true, nome: true, peso: true, data: true, tipo: true, notas: { select: { id: true, estudanteId: true, valor: true } } },
         orderBy: [{ data: "asc" }, { nome: "asc" }],
       },
       matriculas: {
-        select: { estudante: { select: { id: true, nome: true } } },
+        where: MATRICULA_CURSANDO,
+        // SPEC-033: número de matrícula; SPEC-029: média e frequência para saber quem está em exame.
+        select: { estudante: { select: { id: true, nome: true, ficha: { select: { numeroMatricula: true } } } } },
         orderBy: { estudante: { nome: "asc" } },
       },
+      indicadores: { select: { estudanteId: true, media: true, frequenciaAtual: true } },
     },
     orderBy: [{ periodo: "desc" }, { nome: "asc" }],
   });

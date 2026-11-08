@@ -30,20 +30,30 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | RF-24 | Dashboard inicial por perfil | RB-02, RB-03, RB-04, RB-09 | UC-16 | SPEC-016 | — | `tests/spec-016/` | SPEC-015-016.md |
 | RF-25 | Dashboard do administrador | RB-13 | UC-16 | SPEC-016 | — | `tests/spec-016/` | SPEC-015-016.md |
 | RF-26 | Período letivo | RB-13, RB-14, RB-20 | UC-17 | SPEC-017 | — | `tests/spec-017/` | SPEC-017-022.md |
-| RF-27 | Chamada por aula (substitui o percentual do RF-07) | RB-03, RB-05, RB-10, RB-21 | UC-08 | SPEC-018 | — | `tests/spec-018/`, `tests/spec-005/` | SPEC-017-022.md |
+| RF-27 | Chamada por aula (substitui o percentual do RF-07; até 4 aulas por data) | RB-03, RB-05, RB-10, RB-21 | UC-08 | SPEC-018, SPEC-028 | — | `tests/spec-018/`, `tests/spec-005/`, `tests/spec-028/` | SPEC-017-022.md, SPEC-026-035.md |
 | RF-28 | Auditoria | RB-04, RB-13, RB-22 | UC-18 | SPEC-019 | — | `tests/spec-019/` | SPEC-017-022.md |
-| RF-29 | Boletim e histórico escolar | RB-02, RB-04, RB-24 | UC-19 | SPEC-020 | — | `tests/spec-020/` | SPEC-017-022.md |
+| RF-29 | Boletim e histórico escolar | RB-02, RB-04, RB-13, RB-24 | UC-19 | SPEC-020, SPEC-035 | — | `tests/spec-020/`, `tests/spec-035/` | SPEC-017-022.md, SPEC-026-035.md |
 | RF-30 | Importação de estudantes por planilha | RB-15, RB-19, RB-20 | UC-20 | SPEC-021 | — | `tests/spec-021/` | SPEC-017-022.md |
 | RF-31 | Notificações | RB-02, RB-03, RB-23 | UC-21 | SPEC-022 | — | `tests/spec-022/` | SPEC-017-022.md |
 | RF-32 | Simulador de notas | RB-02, RB-03, RB-05, RB-25 | UC-22 | SPEC-023 | — | `tests/spec-023/` | SPEC-023-025.md |
 | RF-33 | Comparativo entre semestres | RB-02, RB-04, RB-24 | UC-16, UC-19 | SPEC-024 | — | `tests/spec-024/` | SPEC-023-025.md |
 | RF-34 | Mural de comunicados | RB-20, RB-22, RB-23, RB-26 | UC-23, UC-24 | SPEC-025 | — | `tests/spec-025/` | SPEC-023-025.md |
+| RF-35 | Correção de cadastros | RB-10, RB-20, RB-21, RB-22, RB-32 | UC-25 | SPEC-026 | — | `tests/spec-026/` | SPEC-026-035.md |
+| RF-36 | Redefinição de senha por pedido | RB-14, RB-15, RB-22, RB-27 | UC-26, UC-12 | SPEC-027 | — | `tests/spec-027/` | SPEC-026-035.md |
+| RF-37 | Prova substitutiva e exame final | RB-24, RB-25, RB-28, RB-29 | UC-03, UC-19 | SPEC-029 | — | `tests/spec-029/` | SPEC-026-035.md |
+| RF-38 | Virada de semestre | RB-18, RB-20, RB-22, RB-30 | UC-27 | SPEC-030 | — | `tests/spec-030/` | SPEC-026-035.md |
+| RF-39 | Situação do estudante no curso | RB-19, RB-22, RB-24, RB-30 | UC-28 | SPEC-031 | — | `tests/spec-031/` | SPEC-026-035.md |
+| RF-40 | Abono de faltas | RB-10, RB-21, RB-22, RB-31 | UC-29, UC-08 | SPEC-032 | — | `tests/spec-032/` | SPEC-026-035.md |
+| RF-41 | Ficha do estudante | RB-13, RB-22, RB-33 | UC-30 | SPEC-033, SPEC-035 | — | `tests/spec-033/` | SPEC-026-035.md |
+| RF-42 | Dados da instituição | RB-13, RB-22 | UC-31, UC-19 | SPEC-033 | — | `tests/spec-033/` | SPEC-026-035.md |
+| RF-43 | Busca e paginação | RB-02, RB-03, RB-04, RB-13, RB-23 | UC-11, UC-13, UC-21, UC-30 | SPEC-034 | — | `tests/spec-034/` | SPEC-026-035.md |
 
 ## Lacunas conhecidas
 
 - RF-22 a RF-25 (SPEC-015 e SPEC-016) sem issue: pedido direto de Arthur em 2026-10-22, registrado nos OPEN-030 a OPEN-036.
 - RF-26 a RF-31 (SPEC-017 a SPEC-022) sem issue: pedido do grupo (Luiz) em 2026-11-05, registrado nos OPEN-038 a OPEN-044.
 - RF-32 a RF-34 (SPEC-023 a SPEC-025) sem issue: pedido do grupo (Luiz) em 2026-11-06, registrado nos OPEN-045 a OPEN-047.
+- RF-35 a RF-43 (SPEC-026 a SPEC-035) sem issue: pedido de Arthur em 2026-11-06 ("Nível 1" para uso real), registrado nos OPEN-048 a OPEN-057.
 
 - Todo RF tem caso de uso: RF-03, RF-04, RF-07, RF-08 e RF-13 ganharam os UC-06 a UC-10 em 2026-10-17.
 - RB-08 (atraso) e RB-12 (progresso do plano) viraram contrato com o fechamento do OPEN-010, do OPEN-003 e do OPEN-021.
@@ -78,3 +88,13 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | SPEC-023 | leitura de Avaliacao, Nota, IndicadorAcademico |
 | SPEC-024 | leitura de PeriodoLetivo, Turma, IndicadorAcademico, Disciplina |
 | SPEC-025 | Comunicado, Notificacao, RegistroAuditoria |
+| SPEC-026 | Usuario, Disciplina, CursoDisciplina, Turma, Matricula, Avaliacao, Atividade, Aula, Presenca, RegistroAuditoria |
+| SPEC-027 | PedidoSenha, Usuario |
+| SPEC-028 | Aula (numero), Presenca, Frequencia, IndicadorAcademico |
+| SPEC-029 | Avaliacao (tipo), Nota, IndicadorAcademico |
+| SPEC-030 | Turma, Matricula |
+| SPEC-031 | FichaEstudante (situação), Matricula (situação), Usuario (curso) |
+| SPEC-032 | Abono, Presenca, Frequencia, IndicadorAcademico |
+| SPEC-033 | FichaEstudante, Instituicao |
+| SPEC-034 | leitura de Usuario, FichaEstudante, HistoricoNota, Notificacao |
+| SPEC-035 | leitura de Usuario, FichaEstudante, RegistroAuditoria, PedidoSenha |

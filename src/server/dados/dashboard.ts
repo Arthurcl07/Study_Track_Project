@@ -1,5 +1,6 @@
 // Consultas dos dashboards por perfil (SPEC-016). O escopo vai dentro da própria query (ADR-003, INV-016-01);
 // as do administrador só tocam em contas (RB-13, INV-016-05).
+import { MATRICULA_CURSANDO } from "./matriculas";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "./prisma";
 
@@ -27,7 +28,7 @@ export function planosAtivos(turmas: Prisma.TurmaWhereInput) {
 // Matrículas em Risco nas turmas indicadas, para saber quem ainda está sem plano (RB-11).
 export function matriculasEmRisco(turmas: Prisma.TurmaWhereInput) {
   return prisma.indicadorAcademico.findMany({
-    where: { situacao: "Risco", turma: turmas },
+    where: { situacao: "Risco", turma: turmas, matricula: MATRICULA_CURSANDO },
     select: { estudanteId: true, turmaId: true, estudante: { select: { nome: true } }, turma: { select: { nome: true } } },
     orderBy: [{ estudante: { nome: "asc" } }],
   });

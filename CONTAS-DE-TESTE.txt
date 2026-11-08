@@ -141,3 +141,9 @@ Observações:
   (o administrador pode dar um segundo curso a alguém na tela Cursos).
 - A situação de cada estudante muda conforme notas e frequência forem lançadas na apresentação.
   Para voltar aos valores originais: rode o seed de novo (opção 3 do .bat).
+- Esqueci minha senha (link no login): o pedido vai para o administrador em "Pedidos de senha". O seed deixa um
+  pedido pendente da professora Júlia Reis (julia.reis@studytrack.test) para a demonstração.
+- Secretaria (admin@): Estudantes (busca por nome, e-mail ou matrícula), ficha, abono, situação no curso,
+  Virada de semestre e Instituição. Amanda Barbosa (Administração) está Trancada no seed.
+- Exame final: o João (estudante@) fez exame em Cálculo Básico (2026/1) e aparece "Aprovado no exame" no boletim.
+- Aula dupla: Turma SO-B, último dia de chamada, com 1ª e 2ª aula.

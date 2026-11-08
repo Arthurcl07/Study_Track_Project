@@ -1,5 +1,6 @@
 // Acesso a dados do dashboard da turma e dos planos de recuperação (SPEC-008). O professor só alcança
 // turmas e planos das turmas que leciona, sempre dentro da própria query (ADR-003, RB-03).
+import { MATRICULA_CURSANDO } from "./matriculas";
 import type { ClienteBanco } from "./indicadores";
 import { prisma } from "./prisma";
 
@@ -11,10 +12,10 @@ export function turmaDoProfessorParaDashboard(professorId: string, turmaId: stri
       nome: true,
       periodo: true,
       disciplina: { select: { nome: true } },
-      matriculas: { select: { estudante: { select: { id: true, nome: true } } }, orderBy: { estudante: { nome: "asc" } } },
+      matriculas: { where: MATRICULA_CURSANDO, select: { estudante: { select: { id: true, nome: true } } }, orderBy: { estudante: { nome: "asc" } } },
       indicadores: { select: { estudanteId: true, media: true, frequenciaAtual: true, situacao: true } },
       // SPEC-023: pesos e notas das avaliações para a coluna "Precisa (6,0)".
-      avaliacoes: { select: { nome: true, peso: true, notas: { select: { estudanteId: true, valor: true } } }, orderBy: [{ data: "asc" }, { nome: "asc" }] },
+      avaliacoes: { select: { nome: true, peso: true, tipo: true, notas: { select: { estudanteId: true, valor: true } } }, orderBy: [{ data: "asc" }, { nome: "asc" }] },
       planos: {
         select: { id: true, status: true, criadoEm: true, estudanteId: true, itens: { select: { concluido: true } } },
         orderBy: { criadoEm: "desc" },
@@ -26,7 +27,7 @@ export function turmaDoProfessorParaDashboard(professorId: string, turmaId: stri
 // Estudante matriculado em turma do professor, com o indicador vigente (para a regra RB-11).
 export function estudanteParaPlano(professorId: string, turmaId: string, estudanteId: string) {
   return prisma.turma.findFirst({
-    where: { id: turmaId, professorId, matriculas: { some: { estudanteId } } },
+    where: { id: turmaId, professorId, matriculas: { some: { estudanteId, ...MATRICULA_CURSANDO } } },
     select: { id: true, indicadores: { where: { estudanteId }, select: { situacao: true } } },
   });
 }

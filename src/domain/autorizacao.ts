@@ -47,6 +47,14 @@ export const RECURSOS = {
   notificacoes: "notificacoes",
   // SPEC-025 (RF-34, OPEN-047): mural para estudante, professor e coordenador; publicar só professor e coordenador.
   comunicados: "comunicados",
+  // SPEC-027 (RF-36): pedidos de redefinição de senha, só pelo Administrador.
+  pedidosSenha: "pedidos-senha",
+  // SPEC-035 (OPEN-057, RB-13): secretaria acadêmica no perfil Administrador — ficha, situação no curso, abono,
+  // virada de semestre e dados da instituição. Não inclui nenhum recurso de trabalho acadêmico.
+  secretaria: "secretaria",
+  // SPEC-033 / SPEC-034 (RB-33): lista de estudantes e ficha — Administrador (todos), Coordenador (cursos dele).
+  // O próprio estudante vê a ficha pela página Documentos.
+  estudantes: "estudantes",
 } as const;
 
 export type Recurso = (typeof RECURSOS)[keyof typeof RECURSOS];
@@ -72,9 +80,13 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "gestao-periodos": ["Administrador"],
   "auditoria-administrativa": ["Administrador"],
   "auditoria-academica": ["Coordenador"],
-  documentos: ["Estudante", "Coordenador"],
+  // SPEC-035: a secretaria (Administrador) emite documentos de qualquer estudante.
+  documentos: ["Estudante", "Coordenador", "Administrador"],
   notificacoes: ["Estudante", "Professor"],
   comunicados: ["Estudante", "Professor", "Coordenador"],
+  "pedidos-senha": ["Administrador"],
+  secretaria: ["Administrador"],
+  estudantes: ["Administrador", "Coordenador"],
 };
 
 export function podeAcessar(perfil: unknown, recurso: unknown): boolean {

@@ -36,7 +36,11 @@ coordenação própria e disciplinas compartilhadas entre cursos (SPEC-015), um 
 depois do login (SPEC-016), períodos letivos com encerramento do semestre (SPEC-017), chamada por aula (SPEC-018),
 auditoria de todas as alterações (SPEC-019), boletim e histórico escolar em PDF (SPEC-020), importação de estudantes por
 planilha CSV (SPEC-021), notificações no sistema (SPEC-022), simulador "Quanto preciso tirar?" (SPEC-023), comparativo
-entre semestres (SPEC-024) e mural de comunicados (SPEC-025).
+entre semestres (SPEC-024) e mural de comunicados (SPEC-025). Nível 1, para uso real (SPEC-026 a SPEC-035): correção de
+cadastros, "Esqueci minha senha" com aprovação da secretaria, várias aulas no mesmo dia, prova substitutiva e exame final,
+virada de semestre, situação do estudante no curso (trancamento, transferência, conclusão), abono de faltas, ficha do
+estudante com número de matrícula, dados da instituição nos documentos, busca e paginação, e o perfil Administrador como
+secretaria acadêmica.
 
 Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
 
@@ -122,7 +126,9 @@ Lista completa de contas, cursos e turmas: `CONTAS-DE-TESTE.txt`. Os números s�
 (gerador com semente fixa) e rodar o seed de novo não duplica nada.
 
 Gestão de contas da SPEC-010 (OPEN-025): entre como `admin@studytrack.test` e use **Contas** para criar
-contas de qualquer perfil e desativar ou reativar o acesso. O administrador não vê dados acadêmicos.
+contas de qualquer perfil, editar nome e e-mail e desativar ou reativar o acesso. Desde a SPEC-035 o administrador é
+também a secretaria: Estudantes (ficha, situação no curso, abono, boletim e histórico), Pedidos de senha, Virada de
+semestre e Instituição. Ele não lança nem vê notas e frequência fora dos documentos e do abono.
 Para trocar o professor de uma turma (por exemplo, para a professora Júlia Reis, `julia.reis@studytrack.test`),
 entre como coordenador e abra a turma em **Turmas e estudantes**.
 

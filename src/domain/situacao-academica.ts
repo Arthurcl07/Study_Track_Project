@@ -34,6 +34,41 @@ export function calcularMedia(notas: readonly NotaPonderada[]): number | null {
   return somaPonderada / somaPesos;
 }
 
+// SPEC-029 (OPEN-051): avaliações da turma para a média do estudante, com o tipo e a nota dele (null = sem nota).
+export type TipoDaAvaliacao = "Prova" | "Trabalho" | "Substitutiva" | "Exame";
+export type AvaliacaoDaMedia = { tipo: TipoDaAvaliacao; peso: number; valor: number | null };
+
+// OPEN-002 + RB-28: média ponderada das provas e trabalhos com nota. Com nota na substitutiva, a prova de menor nota
+// (prova sem nota conta como zero; empate: a primeira) é trocada pela substitutiva, com o peso dela, se isso aumentar
+// a média (INV-029-01). O exame final não entra na média (RB-29).
+export function calcularMediaDaTurma(avaliacoes: readonly AvaliacaoDaMedia[]): number | null {
+  const regulares = avaliacoes.filter((a) => a.tipo === "Prova" || a.tipo === "Trabalho");
+  const comNota = (lista: readonly AvaliacaoDaMedia[]) => lista.flatMap((a) => (a.valor === null ? [] : [{ valor: a.valor, peso: a.peso }]));
+  const base = calcularMedia(comNota(regulares));
+  const substitutiva = avaliacoes.find((a) => a.tipo === "Substitutiva" && a.valor !== null);
+  const provas = regulares.filter((a) => a.tipo === "Prova");
+  if (!substitutiva || provas.length === 0) return base;
+  const menor = provas.reduce((m, p) => ((p.valor ?? 0) < (m.valor ?? 0) ? p : m));
+  const trocada = calcularMedia(comNota(regulares.map((a) => (a === menor ? { ...a, valor: substitutiva.valor } : a))));
+  if (base === null) return trocada;
+  return trocada !== null && trocada > base ? trocada : base;
+}
+
+// RB-29: faz exame quem tem média menor que 6,0 e frequência de pelo menos 75% (sem média, não faz).
+export function elegivelAoExame(media: number | null, frequencia: number | null): boolean {
+  return media !== null && media < MEDIA_NORMAL && frequencia !== null && frequencia >= FREQUENCIA_MINIMA;
+}
+
+export const NOTA_FINAL_MINIMA_EXAME = 5;
+export const MENSAGEM_NAO_ELEGIVEL_EXAME = "Este estudante não está em exame: só faz exame quem tem média menor que 6,0 e frequência de pelo menos 75%.";
+
+// RB-29 / INV-029-03: nota final = (média + exame) ÷ 2.
+export function notaFinalComExame(media: number, exame: number): number {
+  exigirNumero(media, NOTA_MINIMA, NOTA_MAXIMA, "Média");
+  exigirNumero(exame, NOTA_MINIMA, NOTA_MAXIMA, "Exame");
+  return (media + exame) / 2;
+}
+
 // RB-09: devolve sempre exatamente uma situação. Usa os valores exatos, sem arredondar (OPEN-002).
 // Dados ausentes (null) não geram Risco nem Atenção: só o dado presente classifica.
 export function classificarSituacao(media: number | null, frequencia: number | null): Situacao {
