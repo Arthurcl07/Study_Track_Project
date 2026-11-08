@@ -162,6 +162,38 @@
 ## RF-43 — Busca e paginação (incluído em 2026-11-06, OPEN-056)
 - WHEN um usuário consulta uma lista de contas, estudantes, histórico de notas ou notificações, o sistema SHALL apresentá-la em páginas de 25 itens e permitir buscar por nome, e-mail ou número de matrícula.
 
+## RF-44 — Requerimentos (incluído em 2026-11-08, OPEN-058)
+- WHEN um estudante abre um requerimento, o sistema SHALL gravá-lo com protocolo, prazo de 5 dias úteis e o responsável pelo tipo (professor da turma ou secretaria) e notificar o estudante a cada mudança de status.
+- WHEN o responsável analisa, defere ou indefere um requerimento, o sistema SHALL gravar o status, a resposta e a data e registrá-los na auditoria.
+
+## RF-45 — Matriz curricular e integralização (incluído em 2026-11-08, OPEN-059)
+- WHEN o coordenador define o semestre sugerido, o caráter (obrigatória ou optativa) e os pré-requisitos de uma disciplina da grade de um curso que coordena, o sistema SHALL gravar a matriz sem ciclo de pré-requisitos.
+- WHEN um estudante, o coordenador do curso ou a secretaria consulta o curso do estudante, o sistema SHALL apresentar a matriz por semestre com a situação de cada disciplina e o percentual de integralização por carga horária.
+
+## RF-46 — Rematrícula pelo estudante (incluído em 2026-11-08, OPEN-060)
+- WHEN um estudante ativo escolhe uma turma do próprio curso durante a janela de rematrícula do período, o sistema SHALL matriculá-lo na hora se houver vaga, os pré-requisitos estiverem cumpridos, ele não tiver aprovação na disciplina e não houver choque de horário.
+- WHEN a secretaria define a janela de rematrícula de um período aberto, ou o coordenador define as vagas de uma turma, o sistema SHALL gravar o valor e registrá-lo na auditoria.
+
+## RF-47 — Diário de classe (incluído em 2026-11-08, OPEN-061)
+- WHEN o professor registra a chamada, o sistema SHALL gravar o conteúdo da aula.
+- WHEN o professor fecha o diário de uma turma completa, ou o coordenador homologa, devolve ou reabre um diário, o sistema SHALL gravar o novo estado e, enquanto fechado ou homologado, impedir alterações na turma.
+
+## RF-48 — Calendário acadêmico (incluído em 2026-11-08, OPEN-062)
+- WHEN a secretaria cadastra, altera ou exclui um evento do calendário de um período, o sistema SHALL gravá-lo e apresentá-lo no calendário de todos os perfis, junto com os prazos e avaliações das turmas de cada um.
+
+## RF-49 — Grade horária e salas (incluído em 2026-11-08, OPEN-063)
+- WHEN a secretaria cadastra uma sala ou o coordenador define um horário de turma, o sistema SHALL gravá-lo se não houver choque de sala ou de professor e as vagas couberem nas salas.
+- WHEN um estudante ou professor consulta a grade da semana, o sistema SHALL apresentar os horários das próprias turmas de períodos abertos.
+
+## RF-50 — Aproveitamento de estudos (incluído em 2026-11-08, OPEN-064)
+- WHEN a secretaria registra ou exclui o aproveitamento de uma disciplina da matriz para um estudante, o sistema SHALL gravá-lo, contá-lo na integralização e apresentá-lo no histórico.
+
+## RF-51 — Conclusão de curso (incluído em 2026-11-08, OPEN-064)
+- WHEN a secretaria marca um estudante como Concluído, o sistema SHALL aceitar só com integralização de 100% e apresentar a data de conclusão no histórico escolar.
+
+## RF-52 — Exportação de apoio ao Censo (incluído em 2026-11-08, OPEN-065)
+- WHEN a secretaria exporta os dados de um período, o sistema SHALL gerar um CSV de apoio com os dados dos estudantes e das turmas, informando que não é o layout oficial do INEP, e registrar a exportação na auditoria.
+
 ---
 
 

@@ -80,12 +80,19 @@ const DISCIPLINAS: Record<string, { carga: number; cursos: Sigla[] }> = {
   Algoritmos: { carga: 80, cursos: ["ECO", "CC", "SI"] },
   "Engenharia de Software": { carga: 80, cursos: ["CC"] },
   "Estruturas de Dados": { carga: 60, cursos: ["CC"] },
-  "Redes de Computadores": { carga: 60, cursos: ["ELE"] },
+  "Redes de Computadores": { carga: 60, cursos: ["ELE", "ECO"] },
   "Circuitos Elétricos": { carga: 80, cursos: ["ELE"] },
   "Sistemas de Informação Gerenciais": { carga: 60, cursos: ["SI"] },
   "Fundamentos de Marketing": { carga: 60, cursos: ["PP", "ADM"] },
   "Criação Publicitária": { carga: 80, cursos: ["PP"] },
   "Gestão de Projetos": { carga: 60, cursos: ["ADM"] },
+  // SPEC-037 (Nível 3): semestres 3 e 4 da matriz de Engenharia da Computação (prisma/nivel3.ts).
+  Compiladores: { carga: 60, cursos: ["ECO"] },
+  "Cálculo II": { carga: 80, cursos: ["ECO"] },
+  "Ética e Legislação": { carga: 40, cursos: ["ECO"] },
+  "Trabalho de Conclusão de Curso": { carga: 80, cursos: ["ECO"] },
+  "Inteligência Artificial": { carga: 60, cursos: ["ECO"] },
+  Empreendedorismo: { carga: 40, cursos: ["ECO"] },
 };
 
 // professor: índice em PROFESSORES ou "teste" (Carlos Lima, professor@, que leciona em 2 cursos).

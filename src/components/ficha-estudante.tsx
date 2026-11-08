@@ -9,6 +9,7 @@ import { hojeEmBrasilia } from "@/domain/atividades";
 import { MOTIVOS_ABONO, ROTULO_MOTIVO_ABONO, ROTULO_SITUACAO_CURSO, SITUACOES_CURSO, efeitoNasMatriculas, type SituacaoCurso } from "@/domain/secretaria";
 import type { FichaConsultada } from "@/server/academico/secretaria";
 import { SeloSituacaoCurso } from "./lista-estudantes";
+import { BarraIntegralizacao } from "./matriz-estudante";
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_BOTAO_SECUNDARIO, CLASSE_CAMPO, CLASSE_ROTULO, Cartao, ErroCampo, EstadoVazio, Mensagem, formatarDataCurta } from "./ui";
 
 type Envio = { erro: string | null; erros: Record<string, string>; sucesso: string | null; enviando: boolean };
@@ -72,6 +73,60 @@ function DadosPessoais({ ficha, editavel }: { ficha: FichaConsultada; editavel: 
           <Campo nome="responsavelTelefone" rotulo="Telefone do responsável" tipo="tel" valor={ficha.responsavelTelefone} erro={e.responsavelTelefone} desabilitado={!editavel} />
         </div>
         {editavel ? <Rodape estado={estado} texto="Salvar ficha" /> : <p className="text-sm text-mudo">Só a secretaria altera a ficha.</p>}
+      </form>
+    </Cartao>
+  );
+}
+
+function Integralizacao({ ficha }: { ficha: FichaConsultada }) {
+  const i = ficha.integralizacao;
+  return (
+    <Cartao titulo="Integralização">
+      {i ? (
+        <>
+          <BarraIntegralizacao percentual={i.percentual} horasConcluidas={i.horasConcluidas} horasObrigatorias={i.horasObrigatorias} />
+          {i.faltam.length > 0 && <p className="mt-2 text-sm text-mudo">Faltam {i.faltam.length} obrigatória(s): {i.faltam.slice(0, 6).join(", ")}{i.faltam.length > 6 ? "…" : ""}</p>}
+        </>
+      ) : <p className="text-sm text-mudo">Sem curso.</p>}
+    </Cartao>
+  );
+}
+
+// SPEC-042 (UC-39): aproveitamento de estudos — conta na integralização e aparece no histórico.
+function Aproveitamentos({ ficha }: { ficha: FichaConsultada }) {
+  const { estado, enviar } = useEnvio();
+  async function registrar(evento: FormEvent<HTMLFormElement>) {
+    evento.preventDefault();
+    const form = evento.currentTarget;
+    if (await enviar(`/api/estudantes/${ficha.id}/aproveitamentos`, "POST", Object.fromEntries(new FormData(form)), () => "Aproveitamento registrado.")) form.reset();
+  }
+  const e = estado.erros;
+  return (
+    <Cartao titulo={`Aproveitamento de estudos (${ficha.aproveitamentos.length})`}>
+      {ficha.aproveitamentos.length > 0 && (
+        <ul className="mb-4 space-y-2 text-sm">
+          {ficha.aproveitamentos.map((a) => (
+            <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 border-t border-traco pt-2 first:border-t-0 first:pt-0">
+              <span>{a.disciplina}<span className="block text-xs text-mudo">{a.instituicaoOrigem} · {a.disciplinaOrigem} · {a.cargaHoraria} h{a.nota !== null ? ` · nota ${a.nota.toLocaleString("pt-BR")}` : ""}</span></span>
+              <button type="button" onClick={() => window.confirm("Excluir este aproveitamento?") && enviar(`/api/aproveitamentos/${a.id}`, "DELETE", undefined, () => "Aproveitamento excluído.")} className="font-medium text-risco hover:underline">Excluir</button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <form onSubmit={registrar} noValidate className="space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Campo nome="disciplinaId" rotulo="Disciplina da matriz" erro={e.disciplinaId}>
+            <select id="disciplinaId" name="disciplinaId" defaultValue="" className={CLASSE_CAMPO}>
+              <option value="">Escolha...</option>
+              {ficha.disciplinasParaAproveitar.map((d) => <option key={d.id} value={d.id}>{d.nome} ({d.cargaHoraria} h)</option>)}
+            </select>
+          </Campo>
+          <Campo nome="instituicaoOrigem" rotulo="Instituição de origem" erro={e.instituicaoOrigem} />
+          <Campo nome="disciplinaOrigem" rotulo="Disciplina de origem" erro={e.disciplinaOrigem} />
+          <Campo nome="nota" rotulo="Nota (opcional)" erro={e.nota} />
+          <Campo nome="cargaHoraria" rotulo="Carga horária" erro={e.cargaHoraria} />
+        </div>
+        <Rodape estado={estado} texto="Registrar aproveitamento" />
       </form>
     </Cartao>
   );
@@ -221,9 +276,11 @@ export function FichaEstudante({ ficha, editavel }: { ficha: FichaConsultada; ed
     <div className="grid items-start gap-5 xl:grid-cols-[1.6fr_1fr]">
       <div className="space-y-5">
         <DadosPessoais ficha={ficha} editavel={editavel} />
+        {editavel && <Aproveitamentos ficha={ficha} />}
         {editavel && <Abonos ficha={ficha} />}
       </div>
       <div className="space-y-5">
+        <Integralizacao ficha={ficha} />
         <Cartao titulo="Situação no curso">
           <p className="mb-4 flex flex-wrap items-center gap-2">
             <SeloSituacaoCurso situacao={ficha.situacaoCurso} />

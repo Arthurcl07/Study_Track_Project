@@ -18,6 +18,11 @@ export const ACOES = {
   "senha.aprovada": { rotulo: "Pedido de senha aprovado", categoria: "Administrativa", grupo: "Pedidos de senha" },
   "senha.recusada": { rotulo: "Pedido de senha recusado", categoria: "Administrativa", grupo: "Pedidos de senha" },
   "instituicao.alterada": { rotulo: "Dados da instituição alterados", categoria: "Administrativa", grupo: "Instituição" },
+  // SPEC-038, SPEC-040, SPEC-041 e SPEC-043 (Nível 3).
+  "periodo.rematricula": { rotulo: "Janela de rematrícula", categoria: "Administrativa", grupo: "Períodos" },
+  "calendario.evento": { rotulo: "Evento do calendário", categoria: "Administrativa", grupo: "Calendário e salas" },
+  "sala.alterada": { rotulo: "Sala", categoria: "Administrativa", grupo: "Calendário e salas" },
+  "censo.exportado": { rotulo: "Exportação do Censo", categoria: "Administrativa", grupo: "Exportações" },
   // Acadêmicas: só o coordenador do curso vê (INV-019-03).
   "disciplina.criada": { rotulo: "Disciplina criada", categoria: "Academica", grupo: "Disciplinas e turmas" },
   "grade.adicionada": { rotulo: "Disciplina adicionada à grade", categoria: "Academica", grupo: "Disciplinas e turmas" },
@@ -59,6 +64,20 @@ export const ACOES = {
   "abono.registrado": { rotulo: "Abono de faltas registrado", categoria: "Academica", grupo: "Secretaria" },
   "abono.excluido": { rotulo: "Abono de faltas excluído", categoria: "Academica", grupo: "Secretaria" },
   "ficha.alterada": { rotulo: "Ficha do estudante alterada", categoria: "Academica", grupo: "Secretaria" },
+  // SPEC-036 a SPEC-042 (Nível 3).
+  "aproveitamento.registrado": { rotulo: "Aproveitamento registrado", categoria: "Academica", grupo: "Secretaria" },
+  "aproveitamento.excluido": { rotulo: "Aproveitamento excluído", categoria: "Academica", grupo: "Secretaria" },
+  "matriz.alterada": { rotulo: "Matriz do curso alterada", categoria: "Academica", grupo: "Disciplinas e turmas" },
+  "turma.horario": { rotulo: "Horário da turma", categoria: "Academica", grupo: "Disciplinas e turmas" },
+  "turma.vagas": { rotulo: "Vagas da turma", categoria: "Academica", grupo: "Disciplinas e turmas" },
+  "rematricula.feita": { rotulo: "Rematrícula pelo estudante", categoria: "Academica", grupo: "Matrículas e importação" },
+  "rematricula.cancelada": { rotulo: "Rematrícula cancelada pelo estudante", categoria: "Academica", grupo: "Matrículas e importação" },
+  "diario.fechado": { rotulo: "Diário fechado", categoria: "Academica", grupo: "Diário" },
+  "diario.homologado": { rotulo: "Diário homologado", categoria: "Academica", grupo: "Diário" },
+  "diario.devolvido": { rotulo: "Diário devolvido", categoria: "Academica", grupo: "Diário" },
+  "diario.reaberto": { rotulo: "Diário reaberto", categoria: "Academica", grupo: "Diário" },
+  "requerimento.aberto": { rotulo: "Requerimento aberto", categoria: "Academica", grupo: "Requerimentos" },
+  "requerimento.respondido": { rotulo: "Requerimento respondido", categoria: "Academica", grupo: "Requerimentos" },
 } as const satisfies Record<string, { rotulo: string; categoria: CategoriaAuditoria; grupo: string }>;
 
 export type AcaoAuditoria = keyof typeof ACOES;

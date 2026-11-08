@@ -352,6 +352,46 @@ Cada uma entrou por pedido de Arthur ou sugestão aprovada, com a decisão regis
 - **Objetivo:** o administrador vira a secretaria (estudantes, pedidos de senha, virada, instituição e documentos), sem os dados de trabalho acadêmico.
 - **RF / RB:** RF-29; RB-01, RB-13. **Dependências:** SPEC-010, SPEC-016, SPEC-019, SPEC-020, SPEC-027, SPEC-030 a SPEC-034. **OPEN:** OPEN-057.
 
+### SPEC-036 — Requerimentos online
+
+- **Objetivo:** pedidos do estudante com protocolo, prazo de 5 dias úteis e resposta do professor ou da secretaria.
+- **RF / RB:** RF-44; RB-34. **Dependências:** SPEC-019, SPEC-022, SPEC-031, SPEC-033, SPEC-035, SPEC-040. **OPEN:** OPEN-058.
+
+### SPEC-037 — Matriz curricular e integralização
+
+- **Objetivo:** semestre, obrigatória/optativa e pré-requisitos na grade; "Meu curso" com a integralização.
+- **RF / RB:** RF-45; RB-35, RB-41. **Dependências:** SPEC-015, SPEC-019, SPEC-020, SPEC-029, SPEC-033. **OPEN:** OPEN-059.
+
+### SPEC-038 — Rematrícula pelo estudante
+
+- **Objetivo:** matrícula pelo próprio estudante na janela, com vagas, pré-requisitos e sem choque de horário.
+- **RF / RB:** RF-46; RB-36. **Dependências:** SPEC-017, SPEC-026, SPEC-031, SPEC-037, SPEC-041. **OPEN:** OPEN-060.
+
+### SPEC-039 — Diário de classe
+
+- **Objetivo:** conteúdo das aulas, fechamento pelo professor e homologação pela coordenação, com a turma travada.
+- **RF / RB:** RF-47; RB-37. **Dependências:** SPEC-017, SPEC-018, SPEC-019, SPEC-022, SPEC-028, SPEC-029. **OPEN:** OPEN-061.
+
+### SPEC-040 — Calendário acadêmico
+
+- **Objetivo:** eventos do período, calendário do mês para todos e chamada bloqueada em feriado.
+- **RF / RB:** RF-48; RB-38. **Dependências:** SPEC-017, SPEC-018, SPEC-019, SPEC-028. **OPEN:** OPEN-062.
+
+### SPEC-041 — Grade horária e salas
+
+- **Objetivo:** salas, horários das turmas sem choque e grade da semana.
+- **RF / RB:** RF-49; RB-39. **Dependências:** SPEC-015, SPEC-017, SPEC-019, SPEC-026. **OPEN:** OPEN-063.
+
+### SPEC-042 — Aproveitamento de estudos e conclusão de curso
+
+- **Objetivo:** aproveitamento na integralização e conclusão só com 100%, no histórico final.
+- **RF / RB:** RF-50, RF-51; RB-35, RB-40. **Dependências:** SPEC-020, SPEC-031, SPEC-033, SPEC-035, SPEC-037. **OPEN:** OPEN-064.
+
+### SPEC-043 — Exportação de apoio ao Censo
+
+- **Objetivo:** CSV de apoio com estudantes e turmas do período (não é o layout oficial do INEP).
+- **RF / RB:** RF-52. **Dependências:** SPEC-020, SPEC-031, SPEC-033, SPEC-035. **OPEN:** OPEN-065.
+
 ## Questões em aberto transversais
 
 - **OPEN-001:** definir permissões exatas para cada operação de cadastro e registro.

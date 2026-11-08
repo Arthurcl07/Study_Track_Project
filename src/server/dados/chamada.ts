@@ -12,7 +12,7 @@ import { prisma } from "./prisma";
 export function turmaParaChamada(professorId: string, turmaId: string) {
   return prisma.turma.findFirst({
     where: { id: turmaId, professorId },
-    select: { id: true, nome: true, matriculas: { where: MATRICULA_CURSANDO, select: { estudanteId: true } } },
+    select: { id: true, nome: true, periodo: true, matriculas: { where: MATRICULA_CURSANDO, select: { estudanteId: true } } },
   });
 }
 
@@ -20,7 +20,7 @@ export function turmaParaChamada(professorId: string, turmaId: string) {
 export async function aulasDaTurma(professorId: string, turmaId: string) {
   const aulas = await prisma.aula.findMany({
     where: { turmaId, turma: { professorId } },
-    select: { id: true, data: true, numero: true, presencas: { select: { estudanteId: true, presente: true } } },
+    select: { id: true, data: true, numero: true, conteudo: true, presencas: { select: { estudanteId: true, presente: true } } },
     orderBy: [{ data: "desc" }, { numero: "asc" }],
   });
   return aulas.map((a) => ({ ...a, data: deData(a.data) }));
@@ -74,7 +74,7 @@ export async function salvarChamada(turmaId: string, data: string, aulas: Presen
 export function aulaDoProfessor(professorId: string, aulaId: string) {
   return prisma.aula.findFirst({
     where: { id: aulaId, turma: { professorId } },
-    select: { id: true, turmaId: true, data: true, numero: true, presencas: { select: { estudanteId: true } } },
+    select: { id: true, turmaId: true, data: true, numero: true, turma: { select: { periodo: true } }, presencas: { select: { estudanteId: true } } },
   });
 }
 

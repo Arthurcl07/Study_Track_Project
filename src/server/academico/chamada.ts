@@ -5,6 +5,8 @@
 import { hojeEmBrasilia } from "@/domain/atividades";
 import { MAXIMO_AULAS_POR_DATA, MENSAGEM_DATA_AULA, dataDeAulaValida, faltaAbonada, validarChamada } from "@/domain/frequencia";
 import { recalcularIndicador } from "@/server/academico/indicador";
+import { motivoSemAula } from "@/domain/calendario";
+import { eventosDoPeriodo } from "./calendario";
 import { dataBR } from "@/domain/auditoria";
 import { deData, paraData } from "@/server/dados/atividades";
 import { auditar, nomeDoUsuario, turmaParaAuditoria } from "@/server/dados/auditoria";
@@ -31,10 +33,17 @@ export async function registrarChamada(entrada: Record<string, unknown>, profess
   const validacao = validarChamada(entrada, turma.matriculas.map((m) => m.estudanteId), hoje);
   if (!validacao.ok) return falha({ tipo: "invalido", erros: validacao.erros });
   const { data, aulas } = validacao.dados;
+  // SPEC-040 / RB-38: sem aula em feriado, recesso ou fora do intervalo de aulas do período.
+  const semAula = motivoSemAula(data, await eventosDoPeriodo(turma.periodo));
+  if (semAula) return falha({ tipo: "invalido", erros: { data: semAula } });
+  // SPEC-039: conteúdo da aula (opcional, até 500 caracteres).
+  const conteudo = typeof entrada.conteudo === "string" ? entrada.conteudo.trim() : "";
+  if (conteudo.length > 500) return falha({ tipo: "invalido", erros: { conteudo: "O conteúdo pode ter até 500 caracteres." } });
 
   return sucesso(
     await executarEmTransacao(async (tx) => {
       const gravada = await dados.salvarChamada(turmaId, data, aulas, tx);
+      if (conteudo || entrada.conteudo === "") await tx.aula.updateMany({ where: { id: { in: gravada.aulas.map((a) => a.aulaId) } }, data: { conteudo: conteudo || null } });
       // SPEC-019: "ES-A · Modelagem · 05/11/2026 (2 aulas): 6 presentes, 2 faltas (Carla Mendes, Paula Nunes)".
       const contexto = await turmaParaAuditoria(turmaId, tx);
       const faltas = [...new Set(aulas.flatMap((a) => a.filter((p) => !p.presente).map((p) => p.estudanteId)))];
@@ -106,6 +115,8 @@ export async function mudarDataDaAula(aulaId: string, entrada: Record<string, un
   if (trava) return falha(trava);
   const data = dataDeAulaValida(entrada.data, hoje);
   if (!data) return falha({ tipo: "invalido", erros: { data: MENSAGEM_DATA_AULA } });
+  const semAula = motivoSemAula(data, await eventosDoPeriodo(aula.turma.periodo));
+  if (semAula) return falha({ tipo: "invalido", erros: { data: semAula } });
   const anterior = deData(aula.data);
   if (data === anterior) return sucesso({ id: aulaId, data, numero: aula.numero });
   return executarEmTransacao(async (tx) => {

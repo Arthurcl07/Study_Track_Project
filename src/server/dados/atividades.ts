@@ -44,12 +44,14 @@ export function turmasParaFrequencia(professorId: string) {
       id: true,
       nome: true,
       periodo: true,
+      // SPEC-039: diário fechado ou homologado deixa a turma somente leitura.
+      diario: true,
       disciplina: { select: { nome: true } },
       matriculas: ESTUDANTES_DA_TURMA,
       frequencias: { select: { estudanteId: true, percentual: true } },
       indicadores: { select: { estudanteId: true, situacao: true } },
       // SPEC-018: aulas com as presenças, para a tela de chamada. SPEC-028: número da aula na data.
-      aulas: { select: { id: true, data: true, numero: true, presencas: { select: { estudanteId: true, presente: true } } }, orderBy: [{ data: "desc" }, { numero: "asc" }] },
+      aulas: { select: { id: true, data: true, numero: true, conteudo: true, presencas: { select: { estudanteId: true, presente: true } } }, orderBy: [{ data: "desc" }, { numero: "asc" }] },
     },
     orderBy: [{ periodo: "desc" }, { nome: "asc" }],
   });

@@ -31,7 +31,14 @@ tela só é implementada depois do layout `aprovado` (OPEN-020).
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 a SPEC-035 implementadas)
+- `src/` — código-fonte (SPEC-001 a SPEC-043 implementadas)
+  Nível 3 (SPEC-036 a 043, RB-34 a RB-41): regras puras em `src/domain/requerimentos.ts`, `matriz.ts`, `rematricula.ts`,
+  `diario.ts`, `calendario.ts`, `horarios.ts` e `censo.ts`; casos de uso com o mesmo nome em `src/server/academico/`.
+  Diário Fechado ou Homologado deixa a turma somente leitura pela própria `travaDoPeriodo` (só `mudarDiario` passa com
+  `ignorarDiario`); escrita acadêmica nova continua chamando `travaDoPeriodo`. A chamada consulta o calendário
+  (`motivoSemAula`): turma de teste que faz chamada com a data de hoje usa `periodoAbertoDeTeste` (`tests/apoio.ts`).
+  Integralização (`integralizacaoDoEstudante`) usa a aprovação da regra única do histórico (RB-24) e os aproveitamentos;
+  Concluído só com 100% (RB-40, em `mudarSituacao`). Rematrícula confere a vaga com `FOR UPDATE` na transação.
   Nível 1 / secretaria (SPEC-026 a 035, RB-27 a RB-33): o Administrador é a secretaria acadêmica (RB-13 reescrita; recursos
   `secretaria`, `pedidosSenha`, `estudantes`), sem lançar dado acadêmico. Matrícula trancada/cancelada sai de toda lista de
   trabalho pelo filtro único `MATRICULA_CURSANDO` (`src/server/dados/matriculas.ts`); consulta nova de trabalho também usa.

@@ -15,7 +15,8 @@ export default async function Chamada() {
   const turmas: TurmaParaChamada[] = await Promise.all(
     (await turmasParaFrequencia(sessao.usuarioId)).map(async (t) => ({
       id: t.id,
-      rotulo: `${t.nome} · ${t.disciplina.nome} · ${t.periodo}`,
+      rotulo: `${t.nome} · ${t.disciplina.nome} · ${t.periodo}${t.diario === "Aberto" ? "" : " · diário fechado"}`,
+      diario: t.diario,
       estudantes: t.matriculas.map(({ estudante }) => ({
         id: estudante.id,
         nome: estudante.nome,
@@ -23,7 +24,7 @@ export default async function Chamada() {
         percentual: t.frequencias.find((f) => f.estudanteId === estudante.id)?.percentual ?? null,
         situacao: t.indicadores.find((i) => i.estudanteId === estudante.id)?.situacao ?? null,
       })),
-      aulas: t.aulas.map((a) => ({ id: a.id, data: deData(a.data), numero: a.numero, presencas: a.presencas })),
+      aulas: t.aulas.map((a) => ({ id: a.id, data: deData(a.data), numero: a.numero, conteudo: a.conteudo, presencas: a.presencas })),
       // SPEC-032: intervalos de abono dos estudantes, para mostrar "Abonada".
       abonos: await abonosDaTurma(t.id),
     })),

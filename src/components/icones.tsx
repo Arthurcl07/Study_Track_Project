@@ -24,6 +24,11 @@ const CAMINHOS = {
   repetir: "M4 9a7 7 0 0 1 12-4l3 3M19 4v4h-4M20 15a7 7 0 0 1-12 4l-3-3M5 20v-4h4",
   predio: "M4 21V8l8-5 8 5v13M4 21h16M9 21v-5h6v5M8 11h.01M12 11h.01M16 11h.01",
   lixeira: "M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6",
+  bussola: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M15.5 8.5l-2 5-5 2 2-5z",
+  pastas: "M3 7h6l2 2h10v10H3zM3 7V5h6l2 2",
+  agenda: "M4 6h16v14H4zM4 10h16M8 3v4M16 3v4M8 14h3M8 17h6",
+  envelope: "M3 6h18v12H3zM3 7l9 6 9-6",
+  porta: "M6 21V4h12v17M3 21h18M14 12h.01",
   capelo: "M2 9.5 12 5l10 4.5-10 4.5zM6 11.5V16c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.5M22 9.5V15",
 } as const;
 

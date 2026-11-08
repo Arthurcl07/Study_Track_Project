@@ -12,7 +12,8 @@ export default async function NotasDoProfessor() {
   const sessao = await exigirAcessoPagina(RECURSOS.registroDesempenho);
   const turmas: TurmaParaLancamento[] = (await turmasParaLancamento(sessao.usuarioId)).map((t) => ({
     id: t.id,
-    rotulo: `${t.nome} · ${t.disciplina.nome} · ${t.periodo}`,
+    rotulo: `${t.nome} · ${t.disciplina.nome} · ${t.periodo}${t.diario === "Aberto" ? "" : " · diário fechado"}`,
+    diario: t.diario,
     avaliacoes: t.avaliacoes.map((a) => ({ ...a, data: a.data.toISOString() })),
     estudantes: t.matriculas.map(({ estudante: e }) => {
       const indicador = t.indicadores.find((i) => i.estudanteId === e.id);

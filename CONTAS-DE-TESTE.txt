@@ -17,6 +17,18 @@ Professor        Carlos Lima     professor@studytrack.test     -> turmas em 2 cu
 Estudante        Carla Mendes    carla.mendes@studytrack.test  -> em Risco, com plano de recuperação
 Estudante        João Pereira    estudante@studytrack.test     -> painel com 3 turmas (Normal, Atenção e Risco)
 Estudante        Ana Souza       ana.souza@studytrack.test     -> painel com tudo em Normal
+Estudante        Henrique Dias   henrique.dias@studytrack.test -> aproveitamento de estudos (Introdução à Computação)
+
+--------------------------------------------------------
+NÍVEL 3 — O QUE MOSTRAR (SPEC-036 a SPEC-043)
+--------------------------------------------------------
+João (estudante@)     Meu curso (matriz e integralização), Rematrícula 2027/1 (aberta de 03/11 a 30/11/2026),
+                      Calendário com a grade da semana, Requerimentos e a declaração de matrícula deferida
+Carlos (professor@)   Requerimentos do João e da Ana; Chamada com conteúdo das aulas (MS-A); diário da ER-B fechado
+Marina (coordenador@) Diários (ER-B para homologar), Disciplinas > Matriz, horários e vagas em cada turma
+Renata (admin@)       Calendário, Salas, Períodos letivos (janela da rematrícula), Requerimentos (um atrasado),
+                      Exportação do Censo, ficha e histórico do Henrique Dias (aproveitamento)
+Turmas de 2027/1 (Engenharia da Computação): IA-ECO, EMP-ECO, ETI-ECO, COMP-ECO e CAL2-ECO
 
 --------------------------------------------------------
 CURSOS (6) — um coordenador para cada
