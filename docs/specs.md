@@ -61,6 +61,7 @@ Legenda de status da Spec:
 | SPEC-036 a SPEC-043 marcadas como `implementadas`: 395 testes e verificação em `docs/verificacao/SPEC-036-043.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-08 |
 | SPEC-044 (trancamento de disciplina e de curso por requerimento) incluída a pedido de Arthur, com OPEN-066 fechada (decisão humana, Arthur); RF-53 e RB-42; RB-30 e RB-34 ajustadas; texto e layout aguardando aprovação | `especificada` | 2026-11-09 |
 | SPEC-044 e layout aprovados (Arthur) | `aprovada` | 2026-11-09 |
+| SPEC-044 marcada como `implementada`: 400 testes e verificação em `docs/verificacao/SPEC-044.md`, condicionada à aprovação do PR de `development` para `main` | `implementada` | 2026-11-09 |
 
 ---
 
@@ -5561,7 +5562,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-044 — Trancamento de disciplina e de curso por requerimento
 
-**Status:** `aprovada`
+**Status:** `implementada`
 
 ## 1. Identificação
 

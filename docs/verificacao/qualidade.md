@@ -1,6 +1,19 @@
-# Verificação de qualidade e segurança — SPEC-001 a SPEC-043
+# Verificação de qualidade e segurança — SPEC-001 a SPEC-044
 
-**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) em 2026-10-22 com as SPEC-015 e 016 (seção 000) em 2026-11-06 com as SPEC-017 a 022 (seção 0000) e, no mesmo dia, com as SPEC-023 a 025 (seção 00000) e com as SPEC-026 a 035 (seção 000000); em 2026-11-08 com as **SPEC-036 a 043** (seção 0000000).
+**Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) em 2026-10-22 com as SPEC-015 e 016 (seção 000) em 2026-11-06 com as SPEC-017 a 022 (seção 0000) e, no mesmo dia, com as SPEC-023 a 025 (seção 00000) e com as SPEC-026 a 035 (seção 000000); em 2026-11-08 com as SPEC-036 a 043 (seção 0000000) e em 2026-11-09 com a **SPEC-044** (seção 00000000).
+
+## 00000000. Reverificação de 2026-11-09 (depois da SPEC-044, trancamento por requerimento)
+
+| Verificação | Resultado |
+|---|---|
+| Testes | 47 arquivos, **400 testes aprovados** (`npm test`); `tsc --noEmit` e `next build` sem erros |
+| Critérios AC (SPEC-001 a 044) | **316** na documentação (8 novos), todos os novos com teste |
+| Invariantes INV | **191** (4 novos), todos com teste |
+| Regras RB-01 a RB-42 | 42, todas com teste (RB-42 na `spec-044`) |
+| Escopo (ADR-003) | o trancamento de disciplina vai para a secretaria e o professor não o vê (escopo do requerimento na query) |
+| Transações | deferimento, trancamento (matrícula ou situação no curso), notificação e auditoria na mesma transação |
+| Desempenho (RNF-01) | com a faculdade povoada (84 turmas de 30 estudantes em 2026/2, histórico desde 2025/1), no build de produção: Relatórios do coordenador 0,3 a 0,6 s; dashboards e listas abaixo de 1 s |
+| Dependências | nenhuma nova |
 
 ## 0000000. Reverificação de 2026-11-08 (depois das SPEC-036 a SPEC-043, Nível 3: acadêmico)
 
