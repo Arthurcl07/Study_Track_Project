@@ -28,43 +28,31 @@ const EVENTOS: { periodo: string; tipo: TipoEvento; titulo: string; inicio: stri
   { periodo: "2027/1", tipo: "FimAulas", titulo: "Fim das aulas", inicio: "2027-07-03" },
 ];
 
+// Com a faculdade povoada (84 turmas em 2026/2), salas suficientes para a grade sem choque.
 const SALAS = [
   { nome: "Sala 101", capacidade: 45 },
   { nome: "Sala 102", capacidade: 45 },
+  { nome: "Sala 103", capacidade: 45 },
+  { nome: "Sala 104", capacidade: 45 },
   { nome: "Sala 201", capacidade: 40 },
+  { nome: "Sala 202", capacidade: 40 },
+  { nome: "Sala 203", capacidade: 40 },
+  { nome: "Sala 204", capacidade: 40 },
+  { nome: "Sala 301", capacidade: 40 },
+  { nome: "Sala 302", capacidade: 40 },
   { nome: "Laboratório 1", capacidade: 35 },
   { nome: "Laboratório 2", capacidade: 35 },
+  { nome: "Laboratório 3", capacidade: 35 },
   { nome: "Auditório", capacidade: 120 },
-];
-
-// Matriz de Engenharia da Computação: semestre, caráter e pré-requisitos (RB-41, sem ciclo).
-const MATRIZ_ECO: { disciplina: string; semestre: number; obrigatoria?: boolean; requisitos?: string[] }[] = [
-  { disciplina: "Introdução à Computação", semestre: 1 },
-  { disciplina: "Lógica", semestre: 1 },
-  { disciplina: "Cálculo Básico", semestre: 1 },
-  { disciplina: "Modelagem de Software", semestre: 2, requisitos: ["Introdução à Computação"] },
-  { disciplina: "Engenharia de Requisitos", semestre: 2 },
-  { disciplina: "Banco de Dados", semestre: 2, requisitos: ["Lógica"] },
-  { disciplina: "Sistemas Operacionais", semestre: 2, requisitos: ["Introdução à Computação"] },
-  { disciplina: "Cálculo I", semestre: 2, requisitos: ["Cálculo Básico"] },
-  { disciplina: "Física I", semestre: 2 },
-  { disciplina: "Algoritmos", semestre: 2, requisitos: ["Lógica"] },
-  { disciplina: "Compiladores", semestre: 3, requisitos: ["Algoritmos"] },
-  { disciplina: "Cálculo II", semestre: 3, requisitos: ["Cálculo I"] },
-  { disciplina: "Redes de Computadores", semestre: 3, requisitos: ["Sistemas Operacionais"] },
-  { disciplina: "Ética e Legislação", semestre: 3 },
-  { disciplina: "Trabalho de Conclusão de Curso", semestre: 4, requisitos: ["Modelagem de Software", "Engenharia de Requisitos"] },
-  { disciplina: "Inteligência Artificial", semestre: 4, obrigatoria: false },
-  { disciplina: "Empreendedorismo", semestre: 4, obrigatoria: false },
 ];
 
 // 2027/1 com a rematrícula aberta: uma turma livre, uma com choque de horário, uma quase cheia e duas com pré-requisito.
 const TURMAS_2027_1: { nome: string; disciplina: string; professor: string; vagas: number; horarios: (Horario & { sala: string })[] }[] = [
-  { nome: "Turma IA-ECO", disciplina: "Inteligência Artificial", professor: "julia.reis@studytrack.test", vagas: 30, horarios: [{ diaSemana: 1, inicio: "19:00", fim: "20:40", sala: "Laboratório 1" }, { diaSemana: 3, inicio: "19:00", fim: "20:40", sala: "Laboratório 1" }] },
-  { nome: "Turma EMP-ECO", disciplina: "Empreendedorismo", professor: "marcos.andrade@studytrack.test", vagas: 40, horarios: [{ diaSemana: 1, inicio: "20:00", fim: "21:40", sala: "Sala 102" }] },
-  { nome: "Turma ETI-ECO", disciplina: "Ética e Legislação", professor: "fernanda.lopes@studytrack.test", vagas: 2, horarios: [{ diaSemana: 2, inicio: "19:00", fim: "20:40", sala: "Sala 201" }] },
-  { nome: "Turma COMP-ECO", disciplina: "Compiladores", professor: "ricardo.nunes@studytrack.test", vagas: 35, horarios: [{ diaSemana: 4, inicio: "19:00", fim: "20:40", sala: "Laboratório 2" }] },
-  { nome: "Turma CAL2-ECO", disciplina: "Cálculo II", professor: "patricia.gomes@studytrack.test", vagas: 45, horarios: [{ diaSemana: 5, inicio: "19:00", fim: "20:40", sala: "Sala 101" }] },
+  { nome: "Turma IA-ECO-271", disciplina: "Inteligência Artificial", professor: "julia.reis@studytrack.test", vagas: 30, horarios: [{ diaSemana: 1, inicio: "19:00", fim: "20:40", sala: "Laboratório 1" }, { diaSemana: 3, inicio: "19:00", fim: "20:40", sala: "Laboratório 1" }] },
+  { nome: "Turma EMP-ECO-271", disciplina: "Empreendedorismo", professor: "marcos.andrade@studytrack.test", vagas: 40, horarios: [{ diaSemana: 1, inicio: "20:00", fim: "21:40", sala: "Sala 102" }] },
+  { nome: "Turma ETI-ECO-271", disciplina: "Ética e Legislação", professor: "fernanda.lopes@studytrack.test", vagas: 2, horarios: [{ diaSemana: 2, inicio: "19:00", fim: "20:40", sala: "Sala 201" }] },
+  { nome: "Turma COMP-ECO-271", disciplina: "Compiladores", professor: "ricardo.nunes@studytrack.test", vagas: 35, horarios: [{ diaSemana: 4, inicio: "19:00", fim: "20:40", sala: "Laboratório 2" }] },
+  { nome: "Turma CAL2-ECO-271", disciplina: "Cálculo II", professor: "patricia.gomes@studytrack.test", vagas: 45, horarios: [{ diaSemana: 5, inicio: "19:00", fim: "20:40", sala: "Sala 101" }] },
 ];
 
 const CONTEUDOS_MS = [
@@ -89,37 +77,28 @@ export async function exemplosDoNivel3(base: { administradorId: string; professo
   const salas = new Map<string, { id: string; capacidade: number }>();
   for (const s of SALAS) salas.set(s.nome, await prisma.sala.upsert({ where: { nome: s.nome }, update: {}, create: s, select: { id: true, capacidade: true } }));
 
-  // SPEC-037: matriz de Engenharia da Computação.
+  // SPEC-037: a matriz de cada curso (semestres e pré-requisitos) vem do povoamento (prisma/povoamento.ts).
   const idDe = new Map<string, string>();
-  for (const linha of MATRIZ_ECO) {
-    const disciplina = await prisma.disciplina.findFirst({ where: { nome: linha.disciplina }, select: { id: true } });
-    if (!disciplina) throw new Error(`Disciplina ausente da grade: ${linha.disciplina}`);
-    idDe.set(linha.disciplina, disciplina.id);
-    await prisma.cursoDisciplina.upsert({
-      where: { cursoId_disciplinaId: { cursoId: base.cursoId, disciplinaId: disciplina.id } },
-      update: { semestre: linha.semestre, obrigatoria: linha.obrigatoria ?? true },
-      create: { cursoId: base.cursoId, disciplinaId: disciplina.id, semestre: linha.semestre, obrigatoria: linha.obrigatoria ?? true },
-    });
+  for (const nome of [...TURMAS_2027_1.map((d) => d.disciplina), "Introdução à Computação"]) {
+    const disciplina = await prisma.disciplina.findFirst({ where: { nome }, select: { id: true } });
+    if (!disciplina) throw new Error(`Disciplina ausente da grade: ${nome}`);
+    idDe.set(nome, disciplina.id);
   }
-  for (const linha of MATRIZ_ECO) {
-    const disciplinaId = idDe.get(linha.disciplina)!;
-    await prisma.preRequisito.deleteMany({ where: { cursoId: base.cursoId, disciplinaId } });
-    for (const r of linha.requisitos ?? []) await prisma.preRequisito.create({ data: { cursoId: base.cursoId, disciplinaId, requisitoId: idDe.get(r)! } });
-  }
-  console.log(`Matriz de Engenharia da Computação pronta: ${MATRIZ_ECO.length} disciplinas em 4 semestres, com pré-requisitos.`);
 
   // SPEC-038: turmas de 2027/1 com vagas e horários.
   for (const def of TURMAS_2027_1) {
     const professor = await prisma.usuario.findUniqueOrThrow({ where: { email: def.professor }, select: { id: true } });
-    const turma =
-      (await prisma.turma.findFirst({ where: { nome: def.nome, periodo: "2027/1" } })) ??
-      (await prisma.turma.create({ data: { nome: def.nome, periodo: "2027/1", disciplinaId: idDe.get(def.disciplina)!, professorId: professor.id, cursoId: base.cursoId, vagas: def.vagas } }));
+    // Pela disciplina do curso no período (bancos antigos têm estas turmas com o nome sem o sufixo "-271").
+    const existente = await prisma.turma.findFirst({ where: { cursoId: base.cursoId, disciplinaId: idDe.get(def.disciplina)!, periodo: "2027/1" } });
+    const turma = existente
+      ? existente.nome === def.nome ? existente : await prisma.turma.update({ where: { id: existente.id }, data: { nome: def.nome } })
+      : await prisma.turma.create({ data: { nome: def.nome, periodo: "2027/1", disciplinaId: idDe.get(def.disciplina)!, professorId: professor.id, cursoId: base.cursoId, vagas: def.vagas } });
     if ((await prisma.horarioTurma.count({ where: { turmaId: turma.id } })) === 0) {
       await prisma.horarioTurma.createMany({ data: def.horarios.map((h) => ({ turmaId: turma.id, diaSemana: h.diaSemana, inicio: h.inicio, fim: h.fim, salaId: salas.get(h.sala)!.id })) });
     }
   }
   // Ética e Legislação com 1 das 2 vagas já ocupada por um estudante simulado do curso.
-  const etica = await prisma.turma.findFirstOrThrow({ where: { nome: "Turma ETI-ECO", periodo: "2027/1" } });
+  const etica = await prisma.turma.findFirstOrThrow({ where: { nome: "Turma ETI-ECO-271", periodo: "2027/1" } });
   if ((await prisma.matricula.count({ where: { turmaId: etica.id } })) === 0) {
     const simulado = await prisma.usuario.findFirst({ where: { cursoId: base.cursoId, perfil: "Estudante", email: { endsWith: "@studytrack.test", notIn: ["estudante@studytrack.test"] }, ficha: { situacaoCurso: "Ativo" } }, orderBy: { email: "asc" }, select: { id: true } });
     if (simulado) await prisma.matricula.create({ data: { estudanteId: simulado.id, turmaId: etica.id } });
@@ -134,7 +113,10 @@ export async function exemplosDoNivel3(base: { administradorId: string; professo
 }
 
 // SPEC-041: grade de 2026/2 sem choque de sala, de professor nem de estudante (RB-39), com vagas até a menor sala.
+// A grade é refeita a cada execução (mesmo resultado, a ordem é fixa): assim continua sem choque quando o povoamento
+// muda quem está em cada turma.
 async function gradeDe2026_2(salas: Map<string, { id: string; capacidade: number }>) {
+  await prisma.horarioTurma.deleteMany({ where: { turma: { periodo: "2026/2" } } });
   const turmas = await prisma.turma.findMany({
     where: { periodo: "2026/2" },
     select: { id: true, nome: true, vagas: true, professorId: true, matriculas: { select: { estudanteId: true } }, horarios: { select: { diaSemana: true, inicio: true, fim: true, salaId: true } } },
@@ -142,15 +124,16 @@ async function gradeDe2026_2(salas: Map<string, { id: string; capacidade: number
   });
   type Ocupado = Horario & { salaId: string; professorId: string; estudantes: Set<string> };
   const ocupados: Ocupado[] = turmas.flatMap((t) => t.horarios.map((h) => ({ ...h, professorId: t.professorId, estudantes: new Set(t.matriculas.map((m) => m.estudanteId)) })));
+  // Um bloco de 2 aulas por semana para cada disciplina: 10 blocos à noite (segunda a sexta) e 2 no sábado de manhã,
+  // para uma turma de ingresso com 7 disciplinas caber sem choque.
   const pares: Horario[][] = [];
-  for (const faixa of [["19:00", "20:40"], ["20:50", "22:30"]]) {
-    for (const [d1, d2] of [[1, 3], [2, 4], [3, 5], [1, 4], [2, 5]]) pares.push([{ diaSemana: d1, inicio: faixa[0], fim: faixa[1] }, { diaSemana: d2, inicio: faixa[0], fim: faixa[1] }]);
+  for (const [inicio, fim] of [["19:00", "20:40"], ["20:50", "22:30"]]) {
+    for (const dia of [1, 2, 3, 4, 5]) pares.push([{ diaSemana: dia, inicio, fim }]);
   }
-  pares.push([{ diaSemana: 6, inicio: "08:00", fim: "11:30" }]);
+  pares.push([{ diaSemana: 6, inicio: "08:00", fim: "09:40" }], [{ diaSemana: 6, inicio: "10:00", fim: "11:40" }]);
   const listaSalas = [...salas.entries()].sort((a, b) => a[1].capacidade - b[1].capacidade);
   let novas = 0;
   for (const t of turmas) {
-    if (t.horarios.length > 0) continue;
     const estudantes = new Set(t.matriculas.map((m) => m.estudanteId));
     const precisa = Math.max(t.vagas ?? 0, estudantes.size);
     let escolha: { par: Horario[]; salaId: string; capacidade: number } | null = null;
@@ -172,19 +155,21 @@ async function gradeDe2026_2(salas: Map<string, { id: string; capacidade: number
     for (const h of escolha.par) ocupados.push({ ...h, salaId: escolha.salaId, professorId: t.professorId, estudantes });
     novas++;
   }
-  console.log(`Grade de 2026/2 pronta: ${novas} turma(s) com horário novo, ${SALAS.length} salas.`);
+  console.log(`Grade de 2026/2 pronta: ${novas} turma(s) com horário, ${SALAS.length} salas.`);
 }
 
 // SPEC-036: requerimentos em cada status (um atrasado), com protocolo do ano e prazo de 5 dias úteis.
 async function requerimentosDeExemplo(administradorId: string) {
   const folgas: Evento[] = await folgasDoCalendario();
   const msa = await prisma.turma.findFirst({ where: { nome: "Turma MS-A", periodo: "2026/2" }, select: { id: true, avaliacoes: { where: { nome: "Prova 1" }, select: { id: true } } } });
-  const exemplos: { email: string; tipo: TipoRequerimento; descricao: string; abertoEm: string; status: StatusRequerimento; resposta?: string; turma?: boolean }[] = [
+  const exemplos: { email: string; tipo: TipoRequerimento; descricao: string; abertoEm: string; status: StatusRequerimento; resposta?: string; turma?: boolean; turmaNome?: string }[] = [
     { email: "estudante@studytrack.test", tipo: "RevisaoProva", turma: true, abertoEm: "2026-11-05", status: "Aberto", descricao: "Peço a revisão da questão 4 da Prova 1: usei composição e foi considerado errado." },
     { email: "estudante@studytrack.test", tipo: "DeclaracaoMatricula", abertoEm: "2026-11-03", status: "Deferido", descricao: "Declaração de matrícula para o estágio.", resposta: "Declaração disponível no StudyTrack." },
     { email: "ana.souza@studytrack.test", tipo: "SegundaChamada", turma: true, abertoEm: "2026-11-06", status: "EmAnalise", descricao: "Estive doente no dia do trabalho em grupo; anexo o atestado na secretaria." },
     { email: "bruno.costa@studytrack.test", tipo: "Outro", abertoEm: "2026-10-26", status: "Aberto", descricao: "Solicito a ementa de Banco de Dados para apresentar no estágio." },
     { email: "elisa.rocha@studytrack.test", tipo: "Trancamento", abertoEm: "2026-10-20", status: "Indeferido", descricao: "Quero trancar o semestre por motivo de trabalho.", resposta: "Trancamento só até 30/08. Procure a coordenação para outras opções." },
+    // SPEC-044: trancamento de uma disciplina esperando a secretaria (deferir tranca a matrícula na hora).
+    { email: "diego.lima@studytrack.test", tipo: "TrancamentoDisciplina", turmaNome: "Turma FI-ECO", abertoEm: "2026-11-09", status: "Aberto", descricao: "Comecei a trabalhar no horário de Física I e não consigo mais assistir às aulas." },
   ];
   let criados = 0;
   for (const ex of exemplos) {
@@ -203,7 +188,7 @@ async function requerimentosDeExemplo(administradorId: string) {
           estudanteId: estudante.id,
           tipo: ex.tipo,
           destino,
-          turmaId: ex.turma ? (msa?.id ?? null) : null,
+          turmaId: ex.turmaNome ? ((await prisma.turma.findFirst({ where: { nome: ex.turmaNome, periodo: "2026/2" }, select: { id: true } }))?.id ?? null) : ex.turma ? (msa?.id ?? null) : null,
           avaliacaoId: ex.tipo === "RevisaoProva" ? (msa?.avaliacoes[0]?.id ?? null) : null,
           descricao: ex.descricao,
           status: ex.status,

@@ -16,6 +16,10 @@ npm run dev
 ```
 
 Abra http://localhost:3000. Todas as contas usam a senha `StudyTrack@2026` (README, "Contas de teste").
+
+A faculdade de demonstração é grande como uma de verdade: 6 cursos com matriz de 4 semestres × 7 disciplinas, 84 turmas
+de cerca de 30 estudantes em 2026/2 (2º e 4º semestre de cada curso), 360 estudantes, 24 professores e histórico desde
+2025/1. A primeira execução do seed numa máquina leva alguns minutos; as seguintes, cerca de 1 minuto.
 Para trocar de perfil, use **Sair** no menu lateral.
 
 ## 1. Processo (2 min)
@@ -95,7 +99,7 @@ Entrar como `admin@studytrack.test`.
 
 ## 4f. Sistema acadêmico completo (5 min) — SPEC-036 a SPEC-043
 
-- **Estudante (`estudante@`) → Meu curso**: integralização (20%) e a matriz por semestre — Aprovada, Cursando, Pendente e Bloqueada com o pré-requisito que falta (SPEC-037). **Rematrícula 2027/1**: vagas, "Falta pré-requisito" em Cálculo II; matricular em Inteligência Artificial e mostrar que Empreendedorismo passa a ter choque de horário; cancelar (SPEC-038). **Calendário**: feriados, semana de provas, prazos e a grade da semana com salas (SPEC-040/041). **Requerimentos**: abrir uma revisão de prova (protocolo e prazo de 5 dias úteis) e abrir a declaração de matrícula já deferida (SPEC-036).
+- **Estudante (`estudante@`) → Meu curso**: integralização (24%) e a matriz por semestre — Aprovada, Cursando, Pendente e Bloqueada com o pré-requisito que falta (SPEC-037). **Rematrícula 2027/1**: vagas, "Falta pré-requisito" em Cálculo II; matricular em Inteligência Artificial e mostrar que Empreendedorismo passa a ter choque de horário; cancelar (SPEC-038). **Calendário**: feriados, semana de provas, prazos e a grade da semana com salas (SPEC-040/041). **Requerimentos**: abrir uma revisão de prova (protocolo e prazo de 5 dias úteis) e abrir a declaração de matrícula já deferida (SPEC-036).
 - **Professor (`professor@`) → Requerimentos**: deferir a revisão de prova do João (ele recebe a notificação). **Chamada → Turma MS-A**: o conteúdo de cada aula; **Turma ER-B**: diário fechado, sem lançamento (SPEC-039).
 - **Coordenador (`coordenador@`) → Diários**: homologar ou devolver o diário da Turma ER-B (devolver avisa o professor). **Disciplinas → Matriz**: tentar pôr Algoritmos como pré-requisito de Lógica (recusado: ciclo). **Turmas → Turma MS-A**: horários com sala e vagas; um horário que bate com outra turma na mesma sala é recusado (SPEC-037/039/041).
 - **Administrador (`admin@`) → Estudantes → Henrique Dias**: integralização e o aproveitamento de Introdução à Computação; tentar marcar Concluído (recusado com o que falta); **Histórico** com a seção de aproveitamento (SPEC-042). **Calendário**, **Salas**, **Períodos letivos** (janela de rematrícula) e **Exportação do Censo** (prévia e CSV de apoio) (SPEC-040/041/043).
