@@ -194,6 +194,10 @@
 ## RF-52 — Exportação de apoio ao Censo (incluído em 2026-11-08, OPEN-065)
 - WHEN a secretaria exporta os dados de um período, o sistema SHALL gerar um CSV de apoio com os dados dos estudantes e das turmas, informando que não é o layout oficial do INEP, e registrar a exportação na auditoria.
 
+## RF-53 — Trancamento de disciplina e de curso por requerimento (incluído em 2026-11-09, OPEN-066)
+- WHEN um estudante pede o trancamento de uma disciplina que está cursando ou do curso, o sistema SHALL abrir um requerimento para a secretaria.
+- WHEN a secretaria defere o requerimento, o sistema SHALL trancar a matrícula da disciplina ou o curso na mesma operação, notificar o estudante e registrar na auditoria.
+
 ---
 
 

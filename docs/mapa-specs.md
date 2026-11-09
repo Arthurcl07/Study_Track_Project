@@ -392,6 +392,11 @@ Cada uma entrou por pedido de Arthur ou sugestão aprovada, com a decisão regis
 - **Objetivo:** CSV de apoio com estudantes e turmas do período (não é o layout oficial do INEP).
 - **RF / RB:** RF-52. **Dependências:** SPEC-020, SPEC-031, SPEC-033, SPEC-035. **OPEN:** OPEN-065.
 
+### SPEC-044 — Trancamento de disciplina e de curso por requerimento
+
+- **Objetivo:** o estudante pede o trancamento de uma disciplina ou do curso; deferir na secretaria tranca na hora.
+- **RF / RB:** RF-53; RB-30, RB-34, RB-42. **Dependências:** SPEC-031, SPEC-036, SPEC-039. **OPEN:** OPEN-066.
+
 ## Questões em aberto transversais
 
 - **OPEN-001:** definir permissões exatas para cada operação de cadastro e registro.
