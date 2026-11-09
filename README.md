@@ -128,6 +128,12 @@ entregas no prazo, atrasadas, faltando e com prazo nos próximos dias, planos de
 Lista completa de contas, cursos e turmas: `CONTAS-DE-TESTE.txt`. Os números são sempre os mesmos
 (gerador com semente fixa) e rodar o seed de novo não duplica nada.
 
+**Faculdade povoada** (`prisma/povoamento.ts`, pedido de 2026-11-09): cada curso com matriz de 4 semestres × 7
+disciplinas e pré-requisitos; em 2026/2 rodam o 2º e o 4º semestre de cada curso (84 turmas de cerca de 30 estudantes,
+com grade horária sem choque em 14 salas), e o histórico tem 2025/1, 2025/2 e 2026/1 encerrados, com exames finais.
+São 360 estudantes e 24 professores, com situações variadas (cerca de 70% Normal, 10% Atenção e 20% Risco em 2026/2),
+faltosos, planos de recuperação e trancamentos de disciplina. A primeira execução do seed leva alguns minutos.
+
 Gestão de contas da SPEC-010 (OPEN-025): entre como `admin@studytrack.test` e use **Contas** para criar
 contas de qualquer perfil, editar nome e e-mail e desativar ou reativar o acesso. Desde a SPEC-035 o administrador é
 também a secretaria: Estudantes (ficha, situação no curso, abono, boletim e histórico), Pedidos de senha, Virada de

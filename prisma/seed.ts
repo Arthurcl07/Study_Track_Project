@@ -4,6 +4,7 @@
 // (SPEC-005), além de dados de demonstração fictícios (ver dadosDeDemonstracao). Apenas para ambiente local.
 import { exemplosDaSecretaria } from "./secretaria";
 import { exemplosDoNivel3 } from "./nivel3";
+import { povoarFaculdade } from "./povoamento";
 import { hojeEmBrasilia } from "../src/domain/atividades";
 import { recalcularIndicador } from "../src/server/academico/indicador";
 import { salvarConta } from "../src/server/auth/contas";
@@ -82,6 +83,9 @@ async function main() {
   await alinharMatriculasAoCurso();
   // SPEC-017 / OPEN-044: semestre anterior encerrado, para o histórico escolar ter Aprovado e Reprovado.
   await simularPeriodoAnterior({ cursoId: cursos.ECO, professorTesteId: professor.id });
+  // Faculdade completa (pedido de 2026-11-09): matriz de 4 semestres × 7 disciplinas em cada curso, ~30 estudantes
+  // por turma e histórico desde 2025/1 (prisma/povoamento.ts).
+  await povoarFaculdade({ senha: SENHA_DE_TESTE, cursos, hoje });
   await exemplosDeNotificacoesEAuditoria({ professorId: professor.id, coordenadorId: coordenador.id, cursoId: cursos.ECO, hoje });
   // SPEC-026 a SPEC-035 (Nível 1): instituição, substitutiva, exame, aula dupla, abono, trancamento e pedido de senha.
   const administrador = contas.Administrador;

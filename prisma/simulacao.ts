@@ -12,6 +12,7 @@ import { recalcularIndicador } from "../src/server/academico/indicador";
 import { salvarConta } from "../src/server/auth/contas";
 import { paraData } from "../src/server/dados/atividades";
 import { prisma } from "../src/server/dados/prisma";
+import { disciplinasDaMatriz, estudanteDoPovoamento } from "./povoamento";
 
 // Gerador pseudoaleatório com semente fixa (mulberry32): mesmos dados a cada execução.
 function gerador(semente: number) {
@@ -164,7 +165,8 @@ export async function prepararCursos(base: { senha: string; coordenadorTesteId: 
   // Tira da grade dos cursos simulados o que não está em DISCIPLINAS nem é usado por turma do curso (sobras da
   // migração da SPEC-015, que levou para o curso provisório todas as disciplinas das turmas da coordenadora).
   for (const [sigla, cursoId] of Object.entries(ids) as [Sigla, string][]) {
-    const esperadas = Object.entries(DISCIPLINAS).filter(([, d]) => d.cursos.includes(sigla)).map(([nome]) => nome);
+    // Também as da matriz completa do povoamento (prisma/povoamento.ts), que ganham turma só em alguns semestres.
+    const esperadas = [...Object.entries(DISCIPLINAS).filter(([, d]) => d.cursos.includes(sigla)).map(([nome]) => nome), ...disciplinasDaMatriz(sigla)];
     await prisma.cursoDisciplina.deleteMany({
       where: { cursoId, disciplina: { nome: { notIn: esperadas }, turmas: { none: { cursoId } } } },
     });
@@ -414,12 +416,14 @@ export async function simularPeriodoAnterior(base: { cursoId: string; professorT
 
   // Estudantes do curso nas contas do seed: as de demonstração e 8 simulados.
   const demonstracao = await prisma.usuario.findMany({ where: { email: { in: Object.keys(DESEMPENHO_2026_1) }, cursoId: base.cursoId }, select: { id: true, email: true } });
-  const simulados = await prisma.usuario.findMany({
-    where: { cursoId: base.cursoId, email: { endsWith: "@studytrack.test", notIn: Object.keys(DESEMPENHO_2026_1) } },
-    select: { id: true, email: true },
-    orderBy: { email: "asc" },
-    take: 8,
-  });
+  // Só os simulados originais: os estudantes do povoamento (prisma/povoamento.ts) têm notas e presenças próprias.
+  const simulados = (
+    await prisma.usuario.findMany({
+      where: { cursoId: base.cursoId, email: { endsWith: "@studytrack.test", notIn: Object.keys(DESEMPENHO_2026_1) } },
+      select: { id: true, email: true },
+      orderBy: { email: "asc" },
+    })
+  ).filter((e) => !estudanteDoPovoamento(e.email)).slice(0, 8);
 
   for (const [indice, def] of TURMAS_2026_1.entries()) {
     const turma = await garantirTurma({ nome: def.nome, disciplina: def.disciplina, cursoId: base.cursoId, professorId: docentes[indice % docentes.length], periodo: "2026/1" });
