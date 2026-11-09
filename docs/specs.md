@@ -59,6 +59,9 @@ Legenda de status da Spec:
 | SPEC-036 a SPEC-043 (Nível 3, sem os itens 28 e 30) incluídas a pedido de Arthur, com OPEN-058 a OPEN-065 fechadas (decisão humana, Arthur); RF-44 a RF-52 e RB-34 a RB-41; RB-20 e RB-30 ajustados | `especificada` | 2026-11-08 |
 | SPEC-036 a SPEC-043 e layout aprovados (Arthur) | `aprovada` | 2026-11-08 |
 | SPEC-036 a SPEC-043 marcadas como `implementadas`: 395 testes e verificação em `docs/verificacao/SPEC-036-043.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-08 |
+| SPEC-044 (trancamento de disciplina e de curso por requerimento) incluída a pedido de Arthur, com OPEN-066 fechada (decisão humana, Arthur); RF-53 e RB-42; RB-30 e RB-34 ajustadas; texto e layout aguardando aprovação | `especificada` | 2026-11-09 |
+| SPEC-044 e layout aprovados (Arthur) | `aprovada` | 2026-11-09 |
+| SPEC-044 marcada como `implementada`: 400 testes e verificação em `docs/verificacao/SPEC-044.md`, condicionada à aprovação do PR de `development` para `main` | `implementada` | 2026-11-09 |
 
 ---
 
@@ -5550,6 +5553,131 @@ Sem entidade nova.
 ## 13. Questões em aberto
 
 Nenhuma. OPEN-065 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-044 — Trancamento de disciplina e de curso por requerimento
+
+**Status:** `implementada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-044 |
+| **Nome** | Trancamento de disciplina e de curso por requerimento |
+| **Objetivo** | O estudante pede o trancamento de uma disciplina ou do curso inteiro; quando a secretaria defere, o sistema tranca sozinho. |
+| **Valor** | Deixa claro que dá para trancar só uma matéria, e o pedido do estudante vira efeito real sem a secretaria refazer o trabalho na ficha. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-53, RF-44, RF-39 |
+| **RB** | RB-20, RB-22, RB-23, RB-30, RB-34, RB-37, RB-42 |
+| **RNF** | RNF-03, RNF-04, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-32 Abrir requerimento, UC-33 Responder requerimento |
+| **Entidades** | `Requerimento` (novo tipo `TrancamentoDisciplina`), `Matricula` (situação), `FichaEstudante` (situação) |
+| **ADRs** | ADR-001, ADR-002, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-053, OPEN-058, OPEN-061, OPEN-066 |
+
+## 3. Escopo
+
+**Incluído**
+- Novo tipo de requerimento **Trancamento de disciplina**: o estudante escolhe uma turma que está cursando (período aberto e diário aberto); vai para a **secretaria**.
+- O tipo atual "Trancamento" passa a se chamar **Trancamento de curso** (mesmo valor no banco).
+- No formulário, cada tipo de trancamento explica o efeito: a disciplina sai da chamada e das notas e aparece como "Trancada" no boletim e no histórico; o curso tranca todas as disciplinas do semestre.
+- Na resposta da secretaria, o painel do requerimento mostra o que o deferimento vai fazer ("Deferir tranca Banco de Dados (Turma BD-A)" / "Deferir tranca o curso: 6 disciplinas de 2026/2 ficam Trancadas").
+- **Deferir** aplica, na mesma transação do requerimento: disciplina → matrícula `Trancada`; curso → situação `Trancado` com o efeito da RB-30 (data de hoje, motivo "Requerimento AAAA-NNNNNN").
+- Auditoria do deferimento e da mudança (matrícula ou situação no curso) e notificação ao estudante.
+
+**Fora do escopo**
+- Destrancar por requerimento (a secretaria reativa na ficha, como hoje; a disciplina trancada pode voltar na rematrícula do semestre seguinte).
+- Limite de quantas disciplinas o estudante pode trancar.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-09 por Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Estudante — pedir trancamento de disciplina | [prototipo.html#trancamento-pedido](layout/prototipo.html#trancamento-pedido) | [x] | [x] | Arthur | 2026-11-09 |
+| Secretaria — deferir trancamento | [prototipo.html#trancamento-deferir](layout/prototipo.html#trancamento-deferir) | [x] | [x] | Arthur | 2026-11-09 |
+
+## 4. Dependências
+
+SPEC-031 (situação no curso e matrícula trancada), SPEC-036 (requerimentos), SPEC-039 (diário).
+
+## 5. Comportamento esperado
+
+**Fluxo principal (disciplina):** o estudante pede o trancamento de Banco de Dados; a secretaria vê o pedido com o efeito e defere; a matrícula fica Trancada, a turma some do painel, da chamada e das notas dele, e o boletim mostra "Trancada"; o estudante é notificado.
+
+**Fluxo principal (curso):** o estudante pede o trancamento do curso; a secretaria defere; ele fica Trancado e todas as matrículas de período aberto ficam Trancadas.
+
+**Exceções:** disciplina que o estudante não cursa, com diário fechado/homologado ou de período encerrado: 400 na abertura; no deferimento, matrícula já trancada/cancelada, diário não aberto ou período encerrado: 409 (a secretaria pode indeferir); trancamento de curso de estudante que não está Ativo: 409.
+
+**Pós-condições:** requerimento, matrícula ou situação, notificação e auditoria gravados na mesma transação; notas e presenças continuam guardadas.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-044-01 | Requerimento de trancamento de disciplina deferido ⇒ a matrícula daquela turma está Trancada (mesma transação). |
+| INV-044-02 | Só se tranca disciplina com o diário da turma Aberto e o período Aberto (RB-42). |
+| INV-044-03 | Os dois trancamentos são da secretaria; o professor não vê nem responde (RB-34). |
+| INV-044-04 | Trancar não apaga notas, presenças nem entregas. |
+
+## 7. Modelo de domínio envolvido
+
+`TipoRequerimento` ganha `TrancamentoDisciplina` (exige turma, destino Secretaria). Nenhuma tabela nova.
+
+## 8. Impacto arquitetural
+
+- `src/domain/requerimentos.ts`: o tipo novo; `exigeTurma` deixa de decidir o destino sozinho (`destinoDoTipo` explícito).
+- `responderRequerimento`: ao deferir um trancamento, chama a regra de trancamento dentro da mesma transação; o efeito do curso reaproveita o de `mudarSituacao` (RB-30).
+- Migração: valor novo no enum `TipoRequerimento`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `POST /api/requerimentos` | tipo `TrancamentoDisciplina`, turmaId, descrição | requerimento com protocolo e prazo | turma que não cursa, diário fechado, período encerrado |
+| `POST /api/requerimentos` | tipo `Trancamento` (curso), descrição | requerimento | — |
+| `PATCH /api/requerimentos/:id` | status `Deferido` | requerimento deferido e trancamento aplicado | 409 se a matrícula já não está cursando, o diário não está aberto, o período encerrou ou o estudante não está Ativo |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03, RNF-05 | Escopo do requerimento (só a secretaria responde trancamentos) |
+| RNF-04, RNF-06 | Telas aprovadas, desktop e celular |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-044-01 | Estudante cursando Banco de Dados | Pede trancamento de disciplina | Protocolo e prazo; vai para a secretaria, não para o professor |
+| AC-044-02 | Pedido de trancamento de disciplina | Secretaria defere | Requerimento Deferido; matrícula Trancada; estudante notificado; auditoria |
+| AC-044-03 | Matrícula trancada | Estudante abre o painel; professor abre a chamada | A turma não aparece; o boletim mostra "Trancada" |
+| AC-044-04 | Turma com diário fechado | Estudante pede trancamento dela | 400 |
+| AC-044-05 | Pedido aberto e depois o diário foi fechado | Secretaria defere | 409; pode indeferir |
+| AC-044-06 | Estudante Ativo | Pede trancamento de curso e a secretaria defere | Situação Trancado; matrículas de período aberto Trancadas |
+| AC-044-07 | Estudante já Trancado | Secretaria defere outro trancamento de curso | 409 |
+| AC-044-08 | Turma que o estudante não cursa | Pede trancamento dela | 400 |
+
+## 12. Casos de teste derivados
+
+1. Destino e validação do tipo novo (unitário).
+2. Abertura, deferimento com efeito, recusas e escopo (integração).
+
+## 13. Questões em aberto
+
+Nenhuma. OPEN-066 fechada.
 
 ## 14. Definition of Done
 

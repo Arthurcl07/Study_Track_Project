@@ -184,24 +184,32 @@ export async function mudarSituacao(estudanteId: string, entrada: Record<string,
     const motivoConclusao = motivoParaNaoConcluir(resumo);
     if (motivoConclusao) return falha({ tipo: "invalido", erros: { situacao: motivoConclusao } });
   }
+  return sucesso(await executarEmTransacao((tx) => gravarSituacao(tx, { id: estudanteId, nome: estudante.nome, cursoId: estudante.cursoId, numeroMatricula: estudante.ficha!.numeroMatricula, atual }, { situacao, data, motivo }, administradorId)));
+}
+
+// RB-30: grava a situação, ajusta as matrículas cursando de período aberto e audita. Usado também pelo deferimento do
+// trancamento de curso (SPEC-044), dentro da transação do requerimento.
+export async function gravarSituacao(
+  tx: ClienteBanco,
+  estudante: { id: string; nome: string; cursoId: string | null; numeroMatricula: string; atual: SituacaoCurso },
+  nova: { situacao: SituacaoCurso; data: string; motivo: string },
+  autorId: string,
+) {
+  const { situacao, data, motivo } = nova;
   const efeito = efeitoNasMatriculas(situacao);
-  return sucesso(
-    await executarEmTransacao(async (tx) => {
-      await tx.fichaEstudante.update({ where: { estudanteId }, data: { situacaoCurso: situacao, situacaoDesde: paraData(data), situacaoMotivo: motivo } });
-      const { count } = efeito
-        ? await tx.matricula.updateMany({ where: { estudanteId, situacao: "Cursando", turma: { periodoLetivo: { status: "Aberto" } } }, data: { situacao: efeito } })
-        : { count: 0 };
-      await auditar(tx, {
-        autorId: administradorId,
-        acao: "estudante.situacao",
-        cursoId: estudante.cursoId,
-        descricao: `${estudante.nome} (${estudante.ficha!.numeroMatricula}): ${ROTULO_SITUACAO_CURSO[atual]} → ${ROTULO_SITUACAO_CURSO[situacao]} em ${dataBR(data)} — ${motivo}${efeito ? ` (${count} matrícula(s) ${efeito === "Trancada" ? "trancada(s)" : "cancelada(s)"})` : ""}`,
-        antes: { situacao: atual },
-        depois: { situacao, data, motivo, matriculas: count },
-      });
-      return { situacao, matriculasAlteradas: count };
-    }),
-  );
+  await tx.fichaEstudante.update({ where: { estudanteId: estudante.id }, data: { situacaoCurso: situacao, situacaoDesde: paraData(data), situacaoMotivo: motivo } });
+  const { count } = efeito
+    ? await tx.matricula.updateMany({ where: { estudanteId: estudante.id, situacao: "Cursando", turma: { periodoLetivo: { status: "Aberto" } } }, data: { situacao: efeito } })
+    : { count: 0 };
+  await auditar(tx, {
+    autorId,
+    acao: "estudante.situacao",
+    cursoId: estudante.cursoId,
+    descricao: `${estudante.nome} (${estudante.numeroMatricula}): ${ROTULO_SITUACAO_CURSO[estudante.atual]} → ${ROTULO_SITUACAO_CURSO[situacao]} em ${dataBR(data)} — ${motivo}${efeito ? ` (${count} matrícula(s) ${efeito === "Trancada" ? "trancada(s)" : "cancelada(s)"})` : ""}`,
+    antes: { situacao: estudante.atual },
+    depois: { situacao, data, motivo, matriculas: count },
+  });
+  return { situacao, matriculasAlteradas: count };
 }
 
 // AC-031-06 / AC-031-07 / RB-19: só Ativo e sem matrícula cursando em período aberto; o histórico continua.

@@ -81,6 +81,7 @@ const ESTILO_MENSAGEM = {
   sucesso: "bg-sucesso-fundo text-normal",
   erro: "bg-erro-fundo text-risco",
   info: "bg-info-fundo text-info",
+  aviso: "bg-atencao-fundo text-atencao",
 } as const;
 
 export function Mensagem({ tipo, children }: { tipo: keyof typeof ESTILO_MENSAGEM; children: React.ReactNode }) {

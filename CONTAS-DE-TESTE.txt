@@ -15,7 +15,7 @@ Administradora   Renata Duarte   admin@studytrack.test         -> Dashboard de c
 Coordenadora     Marina Alves    coordenador@studytrack.test   -> Engenharia da Computação: grade, turmas, relatórios
 Professor        Carlos Lima     professor@studytrack.test     -> turmas em 2 cursos, notas, frequência, atividades, planos
 Estudante        Carla Mendes    carla.mendes@studytrack.test  -> em Risco, com plano de recuperação
-Estudante        João Pereira    estudante@studytrack.test     -> painel com 3 turmas (Normal, Atenção e Risco)
+Estudante        João Pereira    estudante@studytrack.test     -> 2º semestre de Eng. da Computação, 7 disciplinas
 Estudante        Ana Souza       ana.souza@studytrack.test     -> painel com tudo em Normal
 Estudante        Henrique Dias   henrique.dias@studytrack.test -> aproveitamento de estudos (Introdução à Computação)
 
@@ -28,17 +28,18 @@ Carlos (professor@)   Requerimentos do João e da Ana; Chamada com conteúdo das
 Marina (coordenador@) Diários (ER-B para homologar), Disciplinas > Matriz, horários e vagas em cada turma
 Renata (admin@)       Calendário, Salas, Períodos letivos (janela da rematrícula), Requerimentos (um atrasado),
                       Exportação do Censo, ficha e histórico do Henrique Dias (aproveitamento)
-Turmas de 2027/1 (Engenharia da Computação): IA-ECO, EMP-ECO, ETI-ECO, COMP-ECO e CAL2-ECO
+Turmas de 2027/1 (Engenharia da Computação): IA-ECO-271, EMP-ECO-271, ETI-ECO-271, COMP-ECO-271 e CAL2-ECO-271
+Trancamento (SPEC-044): Diego Lima pediu o trancamento de Física I (Turma FI-ECO); a secretaria defere em Requerimentos.
 
 --------------------------------------------------------
-CURSOS (6) — um coordenador para cada
+CURSOS (6) — um coordenador para cada; turmas de 2026/2 (2º e 4º semestre)
 --------------------------------------------------------
-Administração              Beatriz Moura   turmas: Turma GP-ADM, Turma MKT-ADM
-Ciência da Computação      Otávio Campos   turmas: Turma ALG-CC, Turma ED-B, Turma ES-A
-Engenharia da Computação   Marina Alves    turmas: Turma BD-A, Turma CAL-ECO, Turma ER-B, Turma MS-A, Turma SO-B
-Engenharia Elétrica        Paula Martins   turmas: Turma CAL-ELE, Turma FIS-ELE, Turma RC-A
-Publicidade e Propaganda   Sérgio Bastos   turmas: Turma CRI-PP, Turma MKT-PP
-Sistemas de Informação     Helena Prado    turmas: Turma ALG-SI, Turma BD-SI
+Administração              Beatriz Moura   14 turmas: BI-ADM, CC-ADM, EA-ADM, EL-ADM, EMP-ADM, GC-ADM, GO-ADM, GP-ADM, GPE-ADM, MIC-ADM, MKT-ADM, NI-ADM, PE-ADM, TCC-ADM
+Ciência da Computação      Otávio Campos   14 turmas: AL-CC, ALG-CC, BD-CC, CG-CC, CII-CC, COM-CC, ED-B, EMP-CC, ES-A, IA-CC, POO-CC, SD-CC, SI-CC, TCC-CC
+Engenharia da Computação   Marina Alves    14 turmas: ALG-ECO, BD-A, CAL-ECO, EMP-ECO, ER-B, ES-ECO, FI-ECO, IA-ECO, MIC-ECO, MS-A, PE-ECO, SD-ECO, SO-B, TCC-ECO
+Engenharia Elétrica        Paula Martins   14 turmas: AL-ELE, CA-ELE, CAL-ELE, CEL-ELE, ED-ELE, EMP-ELE, FIS-ELE, IE-ELE, ME-ELE, MIC-ELE, PE-ELE, RC-A, SP-ELE, TCC-ELE
+Publicidade e Propaganda   Sérgio Bastos   14 turmas: AN-PP, CRI-PP, DG-PP, EL-PP, EMP-PP, EP-PP, MID-PP, MKT-PP, MS-PP, PC-PP, PG-PP, PP-PP, RP-PP, TCC-PP
+Sistemas de Informação     Helena Prado    14 turmas: AC-SI, ALG-SI, BD-SI, BI-SI, CB-SI, EMP-SI, ER-SI, GT-SI, IA-SI, PE-SI, POO-SI, SD-SI, SI-SI, TCC-SI
 
 --------------------------------------------------------
 COORDENADORES
@@ -51,99 +52,416 @@ Paula Martins          paula.martins@studytrack.test        curso: Engenharia El
 Sérgio Bastos          sergio.bastos@studytrack.test        curso: Publicidade e Propaganda
 
 --------------------------------------------------------
-PROFESSORES
+PROFESSORES (24) — turmas de 2026/2
 --------------------------------------------------------
-Carlos Lima            professor@studytrack.test            turmas: Turma ER-B (Engenharia da Computação), Turma FIS-ELE (Engenharia Elétrica), Turma MS-A (Engenharia da Computação), Turma SO-B (Engenharia da Computação)
-Fernanda Lopes         fernanda.lopes@studytrack.test       turmas: Turma ALG-SI (Sistemas de Informação), Turma ED-B (Ciência da Computação)
-Júlia Reis             julia.reis@studytrack.test           turmas: Turma BD-A (Engenharia da Computação), Turma BD-SI (Sistemas de Informação)
-Marcos Andrade         marcos.andrade@studytrack.test       turmas: Turma ALG-CC (Ciência da Computação), Turma ES-A (Ciência da Computação)
-Patrícia Gomes         patricia.gomes@studytrack.test       turmas: Turma CAL-ECO (Engenharia da Computação), Turma CAL-ELE (Engenharia Elétrica)
-Ricardo Nunes          ricardo.nunes@studytrack.test        turmas: Turma RC-A (Engenharia Elétrica)
-Sílvia Couto           silvia.couto@studytrack.test         turmas: Turma GP-ADM (Administração), Turma MKT-ADM (Administração)
-Tiago Mello            tiago.mello@studytrack.test          turmas: Turma CRI-PP (Publicidade e Propaganda), Turma MKT-PP (Publicidade e Propaganda)
+André Queiroz          andre.queiroz@studytrack.test        AL-CC, EMP-CC, IA-CC
+Beatriz Salles         beatriz.salles@studytrack.test       EMP-SI, GT-SI, POO-SI
+Carlos Lima            professor@studytrack.test            ER-B, FIS-ELE, MS-A, PE-ECO, SO-B
+Cláudia Rezende        claudia.rezende@studytrack.test      CA-ELE, PE-ELE
+Débora Fagundes        debora.fagundes@studytrack.test      SD-CC
+Eduardo Sampaio        eduardo.sampaio@studytrack.test      ALG-ECO, ES-ECO
+Fábio Arantes          fabio.arantes@studytrack.test        DG-PP, EMP-PP, MS-PP
+Fernanda Lopes         fernanda.lopes@studytrack.test       ALG-SI, BI-SI, CB-SI, CII-CC, COM-CC, ED-B, TCC-CC
+Gustavo Peixoto        gustavo.peixoto@studytrack.test      EL-ADM, GC-ADM, GPE-ADM, PE-ADM
+Henrique Moura         henrique.moura@studytrack.test       IA-SI, PE-SI, SD-SI
+Júlia Reis             julia.reis@studytrack.test           AC-SI, BD-A, BD-SI, ER-SI, IA-ECO, SI-SI, TCC-ECO, TCC-SI
+Juliana Castro         juliana.castro@studytrack.test       AN-PP, EL-PP, RP-PP, TCC-PP
+Larissa Fontes         larissa.fontes@studytrack.test       MIC-ECO
+Marcos Andrade         marcos.andrade@studytrack.test       ALG-CC, ES-A, POO-CC, SI-CC
+Mônica Tavares         monica.tavares@studytrack.test       BD-CC, CG-CC
+Otávio Brandão         otavio.brandao@studytrack.test       BI-ADM, GO-ADM, MIC-ADM
+Patrícia Gomes         patricia.gomes@studytrack.test       AL-ELE, CAL-ECO, CAL-ELE, EMP-ECO, FI-ECO, ME-ELE, SD-ECO, TCC-ELE
+Paula Siqueira         paula.siqueira@studytrack.test       EA-ADM, EMP-ADM, TCC-ADM
+Renata Lobo            renata.lobo@studytrack.test          PC-PP, PG-PP, PP-PP
+Ricardo Nunes          ricardo.nunes@studytrack.test        CEL-ELE, IE-ELE, RC-A
+Rogério Pacheco        rogerio.pacheco@studytrack.test      MIC-ELE
+Sílvia Couto           silvia.couto@studytrack.test         CC-ADM, GP-ADM, MKT-ADM, NI-ADM
+Tiago Mello            tiago.mello@studytrack.test          CRI-PP, EP-PP, MID-PP, MKT-PP
+Vítor Hugo Leal        vitor.hugo.leal@studytrack.test      ED-ELE, EMP-ELE, SP-ELE
 
 --------------------------------------------------------
-ESTUDANTES (79)  — curso e situação atual em cada turma
+ESTUDANTES (360) — curso, semestre em 2026/2 e situação nas disciplinas de 2026/2
 --------------------------------------------------------
-Amanda Barbosa         amanda.barbosa@studytrack.test         Administração              Turma GP-ADM (Risco), Turma MKT-ADM (Risco)
-Amanda Pinto           amanda.pinto@studytrack.test           Engenharia da Computação   Turma CAL-ECO (Risco)
-Amanda Teixeira        amanda.teixeira@studytrack.test        Sistemas de Informação     Turma ALG-SI (Normal), Turma BD-SI (Normal)
-Ana Souza              ana.souza@studytrack.test              Engenharia da Computação   Turma ER-B (Normal), Turma MS-A (Normal)
-André Cardoso          andre.cardoso@studytrack.test          Ciência da Computação      Turma ALG-CC (Risco), Turma ED-B (Risco), Turma ES-A (Risco)
-André Ferreira         andre.ferreira@studytrack.test         Sistemas de Informação     Turma ALG-SI (Normal), Turma BD-SI (Normal)
-Beatriz Carvalho       beatriz.carvalho@studytrack.test       Engenharia da Computação   Turma BD-A (Risco), Turma SO-B (Risco)
-Beatriz Freitas        beatriz.freitas@studytrack.test        Publicidade e Propaganda   Turma CRI-PP (Normal), Turma MKT-PP (Normal)
-Beatriz Vieira         beatriz.vieira@studytrack.test         Engenharia Elétrica        Turma CAL-ELE (Normal), Turma FIS-ELE (Normal), Turma RC-A (Normal)
-Bruno Costa            bruno.costa@studytrack.test            Engenharia da Computação   Turma ER-B (Normal), Turma MS-A (Atenção)
-Caio Cardoso           caio.cardoso@studytrack.test           Sistemas de Informação     Turma ALG-SI (Normal), Turma BD-SI (Normal)
-Caio Correia           caio.correia@studytrack.test           Ciência da Computação      Turma ED-B (Risco), Turma ES-A (Risco)
-Camila Almeida         camila.almeida@studytrack.test         Publicidade e Propaganda   Turma CRI-PP (Normal), Turma MKT-PP (Normal)
-Camila Araújo          camila.araujo@studytrack.test          Engenharia Elétrica        Turma CAL-ELE (Atenção), Turma RC-A (Atenção)
-Camila Freitas         camila.freitas@studytrack.test         Engenharia da Computação   Turma BD-A (Risco), Turma CAL-ECO (Normal), Turma SO-B (Atenção)
-Carla Mendes           carla.mendes@studytrack.test           Engenharia da Computação   Turma MS-A (Risco)
-Daniel Ferreira        daniel.ferreira@studytrack.test        Ciência da Computação      Turma ALG-CC (Normal), Turma ED-B (Normal), Turma ES-A (Normal)
-Daniel Pereira         daniel.pereira@studytrack.test         Sistemas de Informação     Turma ALG-SI (Risco), Turma BD-SI (Risco)
-Diego Lima             diego.lima@studytrack.test             Engenharia da Computação   Turma MS-A (Normal)
-Eduardo Cardoso        eduardo.cardoso@studytrack.test        Administração              Turma GP-ADM (Normal), Turma MKT-ADM (Normal)
-Eduardo Correia        eduardo.correia@studytrack.test        Sistemas de Informação     Turma ALG-SI (Normal), Turma BD-SI (Atenção)
-Eduardo Oliveira       eduardo.oliveira@studytrack.test       Ciência da Computação      Turma ALG-CC (Risco), Turma ED-B (Risco), Turma ES-A (Risco)
-Elisa Rocha            elisa.rocha@studytrack.test            Engenharia da Computação   Turma ER-B (Atenção), Turma MS-A (Risco)
-Felipe Alves           felipe.alves@studytrack.test           Engenharia da Computação   Turma MS-A (Normal)
-Fernanda Barbosa       fernanda.barbosa@studytrack.test       Ciência da Computação      Turma ALG-CC (Normal), Turma ED-B (Atenção), Turma ES-A (Atenção)
-Fernanda Carvalho      fernanda.carvalho@studytrack.test      Sistemas de Informação     Turma ALG-SI (Normal), Turma BD-SI (Normal)
-Fernanda Vieira        fernanda.vieira@studytrack.test        Administração              Turma GP-ADM (Normal), Turma MKT-ADM (Atenção)
-Gabriela Nunes         gabriela.nunes@studytrack.test         Engenharia da Computação   Turma MS-A (Atenção)
-Gustavo Cardoso        gustavo.cardoso@studytrack.test        Engenharia da Computação   Turma BD-A (Risco), Turma SO-B (Risco)
-Gustavo Ferreira       gustavo.ferreira@studytrack.test       Engenharia Elétrica        Turma FIS-ELE (Normal), Turma RC-A (Normal)
-Gustavo Pereira        gustavo.pereira@studytrack.test        Publicidade e Propaganda   Turma CRI-PP (Normal), Turma MKT-PP (Normal)
-Henrique Dias          henrique.dias@studytrack.test          Engenharia da Computação   Turma ER-B (Risco), Turma MS-A (Sem dados)
-Isabela Almeida        isabela.almeida@studytrack.test        Engenharia da Computação   Turma BD-A (Normal), Turma CAL-ECO (Normal), Turma SO-B (Risco)
-Isabela Pinto          isabela.pinto@studytrack.test          Administração              Turma GP-ADM (Normal), Turma MKT-ADM (Normal)
-Isabela Santos         isabela.santos@studytrack.test         Engenharia Elétrica        Turma CAL-ELE (Normal), Turma FIS-ELE (Normal), Turma RC-A (Normal)
-João Pereira           estudante@studytrack.test              Engenharia da Computação   Turma BD-A (Atenção), Turma MS-A (Risco), Turma SO-B (Normal)
-Juliana Almeida        juliana.almeida@studytrack.test        Engenharia Elétrica        Turma CAL-ELE (Normal), Turma FIS-ELE (Normal), Turma RC-A (Normal)
-Juliana Araújo         juliana.araujo@studytrack.test         Engenharia da Computação   Turma BD-A (Normal), Turma CAL-ECO (Normal), Turma SO-B (Normal)
-Juliana Santos         juliana.santos@studytrack.test         Publicidade e Propaganda   Turma CRI-PP (Risco), Turma MKT-PP (Risco)
-Larissa Araújo         larissa.araujo@studytrack.test         Publicidade e Propaganda   Turma CRI-PP (Normal), Turma MKT-PP (Normal)
-Larissa Freitas        larissa.freitas@studytrack.test        Engenharia Elétrica        Turma FIS-ELE (Risco), Turma RC-A (Risco)
-Larissa Vieira         larissa.vieira@studytrack.test         Engenharia da Computação   Turma BD-A (Normal), Turma SO-B (Atenção)
-Leonardo Martins       leonardo.martins@studytrack.test       Engenharia da Computação   Turma CAL-ECO (Risco)
-Leonardo Oliveira      leonardo.oliveira@studytrack.test      Administração              Turma GP-ADM (Risco), Turma MKT-ADM (Risco)
-Leonardo Ribeiro       leonardo.ribeiro@studytrack.test       Engenharia Elétrica        Turma CAL-ELE (Normal), Turma FIS-ELE (Normal), Turma RC-A (Normal)
-Letícia Pinto          leticia.pinto@studytrack.test          Engenharia Elétrica        Turma CAL-ELE (Risco), Turma FIS-ELE (Risco), Turma RC-A (Risco)
-Letícia Santos         leticia.santos@studytrack.test         Engenharia da Computação   Turma BD-A (Normal), Turma CAL-ECO (Normal)
-Letícia Teixeira       leticia.teixeira@studytrack.test       Administração              Turma GP-ADM (Normal), Turma MKT-ADM (Normal)
-Lucas Cardoso          lucas.cardoso@studytrack.test          Publicidade e Propaganda   Turma CRI-PP (Normal), Turma MKT-PP (Normal)
-Lucas Correia          lucas.correia@studytrack.test          Ciência da Computação      Turma ALG-CC (Normal), Turma ED-B (Normal), Turma ES-A (Normal)
-Lucas Oliveira         lucas.oliveira@studytrack.test         Engenharia da Computação   Turma BD-A (Normal)
-Mariana Barbosa        mariana.barbosa@studytrack.test        Engenharia da Computação   Turma BD-A (Normal)
-Mariana Carvalho       mariana.carvalho@studytrack.test       Ciência da Computação      Turma ALG-CC (Normal), Turma ED-B (Normal)
-Mariana Vieira         mariana.vieira@studytrack.test         Publicidade e Propaganda   Turma CRI-PP (Normal), Turma MKT-PP (Normal)
-Matheus Martins        matheus.martins@studytrack.test        Administração              Turma GP-ADM (Normal), Turma MKT-ADM (Normal)
-Matheus Monteiro       matheus.monteiro@studytrack.test       Engenharia da Computação   Turma BD-A (Normal), Turma CAL-ECO (Atenção), Turma SO-B (Normal)
-Matheus Moreira        matheus.moreira@studytrack.test        Engenharia Elétrica        Turma CAL-ELE (Normal), Turma FIS-ELE (Normal), Turma RC-A (Normal)
-Natália Barbosa        natalia.barbosa@studytrack.test        Sistemas de Informação     Turma ALG-SI (Risco), Turma BD-SI (Risco)
-Natália Carvalho       natalia.carvalho@studytrack.test       Administração              Turma GP-ADM (Normal), Turma MKT-ADM (Normal)
-Natália Teixeira       natalia.teixeira@studytrack.test       Ciência da Computação      Turma ALG-CC (Normal), Turma ED-B (Normal), Turma ES-A (Normal)
-Pedro Cardoso          pedro.cardoso@studytrack.test          Ciência da Computação      Turma ALG-CC (Normal), Turma ED-B (Normal)
-Pedro Correia          pedro.correia@studytrack.test          Engenharia da Computação   Turma BD-A (Normal)
-Pedro Ferreira         pedro.ferreira@studytrack.test         Publicidade e Propaganda   Turma CRI-PP (Normal), Turma MKT-PP (Normal)
-Rafael Ferreira        rafael.ferreira@studytrack.test        Engenharia da Computação   Turma BD-A (Risco), Turma CAL-ECO (Risco), Turma SO-B (Risco)
-Rafael Monteiro        rafael.monteiro@studytrack.test        Publicidade e Propaganda   Turma CRI-PP (Normal), Turma MKT-PP (Normal)
-Rafael Pereira         rafael.pereira@studytrack.test         Engenharia Elétrica        Turma CAL-ELE (Risco), Turma FIS-ELE (Risco), Turma RC-A (Risco)
-Rodrigo Correia        rodrigo.correia@studytrack.test        Administração              Turma GP-ADM (Normal), Turma MKT-ADM (Normal)
-Rodrigo Oliveira       rodrigo.oliveira@studytrack.test       Sistemas de Informação     Turma ALG-SI (Risco), Turma BD-SI (Risco)
-Rodrigo Ribeiro        rodrigo.ribeiro@studytrack.test        Ciência da Computação      Turma ALG-CC (Risco), Turma ED-B (Risco), Turma ES-A (Risco)
-Sofia Freitas          sofia.freitas@studytrack.test          Sistemas de Informação     Turma ALG-SI (Normal), Turma BD-SI (Normal)
-Sofia Vieira           sofia.vieira@studytrack.test           Ciência da Computação      Turma ALG-CC (Risco), Turma ED-B (Risco), Turma ES-A (Risco)
-Thiago Monteiro        thiago.monteiro@studytrack.test        Engenharia Elétrica        Turma CAL-ELE (Normal), Turma RC-A (Atenção)
-Thiago Moreira         thiago.moreira@studytrack.test         Publicidade e Propaganda   Turma CRI-PP (Normal), Turma MKT-PP (Normal)
-Thiago Pereira         thiago.pereira@studytrack.test         Engenharia da Computação   Turma BD-A (Normal), Turma CAL-ECO (Normal), Turma SO-B (Normal)
-Vinícius Martins       vinicius.martins@studytrack.test       Engenharia Elétrica        Turma CAL-ELE (Atenção), Turma FIS-ELE (Atenção), Turma RC-A (Atenção)
-Vinícius Moreira       vinicius.moreira@studytrack.test       Engenharia da Computação   Turma BD-A (Risco), Turma CAL-ECO (Risco), Turma SO-B (Risco)
-Vinícius Ribeiro       vinicius.ribeiro@studytrack.test       Administração              Turma GP-ADM (Normal), Turma MKT-ADM (Normal)
-Vitória Carvalho       vitoria.carvalho@studytrack.test       Ciência da Computação      Turma ED-B (Normal), Turma ES-A (Normal)
-Vitória Vieira         vitoria.vieira@studytrack.test         Sistemas de Informação     Turma ALG-SI (Risco), Turma BD-SI (Risco)
+
+Administração:
+  Alice Gomes            alice.gomes@studytrack.test            4º sem  7 Risco
+  Amanda Barbosa         amanda.barbosa@studytrack.test         2º sem  sem disciplina (curso Trancado; 2 trancada(s))
+  Arthur Garcia          arthur.garcia@studytrack.test          2º sem  7 Normal
+  Arthur Gomes           arthur.gomes@studytrack.test           4º sem  7 Normal
+  Bianca Fonseca         bianca.fonseca@studytrack.test         2º sem  1 Normal, 6 Atenção
+  Bianca Garcia          bianca.garcia@studytrack.test          4º sem  2 Normal, 5 Atenção
+  Breno Fonseca          breno.fonseca@studytrack.test          2º sem  1 Normal, 6 Atenção
+  Breno Garcia           breno.garcia@studytrack.test           4º sem  7 Normal
+  Cecília Farias         cecilia.farias@studytrack.test         2º sem  7 Normal
+  Cecília Fonseca        cecilia.fonseca@studytrack.test        4º sem  7 Normal
+  Davi Farias            davi.farias@studytrack.test            4º sem  7 Normal
+  Eduarda Esteves        eduarda.esteves@studytrack.test        2º sem  7 Normal
+  Eduarda Farias         eduarda.farias@studytrack.test         4º sem  7 Normal
+  Eduardo Cardoso        eduardo.cardoso@studytrack.test        2º sem  7 Normal
+  Enzo Esteves           enzo.esteves@studytrack.test           4º sem  7 Normal
+  Fábio Duarte           fabio.duarte@studytrack.test           2º sem  7 Normal
+  Fábio Esteves          fabio.esteves@studytrack.test          4º sem  4 Normal, 3 Atenção
+  Fernanda Vieira        fernanda.vieira@studytrack.test        2º sem  5 Normal, 2 Atenção
+  Giovana Duarte         giovana.duarte@studytrack.test         4º sem  6 Normal, 1 Atenção
+  Heitor Dantas          heitor.dantas@studytrack.test          2º sem  7 Risco
+  Heitor Duarte          heitor.duarte@studytrack.test          4º sem  7 Normal
+  Helena Dantas          helena.dantas@studytrack.test          4º sem  4 Normal, 3 Atenção
+  Igor Cunha             igor.cunha@studytrack.test             2º sem  6 Normal (1 trancada(s))
+  Igor Dantas            igor.dantas@studytrack.test            4º sem  7 Normal
+  Íris Cunha             iris.cunha@studytrack.test             4º sem  7 Normal
+  Isabela Pinto          isabela.pinto@studytrack.test          2º sem  7 Normal
+  Joaquim Coelho         joaquim.coelho@studytrack.test         2º sem  2 Normal, 5 Atenção
+  Joaquim Cunha          joaquim.cunha@studytrack.test          4º sem  7 Normal
+  Júlia Cavalcanti       julia.cavalcanti@studytrack.test       2º sem  7 Normal
+  Júlia Coelho           julia.coelho@studytrack.test           4º sem  7 Normal
+  Kauã Cavalcanti        kaua.cavalcanti@studytrack.test        2º sem  7 Normal
+  Kauã Coelho            kaua.coelho@studytrack.test            4º sem  7 Normal
+  Lara Campos            lara.campos@studytrack.test            2º sem  7 Risco
+  Lara Cavalcanti        lara.cavalcanti@studytrack.test        4º sem  7 Normal
+  Leonardo Oliveira      leonardo.oliveira@studytrack.test      2º sem  5 Normal, 2 Risco
+  Letícia Teixeira       leticia.teixeira@studytrack.test       2º sem  5 Normal, 2 Atenção
+  Lucca Campos           lucca.campos@studytrack.test           4º sem  6 Normal, 1 Atenção
+  Manuela Brito          manuela.brito@studytrack.test          2º sem  4 Normal, 3 Atenção
+  Manuela Campos         manuela.campos@studytrack.test         4º sem  7 Normal
+  Marcelo Brito          marcelo.brito@studytrack.test          4º sem  2 Normal, 4 Atenção (1 trancada(s))
+  Matheus Martins        matheus.martins@studytrack.test        2º sem  7 Normal
+  Melissa Borges         melissa.borges@studytrack.test         2º sem  4 Normal, 3 Atenção
+  Melissa Brito          melissa.brito@studytrack.test          4º sem  7 Normal
+  Natália Carvalho       natalia.carvalho@studytrack.test       2º sem  7 Normal
+  Nicolas Borges         nicolas.borges@studytrack.test         4º sem  7 Normal
+  Olívia Bezerra         olivia.bezerra@studytrack.test         2º sem  7 Normal
+  Olívia Borges          olivia.borges@studytrack.test          4º sem  2 Normal, 4 Risco (1 trancada(s))
+  Otávio Bezerra         otavio.bezerra@studytrack.test         4º sem  5 Normal, 2 Atenção
+  Pietra Antunes         pietra.antunes@studytrack.test         2º sem  7 Normal
+  Pietra Bezerra         pietra.bezerra@studytrack.test         4º sem  7 Risco
+  Raul Andrade           raul.andrade@studytrack.test           2º sem  7 Normal
+  Raul Antunes           raul.antunes@studytrack.test           4º sem  7 Risco
+  Rebeca Andrade         rebeca.andrade@studytrack.test         2º sem  7 Normal
+  Rebeca Antunes         rebeca.antunes@studytrack.test         4º sem  7 Normal
+  Rodrigo Correia        rodrigo.correia@studytrack.test        2º sem  7 Normal
+  Samuel Albuquerque     samuel.albuquerque@studytrack.test     2º sem  7 Normal
+  Samuel Andrade         samuel.andrade@studytrack.test         4º sem  7 Normal
+  Sara Albuquerque       sara.albuquerque@studytrack.test       2º sem  7 Normal
+  Tomás Albuquerque      tomas.albuquerque@studytrack.test      4º sem  7 Normal
+  Vinícius Ribeiro       vinicius.ribeiro@studytrack.test       2º sem  7 Normal
+
+Ciência da Computação:
+  Alice Campos           alice.campos@studytrack.test           2º sem  7 Normal
+  Alice Cavalcanti       alice.cavalcanti@studytrack.test       4º sem  6 Normal (1 trancada(s))
+  Alice Coelho           alice.coelho@studytrack.test           4º sem  7 Risco
+  André Cardoso          andre.cardoso@studytrack.test          2º sem  4 Normal, 3 Risco
+  Arthur Brito           arthur.brito@studytrack.test           2º sem  5 Normal, 2 Atenção
+  Arthur Campos          arthur.campos@studytrack.test          2º sem  3 Normal, 3 Atenção, 1 Risco
+  Arthur Cavalcanti      arthur.cavalcanti@studytrack.test      4º sem  7 Normal
+  Arthur Coelho          arthur.coelho@studytrack.test          4º sem  7 Normal
+  Bianca Brito           bianca.brito@studytrack.test           2º sem  2 Atenção, 4 Risco (1 trancada(s))
+  Bianca Campos          bianca.campos@studytrack.test          4º sem  7 Normal
+  Bianca Cavalcanti      bianca.cavalcanti@studytrack.test      4º sem  2 Normal, 5 Risco
+  Breno Borges           breno.borges@studytrack.test           2º sem  7 Normal
+  Breno Brito            breno.brito@studytrack.test            2º sem  7 Normal
+  Breno Campos           breno.campos@studytrack.test           4º sem  7 Normal
+  Breno Cavalcanti       breno.cavalcanti@studytrack.test       4º sem  1 Atenção, 6 Risco
+  Caio Correia           caio.correia@studytrack.test           2º sem  3 Normal, 1 Atenção, 3 Risco
+  Cecília Borges         cecilia.borges@studytrack.test         2º sem  7 Normal
+  Cecília Brito          cecilia.brito@studytrack.test          4º sem  7 Normal
+  Cecília Campos         cecilia.campos@studytrack.test         4º sem  2 Normal, 5 Atenção
+  Daniel Ferreira        daniel.ferreira@studytrack.test        2º sem  3 Normal, 4 Risco
+  Davi Bezerra           davi.bezerra@studytrack.test           2º sem  7 Normal
+  Davi Borges            davi.borges@studytrack.test            2º sem  7 Normal
+  Davi Brito             davi.brito@studytrack.test             4º sem  7 Normal
+  Eduarda Bezerra        eduarda.bezerra@studytrack.test        2º sem  7 Normal
+  Eduarda Borges         eduarda.borges@studytrack.test         4º sem  7 Normal
+  Eduarda Brito          eduarda.brito@studytrack.test          4º sem  3 Normal, 4 Atenção
+  Eduardo Oliveira       eduardo.oliveira@studytrack.test       2º sem  4 Normal, 3 Risco
+  Enzo Antunes           enzo.antunes@studytrack.test           2º sem  5 Normal, 2 Atenção
+  Enzo Bezerra           enzo.bezerra@studytrack.test           2º sem  1 Atenção, 6 Risco
+  Enzo Borges            enzo.borges@studytrack.test            4º sem  7 Normal
+  Fábio Antunes          fabio.antunes@studytrack.test          2º sem  7 Normal
+  Fábio Bezerra          fabio.bezerra@studytrack.test          4º sem  7 Normal
+  Fábio Borges           fabio.borges@studytrack.test           4º sem  7 Normal
+  Fernanda Barbosa       fernanda.barbosa@studytrack.test       2º sem  5 Normal, 2 Atenção
+  Giovana Andrade        giovana.andrade@studytrack.test        2º sem  5 Normal, 2 Atenção
+  Giovana Antunes        giovana.antunes@studytrack.test        4º sem  7 Risco
+  Giovana Bezerra        giovana.bezerra@studytrack.test        4º sem  7 Normal
+  Heitor Albuquerque     heitor.albuquerque@studytrack.test     2º sem  2 Normal, 2 Atenção, 3 Risco
+  Heitor Andrade         heitor.andrade@studytrack.test         2º sem  7 Normal
+  Heitor Antunes         heitor.antunes@studytrack.test         4º sem  7 Normal
+  Heitor Bezerra         heitor.bezerra@studytrack.test         4º sem  7 Normal
+  Helena Albuquerque     helena.albuquerque@studytrack.test     2º sem  1 Normal, 6 Risco
+  Helena Andrade         helena.andrade@studytrack.test         4º sem  7 Normal
+  Helena Antunes         helena.antunes@studytrack.test         4º sem  7 Normal
+  Igor Albuquerque       igor.albuquerque@studytrack.test       2º sem  7 Normal
+  Igor Andrade           igor.andrade@studytrack.test           4º sem  3 Normal, 3 Atenção, 1 Risco
+  Igor Antunes           igor.antunes@studytrack.test           4º sem  4 Normal, 3 Atenção
+  Íris Albuquerque       iris.albuquerque@studytrack.test       4º sem  3 Normal, 4 Atenção
+  Íris Andrade           iris.andrade@studytrack.test           4º sem  7 Normal
+  Joaquim Albuquerque    joaquim.albuquerque@studytrack.test    4º sem  7 Risco
+  Joaquim Andrade        joaquim.andrade@studytrack.test        4º sem  7 Normal
+  Júlia Albuquerque      julia.albuquerque@studytrack.test      4º sem  7 Normal
+  Kauã Albuquerque       kaua.albuquerque@studytrack.test       4º sem  7 Risco
+  Lucas Correia          lucas.correia@studytrack.test          2º sem  7 Normal
+  Mariana Carvalho       mariana.carvalho@studytrack.test       2º sem  7 Normal
+  Natália Teixeira       natalia.teixeira@studytrack.test       2º sem  5 Normal, 2 Atenção
+  Pedro Cardoso          pedro.cardoso@studytrack.test          2º sem  7 Normal
+  Rodrigo Ribeiro        rodrigo.ribeiro@studytrack.test        2º sem  4 Normal, 3 Risco
+  Sofia Vieira           sofia.vieira@studytrack.test           2º sem  1 Normal, 6 Risco
+  Vitória Carvalho       vitoria.carvalho@studytrack.test       2º sem  7 Normal
+
+Engenharia da Computação:
+  Alice Albuquerque      alice.albuquerque@studytrack.test      2º sem  5 Normal, 1 Risco (1 trancada(s))
+  Alice Andrade          alice.andrade@studytrack.test          2º sem  6 Normal, 1 Risco
+  Alice Antunes          alice.antunes@studytrack.test          4º sem  7 Normal
+  Alice Bezerra          alice.bezerra@studytrack.test          4º sem  7 Normal
+  Alice Borges           alice.borges@studytrack.test           4º sem  6 Normal (1 trancada(s))
+  Alice Brito            alice.brito@studytrack.test            4º sem  7 Normal
+  Amanda Pinto           amanda.pinto@studytrack.test           2º sem  5 Normal, 1 Risco (1 trancada(s))
+  Ana Souza              ana.souza@studytrack.test              2º sem  6 Normal, 1 Risco
+  Arthur Albuquerque     arthur.albuquerque@studytrack.test     2º sem  3 Normal, 3 Atenção, 1 Risco
+  Arthur Andrade         arthur.andrade@studytrack.test         2º sem  6 Normal (1 trancada(s))
+  Arthur Antunes         arthur.antunes@studytrack.test         4º sem  6 Normal, 1 Atenção
+  Arthur Bezerra         arthur.bezerra@studytrack.test         4º sem  7 Normal
+  Arthur Borges          arthur.borges@studytrack.test          4º sem  7 Normal
+  Beatriz Carvalho       beatriz.carvalho@studytrack.test       2º sem  2 Normal, 1 Atenção, 4 Risco
+  Bianca Albuquerque     bianca.albuquerque@studytrack.test     2º sem  1 Normal, 5 Atenção, 1 Risco
+  Bianca Andrade         bianca.andrade@studytrack.test         4º sem  7 Normal
+  Bianca Antunes         bianca.antunes@studytrack.test         4º sem  7 Normal
+  Bianca Bezerra         bianca.bezerra@studytrack.test         4º sem  7 Normal
+  Bianca Borges          bianca.borges@studytrack.test          4º sem  7 Normal
+  Breno Albuquerque      breno.albuquerque@studytrack.test      4º sem  7 Normal
+  Breno Andrade          breno.andrade@studytrack.test          4º sem  7 Risco
+  Breno Antunes          breno.antunes@studytrack.test          4º sem  7 Risco
+  Breno Bezerra          breno.bezerra@studytrack.test          4º sem  3 Normal, 4 Atenção
+  Bruno Costa            bruno.costa@studytrack.test            2º sem  6 Normal, 1 Atenção
+  Camila Freitas         camila.freitas@studytrack.test         2º sem  1 Normal, 1 Atenção, 5 Risco
+  Carla Mendes           carla.mendes@studytrack.test           2º sem  2 Normal, 5 Risco
+  Cecília Albuquerque    cecilia.albuquerque@studytrack.test    4º sem  7 Risco
+  Cecília Andrade        cecilia.andrade@studytrack.test        4º sem  1 Normal, 6 Risco
+  Cecília Antunes        cecilia.antunes@studytrack.test        4º sem  7 Risco
+  Cecília Bezerra        cecilia.bezerra@studytrack.test        4º sem  7 Normal
+  Davi Albuquerque       davi.albuquerque@studytrack.test       4º sem  7 Risco
+  Davi Andrade           davi.andrade@studytrack.test           4º sem  7 Normal
+  Davi Antunes           davi.antunes@studytrack.test           4º sem  7 Normal
+  Diego Lima             diego.lima@studytrack.test             2º sem  3 Normal, 4 Atenção
+  Eduarda Albuquerque    eduarda.albuquerque@studytrack.test    4º sem  7 Risco
+  Eduarda Andrade        eduarda.andrade@studytrack.test        4º sem  7 Normal
+  Eduarda Antunes        eduarda.antunes@studytrack.test        4º sem  7 Normal
+  Elisa Rocha            elisa.rocha@studytrack.test            2º sem  2 Normal, 2 Atenção, 3 Risco
+  Enzo Albuquerque       enzo.albuquerque@studytrack.test       4º sem  7 Normal
+  Enzo Andrade           enzo.andrade@studytrack.test           4º sem  7 Normal
+  Fábio Albuquerque      fabio.albuquerque@studytrack.test      4º sem  1 Normal, 6 Atenção
+  Fábio Andrade          fabio.andrade@studytrack.test          4º sem  7 Normal
+  Felipe Alves           felipe.alves@studytrack.test           2º sem  3 Normal, 1 Atenção, 3 Risco
+  Gabriela Nunes         gabriela.nunes@studytrack.test         2º sem  1 Atenção, 6 Risco
+  Giovana Albuquerque    giovana.albuquerque@studytrack.test    4º sem  7 Normal
+  Gustavo Cardoso        gustavo.cardoso@studytrack.test        2º sem  7 Risco
+  Henrique Dias          henrique.dias@studytrack.test          2º sem  1 Normal, 1 Atenção, 4 Risco
+  Isabela Almeida        isabela.almeida@studytrack.test        2º sem  6 Normal, 1 Risco
+  João Pereira           estudante@studytrack.test              2º sem  2 Normal, 4 Atenção, 1 Risco
+  Juliana Araújo         juliana.araujo@studytrack.test         2º sem  4 Normal, 1 Atenção, 2 Risco
+  Larissa Vieira         larissa.vieira@studytrack.test         2º sem  2 Normal, 2 Atenção, 3 Risco
+  Leonardo Martins       leonardo.martins@studytrack.test       2º sem  6 Normal, 1 Risco
+  Letícia Santos         leticia.santos@studytrack.test         2º sem  7 Normal
+  Lucas Oliveira         lucas.oliveira@studytrack.test         2º sem  1 Normal, 6 Risco
+  Mariana Barbosa        mariana.barbosa@studytrack.test        2º sem  7 Normal
+  Matheus Monteiro       matheus.monteiro@studytrack.test       2º sem  6 Normal, 1 Atenção
+  Pedro Correia          pedro.correia@studytrack.test          2º sem  7 Normal
+  Rafael Ferreira        rafael.ferreira@studytrack.test        2º sem  5 Normal, 2 Risco
+  Thiago Pereira         thiago.pereira@studytrack.test         2º sem  3 Normal, 4 Risco
+  Vinícius Moreira       vinicius.moreira@studytrack.test       2º sem  4 Normal, 3 Risco
+
+Engenharia Elétrica:
+  Alice Cunha            alice.cunha@studytrack.test            2º sem  6 Normal (1 trancada(s))
+  Alice Dantas           alice.dantas@studytrack.test           4º sem  6 Normal (1 trancada(s))
+  Alice Duarte           alice.duarte@studytrack.test           4º sem  7 Normal
+  Arthur Cunha           arthur.cunha@studytrack.test           2º sem  7 Normal
+  Arthur Dantas          arthur.dantas@studytrack.test          4º sem  7 Risco
+  Beatriz Vieira         beatriz.vieira@studytrack.test         2º sem  7 Normal
+  Bianca Coelho          bianca.coelho@studytrack.test          2º sem  7 Normal
+  Bianca Cunha           bianca.cunha@studytrack.test           4º sem  7 Risco
+  Bianca Dantas          bianca.dantas@studytrack.test          4º sem  5 Normal, 2 Atenção
+  Breno Coelho           breno.coelho@studytrack.test           2º sem  7 Normal
+  Breno Cunha            breno.cunha@studytrack.test            4º sem  7 Normal
+  Camila Araújo          camila.araujo@studytrack.test          2º sem  2 Normal, 5 Atenção
+  Cecília Cavalcanti     cecilia.cavalcanti@studytrack.test     2º sem  7 Normal
+  Cecília Coelho         cecilia.coelho@studytrack.test         4º sem  7 Normal
+  Davi Campos            davi.campos@studytrack.test            2º sem  3 Atenção, 4 Risco
+  Davi Cavalcanti        davi.cavalcanti@studytrack.test        4º sem  1 Atenção, 6 Risco
+  Davi Coelho            davi.coelho@studytrack.test            4º sem  7 Normal
+  Eduarda Campos         eduarda.campos@studytrack.test         2º sem  7 Normal
+  Eduarda Cavalcanti     eduarda.cavalcanti@studytrack.test     4º sem  7 Risco
+  Enzo Brito             enzo.brito@studytrack.test             2º sem  7 Normal
+  Enzo Campos            enzo.campos@studytrack.test            4º sem  6 Risco (1 trancada(s))
+  Enzo Cavalcanti        enzo.cavalcanti@studytrack.test        4º sem  7 Normal
+  Fábio Brito            fabio.brito@studytrack.test            2º sem  7 Normal
+  Fábio Campos           fabio.campos@studytrack.test           4º sem  7 Normal
+  Giovana Borges         giovana.borges@studytrack.test         2º sem  7 Normal
+  Giovana Brito          giovana.brito@studytrack.test          4º sem  6 Normal, 1 Atenção
+  Giovana Campos         giovana.campos@studytrack.test         4º sem  7 Normal
+  Gustavo Ferreira       gustavo.ferreira@studytrack.test       2º sem  6 Normal (1 trancada(s))
+  Heitor Borges          heitor.borges@studytrack.test          2º sem  1 Normal, 6 Risco
+  Heitor Brito           heitor.brito@studytrack.test           4º sem  6 Normal, 1 Atenção
+  Helena Bezerra         helena.bezerra@studytrack.test         2º sem  7 Normal
+  Helena Borges          helena.borges@studytrack.test          4º sem  2 Atenção, 5 Risco
+  Helena Brito           helena.brito@studytrack.test           4º sem  7 Normal
+  Igor Bezerra           igor.bezerra@studytrack.test           2º sem  6 Normal (1 trancada(s))
+  Igor Borges            igor.borges@studytrack.test            4º sem  6 Normal, 1 Atenção
+  Íris Antunes           iris.antunes@studytrack.test           2º sem  7 Normal
+  Íris Bezerra           iris.bezerra@studytrack.test           4º sem  7 Normal
+  Íris Borges            iris.borges@studytrack.test            4º sem  5 Normal, 2 Atenção
+  Isabela Santos         isabela.santos@studytrack.test         2º sem  3 Normal, 4 Risco
+  Joaquim Antunes        joaquim.antunes@studytrack.test        2º sem  7 Normal
+  Joaquim Bezerra        joaquim.bezerra@studytrack.test        4º sem  7 Normal
+  Júlia Andrade          julia.andrade@studytrack.test          2º sem  7 Normal
+  Júlia Antunes          julia.antunes@studytrack.test          4º sem  2 Normal, 5 Atenção
+  Júlia Bezerra          julia.bezerra@studytrack.test          4º sem  7 Risco
+  Juliana Almeida        juliana.almeida@studytrack.test        2º sem  7 Normal
+  Kauã Andrade           kaua.andrade@studytrack.test           2º sem  7 Normal
+  Kauã Antunes           kaua.antunes@studytrack.test           4º sem  7 Normal
+  Lara Albuquerque       lara.albuquerque@studytrack.test       2º sem  2 Atenção, 5 Risco
+  Lara Andrade           lara.andrade@studytrack.test           4º sem  1 Atenção, 6 Risco
+  Larissa Freitas        larissa.freitas@studytrack.test        2º sem  7 Risco
+  Leonardo Ribeiro       leonardo.ribeiro@studytrack.test       2º sem  7 Normal
+  Letícia Pinto          leticia.pinto@studytrack.test          2º sem  4 Normal, 3 Risco
+  Lucca Albuquerque      lucca.albuquerque@studytrack.test      4º sem  7 Normal
+  Lucca Andrade          lucca.andrade@studytrack.test          4º sem  1 Normal, 6 Risco
+  Manuela Albuquerque    manuela.albuquerque@studytrack.test    4º sem  6 Normal, 1 Atenção
+  Marcelo Albuquerque    marcelo.albuquerque@studytrack.test    4º sem  6 Normal (1 trancada(s))
+  Matheus Moreira        matheus.moreira@studytrack.test        2º sem  7 Normal
+  Rafael Pereira         rafael.pereira@studytrack.test         2º sem  5 Normal, 2 Risco
+  Thiago Monteiro        thiago.monteiro@studytrack.test        2º sem  6 Normal, 1 Atenção
+  Vinícius Martins       vinicius.martins@studytrack.test       2º sem  4 Normal, 3 Atenção
+
+Publicidade e Propaganda:
+  Alice Fonseca          alice.fonseca@studytrack.test          4º sem  7 Normal
+  Alice Garcia           alice.garcia@studytrack.test           4º sem  7 Normal
+  Arthur Farias          arthur.farias@studytrack.test          2º sem  6 Normal, 1 Atenção
+  Arthur Fonseca         arthur.fonseca@studytrack.test         4º sem  7 Normal
+  Beatriz Freitas        beatriz.freitas@studytrack.test        2º sem  7 Normal
+  Bianca Farias          bianca.farias@studytrack.test          4º sem  7 Risco
+  Breno Esteves          breno.esteves@studytrack.test          2º sem  1 Normal, 6 Risco
+  Breno Farias           breno.farias@studytrack.test           4º sem  4 Atenção, 3 Risco
+  Camila Almeida         camila.almeida@studytrack.test         2º sem  6 Normal, 1 Atenção
+  Cecília Esteves        cecilia.esteves@studytrack.test        4º sem  7 Normal
+  Davi Duarte            davi.duarte@studytrack.test            2º sem  7 Normal
+  Davi Esteves           davi.esteves@studytrack.test           4º sem  7 Normal
+  Eduarda Dantas         eduarda.dantas@studytrack.test         2º sem  7 Normal
+  Eduarda Duarte         eduarda.duarte@studytrack.test         4º sem  7 Normal
+  Enzo Dantas            enzo.dantas@studytrack.test            2º sem  7 Normal
+  Enzo Duarte            enzo.duarte@studytrack.test            4º sem  7 Normal
+  Fábio Cunha            fabio.cunha@studytrack.test            2º sem  7 Normal
+  Fábio Dantas           fabio.dantas@studytrack.test           4º sem  7 Risco
+  Giovana Cunha          giovana.cunha@studytrack.test          2º sem  7 Normal
+  Giovana Dantas         giovana.dantas@studytrack.test         4º sem  5 Normal, 2 Atenção
+  Gustavo Pereira        gustavo.pereira@studytrack.test        2º sem  7 Normal
+  Heitor Coelho          heitor.coelho@studytrack.test          2º sem  1 Normal, 6 Atenção
+  Heitor Cunha           heitor.cunha@studytrack.test           4º sem  7 Normal
+  Helena Coelho          helena.coelho@studytrack.test          2º sem  7 Risco
+  Helena Cunha           helena.cunha@studytrack.test           4º sem  4 Normal, 3 Atenção
+  Igor Cavalcanti        igor.cavalcanti@studytrack.test        2º sem  7 Normal
+  Igor Coelho            igor.coelho@studytrack.test            4º sem  6 Normal (1 trancada(s))
+  Íris Cavalcanti        iris.cavalcanti@studytrack.test        4º sem  7 Normal
+  Íris Coelho            iris.coelho@studytrack.test            4º sem  7 Normal
+  Joaquim Campos         joaquim.campos@studytrack.test         2º sem  7 Normal
+  Joaquim Cavalcanti     joaquim.cavalcanti@studytrack.test     4º sem  6 Risco (1 trancada(s))
+  Júlia Campos           julia.campos@studytrack.test           4º sem  7 Normal
+  Juliana Santos         juliana.santos@studytrack.test         2º sem  5 Normal, 2 Risco
+  Kauã Brito             kaua.brito@studytrack.test             2º sem  7 Normal
+  Kauã Campos            kaua.campos@studytrack.test            4º sem  1 Normal, 6 Risco
+  Lara Brito             lara.brito@studytrack.test             4º sem  6 Normal, 1 Atenção
+  Larissa Araújo         larissa.araujo@studytrack.test         2º sem  2 Normal, 5 Risco
+  Lucas Cardoso          lucas.cardoso@studytrack.test          2º sem  6 Normal, 1 Atenção
+  Lucca Borges           lucca.borges@studytrack.test           2º sem  7 Normal
+  Lucca Brito            lucca.brito@studytrack.test            4º sem  7 Normal
+  Manuela Bezerra        manuela.bezerra@studytrack.test        2º sem  7 Normal
+  Manuela Borges         manuela.borges@studytrack.test         4º sem  2 Normal, 5 Atenção
+  Marcelo Bezerra        marcelo.bezerra@studytrack.test        2º sem  2 Normal, 3 Atenção, 1 Risco (1 trancada(s))
+  Marcelo Borges         marcelo.borges@studytrack.test         4º sem  7 Normal
+  Mariana Vieira         mariana.vieira@studytrack.test         2º sem  7 Normal
+  Melissa Antunes        melissa.antunes@studytrack.test        2º sem  5 Normal, 1 Atenção (1 trancada(s))
+  Melissa Bezerra        melissa.bezerra@studytrack.test        4º sem  7 Normal
+  Nicolas Antunes        nicolas.antunes@studytrack.test        2º sem  7 Normal
+  Nicolas Bezerra        nicolas.bezerra@studytrack.test        4º sem  7 Risco
+  Olívia Andrade         olivia.andrade@studytrack.test         2º sem  1 Atenção, 5 Risco (1 trancada(s))
+  Olívia Antunes         olivia.antunes@studytrack.test         4º sem  7 Normal
+  Otávio Andrade         otavio.andrade@studytrack.test         2º sem  7 Risco
+  Otávio Antunes         otavio.antunes@studytrack.test         4º sem  7 Risco
+  Pedro Ferreira         pedro.ferreira@studytrack.test         2º sem  7 Normal
+  Pietra Albuquerque     pietra.albuquerque@studytrack.test     2º sem  5 Normal, 2 Atenção
+  Pietra Andrade         pietra.andrade@studytrack.test         4º sem  7 Normal
+  Rafael Monteiro        rafael.monteiro@studytrack.test        2º sem  2 Normal, 5 Risco
+  Raul Albuquerque       raul.albuquerque@studytrack.test       4º sem  7 Normal
+  Rebeca Albuquerque     rebeca.albuquerque@studytrack.test     4º sem  7 Normal
+  Thiago Moreira         thiago.moreira@studytrack.test         2º sem  7 Normal
+
+Sistemas de Informação:
+  Alice Esteves          alice.esteves@studytrack.test          2º sem  7 Normal
+  Alice Farias           alice.farias@studytrack.test           4º sem  7 Normal
+  Amanda Teixeira        amanda.teixeira@studytrack.test        2º sem  3 Normal, 4 Risco
+  André Ferreira         andre.ferreira@studytrack.test         2º sem  7 Normal
+  Arthur Duarte          arthur.duarte@studytrack.test          2º sem  7 Risco
+  Arthur Esteves         arthur.esteves@studytrack.test         4º sem  7 Normal
+  Bianca Duarte          bianca.duarte@studytrack.test          4º sem  5 Normal, 2 Atenção
+  Bianca Esteves         bianca.esteves@studytrack.test         4º sem  7 Normal
+  Breno Dantas           breno.dantas@studytrack.test           2º sem  7 Risco
+  Breno Duarte           breno.duarte@studytrack.test           4º sem  7 Normal
+  Caio Cardoso           caio.cardoso@studytrack.test           2º sem  7 Normal
+  Cecília Cunha          cecilia.cunha@studytrack.test          2º sem  7 Normal
+  Cecília Dantas         cecilia.dantas@studytrack.test         4º sem  3 Normal, 4 Atenção
+  Cecília Duarte         cecilia.duarte@studytrack.test         4º sem  7 Normal
+  Daniel Pereira         daniel.pereira@studytrack.test         2º sem  2 Atenção, 5 Risco
+  Davi Cunha             davi.cunha@studytrack.test             2º sem  3 Normal, 4 Atenção
+  Davi Dantas            davi.dantas@studytrack.test            4º sem  7 Normal
+  Eduarda Coelho         eduarda.coelho@studytrack.test         2º sem  7 Normal
+  Eduarda Cunha          eduarda.cunha@studytrack.test          4º sem  7 Normal
+  Eduardo Correia        eduardo.correia@studytrack.test        2º sem  6 Normal, 1 Atenção
+  Enzo Coelho            enzo.coelho@studytrack.test            2º sem  5 Normal, 2 Atenção
+  Enzo Cunha             enzo.cunha@studytrack.test             4º sem  7 Normal
+  Fábio Cavalcanti       fabio.cavalcanti@studytrack.test       2º sem  7 Normal
+  Fábio Coelho           fabio.coelho@studytrack.test           4º sem  1 Atenção, 6 Risco
+  Fernanda Carvalho      fernanda.carvalho@studytrack.test      2º sem  7 Normal
+  Giovana Cavalcanti     giovana.cavalcanti@studytrack.test     2º sem  7 Normal
+  Giovana Coelho         giovana.coelho@studytrack.test         4º sem  6 Normal, 1 Atenção
+  Heitor Campos          heitor.campos@studytrack.test          2º sem  3 Normal, 4 Atenção
+  Heitor Cavalcanti      heitor.cavalcanti@studytrack.test      4º sem  7 Normal
+  Helena Campos          helena.campos@studytrack.test          2º sem  7 Normal
+  Helena Cavalcanti      helena.cavalcanti@studytrack.test      4º sem  7 Risco
+  Igor Brito             igor.brito@studytrack.test             2º sem  7 Normal
+  Igor Campos            igor.campos@studytrack.test            4º sem  7 Normal
+  Íris Brito             iris.brito@studytrack.test             4º sem  7 Normal
+  Íris Campos            iris.campos@studytrack.test            4º sem  7 Normal
+  Joaquim Borges         joaquim.borges@studytrack.test         2º sem  3 Normal, 4 Risco
+  Joaquim Brito          joaquim.brito@studytrack.test          4º sem  7 Normal
+  Júlia Borges           julia.borges@studytrack.test           4º sem  7 Normal
+  Júlia Brito            julia.brito@studytrack.test            4º sem  4 Normal, 2 Atenção (1 trancada(s))
+  Kauã Bezerra           kaua.bezerra@studytrack.test           2º sem  1 Normal, 6 Atenção
+  Kauã Borges            kaua.borges@studytrack.test            4º sem  2 Normal, 5 Atenção
+  Lara Antunes           lara.antunes@studytrack.test           2º sem  7 Risco
+  Lara Bezerra           lara.bezerra@studytrack.test           4º sem  7 Risco
+  Lara Borges            lara.borges@studytrack.test            4º sem  7 Normal
+  Lucca Antunes          lucca.antunes@studytrack.test          2º sem  5 Normal, 2 Atenção
+  Lucca Bezerra          lucca.bezerra@studytrack.test          4º sem  7 Normal
+  Manuela Andrade        manuela.andrade@studytrack.test        2º sem  7 Normal
+  Manuela Antunes        manuela.antunes@studytrack.test        4º sem  7 Normal
+  Marcelo Andrade        marcelo.andrade@studytrack.test        2º sem  7 Normal
+  Marcelo Antunes        marcelo.antunes@studytrack.test        4º sem  2 Normal, 4 Atenção, 1 Risco
+  Melissa Albuquerque    melissa.albuquerque@studytrack.test    2º sem  1 Normal, 6 Risco
+  Melissa Andrade        melissa.andrade@studytrack.test        4º sem  7 Normal
+  Natália Barbosa        natalia.barbosa@studytrack.test        2º sem  5 Normal, 2 Risco
+  Nicolas Albuquerque    nicolas.albuquerque@studytrack.test    2º sem  7 Normal
+  Nicolas Andrade        nicolas.andrade@studytrack.test        4º sem  7 Normal
+  Olívia Albuquerque     olivia.albuquerque@studytrack.test     4º sem  7 Normal
+  Otávio Albuquerque     otavio.albuquerque@studytrack.test     4º sem  7 Risco
+  Rodrigo Oliveira       rodrigo.oliveira@studytrack.test       2º sem  5 Normal, 2 Risco
+  Sofia Freitas          sofia.freitas@studytrack.test          2º sem  2 Normal, 5 Risco
+  Vitória Vieira         vitoria.vieira@studytrack.test         2º sem  5 Normal, 2 Risco
+
+FACULDADE POVOADA (prisma/povoamento.ts)
+- 6 cursos, cada um com matriz de 4 semestres × 7 disciplinas. Em 2026/2 rodam o 2º semestre (turma que entrou em
+  2026/1) e o 4º semestre (turma que entrou em 2025/1) de cada curso: 84 turmas de ~30 estudantes.
+- Histórico: 2025/1, 2025/2 e 2026/1 encerrados, com aprovados, reprovados e exames finais.
+- Turmas de 2026/2 têm o nome simples (Turma ALG-CC); as de outros períodos têm o sufixo ano+semestre
+  (Turma ALG-CC-252 é de 2025/2; Turma IA-ECO-271 é de 2027/1).
+- Senha de todas as contas: StudyTrack@2026.
 
 Observações:
 - Contas criadas pela tela (pelo admin ou pela coordenação) pedem uma senha nova no primeiro acesso.

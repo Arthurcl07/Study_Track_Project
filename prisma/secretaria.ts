@@ -10,6 +10,7 @@ import { paraData } from "../src/server/dados/atividades";
 import { recalcularFrequencia } from "../src/server/dados/chamada";
 import { prisma } from "../src/server/dados/prisma";
 import { AULAS_2026_2 } from "./simulacao";
+import { estudanteDoPovoamento } from "./povoamento";
 
 // Contas de demonstração usadas na apresentação: a secretaria não mexe nelas.
 const CONTAS_DA_APRESENTACAO = ["estudante@studytrack.test", "carla.mendes@studytrack.test", "ana.souza@studytrack.test"];
@@ -80,12 +81,15 @@ export async function exemplosDaSecretaria(base: { administradorId: string }) {
   }
 
   // SPEC-032: abono por atestado médico para um estudante da simulação que faltou num dia de 2026/2.
-  const falta = await prisma.presenca.findFirst({
+  // Um abono de exemplo só (os estudantes do povoamento ficam de fora: as presenças deles são do povoamento).
+  const faltas = await prisma.presenca.findMany({
     where: { presente: false, aula: { turma: { periodo: "2026/2" } }, estudante: { email: { notIn: CONTAS_DA_APRESENTACAO } } },
-    select: { estudanteId: true, estudante: { select: { nome: true, cursoId: true } }, aula: { select: { data: true, turmaId: true } } },
+    select: { estudanteId: true, estudante: { select: { nome: true, email: true, cursoId: true } }, aula: { select: { data: true, turmaId: true } } },
     orderBy: [{ aula: { data: "asc" } }, { estudanteId: "asc" }],
+    take: 500,
   });
-  if (falta && (await prisma.abono.count({ where: { estudanteId: falta.estudanteId } })) === 0) {
+  const falta = faltas.find((f) => !estudanteDoPovoamento(f.estudante.email));
+  if (falta && (await prisma.abono.count({ where: { observacao: "Atestado de 1 dia" } })) === 0) {
     await prisma.$transaction(async (tx) => {
       await tx.abono.create({ data: { estudanteId: falta.estudanteId, inicio: falta.aula.data, fim: falta.aula.data, motivo: "AtestadoMedico", observacao: "Atestado de 1 dia", autorId: base.administradorId } });
       await recalcularFrequencia(falta.estudanteId, falta.aula.turmaId, tx);
@@ -96,10 +100,10 @@ export async function exemplosDaSecretaria(base: { administradorId: string }) {
   }
 
   // SPEC-031: um estudante de Administração trancado (as matrículas de 2026/2 ficam Trancadas).
+  // Sempre a Amanda Barbosa (com o povoamento, "primeiro por nome" passaria a ser outro estudante).
   const trancar = await prisma.usuario.findFirst({
-    where: { perfil: "Estudante", curso: { nome: "Administração" }, email: { notIn: CONTAS_DA_APRESENTACAO } },
+    where: { perfil: "Estudante", email: "amanda.barbosa@studytrack.test" },
     select: { id: true, nome: true, cursoId: true, ficha: { select: { situacaoCurso: true } } },
-    orderBy: { nome: "asc" },
   });
   if (trancar && trancar.ficha?.situacaoCurso === "Ativo") {
     await prisma.$transaction(async (tx) => {

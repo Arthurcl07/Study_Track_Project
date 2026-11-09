@@ -56,6 +56,7 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | RF-50 | Aproveitamento de estudos | RB-22, RB-35 | UC-39 | SPEC-042 | — | `tests/spec-042/` | SPEC-036-043.md |
 | RF-51 | Conclusão de curso | RB-30, RB-40 | UC-39 | SPEC-042 | — | `tests/spec-042/` | SPEC-036-043.md |
 | RF-52 | Exportação de apoio ao Censo | RB-13, RB-22 | UC-40 | SPEC-043 | — | `tests/spec-043/` | SPEC-036-043.md |
+| RF-53 | Trancamento de disciplina e de curso por requerimento | RB-22, RB-30, RB-34, RB-42 | UC-32, UC-33 | SPEC-044 | — | `tests/spec-044/` | SPEC-044.md |
 
 ## Lacunas conhecidas
 
@@ -64,6 +65,7 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 - RF-32 a RF-34 (SPEC-023 a SPEC-025) sem issue: pedido do grupo (Luiz) em 2026-11-06, registrado nos OPEN-045 a OPEN-047.
 - RF-35 a RF-43 (SPEC-026 a SPEC-035) sem issue: pedido de Arthur em 2026-11-06 ("Nível 1" para uso real), registrado nos OPEN-048 a OPEN-057.
 - RF-44 a RF-52 (SPEC-036 a SPEC-043) sem issue: pedido de Arthur em 2026-11-08 (Nível 3, sem os itens 28 e 30), registrado nos OPEN-058 a OPEN-065.
+- RF-53 (SPEC-044) sem issue: pedido de Arthur em 2026-11-09, registrado no OPEN-066.
 
 - Todo RF tem caso de uso: RF-03, RF-04, RF-07, RF-08 e RF-13 ganharam os UC-06 a UC-10 em 2026-10-17.
 - RB-08 (atraso) e RB-12 (progresso do plano) viraram contrato com o fechamento do OPEN-010, do OPEN-003 e do OPEN-021.
@@ -116,3 +118,4 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | SPEC-041 | Sala, HorarioTurma |
 | SPEC-042 | Aproveitamento, FichaEstudante |
 | SPEC-043 | leitura de Usuario, FichaEstudante, Turma, Matricula, IndicadorAcademico |
+| SPEC-044 | Requerimento (tipo TrancamentoDisciplina), Matricula (situação), FichaEstudante (situação) |

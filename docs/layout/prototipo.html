@@ -1241,6 +1241,44 @@ Simulado da prova substitutiva</textarea></div>
           <p style="margin:0;font-size:13px;color:var(--mudo)">Deferir o trancamento não tranca sozinho: registre na <a class="link" href="#">ficha da estudante</a>.</p></div></div>
     </div>`)],
 
+  // ---------------------------------------------------------------- SPEC-044 (trancamento por requerimento)
+  "trancamento-pedido": ["SPEC-044 · Estudante — Pedir trancamento de disciplina", () => casca("Estudante", "requerimentos", `
+    ${cab("Requerimentos", "Peça revisão de prova, segunda chamada, declaração ou trancamento. Prazo de resposta: 5 dias úteis.")}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Meus requerimentos (2)</h2>
+        <table class="tabela-resp"><thead><tr><th>Protocolo</th><th>Tipo</th><th>Status</th><th>Prazo</th></tr></thead><tbody>
+          <tr><td data-r="Protocolo">2026-000121</td><td data-r="Tipo">Trancamento de disciplina · Física I</td><td data-r="Status"><span class="status-req st-deferido">✓ Deferido</span><br><small style="color:var(--mudo)">Física I trancada em 09/11.</small></td><td data-r="Prazo">—</td></tr>
+          <tr><td data-r="Protocolo">2026-000102</td><td data-r="Tipo">Declaração de matrícula</td><td data-r="Status"><span class="status-req st-deferido">✓ Deferido</span></td><td data-r="Prazo">—</td></tr>
+        </tbody></table></div>
+      <div class="cartao"><h2>Novo requerimento</h2><div class="pilha">
+        ${lista("Tipo", ["Revisão de prova", "Segunda chamada", "Declaração de matrícula", "Trancamento de disciplina", "Trancamento de curso", "Outro"], "Trancamento de disciplina")}
+        ${lista("Disciplina que quer trancar", ["Turma BD-A · Banco de Dados", "Turma MS-A · Modelagem de Software", "Turma SO-B · Sistemas Operacionais"], "Turma BD-A · Banco de Dados")}
+        <div><label class="rotulo">Motivo</label><textarea class="campo" rows="3">Vou trabalhar no horário dessa aula a partir deste mês.</textarea></div>
+        <div class="msg" style="background:#EFF6FF;color:#1E3A8A;font-size:13px">Se a secretaria deferir, <strong>só Banco de Dados</strong> fica trancada: sai da chamada e das notas, e o boletim e o histórico mostram "Trancada". Suas notas e presenças ficam guardadas. As outras disciplinas continuam normais.</div>
+        <p style="margin:0;font-size:13px;color:var(--mudo)">Vai para a secretaria. Resposta até 16/11 (5 dias úteis). Só dá para trancar enquanto o diário da turma estiver aberto.</p>
+        <button class="btn btn-primario btn-bloco">Enviar requerimento</button></div></div>
+    </div>
+    <div class="cartao" style="margin-top:16px"><h2>E o trancamento de curso?</h2>
+      <p style="margin:0;font-size:14px;color:var(--mudo)">No tipo <strong>Trancamento de curso</strong> não se escolhe disciplina: o aviso diz "Se a secretaria deferir, você fica com o curso Trancado e <strong>todas</strong> as suas disciplinas de 2026/2 ficam Trancadas".</p></div>`)],
+
+  "trancamento-deferir": ["SPEC-044 · Secretaria — Deferir trancamento", () => casca("Administrador", "requerimentos", `
+    ${cab("Requerimentos", "Declarações, trancamentos e outros pedidos. Os atrasados aparecem primeiro.")}
+    <div class="grade g-form">
+      <div class="cartao"><h2>Pendentes (3)</h2>
+        <table class="tabela-resp"><thead><tr><th>Protocolo</th><th>Estudante</th><th>Tipo</th><th>Prazo</th><th>Status</th></tr></thead><tbody>
+          ${[["2026-000124", "João Pereira · 20260075", "Trancamento de disciplina · Banco de Dados", "16/11", "Aberto"], ["2026-000119", "Elisa Rocha · 20260022", "Trancamento de curso", "13/11", "Em análise"], ["2026-000110", "Bruno Costa · 20260033", "Declaração de matrícula", "12/11", "Aberto"]].map(([p, e, ti, pz, s]) =>
+            `<tr><td data-r="Protocolo"><a class="link" href="#">${p}</a></td><td data-r="Estudante">${e}</td><td data-r="Tipo">${ti}</td><td data-r="Prazo">${pz}</td><td data-r="Status"><span class="status-req ${s === "Aberto" ? "st-aberto" : "st-analise"}">${s}</span></td></tr>`).join("")}
+        </tbody></table></div>
+      <div class="cartao"><h2>2026-000124 · Trancamento de disciplina</h2>
+        <p style="margin:0 0 6px;font-size:14px"><strong>João Pereira</strong> · Engenharia da Computação · aberto em 09/11</p>
+        <p style="margin:0 0 6px;font-size:14px">Turma BD-A · Banco de Dados · professora Júlia Reis</p>
+        <p style="margin:0 0 12px;font-size:14px;color:var(--mudo)">"Vou trabalhar no horário dessa aula a partir deste mês."</p>
+        <div class="msg" style="background:#FFFBEB;color:#92400E;font-size:13px;margin-bottom:12px"><strong>Deferir tranca Banco de Dados (Turma BD-A)</strong> para o João: a matrícula fica Trancada na hora. As outras 3 disciplinas dele continuam.</div>
+        <div class="pilha"><div><label class="rotulo">Resposta</label><textarea class="campo" rows="2">Trancamento registrado.</textarea></div>
+          <div class="acoes-linha" style="justify-content:flex-start"><button class="btn btn-secundario">Em análise</button><button class="btn btn-primario">Deferir e trancar</button><button class="btn btn-perigo">Indeferir</button></div>
+          <p style="margin:0;font-size:13px;color:var(--mudo)">No trancamento de curso, o aviso diz "Deferir tranca o curso: 4 disciplinas de 2026/2 ficam Trancadas".</p></div></div>
+    </div>`)],
+
   "matriz-coordenador": ["SPEC-037 · Coordenador — Matriz do curso", () => casca("Coordenador", "disciplinas", `
     ${cab("Disciplinas", "Engenharia da Computação · aba Matriz: semestre, obrigatória e pré-requisitos.")}
     <div class="cartao" style="margin-bottom:16px"><div class="acoes-linha" style="justify-content:flex-start"><a class="btn btn-secundario" href="#">Grade</a><a class="btn btn-primario" href="#">Matriz</a></div></div>

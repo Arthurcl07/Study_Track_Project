@@ -6,7 +6,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { ROTULO_TIPO_REQUERIMENTO, TIPOS_REQUERIMENTO, exigeTurma, type StatusRequerimento, type TipoRequerimento } from "@/domain/requerimentos";
+import { ROTULO_TIPO_REQUERIMENTO, TIPOS_REQUERIMENTO, ehTrancamento, exigeTurma, vaiAoProfessor, type StatusRequerimento, type TipoRequerimento } from "@/domain/requerimentos";
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_BOTAO_SECUNDARIO, CLASSE_CAMPO, CLASSE_ROTULO, Cartao, ErroCampo, EstadoVazio, Mensagem, formatarDataCurta } from "./ui";
 
 export type RequerimentoDaLista = {
@@ -27,6 +27,8 @@ export type RequerimentoDaLista = {
   turma: string | null;
   avaliacao: string | null;
   responsavel: string | null;
+  // SPEC-044: o que deferir vai fazer (só para quem responde um trancamento pendente).
+  efeito: string | null;
 };
 export type TurmaDoRequerimento = { id: string; rotulo: string; professor: string; avaliacoes: { id: string; nome: string }[] };
 
@@ -85,30 +87,42 @@ function NovoRequerimento({ turmas }: { turmas: TurmaDoRequerimento[] }) {
         {exigeTurma(tipo) && (
           <>
             <div>
-              <label htmlFor="req-turma" className={CLASSE_ROTULO}>Turma</label>
+              <label htmlFor="req-turma" className={CLASSE_ROTULO}>{tipo === "TrancamentoDisciplina" ? "Disciplina que quer trancar" : "Turma"}</label>
               <select id="req-turma" name="turmaId" value={turmaId} onChange={(e) => setTurmaId(e.target.value)} className={CLASSE_CAMPO}>
                 {turmas.length === 0 && <option value="">Você não está cursando nenhuma turma</option>}
                 {turmas.map((t) => <option key={t.id} value={t.id}>{t.rotulo}</option>)}
               </select>
               <ErroCampo mensagem={erros.turmaId} />
             </div>
-            <div>
-              <label htmlFor="req-avaliacao" className={CLASSE_ROTULO}>Avaliação (opcional)</label>
-              <select id="req-avaliacao" name="avaliacaoId" defaultValue="" className={CLASSE_CAMPO}>
-                <option value="">—</option>
-                {turma?.avaliacoes.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
-              </select>
-              <ErroCampo mensagem={erros.avaliacaoId} />
-            </div>
+            {vaiAoProfessor(tipo) && (
+              <div>
+                <label htmlFor="req-avaliacao" className={CLASSE_ROTULO}>Avaliação (opcional)</label>
+                <select id="req-avaliacao" name="avaliacaoId" defaultValue="" className={CLASSE_CAMPO}>
+                  <option value="">—</option>
+                  {turma?.avaliacoes.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+                </select>
+                <ErroCampo mensagem={erros.avaliacaoId} />
+              </div>
+            )}
           </>
         )}
         <div>
-          <label htmlFor="req-descricao" className={CLASSE_ROTULO}>Descrição</label>
+          <label htmlFor="req-descricao" className={CLASSE_ROTULO}>{ehTrancamento(tipo) ? "Motivo" : "Descrição"}</label>
           <textarea id="req-descricao" name="descricao" rows={4} maxLength={1000} aria-invalid={Boolean(erros.descricao)} className={CLASSE_CAMPO} />
           <ErroCampo mensagem={erros.descricao} />
         </div>
+        {/* SPEC-044: o efeito de cada trancamento, antes de enviar. */}
+        {tipo === "TrancamentoDisciplina" && (
+          <Mensagem tipo="info">
+            Se a secretaria deferir, <strong>só {turma ? turma.rotulo.split(" · ").slice(1).join(" · ") || turma.rotulo : "essa disciplina"}</strong> fica trancada: sai da chamada e das notas, e o boletim e o histórico mostram &ldquo;Trancada&rdquo;. Suas notas e presenças ficam guardadas. As outras disciplinas continuam normais.
+          </Mensagem>
+        )}
+        {tipo === "Trancamento" && (
+          <Mensagem tipo="info">Se a secretaria deferir, você fica com o curso <strong>Trancado</strong> e <strong>todas</strong> as suas disciplinas do semestre ficam Trancadas.</Mensagem>
+        )}
         <p className="text-sm text-mudo">
-          {exigeTurma(tipo) ? `Vai para ${turma ? `o(a) professor(a) ${turma.professor}` : "o professor da turma"}.` : "Vai para a secretaria."} Resposta em até 5 dias úteis.
+          {vaiAoProfessor(tipo) ? `Vai para ${turma ? `o(a) professor(a) ${turma.professor}` : "o professor da turma"}.` : "Vai para a secretaria."} Resposta em até 5 dias úteis.
+          {tipo === "TrancamentoDisciplina" && " Só dá para trancar enquanto o diário da turma estiver aberto."}
         </p>
         {erro && Object.keys(erros).length === 0 && <Mensagem tipo="erro">{erro}</Mensagem>}
         {sucesso && <Mensagem tipo="sucesso">{sucesso}</Mensagem>}
@@ -144,16 +158,16 @@ function Responder({ req, aoFechar }: { req: RequerimentoDaLista; aoFechar: () =
       {req.turma && <p className="text-sm text-mudo">{req.turma}{req.avaliacao ? ` · ${req.avaliacao}` : ""}</p>}
       <p className="mt-2 text-sm text-mudo">Aberto em {formatarDataCurta(req.criadoEm.slice(0, 10))} · prazo {formatarDataCurta(req.prazo)}{req.atrasado ? " (atrasado)" : ""}</p>
       <blockquote className="my-3 rounded-lg bg-nevoa px-3 py-2 text-sm">{req.descricao}</blockquote>
+      {req.efeito && <div className="mb-3"><Mensagem tipo="aviso"><strong>{req.efeito}</strong></Mensagem></div>}
       <label htmlFor="resposta" className={CLASSE_ROTULO}>Resposta</label>
       <textarea id="resposta" rows={3} value={resposta} onChange={(e) => setResposta(e.target.value)} maxLength={1000} className={CLASSE_CAMPO} />
       {erro && <div className="mt-2"><Mensagem tipo="erro">{erro}</Mensagem></div>}
       <div className="mt-3 flex flex-wrap gap-2">
         {req.status === "Aberto" && <button type="button" disabled={enviando} onClick={() => enviar("EmAnalise")} className={CLASSE_BOTAO_SECUNDARIO}>Em análise</button>}
-        <button type="button" disabled={enviando} onClick={() => enviar("Deferido")} className={CLASSE_BOTAO_PRIMARIO}>Deferir</button>
+        <button type="button" disabled={enviando} onClick={() => enviar("Deferido")} className={CLASSE_BOTAO_PRIMARIO}>{ehTrancamento(req.tipo) ? "Deferir e trancar" : "Deferir"}</button>
         <button type="button" disabled={enviando} onClick={() => enviar("Indeferido")} className={`${CLASSE_BOTAO_SECUNDARIO} text-risco`}>Indeferir</button>
         <button type="button" onClick={aoFechar} className="text-sm font-medium text-mudo hover:underline">Fechar</button>
       </div>
-      {req.tipo === "Trancamento" && <p className="mt-3 text-sm text-mudo">Deferir o trancamento não tranca sozinho: registre na ficha do estudante, em Estudantes.</p>}
     </Cartao>
   );
 }
