@@ -99,6 +99,7 @@ Entrar como `admin@studytrack.test`.
 - **Professor (`professor@`) → Requerimentos**: deferir a revisão de prova do João (ele recebe a notificação). **Chamada → Turma MS-A**: o conteúdo de cada aula; **Turma ER-B**: diário fechado, sem lançamento (SPEC-039).
 - **Coordenador (`coordenador@`) → Diários**: homologar ou devolver o diário da Turma ER-B (devolver avisa o professor). **Disciplinas → Matriz**: tentar pôr Algoritmos como pré-requisito de Lógica (recusado: ciclo). **Turmas → Turma MS-A**: horários com sala e vagas; um horário que bate com outra turma na mesma sala é recusado (SPEC-037/039/041).
 - **Administrador (`admin@`) → Estudantes → Henrique Dias**: integralização e o aproveitamento de Introdução à Computação; tentar marcar Concluído (recusado com o que falta); **Histórico** com a seção de aproveitamento (SPEC-042). **Calendário**, **Salas**, **Períodos letivos** (janela de rematrícula) e **Exportação do Censo** (prévia e CSV de apoio) (SPEC-040/041/043).
+- **Trancamento (SPEC-044):** o estudante pede "Trancamento de disciplina" (escolhe uma matéria) ou "Trancamento de curso" em **Requerimentos**. Na secretaria (`admin@`), o pedido do **Diego Lima** (Física I) mostra o efeito; **Deferir e trancar** deixa só Física I trancada — ela some do painel do Diego e da chamada, e o boletim mostra "Trancada".
 - A rematrícula de 2027/1 está aberta de 03/11 a 30/11/2026. Se a apresentação for depois, ajuste a janela em **Administrador → Períodos letivos**.
 
 ## 5. Qualidade (2 min)

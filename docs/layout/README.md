@@ -65,5 +65,6 @@ Em todas as telas autenticadas: menu lateral do perfil, nome e perfil do usuári
 | Telas das SPEC-023 a SPEC-025 — `#est-simulador`, `#prof-turma-simulador`, `#coord-comparativo`, `#est-documentos-semestres`, `#comunicados-estudante`, `#comunicados-publicar` | `aprovado` | Luiz | 2026-11-06 |
 | Telas das SPEC-026 a SPEC-035 (Nível 1: secretaria) — `#correcao-avaliacao`, `#avaliacao-tipos`, `#correcao-turma`, `#correcao-conta`, `#senha-esqueci`, `#senha-pedidos`, `#chamada-aulas`, `#boletim-exame`, `#virada-semestre`, `#estudantes-lista`, `#estudante-secretaria`, `#instituicao`, `#dashboard-secretaria`; link "Esqueci minha senha" em `#login` | `aprovado` | Arthur | 2026-11-06 |
 | Telas das SPEC-036 a SPEC-043 (Nível 3) — `#requerimentos-estudante`, `#requerimentos-responder`, `#matriz-coordenador`, `#meu-curso`, `#rematricula`, `#diario-professor`, `#diario-homologar`, `#calendario`, `#calendario-secretaria`, `#turma-horarios`, `#salas`, `#aproveitamento`, `#historico-final`, `#exportacao-censo` | `aprovado` | Arthur | 2026-11-08 |
+| Telas da SPEC-044 (trancamento por requerimento) — `#trancamento-pedido`, `#trancamento-deferir` | `aprovado` | Arthur | 2026-11-09 |
 
 Ao aprovar: preencher esta tabela, a seção "Telas e evidência de layout" de cada Spec em `specs.md` e o campo "Aprovação humana" de `identidade-visual.md`.

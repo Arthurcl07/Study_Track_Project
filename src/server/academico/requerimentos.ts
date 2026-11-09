@@ -10,16 +10,20 @@ import {
   ROTULO_TIPO_REQUERIMENTO,
   atrasado,
   destinoDoTipo,
+  ehTrancamento,
+  motivoParaNaoTrancarDisciplina,
   protocolo,
   validarRequerimento,
   validarResposta,
   type StatusRequerimento,
   type TipoRequerimento,
 } from "@/domain/requerimentos";
+import type { SituacaoCurso } from "@/domain/secretaria";
 import type { Prisma } from "@prisma/client";
 import type { Sessao } from "@/server/auth/token";
 import { deData, paraData } from "@/server/dados/atividades";
-import { auditar } from "@/server/dados/auditoria";
+import { auditar, turmaParaAuditoria } from "@/server/dados/auditoria";
+import type { ClienteBanco } from "@/server/dados/indicadores";
 import { MATRICULA_CURSANDO } from "@/server/dados/matriculas";
 import { executarEmTransacao } from "@/server/dados/notas";
 import { notificar } from "@/server/dados/notificacoes";
@@ -27,6 +31,7 @@ import { TURMA_DE_PERIODO_ABERTO } from "@/server/dados/periodos";
 import { prisma } from "@/server/dados/prisma";
 import type { Falha, Resultado } from "./cadastros";
 import { folgasDoCalendario } from "./calendario";
+import { gravarSituacao } from "./secretaria";
 
 const sucesso = <T>(valor: T): Resultado<T> => ({ ok: true, valor });
 const falha = <T>(f: Falha): Resultado<T> => ({ ok: false, falha: f });
@@ -50,6 +55,11 @@ export async function abrirRequerimento(sessao: Sessao, entrada: Record<string, 
   if (d.turmaId) {
     const turma = await prisma.turma.findFirst({ where: { id: d.turmaId, matriculas: { some: { estudanteId: sessao.usuarioId, ...MATRICULA_CURSANDO } }, ...TURMA_DE_PERIODO_ABERTO }, select: { id: true } });
     if (!turma) return falha({ tipo: "invalido", erros: { turmaId: "Escolha uma turma em que você está cursando." } });
+    // SPEC-044 / RB-42 (AC-044-04): só tranca disciplina com o diário aberto.
+    if (d.tipo === "TrancamentoDisciplina") {
+      const motivo = await motivoDoTrancamento(sessao.usuarioId, d.turmaId);
+      if (motivo) return falha({ tipo: "invalido", erros: { turmaId: motivo } });
+    }
     if (d.avaliacaoId && !(await prisma.avaliacao.findFirst({ where: { id: d.avaliacaoId, turmaId: d.turmaId }, select: { id: true } }))) {
       return falha({ tipo: "invalido", erros: { avaliacaoId: "Avaliação de outra turma." } });
     }
@@ -112,6 +122,7 @@ export async function listarRequerimentos(sessao: Sessao, hoje = hojeEmBrasilia(
       prazo: true,
       criadoEm: true,
       respondidoEm: true,
+      estudanteId: true,
       estudante: { select: { nome: true, ficha: { select: { numeroMatricula: true } }, curso: { select: { nome: true } } } },
       turma: { select: { nome: true, disciplina: { select: { nome: true } }, professor: { select: { nome: true } } } },
       avaliacao: { select: { nome: true } },
@@ -120,9 +131,17 @@ export async function listarRequerimentos(sessao: Sessao, hoje = hojeEmBrasilia(
     orderBy: [{ criadoEm: "desc" }, { id: "asc" }],
     take: 300,
   });
+  const responde = podeResponder(sessao);
+  const efeitos = new Map<string, string | null>();
+  if (responde) {
+    for (const r of lista) {
+      if (ehTrancamento(r.tipo as TipoRequerimento) && (r.status === "Aberto" || r.status === "EmAnalise")) efeitos.set(r.id, await efeitoDoTrancamento(r));
+    }
+  }
   const itens = lista.map((r) => {
     const prazo = deData(r.prazo);
     return {
+      efeito: efeitos.get(r.id) ?? null,
       id: r.id,
       protocolo: r.protocolo,
       tipo: r.tipo as TipoRequerimento,
@@ -154,15 +173,26 @@ export async function listarRequerimentos(sessao: Sessao, hoje = hojeEmBrasilia(
 export async function responderRequerimento(sessao: Sessao, id: string, entrada: Record<string, unknown>) {
   const where = escopo(sessao);
   if (!where || !podeResponder(sessao)) return falha({ tipo: "fora-do-escopo" });
-  const req = await prisma.requerimento.findFirst({ where: { AND: [where, { id }] }, select: { id: true, protocolo: true, tipo: true, status: true, estudanteId: true, turmaId: true, estudante: { select: { nome: true, cursoId: true } } } });
+  const req = await prisma.requerimento.findFirst({ where: { AND: [where, { id }] }, select: { id: true, protocolo: true, tipo: true, status: true, estudanteId: true, turmaId: true, estudante: { select: { nome: true, cursoId: true, ficha: { select: { numeroMatricula: true, situacaoCurso: true } } } } } });
   if (!req) return falha({ tipo: "nao-encontrado", erro: "Requerimento não encontrado." });
   const validacao = validarResposta(req.status as StatusRequerimento, entrada);
   if (!validacao.ok) return "conflito" in validacao ? falha({ tipo: "conflito", erro: validacao.conflito }) : falha({ tipo: "invalido", erros: validacao.erros });
   const { status, resposta } = validacao.dados;
   const decidido = status === "Deferido" || status === "Indeferido";
+  // SPEC-044 / RB-42 (AC-044-05, AC-044-07): o deferimento do trancamento só passa se ainda puder ser aplicado.
+  const tipoReq = req.tipo as TipoRequerimento;
+  const aplicar = status === "Deferido" && ehTrancamento(tipoReq);
+  if (aplicar && tipoReq === "TrancamentoDisciplina") {
+    const motivo = req.turmaId ? await motivoDoTrancamento(req.estudanteId, req.turmaId) : "O requerimento não tem turma.";
+    if (motivo) return falha({ tipo: "conflito", erro: `${motivo} Indefira o requerimento.` });
+  }
+  if (aplicar && tipoReq === "Trancamento" && req.estudante.ficha?.situacaoCurso !== "Ativo") {
+    return falha({ tipo: "conflito", erro: "O estudante não está Ativo no curso: não dá para trancar. Indefira o requerimento." });
+  }
   return sucesso(
     await executarEmTransacao(async (tx) => {
       await tx.requerimento.update({ where: { id }, data: { status, ...(resposta ? { resposta } : {}), ...(decidido ? { respondidoEm: new Date(), responsavelId: sessao.usuarioId } : {}) } });
+      if (aplicar) await aplicarTrancamento(tx, req, sessao.usuarioId);
       const tipo = ROTULO_TIPO_REQUERIMENTO[req.tipo as TipoRequerimento];
       await notificar(tx, req.estudanteId, notificacaoRequerimento(req.protocolo, tipo, status, resposta));
       await auditar(tx, {
@@ -194,4 +224,43 @@ export async function consultarDeclaracao(sessao: Sessao, requerimentoId: string
     prisma.instituicao.findUnique({ where: { id: 1 } }),
   ]);
   return { protocolo: req.protocolo, emitidaEm: (req.respondidoEm ?? new Date()).toISOString(), estudante, turmas, instituicao };
+}
+
+// RB-42: o que impede trancar a disciplina agora (matrícula, período e diário da turma).
+async function motivoDoTrancamento(estudanteId: string, turmaId: string) {
+  const turma = await prisma.turma.findUnique({
+    where: { id: turmaId },
+    select: { diario: true, periodoLetivo: { select: { status: true } }, matriculas: { where: { estudanteId }, select: { situacao: true } } },
+  });
+  if (!turma) return "Turma não encontrada.";
+  return motivoParaNaoTrancarDisciplina({ matricula: turma.matriculas[0]?.situacao ?? null, diario: turma.diario, periodo: turma.periodoLetivo.status });
+}
+
+// SPEC-044 / INV-044-01: aplica o trancamento na mesma transação do deferimento.
+async function aplicarTrancamento(
+  tx: ClienteBanco,
+  req: { protocolo: string; tipo: string; estudanteId: string; turmaId: string | null; estudante: { nome: string; cursoId: string | null; ficha: { numeroMatricula: string; situacaoCurso: string } | null } },
+  autorId: string,
+) {
+  const motivo = `Requerimento ${req.protocolo}`;
+  if (req.tipo === "TrancamentoDisciplina" && req.turmaId) {
+    await tx.matricula.update({ where: { estudanteId_turmaId: { estudanteId: req.estudanteId, turmaId: req.turmaId } }, data: { situacao: "Trancada" } });
+    const contexto = await turmaParaAuditoria(req.turmaId, tx);
+    await auditar(tx, { autorId, acao: "matricula.trancada", ...contexto, descricao: `${req.estudante.nome}: ${contexto.rotulo} trancada — ${motivo}`, antes: { situacao: "Cursando" }, depois: { situacao: "Trancada" } });
+    return;
+  }
+  const ficha = req.estudante.ficha!;
+  await gravarSituacao(
+    tx,
+    { id: req.estudanteId, nome: req.estudante.nome, cursoId: req.estudante.cursoId, numeroMatricula: ficha.numeroMatricula, atual: ficha.situacaoCurso as SituacaoCurso },
+    { situacao: "Trancado", data: hojeEmBrasilia(), motivo },
+    autorId,
+  );
+}
+
+// SPEC-044: o que o deferimento vai fazer, para o painel da secretaria.
+async function efeitoDoTrancamento(r: { tipo: string; estudanteId: string; turma: { nome: string; disciplina: { nome: string } } | null }) {
+  if (r.tipo === "TrancamentoDisciplina") return r.turma ? `Deferir tranca ${r.turma.disciplina.nome} (${r.turma.nome}): a matrícula fica Trancada na hora. As outras disciplinas continuam.` : null;
+  const quantas = await prisma.matricula.count({ where: { estudanteId: r.estudanteId, ...MATRICULA_CURSANDO, turma: TURMA_DE_PERIODO_ABERTO } });
+  return `Deferir tranca o curso: o estudante fica Trancado e ${quantas} disciplina(s) de período aberto ficam Trancadas.`;
 }

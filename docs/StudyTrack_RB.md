@@ -207,6 +207,7 @@ Cláusula EARS:
   IF a situação do estudante no curso não for Ativo, THEN o sistema SHALL impedir novas matrículas e importações dele.
   IF a nova situação for Concluído e a integralização for menor que 100%, THEN o sistema SHALL recusar (RB-40, 2026-11-08).
   WHEN o estudante for trancado, o sistema SHALL marcar como Trancadas as matrículas dele em turmas de período aberto; WHEN for transferido ou cancelado, SHALL marcá-las como Canceladas.
+  WHEN a secretaria deferir um requerimento de trancamento de curso, o sistema SHALL mudar a situação do estudante para Trancado com esse mesmo efeito (RB-42, 2026-11-09).
   IF a matrícula estiver trancada ou cancelada, THEN o sistema SHALL tirá-la da chamada, do lançamento de notas, das entregas, dos planos, dos dashboards, dos alertas e dos relatórios, mantendo-a no boletim e no histórico.
 Aplicada por: RF-39.
 
@@ -240,7 +241,8 @@ Cláusula EARS:
   IF quem responde não for o responsável pelo requerimento, THEN o sistema SHALL impedir a resposta.
   IF o requerimento for indeferido sem resposta escrita, THEN o sistema SHALL recusar.
   IF o requerimento já estiver deferido ou indeferido, THEN o sistema SHALL impedir nova mudança de status.
-Aplicada por: RF-44.
+  WHEN um estudante abrir um trancamento de disciplina, o sistema SHALL exigir uma turma em que ele esteja cursando e encaminhá-lo à secretaria (RB-42, 2026-11-09).
+Aplicada por: RF-44, RF-53.
 
 RB-35 — Integralização do curso
 Descrição: A integralização é o percentual de horas das disciplinas obrigatórias da matriz do curso que o estudante já tem aprovadas ou aproveitadas (OPEN-059).
@@ -291,6 +293,15 @@ Descrição: Pré-requisito é uma disciplina da mesma matriz; não existe ciclo
 Cláusula EARS:
   IF o pré-requisito não estiver na matriz do curso, for a própria disciplina ou criar um ciclo, THEN o sistema SHALL recusar.
 Aplicada por: RF-45, RF-46.
+
+RB-42 — Trancamento por requerimento
+Descrição: O estudante tranca uma disciplina ou o curso por requerimento à secretaria; o deferimento aplica o trancamento. A disciplina só é trancada com o diário da turma e o período abertos (OPEN-066).
+Cláusula EARS:
+  IF o estudante pedir o trancamento de uma disciplina que não está cursando, ou cuja turma tenha o diário fechado ou homologado ou o período encerrado, THEN o sistema SHALL recusar o pedido.
+  WHEN a secretaria deferir um trancamento de disciplina, o sistema SHALL marcar a matrícula daquela turma como Trancada, na mesma transação do deferimento.
+  IF, no deferimento, a matrícula não estiver mais cursando, o diário da turma não estiver aberto ou o período estiver encerrado, THEN o sistema SHALL recusar o deferimento (a secretaria pode indeferir).
+  WHEN a secretaria deferir um trancamento de curso, o sistema SHALL mudar a situação do estudante para Trancado (RB-30); IF o estudante não estiver Ativo, THEN SHALL recusar o deferimento.
+Aplicada por: RF-53.
 
 
 ## Resumo das regras
