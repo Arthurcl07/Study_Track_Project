@@ -1,6 +1,9 @@
 // Dados de demonstração do Nível 1 (SPEC-026 a SPEC-035), fictícios e idempotentes: dados da instituição, tipos das
 // avaliações, uma substitutiva e um exame final, um dia com aula dupla, um abono, um estudante trancado e um pedido de
 // senha pendente. Frequência e situação saem das regras do sistema (recalcularFrequencia e recalcularIndicador).
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { recalcularIndicador } from "../src/server/academico/indicador";
 import { auditar } from "../src/server/dados/auditoria";
 import { paraData } from "../src/server/dados/atividades";
@@ -10,6 +13,9 @@ import { AULAS_2026_2 } from "./simulacao";
 
 // Contas de demonstração usadas na apresentação: a secretaria não mexe nelas.
 const CONTAS_DA_APRESENTACAO = ["estudante@studytrack.test", "carla.mendes@studytrack.test", "ana.souza@studytrack.test"];
+
+// Impressão digital do primeiro logotipo do seed (o "FET"), para trocá-lo sem tocar num logotipo enviado pela tela.
+const LOGOTIPO_FET_SHA256 = "09d0c2cb90c3dd63964cbd0f1d6baffca9880b7f7f11a2e65f5bf2dc2ff8baf4";
 
 export async function exemplosDaSecretaria(base: { administradorId: string }) {
   // SPEC-029: mesma regra da migração — o que não começa com "Prova" é Trabalho (só as avaliações ainda "Prova").
@@ -30,6 +36,14 @@ export async function exemplosDaSecretaria(base: { administradorId: string }) {
       responsavelSecretaria: "Renata Duarte",
     },
   });
+  // Logotipo fictício (prisma/assets, o selo redondo): entra quando a instituição não tem logotipo ou ainda tem o
+  // primeiro logotipo do seed ("FET", trocado a pedido do grupo). O enviado pela tela de Instituição não é trocado.
+  const atual = await prisma.instituicao.findUnique({ where: { id: 1 }, select: { logotipo: true } });
+  const doSeedAntigo = (logo: string) => createHash("sha256").update(logo).digest("hex") === LOGOTIPO_FET_SHA256;
+  if (atual && (atual.logotipo === null || doSeedAntigo(atual.logotipo))) {
+    const png = readFileSync(join(process.cwd(), "prisma", "assets", "logo-faculdade-exemplo.png"));
+    await prisma.instituicao.update({ where: { id: 1 }, data: { logotipo: `data:image/png;base64,${png.toString("base64")}` } });
+  }
   console.log("Instituição pronta: Faculdade Exemplo de Tecnologia");
 
   // SPEC-029: substitutiva (ainda sem notas) em Modelagem de Software e exame final do João em Cálculo Básico (2026/1).
