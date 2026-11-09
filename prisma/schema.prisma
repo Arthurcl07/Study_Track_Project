@@ -630,8 +630,10 @@ enum TipoRequerimento {
   RevisaoProva
   SegundaChamada
   DeclaracaoMatricula
+  // SPEC-044: Trancamento é o do curso; TrancamentoDisciplina tranca a matrícula de uma turma.
   Trancamento
   Outro
+  TrancamentoDisciplina
 }
 
 enum DestinoRequerimento {

@@ -60,6 +60,7 @@ Legenda de status da Spec:
 | SPEC-036 a SPEC-043 e layout aprovados (Arthur) | `aprovada` | 2026-11-08 |
 | SPEC-036 a SPEC-043 marcadas como `implementadas`: 395 testes e verificação em `docs/verificacao/SPEC-036-043.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-08 |
 | SPEC-044 (trancamento de disciplina e de curso por requerimento) incluída a pedido de Arthur, com OPEN-066 fechada (decisão humana, Arthur); RF-53 e RB-42; RB-30 e RB-34 ajustadas; texto e layout aguardando aprovação | `especificada` | 2026-11-09 |
+| SPEC-044 e layout aprovados (Arthur) | `aprovada` | 2026-11-09 |
 
 ---
 
@@ -5560,7 +5561,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-044 — Trancamento de disciplina e de curso por requerimento
 
-**Status:** `especificada`
+**Status:** `aprovada`
 
 ## 1. Identificação
 
@@ -5600,12 +5601,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-09 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Estudante — pedir trancamento de disciplina | [prototipo.html#trancamento-pedido](layout/prototipo.html#trancamento-pedido) | [ ] | [ ] | | |
-| Secretaria — deferir trancamento | [prototipo.html#trancamento-deferir](layout/prototipo.html#trancamento-deferir) | [ ] | [ ] | | |
+| Estudante — pedir trancamento de disciplina | [prototipo.html#trancamento-pedido](layout/prototipo.html#trancamento-pedido) | [x] | [x] | Arthur | 2026-11-09 |
+| Secretaria — deferir trancamento | [prototipo.html#trancamento-deferir](layout/prototipo.html#trancamento-deferir) | [x] | [x] | Arthur | 2026-11-09 |
 
 ## 4. Dependências
 

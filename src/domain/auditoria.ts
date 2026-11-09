@@ -51,6 +51,8 @@ export const ACOES = {
   "turma.editada": { rotulo: "Turma editada", categoria: "Academica", grupo: "Disciplinas e turmas" },
   "turma.excluida": { rotulo: "Turma excluída", categoria: "Academica", grupo: "Disciplinas e turmas" },
   "matricula.excluida": { rotulo: "Estudante tirado da turma", categoria: "Academica", grupo: "Matrículas e importação" },
+  // SPEC-044: trancamento de disciplina deferido pela secretaria.
+  "matricula.trancada": { rotulo: "Disciplina trancada", categoria: "Academica", grupo: "Secretaria" },
   "avaliacao.editada": { rotulo: "Avaliação editada", categoria: "Academica", grupo: "Notas" },
   "avaliacao.excluida": { rotulo: "Avaliação excluída", categoria: "Academica", grupo: "Notas" },
   "atividade.editada": { rotulo: "Atividade editada", categoria: "Academica", grupo: "Atividades e entregas" },
