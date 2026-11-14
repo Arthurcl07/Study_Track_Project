@@ -22,6 +22,12 @@
 - O sistema SHALL oferecer, após o login, uma navegação única e consistente (menu do perfil, identificação do usuário e ação de sair) em todas as telas autenticadas.
 - O sistema SHALL representar a situação acadêmica sempre com as mesmas cores e rótulos (Normal, Atenção, Risco), sem depender só da cor para transmitir a informação.
 
+## RNF-07 — Acessibilidade (incluído em 2026-11-14)
+- O sistema SHALL atender às WCAG 2.1 nível AA nas telas principais: uso só pelo teclado, foco visível, textos alternativos, rótulos nos campos, contraste mínimo de 4,5:1 e link para pular ao conteúdo.
+
+## RNF-08 — Observabilidade (incluído em 2026-11-14)
+- O sistema SHALL registrar os erros inesperados do servidor com um código que a página de erro mostra ao usuário, para o suporte achar o registro, e SHALL oferecer ao administrador uma visão da saúde do sistema.
+
 ---
 
 

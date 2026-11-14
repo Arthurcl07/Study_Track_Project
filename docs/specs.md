@@ -62,6 +62,7 @@ Legenda de status da Spec:
 | SPEC-044 (trancamento de disciplina e de curso por requerimento) incluída a pedido de Arthur, com OPEN-066 fechada (decisão humana, Arthur); RF-53 e RB-42; RB-30 e RB-34 ajustadas; texto e layout aguardando aprovação | `especificada` | 2026-11-09 |
 | SPEC-044 e layout aprovados (Arthur) | `aprovada` | 2026-11-09 |
 | SPEC-044 marcada como `implementada`: 400 testes e verificação em `docs/verificacao/SPEC-044.md`, condicionada à aprovação do PR de `development` para `main` | `implementada` | 2026-11-09 |
+| SPEC-045 a SPEC-059 (LGPD, login, erro, documentos oficiais, Nível 5 e Nível 6) incluídas a pedido de Arthur, com OPEN-067 a OPEN-075 fechadas (decisão humana, Arthur); RF-54 a RF-65, RNF-07, RNF-08, RB-43 a RB-49; RB-05, RB-06, RB-07 e RB-29 passam a usar a regra configurada; ADR-005 e ADR-006; texto e layout aguardando aprovação | `especificada` | 2026-11-14 |
 
 ---
 
@@ -5678,6 +5679,1618 @@ SPEC-031 (situação no curso e matrícula trancada), SPEC-036 (requerimentos), 
 ## 13. Questões em aberto
 
 Nenhuma. OPEN-066 fechada.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-045 — Termos, privacidade e dados do titular (LGPD)
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-045 |
+| **Nome** | Termos, privacidade e dados do titular (LGPD) |
+| **Objetivo** | Aceite dos termos de uso e da política de privacidade e download dos próprios dados. |
+| **Valor** | Coloca o sistema em linha com a LGPD para uso com dados reais. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-54 |
+| **RB** | RB-22, RB-43 |
+| **RNF** | RNF-02, RNF-03, RNF-05, RNF-06 |
+| **UC / fluxo** | UC-41 |
+| **Entidades** | `AceiteTermos` (nova), `Instituicao` (encarregado de dados) |
+| **ADRs** | ADR-001, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-067 |
+
+## 3. Escopo
+
+**Incluído**
+- Páginas públicas **Termos de uso** e **Política de privacidade** (versão e data), com o encarregado de dados da instituição.
+- Página de aceite no primeiro acesso e quando a versão muda; sem aceite, as páginas vão para o aceite e as APIs respondem 403 (como a senha provisória, RB-15).
+- **Meus dados** (todos os perfis): baixar um JSON com conta, ficha, matrículas, notas, frequências, entregas, requerimentos, notificações e aceites do próprio usuário.
+- Campos de encarregado de dados (nome e e-mail) na tela Instituição.
+- Aceite e download na auditoria.
+
+**Fora do escopo**
+- Consentimento de responsáveis (estudantes menores).
+- Exclusão de conta a pedido do titular (os dados acadêmicos têm guarda obrigatória).
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Aceite dos termos | [prototipo.html#lgpd-aceite](layout/prototipo.html#lgpd-aceite) | [ ] | [ ] | | |
+| Meus dados | [prototipo.html#lgpd-meus-dados](layout/prototipo.html#lgpd-meus-dados) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-001, SPEC-011, SPEC-019, SPEC-033.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o João entra, vê os termos, aceita e segue para o dashboard; em Meus dados baixa o arquivo com tudo dele.
+
+**Exceções:** sem aceite, página vai para /termos/aceite e API responde 403; versão nova pede novo aceite.
+
+**Pós-condições:** aceite (usuário, versão, data) e auditoria gravados.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-045-01 | Sem aceite da versão vigente, nenhuma tela além do aceite, dos termos e do Sair (RB-43). |
+| INV-045-02 | O arquivo de dados contém só dados do próprio usuário. |
+| INV-045-03 | Nenhuma senha ou hash sai no arquivo. |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **AceiteTermos** (usuário, versão, aceito em). `Instituicao` ganha encarregado de dados (nome, e-mail).
+
+## 8. Impacto arquitetural
+
+- A guarda (`confirmarConta`) passa a conferir o aceite, como já confere a senha provisória.
+- Versão vigente dos termos em `src/domain/lgpd.ts`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `POST /api/termos/aceite` | versão | aceite gravado | versão diferente da vigente |
+| `GET /api/meus-dados` | — | arquivo JSON | não autenticado |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-05 | Arquivo só com os dados do titular |
+| RNF-04, RNF-06 | Telas aprovadas |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-045-01 | Usuário sem aceite | Abre o dashboard | Vai para o aceite; API do dashboard 403 |
+| AC-045-02 | Usuário sem aceite | Aceita a versão vigente | Aceite gravado; dashboard abre; auditoria |
+| AC-045-03 | Versão nova dos termos | Usuário que aceitou a antiga entra | Pede novo aceite |
+| AC-045-04 | Estudante | Baixa Meus dados | JSON com notas e ficha dele, sem senha; auditoria |
+| AC-045-05 | Estudante | Arquivo baixado | Não contém dado de outro estudante |
+
+## 12. Casos de teste derivados
+
+1. Versão e conteúdo do pacote de dados (unitário).
+2. Guarda, aceite e download (integração).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-046 — Limite de tentativas no login
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-046 |
+| **Nome** | Limite de tentativas no login |
+| **Objetivo** | Bloquear por 15 minutos o e-mail com 5 tentativas erradas seguidas. |
+| **Valor** | Impede adivinhar senha por tentativa e erro. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-55 |
+| **RB** | RB-22, RB-44 |
+| **RNF** | RNF-02, RNF-03 |
+| **UC / fluxo** | UC-42 |
+| **Entidades** | `TentativaLogin` (nova) |
+| **ADRs** | ADR-004 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-068 |
+
+## 3. Escopo
+
+**Incluído**
+- Contagem de tentativas erradas por e-mail (normalizado), exista a conta ou não.
+- Aviso "Restam N tentativas" a partir da 3ª errada e "Bloqueado até HH:MM" na 5ª.
+- Login certo zera a contagem; bloqueio e desbloqueio na auditoria (quando a conta existe).
+
+**Fora do escopo**
+- Bloqueio por endereço IP.
+- CAPTCHA.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Login com tentativas restantes e bloqueio | [prototipo.html#login-bloqueio](layout/prototipo.html#login-bloqueio) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-001, SPEC-019.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a quinta senha errada bloqueia o e-mail; a tela mostra até quando; depois de 15 minutos a senha certa entra.
+
+**Exceções:** durante o bloqueio, até a senha certa é recusada (429).
+
+**Pós-condições:** contagem e bloqueio gravados.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-046-01 | 5 erradas seguidas ⇒ bloqueio de 15 minutos (RB-44). |
+| INV-046-02 | A resposta não revela se o e-mail tem conta. |
+| INV-046-03 | Login certo zera a contagem. |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **TentativaLogin** (e-mail, erradas, bloqueado até).
+
+## 8. Impacto arquitetural
+
+- Regra pura em `src/domain/login.ts`; rota de login confere antes de comparar a senha.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `POST /api/auth/login` | e-mail, senha | sessão | 401 com tentativas restantes; 429 com o horário de liberação |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-02 | Senha nunca registrada; só o e-mail e a contagem |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-046-01 | E-mail com 2 erradas | Erra a 3ª | 401 "Restam 2 tentativas" |
+| AC-046-02 | E-mail com 4 erradas | Erra a 5ª | 429 bloqueado por 15 min; auditoria |
+| AC-046-03 | E-mail bloqueado | Senha certa | 429 |
+| AC-046-04 | Bloqueio vencido | Senha certa | Entra; contagem zerada |
+| AC-046-05 | E-mail sem conta | Erra 5 vezes | Mesmas respostas de um e-mail com conta |
+
+## 12. Casos de teste derivados
+
+1. Contagem, janela e bloqueio (unitário).
+2. Rota de login com bloqueio e desbloqueio (integração).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-047 — Página de erro própria
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-047 |
+| **Nome** | Página de erro própria |
+| **Objetivo** | Erro inesperado mostra uma página com a identidade, um código e o caminho de volta. |
+| **Valor** | Sem tela técnica do framework; o código liga o usuário ao registro do erro (SPEC-057). |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-56, RF-63 |
+| **RB** | — |
+| **RNF** | RNF-04, RNF-06, RNF-08 |
+| **UC / fluxo** | — |
+| **Entidades** | `RegistroErro` (SPEC-057) |
+| **ADRs** | ADR-004 |
+| **Issues** | — |
+| **OPEN relacionados** | — |
+
+## 3. Escopo
+
+**Incluído**
+- Página de erro das telas autenticadas e públicas com o logotipo, a mensagem, o código do erro e os botões Tentar de novo e Voltar ao início.
+- Página de erro geral (quando a própria casca falha).
+- A página nunca mostra a mensagem técnica nem a pilha.
+
+**Fora do escopo**
+- Envio do erro por e-mail.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Página de erro | [prototipo.html#erro](layout/prototipo.html#erro) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-016, SPEC-057.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** uma consulta falha; o usuário vê "Algo deu errado" com o código ERR-7F3A; o administrador acha o erro por esse código.
+
+**Exceções:** —
+
+**Pós-condições:** erro registrado (SPEC-057).
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-047-01 | A página de erro nunca mostra mensagem técnica. |
+| INV-047-02 | O código mostrado é o do registro do erro. |
+
+## 7. Modelo de domínio envolvido
+
+—
+
+## 8. Impacto arquitetural
+
+- `src/app/error.tsx` e `src/app/global-error.tsx`; o código vem do `digest` do Next.js, gravado no registro de erros.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| — | — | — | — |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-06 | Identidade visual na página de erro |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-047-01 | Erro numa tela | Usuário vê a página | Logotipo, mensagem, código e botões; nada técnico |
+| AC-047-02 | Código mostrado | Administrador busca na saúde do sistema | Acha o erro |
+
+## 12. Casos de teste derivados
+
+1. Página de erro no teste de tela (Playwright).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-048 — Documentos oficiais da turma
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-048 |
+| **Nome** | Documentos oficiais da turma |
+| **Objetivo** | Ata de resultados finais, diário de classe impresso e lista de presença. |
+| **Valor** | Os papéis que a secretaria e o professor assinam no fim do semestre saem prontos do sistema. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-57 |
+| **RB** | RB-03, RB-04, RB-24, RB-37, RB-47 |
+| **RNF** | RNF-03, RNF-04, RNF-06 |
+| **UC / fluxo** | UC-43 |
+| **Entidades** | leitura de Turma, Matricula, Aula, Presenca, Avaliacao, Nota, IndicadorAcademico |
+| **ADRs** | ADR-001, ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-069 |
+
+## 3. Escopo
+
+**Incluído**
+- **Ata de resultados finais:** estudantes, média, frequência, exame, nota final e resultado (regra do período, RB-47), totais por resultado e linhas de assinatura; só com diário homologado ou período encerrado.
+- **Diário de classe:** aulas com data e conteúdo, grade de presença por estudante (P/F/A abonada) e frequência final.
+- **Lista de presença:** estudantes cursando com espaço para assinatura, para a data escolhida.
+- Acesso: professor da turma, coordenação do curso e secretaria; botões na página da turma.
+
+**Fora do escopo**
+- Conselho de classe.
+- Assinatura digital.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Ata de resultados finais | [prototipo.html#doc-ata](layout/prototipo.html#doc-ata) | [ ] | [ ] | | |
+| Diário de classe impresso | [prototipo.html#doc-diario](layout/prototipo.html#doc-diario) | [ ] | [ ] | | |
+| Lista de presença | [prototipo.html#doc-lista-presenca](layout/prototipo.html#doc-lista-presenca) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-018, SPEC-020, SPEC-033, SPEC-039.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a coordenação homologa o diário da Turma ER-B e imprime a ata; o professor imprime a lista de presença da próxima aula.
+
+**Exceções:** ata com diário aberto: página explica que precisa homologar; turma fora do escopo: 404.
+
+**Pós-condições:** nada é gravado.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-048-01 | A ata só sai com diário homologado ou período encerrado. |
+| INV-048-02 | O resultado da ata é o mesmo do histórico (RB-24). |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- Documentos em `src/app/documentos/` com a `FolhaDocumento` (SPEC-020).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `/documentos/ata?turma=` | turma | documento | diário aberto, fora do escopo |
+| `/documentos/diario?turma=` | turma | documento | fora do escopo |
+| `/documentos/lista-presenca?turma=&data=` | turma, data | documento | fora do escopo |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-03 | Escopo na query |
+| RNF-06 | Cabeçalho e logotipo da instituição |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-048-01 | Diário homologado | Coordenador abre a ata | Estudantes com resultado e totais |
+| AC-048-02 | Diário aberto | Abre a ata | Aviso de que precisa homologar |
+| AC-048-03 | Turma com 20 aulas | Professor abre o diário | Grade de presença e conteúdo das aulas |
+| AC-048-04 | Professor | Abre a lista de presença de uma data | Estudantes cursando com espaço para assinar |
+| AC-048-05 | Professor de outra turma | Abre qualquer documento | 404 |
+
+## 12. Casos de teste derivados
+
+1. Montagem da ata e do diário (unitário).
+2. Escopo e condições (integração).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-049 — Relatórios em Excel e PDF
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-049 |
+| **Nome** | Relatórios em Excel e PDF |
+| **Objetivo** | Exportar o relatório acadêmico em .xlsx e PDF, além do CSV. |
+| **Valor** | O relatório sai do sistema no formato que a coordenação usa. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-58 |
+| **RB** | RB-03, RB-04 |
+| **RNF** | RNF-01, RNF-03, RNF-06 |
+| **UC / fluxo** | UC-44 |
+| **Entidades** | leitura do relatório (SPEC-009) |
+| **ADRs** | ADR-005 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-070 |
+
+## 3. Escopo
+
+**Incluído**
+- Botões **Excel**, **PDF** e **CSV** no relatório, com os filtros da tela.
+- Excel com aba Resumo (por turma, com totais e cores da situação) e aba Estudantes (média, frequência, situação, entregas atrasadas), cabeçalho na cor da identidade e filtros automáticos.
+- PDF pela versão para impressão do relatório, com cabeçalho da instituição.
+
+**Fora do escopo**
+- Gráficos dentro da planilha.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Relatório com Excel, PDF e CSV | [prototipo.html#relatorio-exportar](layout/prototipo.html#relatorio-exportar) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-009, SPEC-033.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o coordenador filtra Risco e baixa a planilha; abre no Excel com as duas abas.
+
+**Exceções:** filtro fora do escopo: 403, como na tela.
+
+**Pós-condições:** nada é gravado.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-049-01 | A planilha tem exatamente as linhas da tela com os mesmos filtros. |
+| INV-049-02 | Só turmas do escopo (RB-03, RB-04). |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- Rota `/api/relatorios/excel` com exceljs (ADR-005); página `/relatorios/imprimir`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/relatorios/excel` | filtros | arquivo .xlsx | 403 fora do escopo |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Geração em menos de 3 s com a faculdade povoada |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-049-01 | Coordenador com filtro Risco | Baixa Excel | .xlsx com aba Resumo e aba Estudantes só com Risco |
+| AC-049-02 | Professor | Baixa Excel | Só as turmas dele |
+| AC-049-03 | Relatório filtrado | Abre o PDF | Versão para impressão com cabeçalho |
+| AC-049-04 | Turma fora do escopo | Pede o Excel | 403 |
+
+## 12. Casos de teste derivados
+
+1. Linhas da planilha iguais às da tela (integração, lendo o .xlsx gerado).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-050 — Alerta de evasão
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-050 |
+| **Nome** | Alerta de evasão |
+| **Objetivo** | Mostrar quem sumiu das aulas e avisar a coordenação. |
+| **Valor** | A faculdade age antes de o estudante abandonar o curso. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-59 |
+| **RB** | RB-04, RB-45 |
+| **RNF** | RNF-01, RNF-03, RNF-05 |
+| **UC / fluxo** | UC-45 |
+| **Entidades** | leitura de Aula, Presenca, Matricula; `Notificacao` |
+| **ADRs** | ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-004, OPEN-071 |
+
+## 3. Escopo
+
+**Incluído**
+- Painel **Evasão** para a coordenação (curso dela) e a secretaria (todos): estudante, curso, turma, faltas seguidas, última presença e motivo.
+- Contador no dashboard da coordenação.
+- Notificação ao coordenador uma vez por estudante e turma (chave única).
+
+**Fora do escopo**
+- Contato automático com o estudante.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Painel de evasão | [prototipo.html#evasao](layout/prototipo.html#evasao) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-006, SPEC-018, SPEC-022.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a coordenadora abre o dashboard, vê 6 em evasão, abre o painel e a ficha do primeiro.
+
+**Exceções:** —
+
+**Pós-condições:** notificação gravada uma vez.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-050-01 | Evasão é calculada, nunca gravada (RB-45). |
+| INV-050-02 | Só matrículas cursando de períodos abertos. |
+| INV-050-03 | Uma notificação por estudante e turma. |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- Regra pura em `src/domain/evasao.ts`; consulta em `src/server/academico/evasao.ts`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/evasao` | curso (opcional) | lista | 403 sem recurso |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Painel em menos de 3 s com a faculdade povoada |
+| RNF-05 | Coordenação só vê o curso dela |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-050-01 | Faltou nas 3 últimas aulas | Coordenação abre o painel | Estudante listado com "3 faltas seguidas" |
+| AC-050-02 | Sem presença em 14 dias com aula | Abre o painel | Listado com a última presença |
+| AC-050-03 | Faltou 2 e veio na última | Abre | Não listado |
+| AC-050-04 | Estudante de outro curso | Coordenação abre | Não aparece |
+| AC-050-05 | Entrou no alerta | Painel é calculado | Coordenador notificado uma vez |
+
+## 12. Casos de teste derivados
+
+1. Regra de evasão (unitário).
+2. Painel, escopo e notificação (integração).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-051 — Acompanhamento dos professores
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-051 |
+| **Nome** | Acompanhamento dos professores |
+| **Objetivo** | Mostrar à coordenação as chamadas, notas e diários atrasados de cada professor. |
+| **Valor** | A coordenação cobra o que está atrasado sem abrir turma por turma. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-60 |
+| **RB** | RB-04, RB-37, RB-46 |
+| **RNF** | RNF-01, RNF-03 |
+| **UC / fluxo** | UC-46 |
+| **Entidades** | leitura de Turma, Aula, Avaliacao, Nota, EventoCalendario |
+| **ADRs** | ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-072 |
+
+## 3. Escopo
+
+**Incluído**
+- Página **Acompanhamento** da coordenação: professores do curso com as pendências por turma (chamada atrasada há N dias, avaliação sem notas, diário não fechado) e um selo "em dia".
+- Contador de pendências no dashboard da coordenação.
+
+**Fora do escopo**
+- Notificação automática ao professor.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Acompanhamento dos professores | [prototipo.html#acompanhamento](layout/prototipo.html#acompanhamento) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-016, SPEC-018, SPEC-039, SPEC-040.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a coordenadora vê que o professor X está sem chamada há 9 dias na Turma Y e abre a turma.
+
+**Exceções:** —
+
+**Pós-condições:** nada é gravado.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-051-01 | Pendências calculadas, nunca gravadas (RB-46). |
+| INV-051-02 | Só turmas de período aberto do curso do coordenador. |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- Regra pura em `src/domain/acompanhamento.ts`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `/coordenador/acompanhamento` | — | página | 403 |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Menos de 3 s com a faculdade povoada |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-051-01 | Turma sem aula há 9 dias | Coordenador abre | Chamada atrasada há 9 dias |
+| AC-051-02 | Avaliação de 10 dias atrás sem todas as notas | Abre | Nota atrasada |
+| AC-051-03 | Fim das aulas passou e diário aberto | Abre | Diário não fechado |
+| AC-051-04 | Professor sem pendência | Abre | Selo em dia |
+
+## 12. Casos de teste derivados
+
+1. Regras de pendência (unitário).
+2. Página e escopo (integração).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-052 — Regras de avaliação configuráveis
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-052 |
+| **Nome** | Regras de avaliação configuráveis |
+| **Objetivo** | A secretaria configura média mínima, limite de Risco, frequência mínima e nota do exame. |
+| **Valor** | Cada instituição usa as próprias regras; a mudança aparece na hora em todos os painéis. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-61 |
+| **RB** | RB-05, RB-06, RB-07, RB-22, RB-24, RB-29, RB-47 |
+| **RNF** | RNF-01, RNF-03, RNF-06 |
+| **UC / fluxo** | UC-47 |
+| **Entidades** | `Instituicao` (regras), `PeriodoLetivo` (regra de encerramento) |
+| **ADRs** | ADR-001 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-051, OPEN-073 |
+
+## 3. Escopo
+
+**Incluído**
+- Tela **Configurações → Regras de avaliação** (secretaria) com os 4 valores, faixas permitidas e a **prévia do efeito** (quantos estudantes mudariam de situação).
+- Salvar recalcula os indicadores dos períodos abertos na mesma operação e audita antes e depois.
+- Períodos encerrados guardam a regra do encerramento (novos e já encerrados, com a regra padrão).
+- Simulador, boletim, histórico, ata, alertas e exame usam a regra vigente (ou a do período encerrado).
+
+**Fora do escopo**
+- Regra diferente por curso.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Configurações — regras de avaliação | [prototipo.html#config-regras](layout/prototipo.html#config-regras) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-003, SPEC-017, SPEC-023, SPEC-029, SPEC-033.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a secretaria muda a média mínima para 7,0, vê a prévia ("312 estudantes passam de Normal para Atenção"), salva, e o dashboard da coordenação muda.
+
+**Exceções:** valores fora das faixas: 400.
+
+**Pós-condições:** regra, indicadores recalculados e auditoria.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-052-01 | Situação sempre pela regra vigente nos períodos abertos (DA-02 continua: uma função pura recebe a regra). |
+| INV-052-02 | Período encerrado não muda de resultado depois de encerrado. |
+| INV-052-03 | Limite de Risco menor que a média mínima. |
+
+## 7. Modelo de domínio envolvido
+
+`Instituicao` ganha as regras; `PeriodoLetivo` ganha a regra do encerramento.
+
+## 8. Impacto arquitetural
+
+- `classificarSituacao`, `elegivelAoExame`, `resultadoDaTurma` e o simulador recebem a regra como parâmetro (padrão 6/5/75/5).
+- Recálculo dos indicadores dos períodos abertos em lote.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `PUT /api/instituicao/regras` | 4 valores | regra e quantos mudaram | 400 fora das faixas |
+| `POST /api/instituicao/regras/previa` | 4 valores | contagem por mudança | 400 |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | Recálculo da faculdade povoada em poucos segundos |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-052-01 | Média 7,0 | Secretaria vê a prévia | Quantos mudam de situação, sem gravar |
+| AC-052-02 | Média 7,0 | Salva | Indicadores recalculados; estudante com 6,5 vira Atenção; auditoria |
+| AC-052-03 | Período encerrado | Muda a regra | Boletim do período encerrado não muda |
+| AC-052-04 | Limite de Risco 6,5 com média 6,0 | Salva | 400 |
+| AC-052-05 | Frequência mínima 80% | Estudante com 78% abre o painel | Risco |
+
+## 12. Casos de teste derivados
+
+1. Classificação com regra (unitário, uma por RB).
+2. Prévia, recálculo e período encerrado (integração).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-053 — Trocar perfil e importar professores
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-053 |
+| **Nome** | Trocar perfil e importar professores |
+| **Objetivo** | O administrador corrige o perfil de uma conta e cadastra professores em lote. |
+| **Valor** | Fecha a gestão de contas do dia a dia da secretaria. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-62 |
+| **RB** | RB-13, RB-15, RB-22, RB-48 |
+| **RNF** | RNF-02, RNF-03 |
+| **UC / fluxo** | UC-48 |
+| **Entidades** | `Usuario` (perfil) |
+| **ADRs** | ADR-003 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-074 |
+
+## 3. Escopo
+
+**Incluído**
+- Em Contas, **Trocar perfil** (com curso, quando vira Estudante) e o motivo do bloqueio quando há vínculo.
+- **Importar professores** por CSV (nome; e-mail): modelo, prévia, confirmação e as senhas provisórias mostradas uma vez.
+- Auditoria das duas ações.
+
+**Fora do escopo**
+- Importar coordenadores.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Contas — trocar perfil e importar professores | [prototipo.html#contas-perfil-importar](layout/prototipo.html#contas-perfil-importar) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-010, SPEC-011, SPEC-021, SPEC-027.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o administrador importa 5 professores, confere a prévia e confirma; depois troca uma conta de Professor sem turma para Coordenador.
+
+**Exceções:** vínculo incompatível: 409 com o motivo; e-mail repetido na planilha ou no banco: 400 com as linhas.
+
+**Pós-condições:** contas e auditoria gravadas.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-053-01 | Sem vínculo incompatível com o novo perfil (RB-48). |
+| INV-053-02 | Importação é tudo ou nada. |
+| INV-053-03 | Senha provisória obriga a troca no primeiro acesso (RB-15). |
+
+## 7. Modelo de domínio envolvido
+
+Sem entidade nova.
+
+## 8. Impacto arquitetural
+
+- `src/domain/contas.ts` (regra da troca); importação reaproveita a leitura de CSV da SPEC-021.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `PUT /api/contas/:id/perfil` | perfil, curso | conta | 409 vínculo; 400 sem curso |
+| `POST /api/contas/importar` | CSV, confirmar | prévia ou contas criadas | 400 linhas inválidas |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-02 | Senhas provisórias aleatórias, só o hash no banco |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-053-01 | Professor com turmas | Troca para Estudante | 409 "leciona 3 turmas" |
+| AC-053-02 | Professor sem turma | Troca para Coordenador | Perfil trocado; auditoria |
+| AC-053-03 | Para Estudante sem curso | Salva | 400 |
+| AC-053-04 | Administrador | Troca o próprio perfil | 409 |
+| AC-053-05 | CSV com 5 professores | Confirma | 5 contas com senha provisória |
+| AC-053-06 | CSV com e-mail repetido | Envia | 400 com a linha |
+
+## 12. Casos de teste derivados
+
+1. Regra de troca (unitário).
+2. Troca e importação (integração).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-054 — Teste de desempenho
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-054 |
+| **Nome** | Teste de desempenho |
+| **Objetivo** | Medir o tempo das páginas principais com a faculdade povoada e garantir o RNF-01. |
+| **Valor** | Prova, com números, que o sistema aguenta uma faculdade inteira. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | — |
+| **RB** | — |
+| **RNF** | RNF-01 |
+| **UC / fluxo** | — |
+| **Entidades** | índices do banco |
+| **ADRs** | ADR-002 |
+| **Issues** | — |
+| **OPEN relacionados** | — |
+
+## 3. Escopo
+
+**Incluído**
+- Script `npm run carga`: entra com cada perfil e mede P50, P95 e máximo das páginas e APIs principais com requisições simultâneas.
+- Índices do banco para as consultas mais pesadas.
+- Relatório em `docs/verificacao/desempenho.md`.
+
+**Fora do escopo**
+- Teste com milhares de usuários simultâneos.
+
+## Telas e evidência de layout
+
+Sem tela nova de usuário (verificação técnica).
+## 4. Dependências
+
+SPEC-016, SPEC-009, povoamento.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** roda o script contra o build de produção e confere P95 abaixo de 3 s em todas as páginas.
+
+**Exceções:** página acima de 3 s aparece em vermelho e o script termina com erro.
+
+**Pós-condições:** nada é gravado.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-054-01 | P95 de toda página principal abaixo de 3 s (RNF-01). |
+
+## 7. Modelo de domínio envolvido
+
+Só índices.
+
+## 8. Impacto arquitetural
+
+- `scripts/carga.ts` sem dependência nova.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `npm run carga` | URL | tabela de tempos | código de saída 1 se passar de 3 s |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-01 | P95 < 3 s |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-054-01 | Faculdade povoada, build de produção | Roda o script | Todas as páginas com P95 < 3 s |
+| AC-054-02 | Página lenta | Roda | Saída em vermelho e código 1 |
+
+## 12. Casos de teste derivados
+
+1. O próprio script (execução manual e na verificação).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-055 — Testes ponta a ponta
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-055 |
+| **Nome** | Testes ponta a ponta |
+| **Objetivo** | Testes automáticos que abrem o navegador e usam o sistema como uma pessoa. |
+| **Valor** | Pega erro de tela que os testes de unidade não pegam, e dá para mostrar ao vivo. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | — |
+| **RB** | RB-03, RB-04, RB-34, RB-42, RB-43, RB-44 |
+| **RNF** | RNF-03, RNF-04, RNF-07 |
+| **UC / fluxo** | UC-01, UC-03, UC-32, UC-33, UC-41, UC-42 |
+| **Entidades** | — |
+| **ADRs** | ADR-006 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-023 |
+
+## 3. Escopo
+
+**Incluído**
+- Playwright com Chromium em `e2e/`: login de cada perfil, aceite dos termos, bloqueio de login, lançar nota e ver a situação mudar, requerimento aberto e deferido, trancamento, documentos, relatório em Excel, página de erro.
+- `npm run e2e` (com janela, `npm run e2e:ver` para mostrar ao vivo).
+- Job na CI com PostgreSQL, migração, seed e build.
+
+**Fora do escopo**
+- Outros navegadores além do Chromium.
+
+## Telas e evidência de layout
+
+Sem tela nova de usuário (verificação técnica).
+## 4. Dependências
+
+todas as anteriores.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o grupo roda `npm run e2e:ver` na apresentação e o navegador faz o fluxo sozinho.
+
+**Exceções:** falha gera captura de tela e vídeo em `test-results/`.
+
+**Pós-condições:** o banco volta ao seed (os testes usam dados próprios e limpam o que criam).
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-055-01 | Os testes de tela não dependem da ordem de execução. |
+
+## 7. Modelo de domínio envolvido
+
+—
+
+## 8. Impacto arquitetural
+
+- `playwright.config.ts`, pasta `e2e/`, job na CI.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `npm run e2e` | — | relatório | código 1 se falhar |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-07 | axe nas telas principais (SPEC-056) |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-055-01 | Sistema com seed | Roda `npm run e2e` | Todos os fluxos passam |
+| AC-055-02 | PR no GitHub | CI roda | Job de testes de tela verde |
+
+## 12. Casos de teste derivados
+
+1. Os próprios testes em `e2e/`.
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-056 — Acessibilidade WCAG 2.1 AA
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-056 |
+| **Nome** | Acessibilidade WCAG 2.1 AA |
+| **Objetivo** | Telas principais usáveis só pelo teclado, com leitor de tela e contraste AA. |
+| **Valor** | Inclusão de quem usa leitor de tela ou não usa mouse; requisito de órgãos públicos. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | — |
+| **RB** | — |
+| **RNF** | RNF-04, RNF-06, RNF-07 |
+| **UC / fluxo** | — |
+| **Entidades** | — |
+| **ADRs** | ADR-006 |
+| **Issues** | — |
+| **OPEN relacionados** | — |
+
+## 3. Escopo
+
+**Incluído**
+- Link "Pular para o conteúdo", foco visível em tudo, ordem de foco lógica, menu e diálogos pelo teclado.
+- Rótulos e mensagens de erro ligados aos campos (`aria-describedby`), regiões com nome, `aria-current` no menu.
+- Contraste conferido e corrigido; gráficos com texto alternativo.
+- Verificação automática com axe em cada tela principal (sem violação A/AA) e relatório em `docs/verificacao/acessibilidade.md`.
+
+**Fora do escopo**
+- Nível AAA.
+
+## Telas e evidência de layout
+
+Sem tela nova de usuário (verificação técnica).
+## 4. Dependências
+
+SPEC-055.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o teste de tela passa pelo login, dashboards, notas, chamada, requerimentos e documentos com o axe e não acha violação.
+
+**Exceções:** violação faz o teste falhar com o elemento e a regra.
+
+**Pós-condições:** —
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-056-01 | Nenhuma violação A/AA do axe nas telas principais. |
+
+## 7. Modelo de domínio envolvido
+
+—
+
+## 8. Impacto arquitetural
+
+- Ajustes em `ui.tsx`, `casca.tsx` e formulários.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| — | — | — | — |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-07 | axe sem violação e navegação só pelo teclado |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-056-01 | Tela principal | axe roda | Nenhuma violação A/AA |
+| AC-056-02 | Usuário só com teclado | Usa Tab no login e no menu | Foco visível e pula para o conteúdo |
+
+## 12. Casos de teste derivados
+
+1. axe nos testes de tela.
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-057 — Registro de erros e saúde do sistema
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-057 |
+| **Nome** | Registro de erros e saúde do sistema |
+| **Objetivo** | Guardar os erros do servidor e mostrar ao administrador a saúde do sistema. |
+| **Valor** | Saber que algo quebrou antes de alguém reclamar. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-63 |
+| **RB** | RB-13, RB-22 |
+| **RNF** | RNF-02, RNF-05, RNF-08 |
+| **UC / fluxo** | UC-49 |
+| **Entidades** | `RegistroErro` (nova) |
+| **ADRs** | ADR-001 |
+| **Issues** | — |
+| **OPEN relacionados** | — |
+
+## 3. Escopo
+
+**Incluído**
+- Registro de erro com código, data, rota, método, perfil e mensagem curta, sem dados pessoais (e-mail, CPF e números longos mascarados).
+- Página **Saúde do sistema** (administrador): banco respondendo e tempo, tempo das consultas principais, quantidade de estudantes e turmas, erros das últimas 24 h e busca pelo código.
+- Rotas de API que falham registram o erro e respondem com o código.
+
+**Fora do escopo**
+- Envio para serviço externo de monitoramento.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Saúde do sistema | [prototipo.html#saude](layout/prototipo.html#saude) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-010, SPEC-047.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** o administrador abre a saúde do sistema e vê tudo verde e o último erro com o código que um usuário mandou.
+
+**Exceções:** banco fora: a página mostra o banco em vermelho.
+
+**Pós-condições:** erros gravados.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-057-01 | O registro de erro não guarda senha, token, e-mail nem CPF. |
+| INV-057-02 | Só o administrador vê os erros. |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **RegistroErro**.
+
+## 8. Impacto arquitetural
+
+- `src/server/dados/erros.ts`; `respostaDeErro` nas rotas; `src/instrumentation.ts` (`onRequestError`).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `GET /api/saude` | — | estado e tempos | 403 |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-05 | Mascaramento no registro |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-057-01 | Rota falha | Usuário recebe 500 | Código no corpo; erro registrado com o código |
+| AC-057-02 | Mensagem com e-mail | Registra | E-mail mascarado |
+| AC-057-03 | Administrador | Abre Saúde do sistema | Banco, tempos e erros recentes |
+| AC-057-04 | Coordenador | Abre a saúde | 403 |
+
+## 12. Casos de teste derivados
+
+1. Mascaramento (unitário).
+2. Registro e página (integração).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-058 — Importação do sistema anterior
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-058 |
+| **Nome** | Importação do sistema anterior |
+| **Objetivo** | Trazer alunos e histórico do sistema antigo por planilha. |
+| **Valor** | A faculdade começa a usar sem redigitar os alunos e o histórico. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-64 |
+| **RB** | RB-19, RB-22, RB-33, RB-35, RB-47, RB-49 |
+| **RNF** | RNF-01, RNF-03, RNF-05 |
+| **UC / fluxo** | UC-50 |
+| **Entidades** | `Usuario`, `FichaEstudante`, `HistoricoAnterior` (nova) |
+| **ADRs** | ADR-002 |
+| **Issues** | — |
+| **OPEN relacionados** | OPEN-075 |
+
+## 3. Escopo
+
+**Incluído**
+- Página **Importar do sistema anterior** (secretaria) com os modelos das duas planilhas.
+- Alunos: nome; e-mail; curso; matrícula; CPF; nascimento; telefone (a matrícula do sistema anterior é mantida).
+- Histórico: matrícula; disciplina; período; média; frequência.
+- Prévia com quantos alunos e registros, os aprovados e os erros por linha; confirmar grava tudo numa transação, com senha provisória para cada aluno.
+- Histórico escolar com a seção **Cursado no sistema anterior**; aprovados contam na integralização.
+
+**Fora do escopo**
+- Notas avaliação por avaliação do sistema anterior.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Importar do sistema anterior | [prototipo.html#importar-anterior](layout/prototipo.html#importar-anterior) | [ ] | [ ] | | |
+| Histórico com o sistema anterior | [prototipo.html#historico-anterior](layout/prototipo.html#historico-anterior) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-020, SPEC-021, SPEC-033, SPEC-037, SPEC-042.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a secretaria envia as duas planilhas, vê "40 alunos, 280 registros, 251 aprovados", confirma, e o histórico de cada um já mostra o sistema anterior.
+
+**Exceções:** qualquer linha inválida: nada é gravado e a prévia mostra as linhas.
+
+**Pós-condições:** contas, fichas, histórico anterior e auditoria gravados juntos.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-058-01 | Tudo ou nada (RB-49). |
+| INV-058-02 | Número de matrícula e CPF únicos. |
+| INV-058-03 | Histórico só de disciplina da matriz do curso do aluno. |
+
+## 7. Modelo de domínio envolvido
+
+Nova entidade **HistoricoAnterior** (estudante, disciplina, período, média, frequência).
+
+## 8. Impacto arquitetural
+
+- A integralização (`historicoParaMatriz`) inclui o histórico anterior aprovado pela regra (RB-47).
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `POST /api/importacao-anterior` | duas planilhas, confirmar | prévia ou gravado | 400 com as linhas |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-05 | Senhas provisórias mostradas uma vez |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-058-01 | Planilhas válidas | Secretaria vê a prévia | Contagens, sem gravar |
+| AC-058-02 | Prévia sem erro | Confirma | Alunos e histórico gravados; auditoria |
+| AC-058-03 | Uma linha com CPF inválido | Envia | Nada gravado; linha apontada |
+| AC-058-04 | Disciplina fora da matriz | Envia | Linha apontada |
+| AC-058-05 | Aluno importado aprovado em 3 disciplinas | Abre Meu curso | As 3 contam na integralização |
+| AC-058-06 | Histórico do aluno | Secretaria abre | Seção Cursado no sistema anterior |
+
+## 12. Casos de teste derivados
+
+1. Validação das planilhas (unitário).
+2. Prévia, gravação, histórico e integralização (integração).
+
+## 13. Questões em aberto
+
+Nenhuma.
+
+## 14. Definition of Done
+
+Padrão da SPEC-001 (seção 14).
+
+---
+
+# SPEC-059 — Ajuda: manual e tour
+
+**Status:** `especificada`
+
+## 1. Identificação
+
+| Campo | Conteúdo |
+|---|---|
+| **ID** | SPEC-059 |
+| **Nome** | Ajuda: manual e tour |
+| **Objetivo** | Tour guiado no primeiro acesso e página Ajuda com o manual de cada perfil. |
+| **Valor** | Quem nunca usou o sistema aprende sozinho em um minuto. |
+
+## 2. Rastreabilidade
+
+| Artefato | Referências |
+|---|---|
+| **RF** | RF-65 |
+| **RB** | — |
+| **RNF** | RNF-04, RNF-06, RNF-07 |
+| **UC / fluxo** | UC-51 |
+| **Entidades** | `Usuario` (tour visto) |
+| **ADRs** | ADR-004 |
+| **Issues** | — |
+| **OPEN relacionados** | — |
+
+## 3. Escopo
+
+**Incluído**
+- Tour de 5 a 6 passos por perfil, destacando os itens do menu, com Próximo, Voltar e Pular; aparece no primeiro acesso e não volta depois de visto.
+- Página **Ajuda** (item no menu) com o manual do perfil (o que faz cada tela), perguntas frequentes e o botão Rever o tour.
+- Acessível pelo teclado e com leitor de tela.
+
+**Fora do escopo**
+- Vídeos.
+
+## Telas e evidência de layout
+
+**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+
+| Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
+|---|---|---|---|---|---|
+| Tour do primeiro acesso | [prototipo.html#tour](layout/prototipo.html#tour) | [ ] | [ ] | | |
+| Página Ajuda | [prototipo.html#ajuda](layout/prototipo.html#ajuda) | [ ] | [ ] | | |
+
+## 4. Dependências
+
+SPEC-016.
+
+## 5. Comportamento esperado
+
+**Fluxo principal:** a coordenadora entra pela primeira vez, faz o tour de 6 passos e depois revê pela Ajuda.
+
+**Exceções:** —
+
+**Pós-condições:** tour marcado como visto.
+
+## 6. Regras e invariantes
+
+| ID | Invariante |
+|---|---|
+| INV-059-01 | O tour aparece uma vez por usuário, até ele pedir de novo. |
+
+## 7. Modelo de domínio envolvido
+
+`Usuario` ganha a data em que viu o tour.
+
+## 8. Impacto arquitetural
+
+- Componente de tour sem biblioteca nova; textos do manual em `src/domain/ajuda.ts`.
+
+## 9. Contratos necessários
+
+| Operação | Entrada | Saída de sucesso | Erros |
+|---|---|---|---|
+| `POST /api/ajuda/tour` | — | marcado como visto | — |
+
+## 10. RNFs aplicáveis
+
+| RNF | Como verificar |
+|---|---|
+| RNF-07 | Tour pelo teclado |
+
+## 11. Critérios de aceitação
+
+| ID | Dado | Quando | Então |
+|---|---|---|---|
+| AC-059-01 | Primeiro acesso | Usuário entra | Tour do perfil aparece |
+| AC-059-02 | Tour concluído ou pulado | Entra de novo | Não aparece |
+| AC-059-03 | Página Ajuda | Clica Rever o tour | Tour aparece |
+| AC-059-04 | Estudante | Abre a Ajuda | Manual do estudante |
+
+## 12. Casos de teste derivados
+
+1. Conteúdo por perfil (unitário).
+2. Tour no teste de tela.
+
+## 13. Questões em aberto
+
+Nenhuma.
 
 ## 14. Definition of Done
 

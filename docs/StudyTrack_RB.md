@@ -303,6 +303,58 @@ Cláusula EARS:
   WHEN a secretaria deferir um trancamento de curso, o sistema SHALL mudar a situação do estudante para Trancado (RB-30); IF o estudante não estiver Ativo, THEN SHALL recusar o deferimento.
 Aplicada por: RF-53.
 
+RB-43 — Aceite dos termos e dados do titular
+Descrição: Todo usuário aceita a versão vigente dos termos de uso e da política de privacidade; cada um baixa só os próprios dados (OPEN-067).
+Cláusula EARS:
+  IF o usuário não aceitou a versão vigente, THEN o sistema SHALL levá-lo à página de aceite e recusar as APIs, exceto o aceite, os termos e o Sair.
+  WHEN o usuário pedir os próprios dados, o sistema SHALL entregar só os dele e registrar o pedido na auditoria.
+Aplicada por: RF-54.
+
+RB-44 — Bloqueio por tentativas erradas
+Descrição: 5 tentativas de login erradas seguidas bloqueiam o e-mail por 15 minutos (OPEN-068).
+Cláusula EARS:
+  WHEN um e-mail acumular 5 tentativas erradas seguidas, o sistema SHALL recusar novos logins dele por 15 minutos, mesmo com a senha certa.
+  WHEN o login der certo, o sistema SHALL zerar a contagem do e-mail.
+  O sistema SHALL contar pelo e-mail informado, exista a conta ou não, e responder da mesma forma nos dois casos.
+Aplicada por: RF-55.
+
+RB-45 — Evasão
+Descrição: Estudante cursando "some das aulas" quando falta nas 3 últimas aulas registradas de uma turma ou não tem presença nos últimos 14 dias com aula (OPEN-071).
+Cláusula EARS:
+  IF as 3 últimas aulas registradas de uma turma tiverem falta do estudante, OR ele não tiver presença em nenhuma aula dos últimos 14 dias tendo havido aula, THEN o sistema SHALL apresentá-lo como em evasão naquela turma.
+  O sistema SHALL calcular a evasão na leitura, sem gravar, e considerar só matrículas cursando de períodos abertos.
+Aplicada por: RF-59.
+
+RB-46 — Pendências do professor
+Descrição: Chamada atrasada, nota atrasada e diário não fechado, nas turmas de período aberto (OPEN-072).
+Cláusula EARS:
+  IF a turma não tiver aula registrada nos últimos 7 dias, depois do início das aulas e antes do fim, THEN o sistema SHALL apontar chamada atrasada.
+  IF uma avaliação de prova ou trabalho tiver data passada há mais de 7 dias sem nota de todos os cursando, THEN o sistema SHALL apontar nota atrasada.
+  IF o fim das aulas do período já passou e o diário da turma continua Aberto, THEN o sistema SHALL apontar diário não fechado.
+Aplicada por: RF-60.
+
+RB-47 — Regras de avaliação configuráveis
+Descrição: A média mínima, o limite de Risco, a frequência mínima e a nota final mínima do exame são configurados pela secretaria; o período encerrado guarda a regra com que foi encerrado (OPEN-073).
+Cláusula EARS:
+  IF a média mínima não estiver entre 5,0 e 8,0, o limite de Risco não for menor que ela, a frequência mínima não estiver entre 50% e 90% ou a nota final do exame não estiver entre 4,0 e 7,0, THEN o sistema SHALL recusar.
+  WHEN a regra mudar, o sistema SHALL recalcular os indicadores dos períodos abertos na mesma operação.
+  WHEN um período for encerrado, o sistema SHALL guardar nele a regra vigente; boletim, histórico e ata de período encerrado SHALL usar essa regra.
+Aplicada por: RF-61; RB-05, RB-06, RB-07 e RB-29 usam os valores configurados.
+
+RB-48 — Troca de perfil
+Descrição: Só sem vínculos que o novo perfil não pode ter (OPEN-074).
+Cláusula EARS:
+  IF a conta for professor com turmas, coordenador com cursos ou estudante com matrículas, THEN o sistema SHALL recusar a troca de perfil e informar o vínculo.
+  IF o novo perfil for Estudante sem curso, OR o administrador tentar trocar o próprio perfil, THEN o sistema SHALL recusar.
+Aplicada por: RF-62.
+
+RB-49 — Importação do sistema anterior
+Descrição: Alunos e histórico anterior entram juntos, validados, tudo ou nada (OPEN-075).
+Cláusula EARS:
+  IF alguma linha tiver e-mail ou número de matrícula repetido, CPF inválido ou repetido, curso inexistente, disciplina fora da matriz do curso, média fora de 0–10, frequência fora de 0–100 ou período fora do formato AAAA/N, THEN o sistema SHALL recusar a importação inteira e apontar as linhas.
+  WHEN o histórico importado tiver média e frequência dentro da regra vigente, o sistema SHALL contá-lo como aprovado na integralização.
+Aplicada por: RF-64.
+
 
 ## Resumo das regras
 
