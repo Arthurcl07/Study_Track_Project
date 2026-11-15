@@ -83,7 +83,7 @@ export function MediaFrequenciaPorTurma({ turmas, descricao = "Média e frequên
         {linhas.map((l) => (
           <g key={l.rotulo}>
             <line x1={ESQUERDA} x2={LARGURA - 4} y1={l.y} y2={l.y} stroke={l.cor} strokeDasharray="4 4" />
-            <text x={ESQUERDA - 4} y={l.y + 3} fontSize="9" textAnchor="end" fill="#64748B">{l.rotulo}</text>
+            <text x={ESQUERDA - 4} y={l.y + 3} fontSize="9" textAnchor="end" fill="#596779">{l.rotulo}</text>
           </g>
         ))}
         <line x1={ESQUERDA} x2={LARGURA - 4} y1={BASE} y2={BASE} stroke="#E2E8F0" />

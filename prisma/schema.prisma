@@ -74,6 +74,10 @@ model Usuario {
   requerimentosRespondidos   Requerimento[]       @relation("RequerimentosRespondidos")
   aproveitamentos            Aproveitamento[]     @relation("AproveitamentosDoEstudante")
   aproveitamentosRegistrados Aproveitamento[]     @relation("AproveitamentosRegistrados")
+  // SPEC-045 / RB-43: aceites dos termos; SPEC-058: histórico do sistema anterior; SPEC-059: tour visto.
+  aceites                    AceiteTermos[]
+  historicoAnterior          HistoricoAnterior[]
+  tourVistoEm                DateTime?
 
   @@index([cursoId])
 }
@@ -114,13 +118,14 @@ model CursoDisciplina {
 }
 
 model Disciplina {
-  id              String            @id @default(uuid())
-  nome            String
+  id                String              @id @default(uuid())
+  nome              String
   // Inteiro maior que zero (OPEN-009); garantido também por CHECK na migração.
-  cargaHoraria    Int
-  turmas          Turma[]
-  cursos          CursoDisciplina[]
-  aproveitamentos Aproveitamento[]
+  cargaHoraria      Int
+  turmas            Turma[]
+  cursos            CursoDisciplina[]
+  aproveitamentos   Aproveitamento[]
+  historicoAnterior HistoricoAnterior[]
 }
 
 // INV-002-02: toda turma tem exatamente 1 disciplina e 1 professor responsável.
@@ -169,16 +174,21 @@ enum StatusPeriodo {
 
 // SPEC-017 / RB-20 (OPEN-040): turma de período encerrado é somente leitura. INV-017-02: nome único, AAAA/1 ou AAAA/2.
 model PeriodoLetivo {
-  id                String             @id @default(uuid())
-  nome              String             @unique
-  status            StatusPeriodo      @default(Aberto)
-  criadoEm          DateTime           @default(now())
-  encerradoEm       DateTime?
-  turmas            Turma[]
+  id                    String             @id @default(uuid())
+  nome                  String             @unique
+  status                StatusPeriodo      @default(Aberto)
+  criadoEm              DateTime           @default(now())
+  encerradoEm           DateTime?
+  turmas                Turma[]
   // SPEC-038 (OPEN-060): janela de rematrícula definida pela secretaria.
-  rematriculaInicio DateTime?          @db.Date
-  rematriculaFim    DateTime?          @db.Date
-  eventos           EventoCalendario[]
+  rematriculaInicio     DateTime?          @db.Date
+  rematriculaFim        DateTime?          @db.Date
+  eventos               EventoCalendario[]
+  // SPEC-052 / RB-47 (INV-052-02): regra com que o período foi encerrado (null enquanto aberto).
+  regraMediaMinima      Float?
+  regraLimiteRisco      Float?
+  regraFrequenciaMinima Float?
+  regraNotaExame        Float?
 }
 
 // INV-002-04: matrícula N:M entre estudantes e turmas, sem duplicidade.
@@ -424,6 +434,8 @@ enum TipoNotificacao {
   // SPEC-036 e SPEC-039.
   Requerimento
   Diario
+  // SPEC-050 / RB-45.
+  Evasao
 }
 
 // SPEC-022 / RB-23 (OPEN-043): notificação gravada, de exatamente 1 destinatário, o único que a vê e marca como
@@ -557,7 +569,63 @@ model Instituicao {
   responsavelSecretaria String?
   // Data URL (PNG ou JPG, até 200 KB).
   logotipo              String?
+  // SPEC-045 / RB-43: encarregado pelo tratamento de dados (LGPD).
+  encarregadoNome       String?
+  encarregadoEmail      String?
+  // SPEC-052 / RB-47: regras de avaliação vigentes (RB-05, RB-06, RB-07 e RB-29).
+  mediaMinima           Float    @default(6)
+  limiteRisco           Float    @default(5)
+  frequenciaMinima      Float    @default(75)
+  notaExame             Float    @default(5)
   atualizadaEm          DateTime @updatedAt
+}
+
+// SPEC-045 / RB-43 (OPEN-067): aceite de uma versão dos termos de uso e da política de privacidade.
+model AceiteTermos {
+  id        String   @id @default(uuid())
+  usuarioId String
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  versao    String
+  aceitoEm  DateTime @default(now())
+
+  @@unique([usuarioId, versao])
+}
+
+// SPEC-046 / RB-44 (OPEN-068): tentativas erradas por e-mail (normalizado), exista a conta ou não. Sem senha.
+model TentativaLogin {
+  email        String    @id
+  erradas      Int       @default(0)
+  bloqueadoAte DateTime?
+  atualizadaEm DateTime  @updatedAt
+}
+
+// SPEC-057 (RNF-08): erro do servidor, com a mensagem já mascarada (INV-057-01). Só o administrador vê.
+model RegistroErro {
+  id           String   @id @default(uuid())
+  codigo       String   @unique
+  registradoEm DateTime @default(now())
+  rota         String
+  metodo       String
+  perfil       String?
+  mensagem     String
+
+  @@index([registradoEm])
+}
+
+// SPEC-058 / RB-49 (OPEN-075): disciplina cursada no sistema anterior (média e frequência finais).
+model HistoricoAnterior {
+  id           String     @id @default(uuid())
+  estudanteId  String
+  estudante    Usuario    @relation(fields: [estudanteId], references: [id], onDelete: Cascade)
+  disciplinaId String
+  disciplina   Disciplina @relation(fields: [disciplinaId], references: [id], onDelete: Restrict)
+  periodo      String
+  media        Float
+  frequencia   Float
+  importadoEm  DateTime   @default(now())
+
+  @@unique([estudanteId, disciplinaId, periodo])
+  @@index([estudanteId])
 }
 
 // SPEC-037 / RB-41 (OPEN-059): pré-requisito dentro da matriz de um curso (sem ciclo, conferido no domínio).

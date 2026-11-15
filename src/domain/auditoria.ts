@@ -23,6 +23,14 @@ export const ACOES = {
   "calendario.evento": { rotulo: "Evento do calendário", categoria: "Administrativa", grupo: "Calendário e salas" },
   "sala.alterada": { rotulo: "Sala", categoria: "Administrativa", grupo: "Calendário e salas" },
   "censo.exportado": { rotulo: "Exportação do Censo", categoria: "Administrativa", grupo: "Exportações" },
+  // SPEC-045, SPEC-046, SPEC-052 e SPEC-053 (Níveis 5 e 6).
+  "termos.aceitos": { rotulo: "Termos aceitos", categoria: "Administrativa", grupo: "Privacidade e acesso" },
+  "dados.baixados": { rotulo: "Dados do titular baixados", categoria: "Administrativa", grupo: "Privacidade e acesso" },
+  "login.bloqueado": { rotulo: "Login bloqueado", categoria: "Administrativa", grupo: "Privacidade e acesso" },
+  "login.desbloqueado": { rotulo: "Login liberado", categoria: "Administrativa", grupo: "Privacidade e acesso" },
+  "regras.alteradas": { rotulo: "Regras de avaliação alteradas", categoria: "Administrativa", grupo: "Instituição" },
+  "conta.perfil": { rotulo: "Perfil da conta trocado", categoria: "Administrativa", grupo: "Contas" },
+  "contas.importadas": { rotulo: "Professores importados", categoria: "Administrativa", grupo: "Contas" },
   // Acadêmicas: só o coordenador do curso vê (INV-019-03).
   "disciplina.criada": { rotulo: "Disciplina criada", categoria: "Academica", grupo: "Disciplinas e turmas" },
   "grade.adicionada": { rotulo: "Disciplina adicionada à grade", categoria: "Academica", grupo: "Disciplinas e turmas" },
@@ -80,6 +88,8 @@ export const ACOES = {
   "diario.reaberto": { rotulo: "Diário reaberto", categoria: "Academica", grupo: "Diário" },
   "requerimento.aberto": { rotulo: "Requerimento aberto", categoria: "Academica", grupo: "Requerimentos" },
   "requerimento.respondido": { rotulo: "Requerimento respondido", categoria: "Academica", grupo: "Requerimentos" },
+  // SPEC-058: importação do sistema anterior (uma por curso).
+  "importacao.anterior": { rotulo: "Importação do sistema anterior", categoria: "Academica", grupo: "Secretaria" },
 } as const satisfies Record<string, { rotulo: string; categoria: CategoriaAuditoria; grupo: string }>;
 
 export type AcaoAuditoria = keyof typeof ACOES;
@@ -113,7 +123,7 @@ export function dataBR(texto: string): string {
   return `${dia}/${mes}/${ano}`;
 }
 
-const CHAVES_SECRETAS = new Set(["senha", "senhaHash", "senhaProvisoria"]);
+const CHAVES_SECRETAS = new Set(["senha", "senhaHash", "senhaProvisoria", "token"]);
 
 // INV-019-05: nenhum registro guarda senha nem hash, em qualquer nível do objeto.
 export function semSegredos<T>(valor: T): T {

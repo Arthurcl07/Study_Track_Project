@@ -144,7 +144,7 @@ Cláusula EARS:
 Aplicada por: RF-28.
 
 RB-23 — Notificação do destinatário
-Descrição: Cada notificação pertence a um único usuário, que é o único que a vê e a marca como lida; administrador e coordenador não recebem notificações (OPEN-043).
+Descrição: Cada notificação pertence a um único usuário, que é o único que a vê e a marca como lida; o administrador não recebe notificações e o coordenador recebe só o aviso de evasão (OPEN-043; ajustada pela SPEC-050, aprovada por Arthur em 2026-11-14).
 Cláusula EARS:
   WHEN um usuário consultar notificações, o sistema SHALL apresentar apenas as notificações das quais ele é o destinatário.
   O sistema SHALL gravar no máximo uma notificação de prazo por estudante e atividade.

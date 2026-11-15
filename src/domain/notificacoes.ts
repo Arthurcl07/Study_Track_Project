@@ -1,8 +1,8 @@
 // Regras e textos das notificações (SPEC-022, RF-31, RB-23, OPEN-043). Funções puras: sem Next.js nem Prisma.
 import { numeroBR } from "./auditoria";
-import type { Situacao } from "./situacao-academica";
+import { REGRA_PADRAO, type RegraAvaliacao, type Situacao } from "./situacao-academica";
 
-export type TipoNotificacao = "Risco" | "Nota" | "Plano" | "Prazo" | "Comunicado" | "Requerimento" | "Diario";
+export type TipoNotificacao = "Risco" | "Nota" | "Plano" | "Prazo" | "Comunicado" | "Requerimento" | "Diario" | "Evasao";
 export type NovaNotificacao = { tipo: TipoNotificacao; titulo: string; texto: string; link: string; chave?: string };
 
 export const DIAS_DE_AVISO_DO_PRAZO = 2;
@@ -14,27 +14,27 @@ export function entrouEmRisco(anterior: Situacao | null | undefined, nova: Situa
 
 const percentual = (v: number | null) => (v === null ? "—" : `${v.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}%`);
 
-function motivoDoRisco(media: number | null, frequencia: number | null): string {
+function motivoDoRisco(media: number | null, frequencia: number | null, regra: RegraAvaliacao = REGRA_PADRAO): string {
   const partes: string[] = [];
-  if (frequencia !== null && frequencia < 75) partes.push(`frequência em ${percentual(frequencia)}, abaixo de 75%`);
-  if (media !== null && media < 5) partes.push(`média ${numeroBR(media)}, abaixo de 5,0`);
+  if (frequencia !== null && frequencia < regra.frequenciaMinima) partes.push(`frequência em ${percentual(frequencia)}, abaixo de ${percentual(regra.frequenciaMinima)}`);
+  if (media !== null && media < regra.limiteRisco) partes.push(`média ${numeroBR(media)}, abaixo de ${numeroBR(regra.limiteRisco)}`);
   return partes.length > 0 ? partes.join(" e ") : "situação de Risco";
 }
 
-export function notificacaoRiscoEstudante(disciplina: string, professor: string, media: number | null, frequencia: number | null): NovaNotificacao {
+export function notificacaoRiscoEstudante(disciplina: string, professor: string, media: number | null, frequencia: number | null, regra?: RegraAvaliacao): NovaNotificacao {
   return {
     tipo: "Risco",
     titulo: `Você entrou em situação de Risco em ${disciplina}`,
-    texto: `Motivo: ${motivoDoRisco(media, frequencia)}. Converse com ${professor}.`,
+    texto: `Motivo: ${motivoDoRisco(media, frequencia, regra)}. Converse com ${professor}.`,
     link: "/estudante",
   };
 }
 
-export function notificacaoRiscoProfessor(estudante: string, turma: string, turmaId: string, media: number | null, frequencia: number | null): NovaNotificacao {
+export function notificacaoRiscoProfessor(estudante: string, turma: string, turmaId: string, media: number | null, frequencia: number | null, regra?: RegraAvaliacao): NovaNotificacao {
   return {
     tipo: "Risco",
     titulo: `${estudante} entrou em Risco em ${turma}`,
-    texto: `Motivo: ${motivoDoRisco(media, frequencia)}. Avalie criar um plano de recuperação.`,
+    texto: `Motivo: ${motivoDoRisco(media, frequencia, regra)}. Avalie criar um plano de recuperação.`,
     link: `/professor/turmas/${turmaId}`,
   };
 }

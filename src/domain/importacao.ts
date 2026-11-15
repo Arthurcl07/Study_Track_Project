@@ -7,7 +7,7 @@ export type LinhaCsv = { linha: number; nome: string; email: string };
 export type Leitura = { ok: true; linhas: LinhaCsv[] } | { ok: false; erro: string };
 
 // Divide uma linha CSV respeitando aspas ("Silva; Ana" e aspas duplicadas "").
-function campos(linha: string, separador: string): string[] {
+export function campos(linha: string, separador: string): string[] {
   const saida: string[] = [];
   let atual = "";
   let aspas = false;

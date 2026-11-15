@@ -1,3 +1,4 @@
+import { DocumentosDaTurma } from "@/components/documentos-turma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Casca } from "@/components/casca";
@@ -46,6 +47,7 @@ export default async function DetalheTurma({ params }: { params: Promise<{ id: s
         titulo={`${turma.nome} · ${turma.disciplina.nome}`}
         subtitulo={`${turma.curso.nome} · Período ${turma.periodo} · Professor: ${turma.professor.nome}`}
         voltar={{ href: "/coordenador/turmas", rotulo: "Turmas e estudantes" }}
+        acao={<DocumentosDaTurma turmaId={turma.id} />}
       />
       <div className="grid items-start gap-5 lg:grid-cols-[1.6fr_1fr]">
         <Cartao titulo={`Estudantes (${estudantes.length})`}>

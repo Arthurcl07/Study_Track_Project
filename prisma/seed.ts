@@ -4,6 +4,7 @@
 // (SPEC-005), além de dados de demonstração fictícios (ver dadosDeDemonstracao). Apenas para ambiente local.
 import { exemplosDaSecretaria } from "./secretaria";
 import { exemplosDoNivel3 } from "./nivel3";
+import { exemplosDosNiveis5e6 } from "./nivel56";
 import { povoarFaculdade } from "./povoamento";
 import { hojeEmBrasilia } from "../src/domain/atividades";
 import { recalcularIndicador } from "../src/server/academico/indicador";
@@ -94,6 +95,8 @@ async function main() {
   // SPEC-036 a SPEC-043 (Nível 3): calendário, salas e grade, matriz, rematrícula de 2027/1, requerimentos,
   // aproveitamento e diário fechado (prisma/nivel3.ts).
   await exemplosDoNivel3({ administradorId: administrador.id, professorId: professor.id, cursoId: cursos.ECO });
+  // SPEC-045 a SPEC-059 (Níveis 5 e 6): regra padrão, encarregado de dados, aceite e primeiro acesso da Marina.
+  await exemplosDosNiveis5e6();
 }
 
 // Dados de demonstração (fictícios): estudantes em Normal, Atenção, Risco e sem dados, para os

@@ -14,4 +14,7 @@ que roda no navegador nem nas regras de domínio: o domínio continua entregando
 
 ## Consequências
 - Uma dependência de produção nova, pequena e só no servidor; entra no `npm audit` da verificação de qualidade.
+- Verificação de 2026-11-14: o `npm audit` aponta um alerta moderado do `uuid` usado por dentro do exceljs (checagem de
+  limites em `v3`/`v5`/`v6` quando se passa um buffer). O StudyTrack só **gera** planilhas e nunca chama essas funções
+  nem lê planilha enviada por usuário com o exceljs; risco aceito, como o OPEN-022.
 - O PDF não precisa de biblioteca: usa a versão para impressão, como boletim e histórico (SPEC-020).

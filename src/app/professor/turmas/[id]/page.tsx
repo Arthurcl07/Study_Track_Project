@@ -1,3 +1,4 @@
+import { DocumentosDaTurma } from "@/components/documentos-turma";
 import { notFound } from "next/navigation";
 import { Casca } from "@/components/casca";
 import { DiarioDoProfessor } from "@/components/coordenacao-n3";
@@ -30,6 +31,7 @@ export default async function DashboardDaTurma({ params }: { params: Promise<{ i
         titulo={`${turma.nome} · ${turma.disciplina}`}
         subtitulo={`Período ${turma.periodo} · ${turma.estudantes.length} estudante(s)`}
         voltar={{ href: "/professor", rotulo: "Turmas que leciono" }}
+        acao={<DocumentosDaTurma turmaId={turma.id} />}
       />
       <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {CONTADORES.map((c) => (

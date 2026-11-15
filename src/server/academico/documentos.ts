@@ -4,7 +4,8 @@
 // emite de qualquer estudante (RB-13). Professor: nada (INV-020-05).
 // SPEC-029: exame e nota final; SPEC-031: matrícula trancada/cancelada; SPEC-032: a frequência já conta o abono.
 import { resumoPorPeriodo } from "@/domain/comparativo";
-import { periodoPadrao, resultadoDaTurma, resumoDoHistorico, type Resultado } from "@/domain/documentos";
+import { ehAprovado, periodoPadrao, resultadoDaTurma, resumoDoHistorico, type Resultado } from "@/domain/documentos";
+import { CAMPOS_REGRA_DO_PERIODO, regraGuardada, regraVigente } from "@/server/dados/regras";
 import { notaFinalComExame, type Situacao } from "@/domain/situacao-academica";
 import type { Sessao } from "@/server/auth/token";
 import { prisma } from "@/server/dados/prisma";
@@ -33,7 +34,7 @@ export async function turmasDoEstudante(estudanteId: string, periodo?: string) {
       id: true,
       nome: true,
       periodo: true,
-      periodoLetivo: { select: { status: true } },
+      periodoLetivo: { select: CAMPOS_REGRA_DO_PERIODO },
       disciplina: { select: { id: true, nome: true, cargaHoraria: true } },
       professor: { select: { nome: true } },
       avaliacoes: { select: { nome: true, peso: true, tipo: true, data: true, notas: { where: { estudanteId }, select: { valor: true } } }, orderBy: [{ data: "asc" }, { nome: "asc" }] },
@@ -43,9 +44,12 @@ export async function turmasDoEstudante(estudanteId: string, periodo?: string) {
     },
     orderBy: [{ periodo: "asc" }, { disciplina: { nome: "asc" } }],
   });
+  const vigente = await regraVigente();
   return turmas.map((t) => {
     const indicador = t.indicadores[0];
     const encerrado = t.periodoLetivo.status === "Encerrado";
+    // SPEC-052 / RB-47: período encerrado usa a regra com que foi encerrado (INV-052-02).
+    const regra = (encerrado ? regraGuardada(t.periodoLetivo) : null) ?? vigente;
     const media = indicador?.media ?? null;
     const frequencia = indicador?.frequenciaAtual ?? null;
     const exame = t.avaliacoes.find((a) => a.tipo === "Exame")?.notas[0]?.valor ?? null;
@@ -71,7 +75,8 @@ export async function turmasDoEstudante(estudanteId: string, periodo?: string) {
       aulas: t.aulas.length,
       presencas: presentes,
       situacao: (indicador?.situacao ?? null) as Situacao | null,
-      resultado: resultadoDaTurma({ encerrado, media, frequencia, exame, matricula }) as Resultado,
+      regra,
+      resultado: resultadoDaTurma({ encerrado, media, frequencia, exame, matricula, regra }) as Resultado,
     };
   });
 }
@@ -104,20 +109,34 @@ export async function consultarHistorico(sessao: Sessao, filtros: { estudante?: 
     return { nome, encerrado: doPeriodo.every((l) => l.encerrado), linhas: doPeriodo };
   });
   // SPEC-042: aproveitamentos (contam na carga aprovada) e a data de conclusão do curso.
-  const [aproveitamentos, ficha] = await Promise.all([
+  const [aproveitamentos, ficha, anteriores, regraAtual] = await Promise.all([
     prisma.aproveitamento.findMany({ where: { estudanteId: estudante.id }, select: { id: true, instituicaoOrigem: true, disciplinaOrigem: true, nota: true, cargaHoraria: true, disciplina: { select: { nome: true } } }, orderBy: { registradoEm: "asc" } }),
     prisma.fichaEstudante.findUnique({ where: { estudanteId: estudante.id }, select: { situacaoCurso: true, situacaoDesde: true } }),
+    // SPEC-058: histórico do sistema anterior.
+    prisma.historicoAnterior.findMany({ where: { estudanteId: estudante.id }, select: { id: true, periodo: true, media: true, frequencia: true, disciplina: { select: { nome: true, cargaHoraria: true } } }, orderBy: [{ periodo: "asc" }, { disciplina: { nome: "asc" } }] }),
+    regraVigente(),
   ]);
   const resumo = resumoDoHistorico(linhas);
+  const anterior = anteriores.map((a) => ({
+    id: a.id,
+    periodo: a.periodo,
+    disciplina: a.disciplina.nome,
+    cargaHoraria: a.disciplina.cargaHoraria,
+    media: a.media,
+    frequencia: a.frequencia,
+    resultado: resultadoDaTurma({ encerrado: true, media: a.media, frequencia: a.frequencia, regra: regraAtual }) as Resultado,
+  }));
+  const aprovadasAnteriores = anterior.filter((a) => ehAprovado(a.resultado));
   return {
     estudante,
     periodos: porPeriodo,
     aproveitamentos: aproveitamentos.map((a) => ({ id: a.id, disciplina: a.disciplina.nome, origem: `${a.instituicaoOrigem} · ${a.disciplinaOrigem}`, nota: a.nota, cargaHoraria: a.cargaHoraria })),
+    anterior,
     concluidoEm: ficha?.situacaoCurso === "Concluido" ? ficha.situacaoDesde.toISOString().slice(0, 10) : null,
     resumo: {
       ...resumo,
-      disciplinasAprovadas: resumo.disciplinasAprovadas + aproveitamentos.length,
-      cargaHorariaAprovada: resumo.cargaHorariaAprovada + aproveitamentos.reduce((s, a) => s + a.cargaHoraria, 0),
+      disciplinasAprovadas: resumo.disciplinasAprovadas + aproveitamentos.length + aprovadasAnteriores.length,
+      cargaHorariaAprovada: resumo.cargaHorariaAprovada + aproveitamentos.reduce((s, a) => s + a.cargaHoraria, 0) + aprovadasAnteriores.reduce((s, a) => s + a.cargaHoraria, 0),
     },
     emitidoEm: new Date().toISOString(),
   };

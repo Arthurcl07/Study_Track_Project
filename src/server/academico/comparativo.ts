@@ -3,6 +3,7 @@
 import { MATRICULA_CURSANDO } from "@/server/dados/matriculas";
 import { mediaPorDisciplina, resumoPorPeriodo, type LinhaComparativo } from "@/domain/comparativo";
 import { prisma } from "@/server/dados/prisma";
+import { regrasDosPeriodos } from "@/server/dados/regras";
 
 export async function comparativoDoCoordenador(coordenadorId: string, cursoIds: string[]) {
   const indicadores = await prisma.indicadorAcademico.findMany({
@@ -22,7 +23,10 @@ export async function comparativoDoCoordenador(coordenadorId: string, cursoIds: 
     select: { estudanteId: true, valor: true, avaliacao: { select: { turmaId: true } } },
   });
   const exameDe = new Map(exames.map((e) => [`${e.estudanteId}:${e.avaliacao.turmaId}`, e.valor]));
+  // SPEC-052 (INV-052-02): resultado de cada período pela regra dele.
+  const regras = await regrasDosPeriodos(indicadores.map((i) => i.turma.periodo));
   const linhas: LinhaComparativo[] = indicadores.map((i) => ({
+    regra: regras.get(i.turma.periodo),
     exame: exameDe.get(`${i.estudanteId}:${i.turmaId}`) ?? null,
     periodo: i.turma.periodo,
     encerrado: i.turma.periodoLetivo.status === "Encerrado",

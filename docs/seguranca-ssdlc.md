@@ -69,3 +69,15 @@ Detalhe em `docs/verificacao/qualidade.md`.
 | Controle de acesso quebrado | Conta com senha provisória bloqueada em todas as páginas e APIs, na guarda | AC-011-01 |
 | Falhas de registro e monitoramento | Histórico imutável de lançamento e alteração de nota, com autor e data (RB-16) | `tests/spec-013/historico.test.ts` |
 | Exposição de dados | Plano visível só ao próprio estudante; histórico e painel no escopo do perfil | AC-012-03, AC-013-03, AC-014-04 |
+
+## 7. Registro de verificação da aplicação (2026-11-14, SPEC-045 a SPEC-059)
+
+| Risco (OWASP) | Mitigação nova | Evidência |
+|---|---|---|
+| Falhas de autenticação: força bruta | 5 senhas erradas seguidas bloqueiam o e-mail por 15 minutos, inclusive a certa; mesma resposta exista a conta ou não (RB-44) | `tests/spec-046/login.test.ts`, `e2e/02-login-bloqueio.spec.ts` |
+| Exposição de dados (LGPD) | Aceite versionado dos termos; download só dos próprios dados, sem senha nem hash, auditado (RB-43) | `tests/spec-045/lgpd.test.ts` |
+| Falhas de registro e monitoramento | Erros do servidor gravados com código, rota sem identificadores e mensagem com e-mail, CPF, números longos, senha e token mascarados; só o administrador vê (SPEC-057) | `tests/spec-057/erros-saude.test.ts` |
+| Exposição de detalhes técnicos | Página de erro sem mensagem técnica nem pilha; rota de API com erro responde 500 com o código (SPEC-047) | `e2e/06-erro-e-saude.spec.ts` |
+| Controle de acesso | Documentos da turma, Excel, evasão e acompanhamento com o escopo na própria consulta; regras, importações e saúde só para a secretaria | `tests/spec-048` a `spec-053`, `spec-058` |
+| Importação de dados | Planilhas validadas linha a linha, tudo ou nada, com limite de tamanho; senhas provisórias aleatórias, só o hash no banco (RB-49, INV-053-03) | `tests/spec-053`, `tests/spec-058` |
+| Dependências | `exceljs` (produção), `@playwright/test`, `playwright-core` e `@axe-core/playwright` (desenvolvimento), com versões fixas; alerta moderado do `uuid` interno do exceljs aceito (ADR-005) | `npm audit` |

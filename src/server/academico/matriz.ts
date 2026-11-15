@@ -1,6 +1,8 @@
 // Matriz curricular, integralização, aproveitamento e conclusão (SPEC-037, SPEC-042, RF-45, RF-50, RF-51, UC-34,
 // UC-39). Matriz: coordenador do curso (escopo na query). Curso do estudante: o próprio, o coordenador do curso e a
 // secretaria. Aproveitamento: secretaria. Toda escrita com auditoria na transação (RB-22).
+import { aprovadoNoAnterior } from "@/domain/importacao-anterior";
+import { regraVigente } from "@/server/dados/regras";
 import { ehAprovado } from "@/domain/documentos";
 import {
   ROTULO_SITUACAO_MATRIZ,
@@ -68,10 +70,20 @@ export async function salvarLinhaDaMatriz(cursoId: string, disciplinaId: string,
 
 // O que o estudante tem em cada disciplina: aprovação (regra única do histórico, RB-24), cursando, reprovação e aproveitamento.
 export async function historicoParaMatriz(estudanteId: string): Promise<HistoricoDoEstudante> {
-  const [linhas, aproveitamentos] = await Promise.all([turmasDoEstudante(estudanteId), prisma.aproveitamento.findMany({ where: { estudanteId }, select: { disciplinaId: true } })]);
+  const [linhas, aproveitamentos, anteriores, regra] = await Promise.all([
+    turmasDoEstudante(estudanteId),
+    prisma.aproveitamento.findMany({ where: { estudanteId }, select: { disciplinaId: true } }),
+    // SPEC-058 / RB-49: o cursado no sistema anterior conta, aprovado pela regra vigente.
+    prisma.historicoAnterior.findMany({ where: { estudanteId }, select: { disciplinaId: true, media: true, frequencia: true } }),
+    regraVigente(),
+  ]);
   const aprovadas = new Set<string>();
   const cursando = new Set<string>();
   const reprovadas = new Set<string>();
+  for (const a of anteriores) {
+    if (aprovadoNoAnterior(a, regra)) aprovadas.add(a.disciplinaId);
+    else reprovadas.add(a.disciplinaId);
+  }
   for (const l of linhas) {
     if (ehAprovado(l.resultado)) aprovadas.add(l.disciplinaId);
     else if (l.resultado === "EmCurso") cursando.add(l.disciplinaId);

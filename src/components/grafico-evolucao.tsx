@@ -9,7 +9,10 @@ const MARGEM = 18;
 
 const formatar = (nota: number) => nota.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
 
-export function GraficoEvolucao({ pontos }: { pontos: PontoEvolucao[] }) {
+// SPEC-052: as linhas de referência seguem a regra vigente.
+export function GraficoEvolucao({ pontos, regra }: { pontos: PontoEvolucao[]; regra?: { mediaMinima: number; limiteRisco: number } }) {
+  const linhaRisco = regra?.limiteRisco ?? MEDIA_RISCO;
+  const linhaNormal = regra?.mediaMinima ?? MEDIA_NORMAL;
   if (pontos.length === 0) {
     return <p className="rounded-[10px] bg-nevoa px-3 py-4 text-center text-sm text-mudo">Ainda sem notas lançadas.</p>;
   }
@@ -24,8 +27,8 @@ export function GraficoEvolucao({ pontos }: { pontos: PontoEvolucao[] }) {
   return (
     <svg viewBox={`0 0 ${LARGURA} ${ALTURA}`} className="w-full" role="img" aria-label={`Evolução das notas — ${descricao}`}>
       <line x1={MARGEM} x2={LARGURA - MARGEM} y1={y(0)} y2={y(0)} stroke="var(--color-traco)" />
-      <line x1={MARGEM} x2={LARGURA - MARGEM} y1={y(MEDIA_RISCO)} y2={y(MEDIA_RISCO)} stroke="#FCA5A5" strokeDasharray="4 4" />
-      <line x1={MARGEM} x2={LARGURA - MARGEM} y1={y(MEDIA_NORMAL)} y2={y(MEDIA_NORMAL)} stroke="#FCD34D" strokeDasharray="4 4" />
+      <line x1={MARGEM} x2={LARGURA - MARGEM} y1={y(linhaRisco)} y2={y(linhaRisco)} stroke="#FCA5A5" strokeDasharray="4 4" />
+      <line x1={MARGEM} x2={LARGURA - MARGEM} y1={y(linhaNormal)} y2={y(linhaNormal)} stroke="#FCD34D" strokeDasharray="4 4" />
       {pontos.length > 1 && <polyline points={linha} fill="none" stroke="var(--color-azul)" strokeWidth={2.5} strokeLinejoin="round" />}
       {pontos.map((p, i) => (
         <g key={`${p.avaliacao}-${i}`}>

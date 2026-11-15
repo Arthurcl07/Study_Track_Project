@@ -7,6 +7,8 @@ import { SeletorPeriodo } from "@/components/seletor-periodo";
 import { ComparativoSemestres } from "@/components/comparativo-semestres";
 import { CabecalhoPagina, Cartao, CartaoNumero, CLASSE_LINK, EstadoVazio } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
+import { contarPendenciasDosProfessores } from "@/server/academico/acompanhamento";
+import { contarEvasao } from "@/server/academico/evasao";
 import { consultarPainelCoordenador } from "@/server/academico/painel-coordenador";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 
@@ -18,7 +20,12 @@ import { exigirAcessoPagina } from "@/server/auth/guardas";
 export default async function PainelCoordenador({ searchParams }: { searchParams: Promise<{ curso?: string; periodo?: string }> }) {
   const sessao = await exigirAcessoPagina(RECURSOS.painelCoordenador);
   const { curso, periodo: periodoPedido } = await searchParams;
-  const { cursos, filtro, periodos, periodo, totais, resumo, porCurso, atencao, comparativo } = await consultarPainelCoordenador(sessao, curso, periodoPedido);
+  // SPEC-050 e SPEC-051: estudantes em evasão e pendências dos professores (calculados, nunca gravados).
+  const [{ cursos, filtro, periodos, periodo, totais, resumo, porCurso, atencao, comparativo }, evasao, pendencias] = await Promise.all([
+    consultarPainelCoordenador(sessao, curso, periodoPedido),
+    contarEvasao(sessao.usuarioId, curso),
+    contarPendenciasDosProfessores(sessao.usuarioId),
+  ]);
   const sufixo = filtro ? `?curso=${filtro.id}` : "";
   const subtitulo = filtro ? `Visão geral de ${filtro.nome}.` : cursos.length === 1 ? `Visão geral de ${cursos[0].nome}.` : "Visão geral dos cursos que você coordena.";
 
@@ -43,7 +50,7 @@ export default async function PainelCoordenador({ searchParams }: { searchParams
           </div>
         }
       />
-      <div className="mb-5 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+      <div className="mb-5 grid grid-cols-2 gap-4 md:grid-cols-4">
         <CartaoNumero rotulo="Cursos" valor={totais.cursos} />
         <CartaoNumero rotulo="Disciplinas" valor={totais.disciplinas} href={`/coordenador/disciplinas${sufixo}`} />
         <CartaoNumero rotulo="Turmas" valor={totais.turmas} href="/coordenador/turmas" />
@@ -56,6 +63,8 @@ export default async function PainelCoordenador({ searchParams }: { searchParams
           href={`/relatorios?situacao=Risco${filtro ? `&curso=${filtro.id}` : ""}`}
         />
         <CartaoNumero rotulo="Planos ativos" valor={totais.planosAtivos} detalhe={`${totais.riscoSemPlano} estudante(s) em Risco sem plano`} />
+        <CartaoNumero rotulo="🚪 Em evasão" valor={evasao} cor={evasao > 0 ? "text-risco" : ""} detalhe="sumiram das aulas" href={`/evasao${filtro ? `?curso=${filtro.id}` : ""}`} />
+        <CartaoNumero rotulo="Pendências dos professores" valor={pendencias} cor={pendencias > 0 ? "text-atencao" : ""} detalhe="chamada, notas e diário" href="/coordenador/acompanhamento" />
       </div>
 
       {resumo.length === 0 ? (

@@ -63,6 +63,8 @@ Legenda de status da Spec:
 | SPEC-044 e layout aprovados (Arthur) | `aprovada` | 2026-11-09 |
 | SPEC-044 marcada como `implementada`: 400 testes e verificação em `docs/verificacao/SPEC-044.md`, condicionada à aprovação do PR de `development` para `main` | `implementada` | 2026-11-09 |
 | SPEC-045 a SPEC-059 (LGPD, login, erro, documentos oficiais, Nível 5 e Nível 6) incluídas a pedido de Arthur, com OPEN-067 a OPEN-075 fechadas (decisão humana, Arthur); RF-54 a RF-65, RNF-07, RNF-08, RB-43 a RB-49; RB-05, RB-06, RB-07 e RB-29 passam a usar a regra configurada; ADR-005 e ADR-006; texto e layout aguardando aprovação | `especificada` | 2026-11-14 |
+| SPEC-045 a SPEC-059 e layout aprovados (Arthur) | `aprovada` | 2026-11-14 |
+| SPEC-045 a SPEC-059 marcadas como `implementadas`: 460 testes, 7 testes de tela com axe, teste de carga e verificação em `docs/verificacao/SPEC-045-059.md`, condicionadas à aprovação do PR de `development` para `main` | `implementada` | 2026-11-14 |
 
 ---
 
@@ -5688,7 +5690,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-045 — Termos, privacidade e dados do titular (LGPD)
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -5727,12 +5729,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Aceite dos termos | [prototipo.html#lgpd-aceite](layout/prototipo.html#lgpd-aceite) | [ ] | [ ] | | |
-| Meus dados | [prototipo.html#lgpd-meus-dados](layout/prototipo.html#lgpd-meus-dados) | [ ] | [ ] | | |
+| Aceite dos termos | [prototipo.html#lgpd-aceite](layout/prototipo.html#lgpd-aceite) | [x] | [x] | Arthur | 2026-11-14 |
+| Meus dados | [prototipo.html#lgpd-meus-dados](layout/prototipo.html#lgpd-meus-dados) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 
@@ -5804,7 +5806,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-046 — Limite de tentativas no login
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -5841,11 +5843,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Login com tentativas restantes e bloqueio | [prototipo.html#login-bloqueio](layout/prototipo.html#login-bloqueio) | [ ] | [ ] | | |
+| Login com tentativas restantes e bloqueio | [prototipo.html#login-bloqueio](layout/prototipo.html#login-bloqueio) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 
@@ -5914,7 +5916,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-047 — Página de erro própria
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -5950,11 +5952,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Página de erro | [prototipo.html#erro](layout/prototipo.html#erro) | [ ] | [ ] | | |
+| Página de erro | [prototipo.html#erro](layout/prototipo.html#erro) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 
@@ -6018,7 +6020,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-048 — Documentos oficiais da turma
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -6056,13 +6058,13 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Ata de resultados finais | [prototipo.html#doc-ata](layout/prototipo.html#doc-ata) | [ ] | [ ] | | |
-| Diário de classe impresso | [prototipo.html#doc-diario](layout/prototipo.html#doc-diario) | [ ] | [ ] | | |
-| Lista de presença | [prototipo.html#doc-lista-presenca](layout/prototipo.html#doc-lista-presenca) | [ ] | [ ] | | |
+| Ata de resultados finais | [prototipo.html#doc-ata](layout/prototipo.html#doc-ata) | [x] | [x] | Arthur | 2026-11-14 |
+| Diário de classe impresso | [prototipo.html#doc-diario](layout/prototipo.html#doc-diario) | [x] | [x] | Arthur | 2026-11-14 |
+| Lista de presença | [prototipo.html#doc-lista-presenca](layout/prototipo.html#doc-lista-presenca) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 
@@ -6133,7 +6135,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-049 — Relatórios em Excel e PDF
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -6169,11 +6171,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Relatório com Excel, PDF e CSV | [prototipo.html#relatorio-exportar](layout/prototipo.html#relatorio-exportar) | [ ] | [ ] | | |
+| Relatório com Excel, PDF e CSV | [prototipo.html#relatorio-exportar](layout/prototipo.html#relatorio-exportar) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 
@@ -6239,7 +6241,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-050 — Alerta de evasão
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -6275,11 +6277,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Painel de evasão | [prototipo.html#evasao](layout/prototipo.html#evasao) | [ ] | [ ] | | |
+| Painel de evasão | [prototipo.html#evasao](layout/prototipo.html#evasao) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 
@@ -6349,7 +6351,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-051 — Acompanhamento dos professores
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -6384,11 +6386,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Acompanhamento dos professores | [prototipo.html#acompanhamento](layout/prototipo.html#acompanhamento) | [ ] | [ ] | | |
+| Acompanhamento dos professores | [prototipo.html#acompanhamento](layout/prototipo.html#acompanhamento) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 
@@ -6455,7 +6457,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-052 — Regras de avaliação configuráveis
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -6492,11 +6494,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Configurações — regras de avaliação | [prototipo.html#config-regras](layout/prototipo.html#config-regras) | [ ] | [ ] | | |
+| Configurações — regras de avaliação | [prototipo.html#config-regras](layout/prototipo.html#config-regras) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 
@@ -6567,7 +6569,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-053 — Trocar perfil e importar professores
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -6603,11 +6605,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Contas — trocar perfil e importar professores | [prototipo.html#contas-perfil-importar](layout/prototipo.html#contas-perfil-importar) | [ ] | [ ] | | |
+| Contas — trocar perfil e importar professores | [prototipo.html#contas-perfil-importar](layout/prototipo.html#contas-perfil-importar) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 
@@ -6678,7 +6680,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-054 — Teste de desempenho
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -6776,7 +6778,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-055 — Testes ponta a ponta
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -6874,7 +6876,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-056 — Acessibilidade WCAG 2.1 AA
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -6973,7 +6975,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-057 — Registro de erros e saúde do sistema
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -7009,11 +7011,11 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Saúde do sistema | [prototipo.html#saude](layout/prototipo.html#saude) | [ ] | [ ] | | |
+| Saúde do sistema | [prototipo.html#saude](layout/prototipo.html#saude) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 
@@ -7080,7 +7082,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-058 — Importação do sistema anterior
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -7118,12 +7120,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Importar do sistema anterior | [prototipo.html#importar-anterior](layout/prototipo.html#importar-anterior) | [ ] | [ ] | | |
-| Histórico com o sistema anterior | [prototipo.html#historico-anterior](layout/prototipo.html#historico-anterior) | [ ] | [ ] | | |
+| Importar do sistema anterior | [prototipo.html#importar-anterior](layout/prototipo.html#importar-anterior) | [x] | [x] | Arthur | 2026-11-14 |
+| Histórico com o sistema anterior | [prototipo.html#historico-anterior](layout/prototipo.html#historico-anterior) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 
@@ -7193,7 +7195,7 @@ Padrão da SPEC-001 (seção 14).
 
 # SPEC-059 — Ajuda: manual e tour
 
-**Status:** `especificada`
+**Status:** `implementada`
 
 ## 1. Identificação
 
@@ -7229,12 +7231,12 @@ Padrão da SPEC-001 (seção 14).
 
 ## Telas e evidência de layout
 
-**Gate (OPEN-020):** Layout `pendente` — aguardando aprovação de Arthur.
+**Gate (OPEN-020):** Layout `aprovado` em 2026-11-14 por Arthur.
 
 | Tela | Evidência | Desktop | Smartphone | Aprovado por | Data |
 |---|---|---|---|---|---|
-| Tour do primeiro acesso | [prototipo.html#tour](layout/prototipo.html#tour) | [ ] | [ ] | | |
-| Página Ajuda | [prototipo.html#ajuda](layout/prototipo.html#ajuda) | [ ] | [ ] | | |
+| Tour do primeiro acesso | [prototipo.html#tour](layout/prototipo.html#tour) | [x] | [x] | Arthur | 2026-11-14 |
+| Página Ajuda | [prototipo.html#ajuda](layout/prototipo.html#ajuda) | [x] | [x] | Arthur | 2026-11-14 |
 
 ## 4. Dependências
 

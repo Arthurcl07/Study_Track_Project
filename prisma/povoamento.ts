@@ -236,8 +236,21 @@ const AULAS: Record<string, string[]> = {
   "2025/1": datasDeAula("2025-02-25", 20),
   "2025/2": datasDeAula("2025-08-12", 20),
   "2026/1": datasDeAula("2026-02-24", 20),
-  "2026/2": datasDeAula("2026-08-11", 20),
+  // SPEC-050 e SPEC-051: o semestre atual tem chamada até hoje (terças e quintas até o fim das aulas).
+  "2026/2": datasDeAula("2026-08-11", 35),
 };
+
+// SPEC-051 (acompanhamento): umas poucas turmas novas do semestre atual estão com a chamada parada há 9 dias e um
+// seminário sem nota, para a coordenação ter o que cobrar.
+const SEMINARIO_PENDENTE = "Seminário";
+const turmaAtrasada = (t: { nome: string; periodo: string; disciplina: string }) =>
+  t.periodo === "2026/2" && !turmaAnterior(t.nome, t.disciplina) && hash01(`atraso:${t.nome}`) < 0.05;
+
+// SPEC-050 (evasão): no semestre atual, 3% dos estudantes sumiram de todas as aulas e 1,2% das matrículas sumiram de
+// uma disciplina; quem sumiu faltou nas últimas 3 a 6 aulas.
+function aulasSumidas(email: string, turmaId: string) {
+  return hash01(`sumiu:${email}`) < 0.03 || hash01(`sumiu:${email}:${turmaId}`) < 0.012 ? 3 + Math.floor(hash01(`quanto:${email}:${turmaId}`) * 4) : 0;
+}
 const AVALIACOES_HISTORICO: Record<string, [string, string][]> = {
   "2025/1": [["Prova 1", "2025-04-10"], ["Prova 2", "2025-06-12"]],
   "2025/2": [["Prova 1", "2025-09-25"], ["Prova 2", "2025-11-27"]],
@@ -400,7 +413,8 @@ export async function povoarFaculdade(base: { senha: string; cursos: Record<Sigl
     const definicoes = t.periodo === "2026/2"
       ? AVALIACOES_ATUAIS
       : AVALIACOES_HISTORICO[t.periodo].map(([nome, data]) => ({ nome, peso: 1, data, tipo: "Prova" as const }));
-    const faltam = definicoes.filter((d) => !atuais.some((a) => a.nome === d.nome));
+    const comPendencia = turmaAtrasada(t) ? [...definicoes, { nome: SEMINARIO_PENDENTE, peso: 1, data: somarDias(base.hoje, -10), tipo: "Trabalho" as const }] : definicoes;
+    const faltam = comPendencia.filter((d) => !atuais.some((a) => a.nome === d.nome));
     if (faltam.length) await prisma.avaliacao.createMany({ data: faltam.map((d) => ({ turmaId: t.id, nome: d.nome, peso: d.peso, data: paraData(d.data), tipo: d.tipo })) });
     const todas = await prisma.avaliacao.findMany({ where: { turmaId: t.id }, select: { id: true, nome: true, data: true, tipo: true } });
     avaliacoesDa.set(t.id, todas.map((a) => ({ id: a.id, nome: a.nome, data: a.data.toISOString().slice(0, 10), tipo: a.tipo })));
@@ -420,12 +434,16 @@ export async function povoarFaculdade(base: { senha: string; cursos: Record<Sigl
   }
   await emLotes(novas, (lote) => prisma.matricula.createMany({ data: lote.map((m) => ({ estudanteId: m.estudanteId, turmaId: m.turmaId })), skipDuplicates: true }));
 
-  // Aulas do período (se a turma ainda não tem nenhuma).
+  // Aulas do período: as que faltam até hoje (até 9 dias atrás nas turmas atrasadas). As turmas que já existiam
+  // antes do povoamento têm as aulas da simulação.
   const aulasDa = new Map<string, { id: string; data: string }[]>();
   for (const t of turmas) {
     let aulas = await prisma.aula.findMany({ where: { turmaId: t.id }, select: { id: true, data: true }, orderBy: [{ data: "asc" }, { numero: "asc" }] });
-    if (aulas.length === 0) {
-      await prisma.aula.createMany({ data: AULAS[t.periodo].filter((d) => d <= base.hoje).map((d) => ({ turmaId: t.id, data: paraData(d) })), skipDuplicates: true });
+    const limite = turmaAtrasada(t) ? somarDias(base.hoje, -9) : base.hoje;
+    const existentes = new Set(aulas.map((a) => a.data.toISOString().slice(0, 10)));
+    const faltando = aulas.length > 0 && turmaAnterior(t.nome, t.disciplina) ? [] : AULAS[t.periodo].filter((d) => d <= limite && !existentes.has(d));
+    if (faltando.length > 0) {
+      await prisma.aula.createMany({ data: faltando.map((d) => ({ turmaId: t.id, data: paraData(d) })), skipDuplicates: true });
       aulas = await prisma.aula.findMany({ where: { turmaId: t.id }, select: { id: true, data: true }, orderBy: [{ data: "asc" }, { numero: "asc" }] });
     }
     aulasDa.set(t.id, aulas.map((a) => ({ id: a.id, data: a.data.toISOString().slice(0, 10) })));
@@ -447,7 +465,7 @@ export async function povoarFaculdade(base: { senha: string; cursos: Record<Sigl
   for (const m of doPovoamento) {
     const turma = turmaPorId.get(m.turmaId)!;
     for (const a of avaliacoesDa.get(m.turmaId)!) {
-      if (a.tipo === "Substitutiva" || a.tipo === "Exame" || a.data >= base.hoje) continue;
+      if (a.tipo === "Substitutiva" || a.tipo === "Exame" || a.data >= base.hoje || a.nome === SEMINARIO_PENDENTE) continue;
       const valor = valorDaNota(m.estudante.email, turma, a.id);
       const atual = notasAtuais.get(`${a.id}:${m.estudanteId}`);
       if (!atual) {
@@ -471,7 +489,8 @@ export async function povoarFaculdade(base: { senha: string; cursos: Record<Sigl
   for (const m of doPovoamento) {
     const aulas = aulasDa.get(m.turmaId)!;
     if (aulas.length === 0) continue;
-    const lista = aulas.map((a, k) => ({ aulaId: a.id, estudanteId: m.estudanteId, presente: presenteNaAula(m.estudante.email, m.turmaId, k, aulas.length) }));
+    const sumiu = turmaPorId.get(m.turmaId)!.periodo === "2026/2" ? aulasSumidas(m.estudante.email, m.turmaId) : 0;
+    const lista = aulas.map((a, k) => ({ aulaId: a.id, estudanteId: m.estudanteId, presente: k < aulas.length - sumiu && presenteNaAula(m.estudante.email, m.turmaId, k, aulas.length) }));
     let mudou = false;
     for (const p of lista) {
       const atual = presencasAtuais.get(`${p.aulaId}:${p.estudanteId}`);

@@ -9,7 +9,7 @@
   :root {
     --marinho: #0F2A4A; --marinho-claro: #1E3A5F; --azul: #2563EB; --azul-escuro: #1D4ED8;
     --azul-suave: #DBEAFE; --ceu: #93C5FD; --nevoa: #F5F7FB; --branco: #FFFFFF; --traco: #E2E8F0;
-    --texto: #0F172A; --mudo: #64748B;
+    --texto: #0F172A; --mudo: #596779;
     --normal: #15803D; --normal-bg: #DCFCE7; --atencao: #B45309; --atencao-bg: #FEF3C7; --risco: #B91C1C; --risco-bg: #FEE2E2;
     --ok-bg: #F0FDF4; --erro-bg: #FEF2F2; --info: #1D4ED8; --info-bg: #EFF6FF;
   }
@@ -324,7 +324,7 @@ const TELAS = {
       <div class="cartao"><h2>Logotipo</h2><div class="pilha"><div>${logoClaro(28)}</div>
         <div style="background:var(--marinho);padding:16px;border-radius:12px">${logoInverso(28)}</div><div>${MARCA_CLARA.replace('width="36" height="36"', 'width="56" height="56"')}</div></div></div>
       <div class="cartao"><h2>Paleta</h2><div class="grade g3" style="font-size:13px">
-        ${[["Marinho", "#0F2A4A"], ["Marinho-claro", "#1E3A5F"], ["Azul", "#2563EB"], ["Azul-escuro", "#1D4ED8"], ["Azul-suave", "#DBEAFE"], ["Céu", "#93C5FD"], ["Névoa", "#F5F7FB"], ["Traço", "#E2E8F0"], ["Mudo", "#64748B"]]
+        ${[["Marinho", "#0F2A4A"], ["Marinho-claro", "#1E3A5F"], ["Azul", "#2563EB"], ["Azul-escuro", "#1D4ED8"], ["Azul-suave", "#DBEAFE"], ["Céu", "#93C5FD"], ["Névoa", "#F5F7FB"], ["Traço", "#E2E8F0"], ["Mudo", "#596779"]]
           .map(([n, h]) => `<div><div style="height:44px;border-radius:10px;background:${h};border:1px solid var(--traco)"></div><strong>${n}</strong><br><span style="color:var(--mudo)">${h}</span></div>`).join("")}</div></div>
       <div class="cartao"><h2>Situação acadêmica (cor + símbolo + rótulo)</h2><div style="display:flex;gap:10px;flex-wrap:wrap">${selo("Normal")}${selo("Atencao")}${selo("Risco")}</div>
         <div class="pilha" style="margin-top:16px"><div class="msg msg-ok">Nota lançada. Média e situação atualizadas.</div><div class="msg msg-erro">E-mail ou senha inválidos.</div><div class="msg msg-info">Cadastre uma disciplina antes de criar turmas.</div></div></div>

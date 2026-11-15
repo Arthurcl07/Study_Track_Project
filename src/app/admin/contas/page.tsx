@@ -1,6 +1,7 @@
 import { Casca } from "@/components/casca";
 import { FormularioApi } from "@/components/formulario-api";
 import { ListaContas } from "@/components/lista-contas";
+import { ImportarProfessores } from "@/components/contas-n5";
 import { CabecalhoPagina, Cartao } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { PERFIS, ehPerfilValido } from "@/domain/perfil";
@@ -22,8 +23,9 @@ export default async function Contas({ searchParams }: { searchParams: Promise<{
       <CabecalhoPagina titulo="Contas" subtitulo="Crie contas, escolha o perfil de cada uma e controle quem pode entrar. Dados acadêmicos não aparecem aqui." />
       <div className="grid items-start gap-5 xl:grid-cols-[1.6fr_1fr]">
         <Cartao>
-          <ListaContas contas={contas.itens} pagina={contas.pagina} usuarioId={sessao.usuarioId} />
+          <ListaContas contas={contas.itens} pagina={contas.pagina} usuarioId={sessao.usuarioId} cursos={cursos} />
         </Cartao>
+        <div className="space-y-5">
         <Cartao titulo="Nova conta">
           <FormularioApi
             url="/api/contas"
@@ -46,6 +48,11 @@ export default async function Contas({ searchParams }: { searchParams: Promise<{
           />
           <p className="mt-3 text-sm text-mudo">Estudantes também podem ser cadastrados pela coordenação, já matriculados na turma.</p>
         </Cartao>
+        {/* SPEC-053: professores em lote, com prévia e senhas provisórias. */}
+        <Cartao titulo="Importar professores (CSV)">
+          <ImportarProfessores />
+        </Cartao>
+        </div>
       </div>
     </Casca>
   );

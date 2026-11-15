@@ -22,6 +22,34 @@ de cerca de 30 estudantes em 2026/2 (2º e 4º semestre de cada curso), 360 estu
 2025/1. A primeira execução do seed numa máquina leva alguns minutos; as seguintes, cerca de 1 minuto.
 Para trocar de perfil, use **Sair** no menu lateral.
 
+## Roteiro rápido (8 minutos) — se o tempo for curto, apresente só isto
+
+Pensado para impressionar sem enrolação: cada passo mostra uma coisa que um sistema acadêmico de verdade tem e
+quase nenhum trabalho de faculdade tem. Os números vêm da faculdade povoada (6 cursos, 360 estudantes, 84 turmas).
+
+**No dia, antes de começar (5 min):**
+
+1. Rode `Iniciar StudyTrack.bat` com a **opção 3** (restaura os dados: as datas de chamada, evasão e atrasos são
+   calculadas a partir de hoje). Feche e rode de novo com a **opção 2** (modo apresentação: as telas abrem na hora).
+2. Abra **duas janelas** do navegador: uma normal e uma anônima (cada uma com o seu login). Na anônima, entre como
+   `admin@studytrack.test`. Deixe a normal na tela de login.
+3. Deixe um terminal aberto na pasta do projeto para o passo 7 e as planilhas de `docs/exemplos/` à mão.
+
+| Tempo | O que fazer | O que falar (uma frase) |
+|---|---|---|
+| **0:00 – 1:00** | Janela normal: entre como **`coordenador@`** (Marina). Aparecem os **Termos e a Política de privacidade** → marcar e **Aceitar**. Começa o **tour**: Próximo, Próximo, **Pular**. | "Primeiro acesso: aceite versionado da LGPD (se a versão muda, pede de novo) e um tour que ensina o sistema em 30 segundos." |
+| **1:00 – 2:15** | No dashboard, clique no cartão **🚪 Em evasão** → a lista de quem sumiu ("4 faltas seguidas", última presença). Volte e clique em **Pendências dos professores** → "Chamada atrasada há 9 dias", "Seminário sem 30 notas". | "O sistema avisa antes de o aluno abandonar e mostra o que cada professor está devendo. Nada disso é digitado: é calculado da chamada e das notas." |
+| **2:15 – 3:00** | **Relatórios** → Situação **Risco** → **Excel** (abra o arquivo: abas Resumo e Estudantes, cabeçalho azul, situação colorida, filtros) → **PDF**. | "Exporta exatamente o que está na tela, no formato que a coordenação usa." |
+| **3:00 – 4:15** | Janela anônima (admin): **Configurações** → média mínima **7,0** → **Ver efeito** ("N matrículas passam de Normal para Atenção") → **Salvar e recalcular**. Na janela da Marina, **F5** no dashboard: os números de Atenção mudaram. Volte ao admin e clique **Voltar ao padrão** → Salvar. | "A regra é configurável, mas continua sendo uma regra única. O sistema recalcula a faculdade inteira na hora, e o semestre encerrado guarda a regra com que foi encerrado." |
+| **4:15 – 5:15** | Admin: **Importar do sistema anterior** → escolha `sistema-anterior-alunos.csv` e `sistema-anterior-historico.csv` → **Ver prévia** (aprovados, integralização) → **Confirmar**. Se sobrar tempo, mostre antes o `...-com-erro.csv`: a linha é apontada e nada é gravado. | "Migração da faculdade em um clique, tudo ou nada: com um erro, nada entra." |
+| **5:15 – 6:00** | Admin: **Saúde do sistema** (banco, tempo das consultas) → **Testar a página de erro** → a página mostra **ERR-XXXXXX** → volte e busque o código: achado, com e-mail e CPF mascarados. | "Erro não mostra tela técnica; o usuário passa o código e o suporte acha o erro na hora, sem dado pessoal." |
+| **6:00 – 6:30** | Saia e erre a senha de qualquer conta 5 vezes. Na 3ª aparece "Restam 2 tentativas"; na 5ª, "bloqueado até HH:MM". | "Proteção contra adivinhar senha, sem revelar se o e-mail existe." |
+| **6:30 – 8:00** | No terminal: `npm run e2e:ver`. O navegador abre e **usa o sistema sozinho** (primeiro acesso, bloqueio, nota que muda a situação, trancamento, Excel, página de erro, acessibilidade). Enquanto roda, fale da qualidade. | "São 7 fluxos de ponta a ponta, mais de 430 testes automáticos e a verificação de acessibilidade WCAG em cada tela, tudo rodando na CI a cada PR. O teste de carga mede cada página com a faculdade cheia: todas abaixo de 3 segundos." |
+
+Se perguntarem do processo: cada funcionalidade nasceu de uma decisão registrada (`docs/decisoes-em-aberto.md`), virou
+requisito e regra em EARS, Spec aprovada, protótipo aprovado e só então código, com testes nomeados pelos critérios
+(`docs/specs.md`, `docs/rastreabilidade.md`).
+
 ## 1. Processo (2 min)
 
 | Mostrar | Onde |
@@ -106,16 +134,33 @@ Entrar como `admin@studytrack.test`.
 - **Trancamento (SPEC-044):** o estudante pede "Trancamento de disciplina" (escolhe uma matéria) ou "Trancamento de curso" em **Requerimentos**. Na secretaria (`admin@`), o pedido do **Diego Lima** (Física I) mostra o efeito; **Deferir e trancar** deixa só Física I trancada — ela some do painel do Diego e da chamada, e o boletim mostra "Trancada".
 - A rematrícula de 2027/1 está aberta de 03/11 a 30/11/2026. Se a apresentação for depois, ajuste a janela em **Administrador → Períodos letivos**.
 
+## 4g. Níveis 5 e 6 (detalhe) — SPEC-045 a SPEC-059
+
+- **LGPD (SPEC-045):** `coordenador@` (Marina) mostra o primeiro acesso (termos e tour); as outras contas da apresentação já aceitaram. Em qualquer perfil, **Meus dados** baixa um JSON só com os dados da pessoa (fica na auditoria).
+- **Login (SPEC-046):** 5 erradas bloqueiam o e-mail por 15 minutos (a auditoria registra o bloqueio).
+- **Erro e saúde (SPEC-047 e 057):** **Administrador → Saúde do sistema → Testar a página de erro**; o código mostrado é achado na busca.
+- **Documentos oficiais (SPEC-048):** em qualquer turma (professor ou coordenação), os botões **Ata de resultados**, **Diário de classe** e **Lista de presença**. A ata só sai com o diário homologado: homologue o diário da Turma ER-B em **Diários** e abra a ata.
+- **Excel e PDF (SPEC-049):** **Relatórios** → Excel, PDF e CSV com os filtros da tela.
+- **Evasão e acompanhamento (SPEC-050 e 051):** cartões no dashboard da coordenação, itens **Evasão** e **Acompanhamento** no menu. A coordenação recebe a notificação de evasão (sino).
+- **Regras configuráveis (SPEC-052):** **Administrador → Configurações**. O boletim de 2026/1 (encerrado) não muda quando a regra muda.
+- **Contas (SPEC-053):** **Contas → Trocar perfil** (professor com turmas é recusado, com as turmas) e **Importar professores** com `docs/exemplos/professores.csv`.
+- **Sistema anterior (SPEC-058):** planilhas em `docs/exemplos/`; depois, **Estudantes → Paulo Reis → Histórico** com a seção "Cursado no sistema anterior" e **Meu curso** com a integralização.
+- **Ajuda (SPEC-059):** item **Ajuda** em todo perfil, com o manual, as perguntas e **Rever o tour**.
+- **Engenharia (SPEC-054 a 056):** `npm run carga` (tabela de tempos), `npm run e2e` / `npm run e2e:ver` (Playwright) e o axe em cada tela; relatórios em `docs/verificacao/desempenho.md` e `docs/verificacao/acessibilidade.md`.
+
 ## 5. Qualidade (2 min)
 
 | Mostrar | Onde |
 |---|---|
-| 395 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
+| Mais de 430 testes, um por AC, INV e RB, nomeados pelo identificador | `npm test`; `docs/verificacao/qualidade.md` |
+| Testes de tela que usam o sistema sozinhos, com axe (WCAG 2.1 AA) | `npm run e2e:ver`; `e2e/` |
+| Teste de carga com a faculdade povoada (P95 < 3 s) | `npm run carga`; `docs/verificacao/desempenho.md` |
 | CI verde em todo PR, obrigatória na `main` | aba Actions do GitHub; `.github/workflows/ci.yml` |
 | Verificação de cada Spec (testes + navegador, desktop e celular) | `docs/verificacao/` |
 | Segurança: escopo na própria consulta, hash de senha, JWT em cookie httpOnly | `docs/seguranca-ssdlc.md`, ADR-003 e ADR-004 |
 
 ## Se algo der errado
 
-- Dados alterados durante a demonstração: rodar `npm run seed` de novo devolve as notas e frequências dos estudantes de demonstração aos valores iniciais e recalcula a situação. Entregas e planos criados na apresentação continuam no banco.
+- Regra de avaliação mudada e esquecida: **Configurações → Voltar ao padrão → Salvar** (ou `npm run seed`).
+- Dados alterados durante a demonstração: rodar `npm run seed` de novo devolve a regra padrão, o primeiro acesso da Marina, os bloqueios de login zerados e apaga os alunos importados do sistema anterior; também devolve as notas e frequências dos estudantes de demonstração aos valores iniciais e recalcula a situação. Entregas e planos criados na apresentação continuam no banco.
 - Página com erro depois de trocar de branch: parar e subir de novo o `npm run dev`.

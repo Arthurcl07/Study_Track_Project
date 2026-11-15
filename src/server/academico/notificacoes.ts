@@ -1,11 +1,12 @@
-// Casos de uso das notificações (SPEC-022, RF-31, UC-21). Só estudante e professor recebem (INV-022-05); cada um
-// vê e marca só as próprias (RB-23). As de prazo são geradas quando o estudante entra no sistema (OPEN-043).
+// Casos de uso das notificações (SPEC-022, RF-31, UC-21). Estudante e professor recebem (INV-022-05) e, desde a
+// SPEC-050, o coordenador recebe o aviso de evasão; cada um vê e marca só as próprias (RB-23). As de prazo são geradas
+// quando o estudante entra no sistema (OPEN-043).
 import { paginar } from "@/domain/secretaria";
 import type { Sessao } from "@/server/auth/token";
 import * as dados from "@/server/dados/notificacoes";
 import type { Resultado } from "./cadastros";
 
-const recebe = (sessao: Sessao) => sessao.perfil === "Estudante" || sessao.perfil === "Professor";
+const recebe = (sessao: Sessao) => sessao.perfil !== "Administrador";
 
 // Contador do menu: para o estudante, antes gera os avisos de prazo que faltarem.
 export async function naoLidasDoMenu(sessao: Sessao): Promise<number | undefined> {

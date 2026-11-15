@@ -1,9 +1,10 @@
 // Comparativo entre semestres (SPEC-024, RF-33, OPEN-046). Funções puras: sem Next.js nem Prisma.
 // O resultado de cada matrícula usa a regra única do histórico (RB-24, resultadoDaTurma).
 import { ehAprovado, resultadoDaTurma } from "./documentos";
-import type { Situacao } from "./situacao-academica";
+import type { RegraAvaliacao, Situacao } from "./situacao-academica";
 
-export type LinhaComparativo = { periodo: string; encerrado: boolean; disciplina: string; media: number | null; frequencia: number | null; situacao: Situacao | null; exame?: number | null };
+// SPEC-052: regra do período (a do encerramento) para o resultado.
+export type LinhaComparativo = { periodo: string; encerrado: boolean; disciplina: string; media: number | null; frequencia: number | null; situacao: Situacao | null; exame?: number | null; regra?: RegraAvaliacao };
 
 export type ResumoPeriodo = {
   periodo: string;

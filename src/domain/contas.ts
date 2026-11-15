@@ -24,6 +24,51 @@ export function mensagemProfessorComTurmas(nome: string, turmas: number) {
   return `${nome} é professor responsável por ${turmas} turma(s) e não pode ser desativado. Troque o professor dessas turmas antes.`;
 }
 
+// ---------------------------------------------------------------- SPEC-053 / RB-48 (OPEN-074): troca de perfil
+
+export type VinculosDaConta = { id: string; nome: string; perfil: Perfil; turmas: string[]; cursos: string[]; matriculas: number };
+export type RecusaDaTroca = { tipo: "conflito" | "invalido"; erro: string };
+
+const listaCurta = (nomes: readonly string[]) => (nomes.length <= 3 ? nomes.join(", ") : `${nomes.slice(0, 3).join(", ")} e mais ${nomes.length - 3}`);
+
+// INV-053-01: sem vínculo que o novo perfil não pode ter; Estudante precisa de curso; ninguém troca o próprio perfil.
+export function motivoParaNaoTrocarPerfil(conta: VinculosDaConta, novo: unknown, cursoId: string | null, administradorId: string): RecusaDaTroca | null {
+  if (!ehPerfilValido(novo)) return { tipo: "invalido", erro: "Escolha o novo perfil." };
+  if (conta.id === administradorId) return { tipo: "conflito", erro: "Você não pode trocar o seu próprio perfil." };
+  if (novo === conta.perfil) return { tipo: "invalido", erro: `${conta.nome} já é ${novo}.` };
+  if (novo === "Estudante" && !cursoId) return { tipo: "invalido", erro: "Escolha o curso do estudante." };
+  if (conta.turmas.length > 0) {
+    return { tipo: "conflito", erro: `Não dá para trocar: ${conta.nome} leciona ${conta.turmas.length} turma(s) (${listaCurta(conta.turmas)}). Troque o professor dessas turmas antes.` };
+  }
+  if (conta.cursos.length > 0) {
+    return { tipo: "conflito", erro: `Não dá para trocar: ${conta.nome} coordena ${listaCurta(conta.cursos)}. Troque a coordenação antes.` };
+  }
+  if (conta.matriculas > 0) {
+    return { tipo: "conflito", erro: `Não dá para trocar: ${conta.nome} tem ${conta.matriculas} matrícula(s) como estudante. O histórico escolar não pode ficar sem dono.` };
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------- SPEC-053: importar professores (nome;email)
+
+export type LinhaProfessor = { linha: number; nome: string; email: string; erro?: string };
+
+const FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// AC-053-06: e-mail repetido na planilha ou já cadastrado aponta a linha; tudo ou nada (INV-053-02).
+export function preverProfessores(linhas: readonly { linha: number; nome: string; email: string }[], emailsExistentes: ReadonlySet<string>): LinhaProfessor[] {
+  const primeira = new Map<string, number>();
+  return linhas.map((l) => {
+    if (!l.nome) return { ...l, erro: "Nome vazio" };
+    if (!FORMATO_EMAIL.test(l.email)) return { ...l, erro: "E-mail inválido" };
+    const anterior = primeira.get(l.email);
+    if (anterior !== undefined) return { ...l, erro: `E-mail repetido na planilha (linha ${anterior})` };
+    primeira.set(l.email, l.linha);
+    if (emailsExistentes.has(l.email)) return { ...l, erro: "Já existe uma conta com este e-mail" };
+    return { ...l };
+  });
+}
+
 // RB-14 / INV-010-06 / INV-015-09: devolve o motivo que impede a desativação, ou null se ela é permitida.
 export function motivoParaNaoDesativar(
   alvo: { id: string; nome: string; turmasComoProfessor: number; cursosCoordenados: number },

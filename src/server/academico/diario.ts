@@ -8,6 +8,7 @@ import { executarEmTransacao } from "@/server/dados/notas";
 import { notificar } from "@/server/dados/notificacoes";
 import { prisma } from "@/server/dados/prisma";
 import type { Falha, Resultado } from "./cadastros";
+import { regraDaTurma } from "@/server/dados/regras";
 import { travaDoPeriodo } from "./periodos";
 
 const sucesso = <T>(valor: T): Resultado<T> => ({ ok: true, valor });
@@ -38,7 +39,7 @@ export async function pendenciasDoDiario(turmaId: string) {
     fechadoEm: turma.diarioFechadoEm?.toISOString() ?? null,
     homologadoEm: turma.diarioHomologadoEm?.toISOString() ?? null,
     observacao: turma.diarioObservacao,
-    pendencias: pendenciasParaFechar(avaliacoes, estudantes),
+    pendencias: pendenciasParaFechar(avaliacoes, estudantes, await regraDaTurma(turmaId)),
     semAvaliacao: avaliacoes.length === 0,
   };
 }
