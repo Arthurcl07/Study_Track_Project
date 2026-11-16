@@ -1,5 +1,6 @@
 // Acesso a dados das notificações (SPEC-022, RF-31, RB-23). Gravação dentro da transação do evento (INV-022-04);
 // consulta e leitura sempre filtradas pelo destinatário na própria query (ADR-003, INV-022-01).
+import type { RegraAvaliacao } from "@/domain/situacao-academica";
 import { MATRICULA_CURSANDO } from "./matriculas";
 import { hojeEmBrasilia } from "@/domain/atividades";
 import {
@@ -20,15 +21,15 @@ export function notificar(db: ClienteBanco, usuarioId: string, n: NovaNotificaca
 
 // AC-022-01: estudante e professor da turma, quando a situação muda para Risco. Turma de período encerrado não
 // notifica (como os alertas e os prazos, INV-017-05).
-export async function notificarEntradaEmRisco(db: ClienteBanco, estudanteId: string, turmaId: string, media: number | null, frequencia: number | null) {
+export async function notificarEntradaEmRisco(db: ClienteBanco, estudanteId: string, turmaId: string, media: number | null, frequencia: number | null, regra?: RegraAvaliacao) {
   const turma = await db.turma.findUniqueOrThrow({
     where: { id: turmaId },
     select: { nome: true, professorId: true, professor: { select: { nome: true } }, disciplina: { select: { nome: true } }, periodoLetivo: { select: { status: true } } },
   });
   if (turma.periodoLetivo.status !== "Aberto") return;
   const estudante = await db.usuario.findUniqueOrThrow({ where: { id: estudanteId }, select: { nome: true } });
-  await notificar(db, estudanteId, notificacaoRiscoEstudante(turma.disciplina.nome, turma.professor.nome, media, frequencia));
-  await notificar(db, turma.professorId, notificacaoRiscoProfessor(estudante.nome, `${turma.nome} · ${turma.disciplina.nome}`, turmaId, media, frequencia));
+  await notificar(db, estudanteId, notificacaoRiscoEstudante(turma.disciplina.nome, turma.professor.nome, media, frequencia, regra));
+  await notificar(db, turma.professorId, notificacaoRiscoProfessor(estudante.nome, `${turma.nome} · ${turma.disciplina.nome}`, turmaId, media, frequencia, regra));
 }
 
 export async function notificarPlano(db: ClienteBanco, estudanteId: string, turmaId: string, itens: number) {

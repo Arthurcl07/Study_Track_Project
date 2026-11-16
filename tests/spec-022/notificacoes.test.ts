@@ -165,11 +165,13 @@ describe("SPEC-022 — leitura e escopo (integração)", () => {
     expect((await (await notificacoesApi(requisicaoComSessao(`${API}/notificacoes`, c.tokenEstudante))).json()).naoLidas).toBe(0);
   });
 
-  it("AC-022-08 / INV-022-05: coordenador e administrador não têm notificações", async () => {
-    for (const perfil of ["Coordenador", "Administrador"] as const) {
-      const u = await criarUsuarioDeTeste(perfil);
-      const token = await entrarComo(u.email, u.senha);
-      expect((await notificacoesApi(requisicaoComSessao(`${API}/notificacoes`, token))).status).toBe(403);
-    }
+  // RB-23 ajustada pela SPEC-050 (2026-11-14): o coordenador recebe o aviso de evasão; o administrador continua sem.
+  it("AC-022-08 / INV-022-05: administrador não tem notificações; coordenador vê só as próprias", async () => {
+    const admin = await criarUsuarioDeTeste("Administrador");
+    expect((await notificacoesApi(requisicaoComSessao(`${API}/notificacoes`, await entrarComo(admin.email, admin.senha)))).status).toBe(403);
+    const coordenador = await criarUsuarioDeTeste("Coordenador");
+    const resposta = await notificacoesApi(requisicaoComSessao(`${API}/notificacoes`, await entrarComo(coordenador.email, coordenador.senha)));
+    expect(resposta.status).toBe(200);
+    expect((await resposta.json()).notificacoes).toEqual([]);
   });
 });

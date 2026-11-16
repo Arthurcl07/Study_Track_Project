@@ -153,7 +153,11 @@ export function validarLogotipo(valor: unknown): { ok: true; logotipo: string | 
   return { ok: true, logotipo: dataUrl };
 }
 
-export type DadosInstituicao = { nome: string; cnpj: string | null; endereco: string | null; cidadeUf: string | null; telefone: string | null; email: string | null; responsavelSecretaria: string | null };
+export type DadosInstituicao = {
+  nome: string; cnpj: string | null; endereco: string | null; cidadeUf: string | null; telefone: string | null; email: string | null; responsavelSecretaria: string | null;
+  // SPEC-045 / RB-43: encarregado pelo tratamento de dados (LGPD).
+  encarregadoNome: string | null; encarregadoEmail: string | null;
+};
 
 export function validarInstituicao(entrada: Record<string, unknown>): Validacao<DadosInstituicao> {
   const erros: ErrosDeCampo = {};
@@ -164,6 +168,8 @@ export function validarInstituicao(entrada: Record<string, unknown>): Validacao<
   else if (nome.length > 150) erros.nome = "O nome pode ter até 150 caracteres.";
   if (cnpj && !cnpjValido(cnpj)) erros.cnpj = "CNPJ inválido.";
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) erros.email = "E-mail inválido.";
+  const encarregadoEmail = texto(entrada.encarregadoEmail);
+  if (encarregadoEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(encarregadoEmail)) erros.encarregadoEmail = "E-mail inválido.";
   const opcional = (v: unknown) => texto(v).slice(0, 200) || null;
   return resultado(erros, {
     nome,
@@ -173,6 +179,8 @@ export function validarInstituicao(entrada: Record<string, unknown>): Validacao<
     telefone: opcional(entrada.telefone),
     email: email || null,
     responsavelSecretaria: opcional(entrada.responsavelSecretaria),
+    encarregadoNome: opcional(entrada.encarregadoNome),
+    encarregadoEmail: encarregadoEmail || null,
   });
 }
 

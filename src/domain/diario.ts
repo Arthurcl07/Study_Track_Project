@@ -1,5 +1,5 @@
 // Diário de classe (SPEC-039, RF-47, RB-37, OPEN-061). Funções puras: o que falta para fechar e as transições.
-import { elegivelAoExame } from "./situacao-academica";
+import { elegivelAoExame, REGRA_PADRAO, type RegraAvaliacao } from "./situacao-academica";
 
 export type StatusDiario = "Aberto" | "Fechado" | "Homologado";
 export type AcaoDiario = "fechar" | "homologar" | "devolver" | "reabrir";
@@ -8,11 +8,11 @@ export type AvaliacaoDoDiario = { nome: string; tipo: "Prova" | "Trabalho" | "Su
 export type EstudanteDoDiario = { id: string; nome: string; media: number | null; frequencia: number | null };
 
 // RB-37 / INV-039-01: Prova e Trabalho com nota de todos os cursando; Exame com nota de todos os que estão em exame.
-export function pendenciasParaFechar(avaliacoes: readonly AvaliacaoDoDiario[], estudantes: readonly EstudanteDoDiario[]): string[] {
+export function pendenciasParaFechar(avaliacoes: readonly AvaliacaoDoDiario[], estudantes: readonly EstudanteDoDiario[], regra: RegraAvaliacao = REGRA_PADRAO): string[] {
   const pendencias: string[] = [];
   for (const a of avaliacoes) {
     if (a.tipo === "Substitutiva") continue;
-    const devem = a.tipo === "Exame" ? estudantes.filter((e) => elegivelAoExame(e.media, e.frequencia)) : estudantes;
+    const devem = a.tipo === "Exame" ? estudantes.filter((e) => elegivelAoExame(e.media, e.frequencia, regra)) : estudantes;
     const faltam = devem.filter((e) => !a.comNota.has(e.id)).map((e) => e.nome);
     if (faltam.length > 0) pendencias.push(`${a.nome}: ${faltam.slice(0, 4).join(", ")}${faltam.length > 4 ? ` e mais ${faltam.length - 4}` : ""}`);
   }

@@ -4,8 +4,9 @@ import { RECURSOS } from "@/domain/autorizacao";
 import { gerarCsv } from "@/domain/relatorio";
 import { gerarRelatorio } from "@/server/academico/relatorios";
 import { autorizarApi } from "@/server/auth/guardas";
+import { comRegistroDeErro } from "@/server/dados/erros";
 
-export async function GET(requisicao: Request) {
+async function rotaGET(requisicao: Request) {
   const acesso = await autorizarApi(requisicao, RECURSOS.relatorios);
   if ("negado" in acesso) return acesso.negado;
 
@@ -29,3 +30,6 @@ export async function GET(requisicao: Request) {
   }
   return Response.json(resultado.relatorio);
 }
+
+// SPEC-057 (AC-057-01): erro inesperado vira 500 com o código, gravado no registro de erros.
+export const GET = comRegistroDeErro(rotaGET);

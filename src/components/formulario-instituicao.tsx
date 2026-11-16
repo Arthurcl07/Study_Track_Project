@@ -15,6 +15,9 @@ const CAMPOS: { nome: string; rotulo: string; tipo?: string }[] = [
   { nome: "telefone", rotulo: "Telefone", tipo: "tel" },
   { nome: "email", rotulo: "E-mail", tipo: "email" },
   { nome: "responsavelSecretaria", rotulo: "Responsável pela secretaria (assina os documentos)" },
+  // SPEC-045 / RB-43: aparece nos termos e em Meus dados.
+  { nome: "encarregadoNome", rotulo: "Encarregado de dados (LGPD)" },
+  { nome: "encarregadoEmail", rotulo: "E-mail do encarregado", tipo: "email" },
 ];
 
 export function FormularioInstituicao({ instituicao }: { instituicao: Instituicao }) {

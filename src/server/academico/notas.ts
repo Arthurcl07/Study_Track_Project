@@ -3,7 +3,8 @@
 // sempre dentro da própria query (ADR-003). Toda escrita de nota recalcula o indicador na MESMA
 // transação (INV-004-03, RB-10, AD-02): se o recálculo falhar, a nota anterior fica como estava.
 import { ROTULO_TIPO, validarAvaliacao, validarValorNota } from "@/domain/registro-notas";
-import { MENSAGEM_NAO_ELEGIVEL_EXAME, elegivelAoExame } from "@/domain/situacao-academica";
+import { elegivelAoExame, mensagemNaoElegivelAoExame } from "@/domain/situacao-academica";
+import { regraDaTurma } from "@/server/dados/regras";
 import { prisma } from "@/server/dados/prisma";
 import { recalcularIndicador } from "@/server/academico/indicador";
 import { numeroBR } from "@/domain/auditoria";
@@ -68,7 +69,8 @@ export async function registrarNota(entrada: Record<string, unknown>, professorI
   // SPEC-029 / RB-29 / AC-029-05: nota de exame só para quem está em exame (média < 6,0 e frequência ≥ 75%).
   if (avaliacao.tipo === "Exame") {
     const indicador = await prisma.indicadorAcademico.findUnique({ where: { estudanteId_turmaId: { estudanteId: alvo.estudanteId, turmaId: avaliacao.turmaId } }, select: { media: true, frequenciaAtual: true } });
-    if (!elegivelAoExame(indicador?.media ?? null, indicador?.frequenciaAtual ?? null)) return falha({ tipo: "invalido", erros: { valor: MENSAGEM_NAO_ELEGIVEL_EXAME } });
+    const regra = await regraDaTurma(avaliacao.turmaId);
+    if (!elegivelAoExame(indicador?.media ?? null, indicador?.frequenciaAtual ?? null, regra)) return falha({ tipo: "invalido", erros: { valor: mensagemNaoElegivelAoExame(regra) } });
   }
 
   try {

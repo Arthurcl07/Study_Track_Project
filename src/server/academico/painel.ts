@@ -8,7 +8,9 @@ import { indicadoresEmAlertaDoEscopo } from "@/server/dados/indicadores";
 import { turmasDoPainel } from "@/server/dados/painel";
 import { planosDoEstudante } from "@/server/dados/planos";
 import { progressoDoPlano, type Progresso } from "@/domain/plano";
-import { METAS, notaNecessaria, type AvaliacaoSimulada, type NotaNecessaria } from "@/domain/simulador";
+import { metasDaRegra, notaNecessaria, type AvaliacaoSimulada, type NotaNecessaria } from "@/domain/simulador";
+import { REGRA_PADRAO, type RegraAvaliacao } from "@/domain/situacao-academica";
+import { regraVigente } from "@/server/dados/regras";
 import { temPeso } from "@/domain/registro-notas";
 import { notaFinalComExame } from "@/domain/situacao-academica";
 import { consultarAtividades } from "./atividades";
@@ -79,17 +81,20 @@ export type Painel = {
   // SPEC-012 / RF-19: só leitura; o progresso usa a mesma regra do professor (RB-12).
   planos: PlanoDoEstudante[];
   atividadesEmAtencao: { id: string; descricao: string; disciplina: string; prazo: string; status: StatusEntrega }[];
+  // SPEC-052: regra vigente (cores, metas do simulador e textos).
+  regra: RegraAvaliacao;
 };
 
 // Contrato "Consultar painel" (RF-10): só para o próprio estudante (INV-007-01).
 export async function consultarPainel(sessao: Sessao): Promise<Painel> {
-  if (sessao.perfil !== "Estudante") return { turmas: [], alertas: [], planos: [], atividadesEmAtencao: [] };
+  if (sessao.perfil !== "Estudante") return { turmas: [], alertas: [], planos: [], atividadesEmAtencao: [], regra: REGRA_PADRAO };
 
-  const [turmas, alertas, atividades, planos] = await Promise.all([
+  const [turmas, alertas, atividades, planos, regra] = await Promise.all([
     turmasDoPainel(sessao.usuarioId),
     consultarAlertas(sessao),
     consultarAtividades(sessao),
     planosDoEstudante(sessao.usuarioId),
+    regraVigente(),
   ]);
 
   return {
@@ -112,11 +117,12 @@ export async function consultarPainel(sessao: Sessao): Promise<Painel> {
         alerta: nivelDoAlerta(indicador?.situacao),
         avaliacoesComNota: evolucao.length,
         evolucao,
-        ...simulador(t.avaliacoes.filter((a) => temPeso(a.tipo)).map((a) => ({ nome: a.nome, peso: a.peso, nota: a.notas[0]?.valor ?? null }))),
+        ...simulador(t.avaliacoes.filter((a) => temPeso(a.tipo)).map((a) => ({ nome: a.nome, peso: a.peso, nota: a.notas[0]?.valor ?? null })), regra),
         ...exameDaTurma(indicador?.media ?? null, t.avaliacoes.find((a) => a.tipo === "Exame")?.notas[0]?.valor ?? null),
       };
     }),
     alertas,
+    regra,
     planos: planos.map((p) => ({
       id: p.id,
       status: p.status,
@@ -141,6 +147,7 @@ function exameDaTurma(media: number | null, exame: number | null) {
 }
 
 // SPEC-023 / RB-25: nada é gravado; só se calcula na leitura (INV-023-03). Substitutiva e exame não entram.
-function simulador(avaliacoes: AvaliacaoSimulada[]) {
-  return { avaliacoes, necessaria: { normal: notaNecessaria(avaliacoes, METAS.normal), saidaDoRisco: notaNecessaria(avaliacoes, METAS.saidaDoRisco) } };
+function simulador(avaliacoes: AvaliacaoSimulada[], regra: RegraAvaliacao) {
+  const metas = metasDaRegra(regra);
+  return { avaliacoes, necessaria: { normal: notaNecessaria(avaliacoes, metas.normal), saidaDoRisco: notaNecessaria(avaliacoes, metas.saidaDoRisco) } };
 }

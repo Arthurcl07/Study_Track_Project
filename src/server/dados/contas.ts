@@ -1,4 +1,5 @@
 // Acesso a dados da gestão de contas (SPEC-010, RF-16). Nunca devolve o hash da senha.
+import { VERSAO_TERMOS } from "@/domain/lgpd";
 import type { Perfil } from "@/domain/perfil";
 import type { ClienteBanco } from "./indicadores";
 import { paginar } from "@/domain/secretaria";
@@ -43,8 +44,12 @@ export function definirAtivo(id: string, ativo: boolean, db: ClienteBanco = pris
 }
 
 // RB-14 (SPEC-017: só turmas de período aberto impedem a desativação do professor, INV-017-07): a guarda confere a cada requisição se a conta da sessão continua existindo, ativa e com o mesmo perfil.
+// SPEC-045 / RB-43: e se aceitou a versão vigente dos termos (só o aceite dela é lido).
 export function situacaoDaConta(id: string) {
-  return prisma.usuario.findUnique({ where: { id }, select: { ativo: true, perfil: true, trocarSenha: true } });
+  return prisma.usuario.findUnique({
+    where: { id },
+    select: { ativo: true, perfil: true, trocarSenha: true, aceites: { where: { versao: VERSAO_TERMOS }, select: { versao: true } } },
+  });
 }
 
 // SPEC-011: hash atual para conferir a senha atual, e gravação da nova (só o hash, RNF-02).

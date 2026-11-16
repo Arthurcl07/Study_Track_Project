@@ -31,7 +31,17 @@ tela só é implementada depois do layout `aprovado` (OPEN-020).
 - `docs/` — documentação: visão, personas, RF, RNF, RB, glossário, modelo de domínio, casos de
   uso, arquitetura, drivers, ADRs (`docs/adr/`), mapa de Specs, Specs completas (`docs/specs.md`),
   decisões em aberto, rastreabilidade, estratégia de testes e segurança.
-- `src/` — código-fonte (SPEC-001 a SPEC-043 implementadas)
+- `src/` — código-fonte (SPEC-001 a SPEC-059 implementadas)
+  Níveis 5 e 6 (SPEC-045 a 059, RB-43 a RB-49): LGPD em `src/domain/lgpd.ts` (a guarda manda para `/termos/aceite` e
+  responde 403 sem o aceite da versão vigente; conta de teste nasce com o aceite, `semAceite` para testar); limite de
+  login em `src/domain/login.ts`; regras de avaliação configuráveis: `classificarSituacao`, `elegivelAoExame` e
+  `resultadoDaTurma` recebem a `RegraAvaliacao` (padrão 6/5/75/5) — no servidor, `regraVigente`/`regraDaTurma`
+  (`src/server/dados/regras.ts`); período encerrado guarda a regra do encerramento; mudar a regra recalcula em lote
+  (`aplicarRegra`). Evasão (`src/domain/evasao.ts`) e pendências do professor (`acompanhamento.ts`) são calculadas,
+  nunca gravadas. Toda rota de API exporta o handler envolto em `comRegistroDeErro` (500 com o código, erro gravado e
+  mascarado); rota nova faz o mesmo. Testes de tela em `e2e/` (Playwright, dados @e2e.studytrack.test, apagados no
+  fim) com o axe; `npm run carga` mede o RNF-01. Seed dos níveis 5 e 6 em `prisma/nivel56.ts` (a Marina mostra o
+  primeiro acesso).
   Nível 3 (SPEC-036 a 043, RB-34 a RB-41): regras puras em `src/domain/requerimentos.ts`, `matriz.ts`, `rematricula.ts`,
   `diario.ts`, `calendario.ts`, `horarios.ts` e `censo.ts`; casos de uso com o mesmo nome em `src/server/academico/`.
   Diário Fechado ou Homologado deixa a turma somente leitura pela própria `travaDoPeriodo` (só `mudarDiario` passa com

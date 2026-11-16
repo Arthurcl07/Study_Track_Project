@@ -1,6 +1,6 @@
 // Regras do boletim e do histórico escolar (SPEC-020, RF-29, RB-24, OPEN-044). Funções puras: sem Next.js nem Prisma.
 // Os limites são os mesmos da classificação (RB-05 e RB-06), definidos em situacao-academica.ts.
-import { FREQUENCIA_MINIMA, MEDIA_NORMAL, NOTA_FINAL_MINIMA_EXAME, notaFinalComExame } from "./situacao-academica";
+import { notaFinalComExame, REGRA_PADRAO, type RegraAvaliacao } from "./situacao-academica";
 
 // SPEC-029 e SPEC-031 (2026-11-06): Aprovado no exame (RB-29) e matrícula trancada ou cancelada (RB-30).
 export type Resultado = "Aprovado" | "AprovadoExame" | "ReprovadoNota" | "ReprovadoFrequencia" | "ReprovadoNotaFrequencia" | "SemRegistro" | "EmCurso" | "Trancada" | "Cancelada";
@@ -25,6 +25,8 @@ export type TurmaParaResultado = {
   frequencia: number | null;
   exame?: number | null;
   matricula?: "Cursando" | "Trancada" | "Cancelada";
+  // SPEC-052 / RB-47: a regra do período (a do encerramento, se encerrado); sem ela, a padrão.
+  regra?: RegraAvaliacao;
 };
 
 // RB-24 / INV-020-02: resultado só em período encerrado; aberto = Em curso; faltando média ou frequência = Sem registro.
@@ -33,11 +35,12 @@ export function resultadoDaTurma(turma: TurmaParaResultado): Resultado {
   if (turma.matricula === "Trancada" || turma.matricula === "Cancelada") return turma.matricula;
   if (!turma.encerrado) return "EmCurso";
   if (turma.media === null || turma.frequencia === null) return "SemRegistro";
-  if (turma.media < MEDIA_NORMAL && turma.exame !== null && turma.exame !== undefined && turma.frequencia >= FREQUENCIA_MINIMA) {
-    return notaFinalComExame(turma.media, turma.exame) >= NOTA_FINAL_MINIMA_EXAME ? "AprovadoExame" : "ReprovadoNota";
+  const regra = turma.regra ?? REGRA_PADRAO;
+  if (turma.media < regra.mediaMinima && turma.exame !== null && turma.exame !== undefined && turma.frequencia >= regra.frequenciaMinima) {
+    return notaFinalComExame(turma.media, turma.exame) >= regra.notaExame ? "AprovadoExame" : "ReprovadoNota";
   }
-  const nota = turma.media < MEDIA_NORMAL;
-  const frequencia = turma.frequencia < FREQUENCIA_MINIMA;
+  const nota = turma.media < regra.mediaMinima;
+  const frequencia = turma.frequencia < regra.frequenciaMinima;
   if (nota && frequencia) return "ReprovadoNotaFrequencia";
   if (nota) return "ReprovadoNota";
   if (frequencia) return "ReprovadoFrequencia";

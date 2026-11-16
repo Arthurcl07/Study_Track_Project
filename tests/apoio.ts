@@ -1,5 +1,6 @@
 // Apoio aos testes: cada teste cria os próprios usuários e os remove ao final (estrategia-testes.md, seção 7).
 import { randomUUID } from "node:crypto";
+import { VERSAO_TERMOS } from "@/domain/lgpd";
 import type { Perfil } from "@/domain/perfil";
 import { salvarConta } from "@/server/auth/contas";
 import { prisma } from "@/server/dados/prisma";
@@ -12,7 +13,8 @@ export const PREFIXO_DISCIPLINA_TESTE = "vitest-";
 
 // SPEC-015: todo coordenador de teste coordena um curso próprio (a menos que se peça semCurso), e todo estudante
 // de teste é de um curso (RB-19): o informado ou um curso padrão de teste, compartilhado no arquivo de testes.
-export async function criarUsuarioDeTeste(perfil: Perfil, opcoes: { cursoId?: string; semCurso?: boolean } = {}) {
+// SPEC-045: a conta de teste já aceitou a versão vigente dos termos, a menos que se peça semAceite.
+export async function criarUsuarioDeTeste(perfil: Perfil, opcoes: { cursoId?: string; semCurso?: boolean; semAceite?: boolean } = {}) {
   const senha = `senha-${randomUUID()}`;
   const cursoDoEstudante = perfil === "Estudante" ? (opcoes.cursoId ?? (await cursoPadraoDeTeste())) : null;
   const usuario = await salvarConta({
@@ -23,6 +25,7 @@ export async function criarUsuarioDeTeste(perfil: Perfil, opcoes: { cursoId?: st
     cursoId: cursoDoEstudante,
   });
   const cursoId = perfil === "Coordenador" && !opcoes.semCurso ? await criarCursoDeTeste(usuario.id) : cursoDoEstudante;
+  if (!opcoes.semAceite) await prisma.aceiteTermos.create({ data: { usuarioId: usuario.id, versao: VERSAO_TERMOS } });
   return { ...usuario, senha, cursoId: cursoId ?? "" };
 }
 

@@ -98,7 +98,9 @@ describe("SPEC-007 — painel do estudante", () => {
     const sozinho = await criarUsuarioDeTeste("Estudante");
     const { corpo } = await painelDe(sozinho);
     // A SPEC-012 acrescentou a lista de planos ao painel; sem turmas, também vem vazia.
-    expect(corpo).toEqual({ turmas: [], alertas: [], planos: [], atividadesEmAtencao: [] });
+    // SPEC-052: o painel leva também a regra vigente (cores e metas do simulador).
+    expect(corpo).toMatchObject({ turmas: [], alertas: [], planos: [], atividadesEmAtencao: [] });
+    expect(corpo.regra).toHaveProperty("mediaMinima");
   });
 
   it("AC-007-05 / INV-007-01 / INV-007-03: cada estudante vê só os próprios dados", async () => {

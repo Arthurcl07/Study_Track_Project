@@ -23,7 +23,8 @@ export function FormularioLogin() {
       });
       const corpo = await resposta.json().catch(() => ({}));
       if (!resposta.ok) {
-        setErro(corpo.erro ?? "Não foi possível entrar. Tente novamente.");
+        // SPEC-046: bloqueio por tentativas erradas (429) com o cadeado, como no layout aprovado.
+        setErro(resposta.status === 429 && corpo.erro ? `🔒 ${corpo.erro}` : (corpo.erro ?? "Não foi possível entrar. Tente novamente."));
         return;
       }
       router.replace(corpo.destino);

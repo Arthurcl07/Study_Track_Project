@@ -32,6 +32,18 @@ Turmas de 2027/1 (Engenharia da Computação): IA-ECO-271, EMP-ECO-271, ETI-ECO-
 Trancamento (SPEC-044): Diego Lima pediu o trancamento de Física I (Turma FI-ECO); a secretaria defere em Requerimentos.
 
 --------------------------------------------------------
+NÍVEIS 5 E 6 — O QUE MOSTRAR (SPEC-045 a SPEC-059)  ·  roteiro de 8 min em docs/roteiro-apresentacao.md
+--------------------------------------------------------
+Marina (coordenador@) PRIMEIRO ACESSO: aceite dos termos (LGPD) e o tour; depois o dashboard com Evasão e
+                      Pendências dos professores, Acompanhamento, Relatórios em Excel/PDF/CSV, Ata e Diário impresso
+Renata (admin@)       Configurações (regras de avaliação com prévia), Importar do sistema anterior (planilhas em
+                      docs/exemplos/), Contas > Trocar perfil e Importar professores, Saúde do sistema (testar a
+                      página de erro e achar o código), Evasão de todos os cursos
+Qualquer conta        Meus dados (download dos próprios dados), Ajuda (manual e "Rever o tour"); 5 senhas
+                      erradas bloqueiam o e-mail por 15 minutos
+O seed ("Restaurar os dados", opção 3) volta a regra padrão, o primeiro acesso da Marina e apaga os importados.
+
+--------------------------------------------------------
 CURSOS (6) — um coordenador para cada; turmas de 2026/2 (2º e 4º semestre)
 --------------------------------------------------------
 Administração              Beatriz Moura   14 turmas: BI-ADM, CC-ADM, EA-ADM, EL-ADM, EMP-ADM, GC-ADM, GO-ADM, GP-ADM, GPE-ADM, MIC-ADM, MKT-ADM, NI-ADM, PE-ADM, TCC-ADM

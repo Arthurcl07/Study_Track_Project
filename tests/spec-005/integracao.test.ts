@@ -112,7 +112,10 @@ describe("SPEC-005 — frequência (pela chamada, SPEC-018)", () => {
     const { turma, estudanteA, estudanteB, token } = await cenario();
     falhaNoRecalculo.ativa = true;
     try {
-      await expect(chamada(turma.id, estudanteA.id, estudanteB.id, hojeEmBrasilia(), false, token)).rejects.toThrow();
+      // SPEC-057 (AC-057-01): a falha vira 500 com o código do erro, sem gravar nada.
+      const resposta = await chamada(turma.id, estudanteA.id, estudanteB.id, hojeEmBrasilia(), false, token);
+      expect(resposta.status).toBe(500);
+      expect((await resposta.json()).codigo).toMatch(/^ERR-[0-9A-F]{6}$/);
     } finally {
       falhaNoRecalculo.ativa = false;
     }

@@ -68,7 +68,8 @@ describe("SPEC-019 — regras de domínio (sem banco)", () => {
   it("RB-22: toda ação tem categoria; grupos de cada perfil não se misturam", () => {
     // SPEC-027 e SPEC-033 (2026-11-06): pedidos de senha e instituição também são administrativos.
     // SPEC-040, SPEC-041 e SPEC-043 (2026-11-08): calendário, salas e exportação do Censo também.
-    expect(gruposDaCategoria("Administrativa")).toEqual(["Contas", "Cursos", "Períodos", "Pedidos de senha", "Instituição", "Calendário e salas", "Exportações"]);
+    // SPEC-045 e SPEC-046 (2026-11-14): aceite, download dos dados e bloqueio de login.
+    expect(gruposDaCategoria("Administrativa")).toEqual(["Contas", "Cursos", "Períodos", "Pedidos de senha", "Instituição", "Calendário e salas", "Exportações", "Privacidade e acesso"]);
     expect(gruposDaCategoria("Academica")).not.toContain("Contas");
     // SPEC-026: editar e excluir avaliação também ficam no grupo Notas.
     expect(acoesDoGrupo("Academica", "Notas").sort()).toEqual(["avaliacao.criada", "avaliacao.editada", "avaliacao.excluida", "nota.alterada", "nota.lancada"]);

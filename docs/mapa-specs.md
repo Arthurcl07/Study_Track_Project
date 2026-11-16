@@ -397,6 +397,81 @@ Cada uma entrou por pedido de Arthur ou sugestão aprovada, com a decisão regis
 - **Objetivo:** o estudante pede o trancamento de uma disciplina ou do curso; deferir na secretaria tranca na hora.
 - **RF / RB:** RF-53; RB-30, RB-34, RB-42. **Dependências:** SPEC-031, SPEC-036, SPEC-039. **OPEN:** OPEN-066.
 
+### SPEC-045 — Termos, privacidade e dados do titular (LGPD)
+
+- **Objetivo:** Aceite dos termos de uso e da política de privacidade e download dos próprios dados.
+- **RF / RB:** RF-54; RB-22, RB-43. **Dependências:** SPEC-001, SPEC-011, SPEC-019, SPEC-033. **OPEN:** OPEN-067.
+
+### SPEC-046 — Limite de tentativas no login
+
+- **Objetivo:** Bloquear por 15 minutos o e-mail com 5 tentativas erradas seguidas.
+- **RF / RB:** RF-55; RB-22, RB-44. **Dependências:** SPEC-001, SPEC-019. **OPEN:** OPEN-068.
+
+### SPEC-047 — Página de erro própria
+
+- **Objetivo:** Erro inesperado mostra uma página com a identidade, um código e o caminho de volta.
+- **RF / RB:** RF-56, RF-63; —. **Dependências:** SPEC-016, SPEC-057. **OPEN:** —.
+
+### SPEC-048 — Documentos oficiais da turma
+
+- **Objetivo:** Ata de resultados finais, diário de classe impresso e lista de presença.
+- **RF / RB:** RF-57; RB-03, RB-04, RB-24, RB-37, RB-47. **Dependências:** SPEC-018, SPEC-020, SPEC-033, SPEC-039. **OPEN:** OPEN-069.
+
+### SPEC-049 — Relatórios em Excel e PDF
+
+- **Objetivo:** Exportar o relatório acadêmico em .xlsx e PDF, além do CSV.
+- **RF / RB:** RF-58; RB-03, RB-04. **Dependências:** SPEC-009, SPEC-033. **OPEN:** OPEN-070.
+
+### SPEC-050 — Alerta de evasão
+
+- **Objetivo:** Mostrar quem sumiu das aulas e avisar a coordenação.
+- **RF / RB:** RF-59; RB-04, RB-45. **Dependências:** SPEC-006, SPEC-018, SPEC-022. **OPEN:** OPEN-004, OPEN-071.
+
+### SPEC-051 — Acompanhamento dos professores
+
+- **Objetivo:** Mostrar à coordenação as chamadas, notas e diários atrasados de cada professor.
+- **RF / RB:** RF-60; RB-04, RB-37, RB-46. **Dependências:** SPEC-016, SPEC-018, SPEC-039, SPEC-040. **OPEN:** OPEN-072.
+
+### SPEC-052 — Regras de avaliação configuráveis
+
+- **Objetivo:** A secretaria configura média mínima, limite de Risco, frequência mínima e nota do exame.
+- **RF / RB:** RF-61; RB-05, RB-06, RB-07, RB-22, RB-24, RB-29, RB-47. **Dependências:** SPEC-003, SPEC-017, SPEC-023, SPEC-029, SPEC-033. **OPEN:** OPEN-051, OPEN-073.
+
+### SPEC-053 — Trocar perfil e importar professores
+
+- **Objetivo:** O administrador corrige o perfil de uma conta e cadastra professores em lote.
+- **RF / RB:** RF-62; RB-13, RB-15, RB-22, RB-48. **Dependências:** SPEC-010, SPEC-011, SPEC-021, SPEC-027. **OPEN:** OPEN-074.
+
+### SPEC-054 — Teste de desempenho
+
+- **Objetivo:** Medir o tempo das páginas principais com a faculdade povoada e garantir o RNF-01.
+- **RF / RB:** —; —. **Dependências:** SPEC-016, SPEC-009, povoamento. **OPEN:** —.
+
+### SPEC-055 — Testes ponta a ponta
+
+- **Objetivo:** Testes automáticos que abrem o navegador e usam o sistema como uma pessoa.
+- **RF / RB:** —; RB-03, RB-04, RB-34, RB-42, RB-43, RB-44. **Dependências:** todas as anteriores. **OPEN:** OPEN-023.
+
+### SPEC-056 — Acessibilidade WCAG 2.1 AA
+
+- **Objetivo:** Telas principais usáveis só pelo teclado, com leitor de tela e contraste AA.
+- **RF / RB:** —; —. **Dependências:** SPEC-055. **OPEN:** —.
+
+### SPEC-057 — Registro de erros e saúde do sistema
+
+- **Objetivo:** Guardar os erros do servidor e mostrar ao administrador a saúde do sistema.
+- **RF / RB:** RF-63; RB-13, RB-22. **Dependências:** SPEC-010, SPEC-047. **OPEN:** —.
+
+### SPEC-058 — Importação do sistema anterior
+
+- **Objetivo:** Trazer alunos e histórico do sistema antigo por planilha.
+- **RF / RB:** RF-64; RB-19, RB-22, RB-33, RB-35, RB-47, RB-49. **Dependências:** SPEC-020, SPEC-021, SPEC-033, SPEC-037, SPEC-042. **OPEN:** OPEN-075.
+
+### SPEC-059 — Ajuda: manual e tour
+
+- **Objetivo:** Tour guiado no primeiro acesso e página Ajuda com o manual de cada perfil.
+- **RF / RB:** RF-65; —. **Dependências:** SPEC-016. **OPEN:** —.
+
 ## Questões em aberto transversais
 
 - **OPEN-001:** definir permissões exatas para cada operação de cadastro e registro.

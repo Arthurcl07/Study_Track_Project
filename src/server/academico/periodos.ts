@@ -1,5 +1,7 @@
 // Casos de uso dos períodos letivos (SPEC-017, RF-26, UC-17). Quem pode: Administrador, verificado nas rotas
 // pela matriz de autorização (INV-017-06). A trava (RB-20) é usada por todas as escritas acadêmicas.
+import { regraVigente } from "@/server/dados/regras";
+import { aplicarRegra } from "./regras";
 import type { Prisma } from "@prisma/client";
 import { MENSAGEM_PERIODO_EM_USO, mensagemPeriodoEncerrado, validarPeriodo } from "@/domain/periodos";
 import { auditar } from "@/server/dados/auditoria";
@@ -37,7 +39,10 @@ export async function mudarStatusDoPeriodo(id: string, status: "Aberto" | "Encer
   if (!periodo) return falha({ tipo: "nao-encontrado", erro: "Período não encontrado." });
   return sucesso(
     await executarEmTransacao(async (tx) => {
-      const novo = await dados.mudarStatus(id, status, tx);
+      const vigente = await regraVigente(tx);
+      const novo = await dados.mudarStatus(id, status, tx, vigente);
+      // SPEC-052: período reaberto volta a seguir a regra vigente (INV-052-01).
+      if (status === "Aberto") await aplicarRegra({ periodo: novo.nome }, vigente, tx);
       const turmas = novo._count.turmas;
       await auditar(tx, {
         autorId,

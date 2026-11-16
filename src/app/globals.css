@@ -14,7 +14,7 @@
   --color-nevoa: #f5f7fb;
   --color-traco: #e2e8f0;
   --color-texto: #0f172a;
-  --color-mudo: #64748b;
+  --color-mudo: #596779; /* SPEC-056: era #64748b; escurecido para contraste AA (≥ 4,5:1) também sobre névoa e traço. */
 
   --color-normal: #15803d;
   --color-normal-fundo: #dcfce7;
@@ -31,6 +31,15 @@
 
 body {
   @apply bg-nevoa font-sans text-texto antialiased;
+}
+
+/* SPEC-056 / RNF-07 (WCAG 2.4.7): foco sempre visível para quem usa o teclado. */
+:focus-visible {
+  outline: 2px solid var(--color-azul);
+  outline-offset: 2px;
+}
+nav#menu-principal :focus-visible {
+  outline-color: var(--color-ceu);
 }
 
 /* Tabela que vira lista de cartões no celular e no tablet (identidade-visual.md, componente Tabela, RNF-04).

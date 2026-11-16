@@ -4,6 +4,7 @@ import { CabecalhoPagina } from "@/components/ui";
 import { RECURSOS } from "@/domain/autorizacao";
 import { exigirAcessoPagina } from "@/server/auth/guardas";
 import { turmasParaLancamento } from "@/server/dados/notas";
+import { regraVigente } from "@/server/dados/regras";
 
 // SPEC-004 / UC-03: lançamento e alteração de notas e cadastro de avaliação, só nas turmas que o professor leciona.
 // Layout aprovado em docs/layout/prototipo.html#professor-notas. SPEC-026/029: tipo da avaliação, editar, excluir e
@@ -26,7 +27,7 @@ export default async function NotasDoProfessor() {
         titulo="Notas e avaliações"
         subtitulo="Escolha a turma e a avaliação; clique no estudante para lançar ou alterar a nota."
       />
-      <LancamentoNotas turmas={turmas} />
+      <LancamentoNotas turmas={turmas} regra={await regraVigente()} />
     </Casca>
   );
 }

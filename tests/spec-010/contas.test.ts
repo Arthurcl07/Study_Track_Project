@@ -80,8 +80,10 @@ describe("SPEC-010 — regras de domínio", () => {
       RECURSOS.documentos, RECURSOS.pedidosSenha, RECURSOS.secretaria, RECURSOS.estudantes,
       // SPEC-036 / SPEC-040: calendário e requerimentos são de todos os perfis.
       RECURSOS.calendario, RECURSOS.requerimentos,
+      // SPEC-045, SPEC-059 (todos os perfis), SPEC-048 e SPEC-050 (secretaria) e SPEC-057 (saúde do sistema).
+      RECURSOS.meusDados, RECURSOS.ajuda, RECURSOS.documentosTurma, RECURSOS.evasao, RECURSOS.saude,
     ];
-    const compartilhados: string[] = [RECURSOS.documentos, RECURSOS.estudantes, RECURSOS.calendario, RECURSOS.requerimentos];
+    const compartilhados: string[] = [RECURSOS.documentos, RECURSOS.estudantes, RECURSOS.calendario, RECURSOS.requerimentos, RECURSOS.meusDados, RECURSOS.ajuda, RECURSOS.documentosTurma, RECURSOS.evasao];
     for (const recurso of Object.values(RECURSOS)) {
       expect(podeAcessar("Administrador", recurso)).toBe(doAdministrador.includes(recurso));
     }

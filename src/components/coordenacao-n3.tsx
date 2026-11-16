@@ -66,7 +66,7 @@ export function EditorMatriz({ cursoId, matriz }: { cursoId: string; matriz: Dis
             </thead>
             <tbody>
               {matriz.map((d) => (
-                <tr key={d.disciplinaId} className={`border-t border-traco ${d.disciplinaId === editando ? "bg-azul-suave" : ""}`}>
+                <tr key={d.disciplinaId} className={`border-t border-traco ${d.disciplinaId === editando ? "bg-info-fundo shadow-[inset_3px_0_0_var(--color-azul)]" : ""}`}>
                   <td data-rotulo="Semestre" className="py-3 pr-2">{d.semestre ? `${d.semestre}º` : "—"}</td>
                   <td data-rotulo="Disciplina" className="px-2 py-3">{d.nome}</td>
                   <td data-rotulo="CH" className="px-2 py-3 text-right whitespace-nowrap tabular-nums">{d.cargaHoraria} h</td>

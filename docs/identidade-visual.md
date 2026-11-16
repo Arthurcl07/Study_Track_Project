@@ -40,7 +40,7 @@ O que não fazer: distorcer, girar, aplicar sombra, trocar as cores da linha, co
 | **Branco** | `#FFFFFF` | cartões, campos, tabelas |
 | **Traço** | `#E2E8F0` | bordas e divisórias |
 | **Texto** | `#0F172A` | texto principal |
-| **Mudo** | `#64748B` | texto secundário, legendas, rótulos de tabela |
+| **Mudo** | `#596779` | texto secundário, legendas, rótulos de tabela (era `#64748B`; escurecido na SPEC-056 para contraste AA de 4,5:1 também sobre Névoa e Traço) |
 
 ### Situação acadêmica (RB-09) — sempre cor **e** rótulo
 

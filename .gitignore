@@ -14,3 +14,7 @@ next-env.d.ts
 
 # Gerado automaticamente pelo Next.js 16 ao rodar `next dev` (aviso para ferramentas de IA); não faz parte do projeto.
 AGENTS.md
+
+# Playwright (SPEC-055): resultados e relatório dos testes de tela.
+test-results/
+playwright-report/

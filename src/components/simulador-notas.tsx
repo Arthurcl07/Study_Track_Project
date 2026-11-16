@@ -7,14 +7,17 @@ import { useState } from "react";
 import {
   lerNotaHipotetica, mediaSimulada, riscoPelaFrequencia, situacaoSimulada, textoNecessaria, type AvaliacaoSimulada, type NotaNecessaria,
 } from "@/domain/simulador";
+import type { RegraAvaliacao } from "@/domain/situacao-academica";
 import { CLASSE_CAMPO, formatarNumero as numero, SeloSituacao } from "./ui";
+
+const umaCasa = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 const COR = { nota: "text-atencao", garantida: "text-normal", inalcancavel: "text-risco", "sem-restante": "text-mudo" } as const;
 
-function Meta({ n, alvo, legenda }: { n: NotaNecessaria; alvo: string; legenda: string }) {
+function Meta({ n, alvo, legenda, principal = false }: { n: NotaNecessaria; alvo: string; legenda: string; principal?: boolean }) {
   return (
     <div className="flex items-center gap-3 rounded-xl bg-nevoa px-3 py-2.5 text-sm">
-      <strong className={`min-w-[64px] text-lg tabular-nums ${n.tipo === "nota" ? (alvo === "6,0" ? COR.nota : "text-texto") : COR[n.tipo]}`}>{textoNecessaria(n)}</strong>
+      <strong className={`min-w-[64px] text-lg tabular-nums ${n.tipo === "nota" ? (principal ? COR.nota : "text-texto") : COR[n.tipo]}`}>{textoNecessaria(n)}</strong>
       <span>para chegar a <b>{alvo}</b> {legenda}</span>
     </div>
   );
@@ -24,10 +27,13 @@ export function SimuladorNotas({
   avaliacoes,
   necessaria,
   frequencia,
+  regra,
 }: {
   avaliacoes: AvaliacaoSimulada[];
   necessaria: { normal: NotaNecessaria; saidaDoRisco: NotaNecessaria };
   frequencia: number | null;
+  // SPEC-052: metas e limites pela regra vigente.
+  regra: RegraAvaliacao;
 }) {
   const [aberto, setAberto] = useState(false);
   const [hipoteses, setHipoteses] = useState<string[]>(() => avaliacoes.map(() => ""));
@@ -48,8 +54,8 @@ export function SimuladorNotas({
             Nota igual nas avaliações que faltam: {restantes.map((a) => `${a.nome} (peso ${numero(a.peso)})`).join(", ")}.
           </p>
           <div className="space-y-2">
-            <Meta n={necessaria.normal} alvo="6,0" legenda="(Normal)" />
-            <Meta n={necessaria.saidaDoRisco} alvo="5,0" legenda="(sair do Risco por nota)" />
+            <Meta n={necessaria.normal} alvo={umaCasa(regra.mediaMinima)} legenda="(Normal)" principal />
+            <Meta n={necessaria.saidaDoRisco} alvo={umaCasa(regra.limiteRisco)} legenda="(sair do Risco por nota)" />
           </div>
           <button type="button" onClick={() => setAberto((v) => !v)} aria-expanded={aberto} className="mt-3 text-sm font-medium text-azul hover:underline">
             {aberto ? "Fechar simulação" : "Simular minhas notas"}
@@ -76,7 +82,7 @@ export function SimuladorNotas({
               ))}
               <div className="flex flex-wrap items-center gap-2 rounded-[10px] bg-info-fundo px-3 py-2.5 text-info" aria-live="polite">
                 {algumaHipotese && media !== null ? (
-                  <>Média simulada <b className="tabular-nums">{numero(media)}</b> <SeloSituacao situacao={situacaoSimulada(media, frequencia)} /></>
+                  <>Média simulada <b className="tabular-nums">{numero(media)}</b> <SeloSituacao situacao={situacaoSimulada(media, frequencia, regra)} /></>
                 ) : (
                   "Digite ao menos uma nota para ver a média simulada."
                 )}
@@ -85,8 +91,8 @@ export function SimuladorNotas({
           )}
         </>
       )}
-      {riscoPelaFrequencia(frequencia) && (
-        <p className="mt-3 text-[13px] text-risco">■ Frequência em {numero(frequencia!)}%: abaixo de 75% a situação continua Risco, qualquer que seja a nota.</p>
+      {riscoPelaFrequencia(frequencia, regra) && (
+        <p className="mt-3 text-[13px] text-risco">■ Frequência em {numero(frequencia!)}%: abaixo de {numero(regra.frequenciaMinima)}% a situação continua Risco, qualquer que seja a nota.</p>
       )}
     </div>
   );

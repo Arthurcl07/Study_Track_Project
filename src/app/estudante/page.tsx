@@ -48,14 +48,14 @@ export default async function DashboardEstudante() {
         <CartaoNumero
           rotulo="Média geral"
           valor={resumo.mediaGeral === null ? "—" : numero(resumo.mediaGeral)}
-          cor={corDaMedia(resumo.mediaGeral)}
+          cor={corDaMedia(resumo.mediaGeral, painel.regra)}
           detalhe={comNota === 0 ? "nenhuma nota ainda" : `média das ${comNota} turma(s) com nota`}
         />
         <CartaoNumero
           rotulo="Frequência geral"
           valor={resumo.frequenciaGeral === null ? "—" : `${numero(resumo.frequenciaGeral)}%`}
-          cor={corDaFrequencia(resumo.frequenciaGeral)}
-          detalhe="abaixo de 75% é Risco"
+          cor={corDaFrequencia(resumo.frequenciaGeral, painel.regra)}
+          detalhe={`abaixo de ${numero(painel.regra.frequenciaMinima)}% é Risco`}
         />
         <CartaoNumero
           rotulo="Situação nas turmas"
@@ -132,8 +132,8 @@ export default async function DashboardEstudante() {
             </div>
             <dl className="my-4 grid grid-cols-3 gap-2.5">
               {[
-                { rotulo: "Média", valor: t.media === null ? "—" : numero(t.media), cor: corDaMedia(t.media) },
-                { rotulo: "Frequência", valor: t.frequencia === null ? "—" : `${numero(t.frequencia)}%`, cor: corDaFrequencia(t.frequencia) },
+                { rotulo: "Média", valor: t.media === null ? "—" : numero(t.media), cor: corDaMedia(t.media, painel.regra) },
+                { rotulo: "Frequência", valor: t.frequencia === null ? "—" : `${numero(t.frequencia)}%`, cor: corDaFrequencia(t.frequencia, painel.regra) },
                 { rotulo: "Avaliações", valor: String(t.avaliacoesComNota), cor: "" },
               ].map((m) => (
                 <div key={m.rotulo} className="rounded-[10px] bg-nevoa px-3 py-2">
@@ -149,9 +149,9 @@ export default async function DashboardEstudante() {
               </p>
             )}
             <p className="mb-1 text-xs text-mudo">Evolução das notas</p>
-            <GraficoEvolucao pontos={t.evolucao} />
+            <GraficoEvolucao pontos={t.evolucao} regra={painel.regra} />
             {/* SPEC-023 (RF-32): quanto precisa tirar e simulação; nada é gravado. */}
-            <SimuladorNotas avaliacoes={t.avaliacoes} necessaria={t.necessaria} frequencia={t.frequencia} />
+            <SimuladorNotas avaliacoes={t.avaliacoes} necessaria={t.necessaria} frequencia={t.frequencia} regra={painel.regra} />
           </section>
         ))}
       </div>

@@ -205,7 +205,7 @@ export function RegistroChamada({ turmas, hoje }: { turmas: TurmaParaChamada[]; 
                 </thead>
                 <tbody>
                   {aulas.map((a) => (
-                    <tr key={a.id} className={`border-t border-traco ${a.data === data && corrigindo ? "bg-azul-suave" : ""}`}>
+                    <tr key={a.id} className={`border-t border-traco ${a.data === data && corrigindo ? "bg-info-fundo shadow-[inset_3px_0_0_var(--color-azul)]" : ""}`}>
                       <td data-rotulo="Data" className="px-2 py-3">{formatarDataCurta(a.data)}</td>
                       <td data-rotulo="Aula" className="px-2 py-3">{a.numero}ª{a.conteudo && <span className="block max-w-56 text-xs text-mudo">{a.conteudo}</span>}</td>
                       <td data-rotulo="Presentes" className="px-2 py-3 text-right tabular-nums">{a.presencas.filter((p) => p.presente).length} de {a.presencas.length}</td>

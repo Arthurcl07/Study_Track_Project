@@ -127,8 +127,11 @@ export function SeloEntrega({ status }: { status: keyof typeof ENTREGAS }) {
 export const formatarNumero = (v: number) => v.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
 
 // Só destaca o valor que está fora do limite; os limites vêm da regra única (DA-02).
-export const corDaMedia = (m: number | null) => (m === null || m >= MEDIA_NORMAL ? "" : m < MEDIA_RISCO ? "text-risco" : "text-atencao");
-export const corDaFrequencia = (f: number | null) => (f !== null && f < FREQUENCIA_MINIMA ? "text-risco" : "");
+// SPEC-052: com a regra vigente quando a página a tem; sem ela, os valores padrão.
+type Limites = { mediaMinima: number; limiteRisco: number; frequenciaMinima: number };
+const PADRAO: Limites = { mediaMinima: MEDIA_NORMAL, limiteRisco: MEDIA_RISCO, frequenciaMinima: FREQUENCIA_MINIMA };
+export const corDaMedia = (m: number | null, r: Limites = PADRAO) => (m === null || m >= r.mediaMinima ? "" : m < r.limiteRisco ? "text-risco" : "text-atencao");
+export const corDaFrequencia = (f: number | null, r: Limites = PADRAO) => (f !== null && f < r.frequenciaMinima ? "text-risco" : "");
 
 // "AAAA-MM-DD" → "DD/MM/AAAA" sem passar por fuso horário.
 export function formatarDataCurta(texto: string) {
