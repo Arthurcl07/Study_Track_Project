@@ -2,6 +2,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { podeAcessar, type Recurso } from "@/domain/autorizacao";
+import { MENSAGEM_ACEITAR_TERMOS, precisaAceitar } from "@/domain/lgpd";
 import { MENSAGEM_DEFINIR_SENHA } from "@/domain/senha";
 import { situacaoDaConta } from "@/server/dados/contas";
 import { NOME_COOKIE_SESSAO, verificarSessao, type Sessao } from "./token";
@@ -15,7 +16,7 @@ function lerCookie(cabecalho: string | null, nome: string): string | undefined {
   return undefined;
 }
 
-export type ContaDaSessao = { sessao: Sessao; trocarSenha: boolean };
+export type ContaDaSessao = { sessao: Sessao; trocarSenha: boolean; aceitarTermos: boolean };
 
 // RB-14 / INV-010-04 (SPEC-010): o JWT só vale se a conta ainda existe, está ativa e tem o mesmo perfil.
 // Assim, desativar uma conta corta na próxima requisição uma sessão que já tinha sido emitida.
@@ -23,7 +24,10 @@ export type ContaDaSessao = { sessao: Sessao; trocarSenha: boolean };
 async function confirmarConta(sessao: Sessao | null): Promise<ContaDaSessao | null> {
   if (!sessao) return null;
   const conta = await situacaoDaConta(sessao.usuarioId);
-  return conta && conta.ativo && conta.perfil === sessao.perfil ? { sessao, trocarSenha: conta.trocarSenha } : null;
+  // RB-43 (SPEC-045): e se falta o aceite da versão vigente dos termos.
+  return conta && conta.ativo && conta.perfil === sessao.perfil
+    ? { sessao, trocarSenha: conta.trocarSenha, aceitarTermos: precisaAceitar(conta.aceites.map((a) => a.versao)) }
+    : null;
 }
 
 // Para a troca de senha (SPEC-011): aceita conta com senha provisória.
@@ -57,6 +61,10 @@ export async function autorizarApi(
   if (conta.trocarSenha) {
     return { negado: Response.json({ erro: MENSAGEM_DEFINIR_SENHA, trocarSenha: true }, { status: 403 }) };
   }
+  // RB-43 / INV-045-01: sem o aceite da versão vigente, só o aceite, os termos e o Sair.
+  if (conta.aceitarTermos) {
+    return { negado: Response.json({ erro: MENSAGEM_ACEITAR_TERMOS, aceitarTermos: true }, { status: 403 }) };
+  }
   const { sessao } = conta;
   if (!podeAcessar(sessao.perfil, recurso)) {
     return { negado: Response.json({ erro: "Acesso negado." }, { status: 403 }) };
@@ -69,6 +77,7 @@ export async function exigirAcessoPagina(recurso: Recurso): Promise<Sessao> {
   const conta = await contaDaPagina();
   if (!conta) redirect("/login");
   if (conta.trocarSenha) redirect("/definir-senha");
+  if (conta.aceitarTermos) redirect("/termos/aceite");
   if (!podeAcessar(conta.sessao.perfil, recurso)) redirect("/acesso-negado");
   return conta.sessao;
 }

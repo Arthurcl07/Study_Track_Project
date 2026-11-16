@@ -113,7 +113,7 @@ export function EntregasAtividade({ atividadeId, linhas, hoje }: { atividadeId: 
               </thead>
               <tbody>
                 {linhas.map((l) => (
-                  <tr key={l.estudanteId} className={`border-t border-traco ${l.estudanteId === estudanteId ? "bg-azul-suave" : ""}`}>
+                  <tr key={l.estudanteId} className={`border-t border-traco ${l.estudanteId === estudanteId ? "bg-info-fundo shadow-[inset_3px_0_0_var(--color-azul)]" : ""}`}>
                     <td data-rotulo="Estudante" className="px-2 py-3">{l.nome}</td>
                     <td data-rotulo="Status" className="px-2 py-3"><SeloEntrega status={l.status} /></td>
                     <td data-rotulo="Entregue em" className={`px-2 py-3 tabular-nums ${l.entrega ? "" : "text-mudo"}`}>

@@ -65,6 +65,19 @@ export const RECURSOS = {
   rematricula: "rematricula",
   // SPEC-039: homologação de diários pela coordenação (o professor fecha pelo recurso de registro).
   diarios: "diarios",
+  // Níveis 5 e 6 (SPEC-045 a SPEC-059).
+  // SPEC-045: Meus dados (LGPD) e SPEC-059: Ajuda — todo perfil, sobre si mesmo.
+  meusDados: "meus-dados",
+  ajuda: "ajuda",
+  // SPEC-048: ata, diário impresso e lista de presença — professor da turma, coordenação do curso e secretaria
+  // (escopo na query).
+  documentosTurma: "documentos-turma",
+  // SPEC-050: evasão — coordenação (curso dela) e secretaria (todos).
+  evasao: "evasao",
+  // SPEC-051: acompanhamento dos professores, só a coordenação.
+  acompanhamento: "acompanhamento",
+  // SPEC-057: saúde do sistema e registro de erros, só o administrador (INV-057-02).
+  saude: "saude",
 } as const;
 
 export type Recurso = (typeof RECURSOS)[keyof typeof RECURSOS];
@@ -92,7 +105,8 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "auditoria-academica": ["Coordenador"],
   // SPEC-035: a secretaria (Administrador) emite documentos de qualquer estudante.
   documentos: ["Estudante", "Coordenador", "Administrador"],
-  notificacoes: ["Estudante", "Professor"],
+  // SPEC-050: o coordenador recebe o aviso de evasão (RB-23 ajustada).
+  notificacoes: ["Estudante", "Professor", "Coordenador"],
   comunicados: ["Estudante", "Professor", "Coordenador"],
   "pedidos-senha": ["Administrador"],
   secretaria: ["Administrador"],
@@ -102,6 +116,12 @@ const PERFIS_AUTORIZADOS: Readonly<Record<Recurso, readonly Perfil[]>> = {
   "meu-curso": ["Estudante"],
   rematricula: ["Estudante"],
   diarios: ["Coordenador"],
+  "meus-dados": ["Estudante", "Professor", "Coordenador", "Administrador"],
+  ajuda: ["Estudante", "Professor", "Coordenador", "Administrador"],
+  "documentos-turma": ["Professor", "Coordenador", "Administrador"],
+  evasao: ["Coordenador", "Administrador"],
+  acompanhamento: ["Coordenador"],
+  saude: ["Administrador"],
 };
 
 export function podeAcessar(perfil: unknown, recurso: unknown): boolean {

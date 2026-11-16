@@ -1,3 +1,4 @@
+import { regraVigente } from "@/server/dados/regras";
 import Link from "next/link";
 import { Casca } from "@/components/casca";
 import { Icone } from "@/components/icones";
@@ -41,7 +42,10 @@ export default async function Relatorios({ searchParams }: { searchParams: Promi
   const turma = filtros.turma || "";
   const curso = filtros.curso || "";
   const situacao = ehSituacaoRelatorio(filtros.situacao) ? filtros.situacao : "";
-  const resultado = await gerarRelatorio(sessao, { turma: turma || null, situacao: situacao || null, curso: curso || null, periodo: filtros.periodo || null });
+  const [resultado, regra] = await Promise.all([
+    gerarRelatorio(sessao, { turma: turma || null, situacao: situacao || null, curso: curso || null, periodo: filtros.periodo || null }),
+    regraVigente(),
+  ]);
 
   const subtitulo =
     sessao.perfil === "Coordenador"
@@ -66,6 +70,7 @@ export default async function Relatorios({ searchParams }: { searchParams: Promi
   if (curso) consulta.set("curso", curso);
   if (turma) consulta.set("turma", turma);
   if (situacao) consulta.set("situacao", situacao);
+  const filtrosDaTela = consulta.toString();
   consulta.set("formato", "csv");
 
   return (
@@ -74,10 +79,19 @@ export default async function Relatorios({ searchParams }: { searchParams: Promi
         titulo="Relatório acadêmico"
         subtitulo={subtitulo}
         acao={
+          // SPEC-049 (RF-58): Excel, PDF (versão para impressão) e CSV, todos com os filtros da tela (INV-049-01).
           turmasDisponiveis.length > 0 && (
-            <a href={`/api/relatorios?${consulta}`} download className={CLASSE_BOTAO_SECUNDARIO}>
-              <Icone nome="download" className="h-4 w-4" /> Exportar CSV
-            </a>
+            <div className="flex flex-wrap gap-2">
+              <a href={`/api/relatorios/excel?${filtrosDaTela}`} download className={CLASSE_BOTAO_PRIMARIO}>
+                <Icone nome="download" className="h-4 w-4" /> Excel
+              </a>
+              <Link href={`/relatorios/imprimir?${filtrosDaTela}`} className={CLASSE_BOTAO_SECUNDARIO}>
+                <Icone nome="documento" className="h-4 w-4" /> PDF
+              </Link>
+              <a href={`/api/relatorios?${consulta}`} download className={CLASSE_BOTAO_SECUNDARIO}>
+                <Icone nome="download" className="h-4 w-4" /> CSV
+              </a>
+            </div>
           )
         }
       />
@@ -186,10 +200,10 @@ export default async function Relatorios({ searchParams }: { searchParams: Promi
                     <tr key={`${l.turmaId}-${l.estudante}`} className="border-t border-traco">
                       <td data-rotulo="Estudante" className="py-3 pr-2">{l.estudante}</td>
                       <td data-rotulo="Turma" className="px-2 py-3 text-mudo">{l.turma}</td>
-                      <td data-rotulo="Média" className={`px-2 py-3 text-right tabular-nums ${corDaMedia(l.media) && `font-semibold ${corDaMedia(l.media)}`}`}>
+                      <td data-rotulo="Média" className={`px-2 py-3 text-right tabular-nums ${corDaMedia(l.media, regra) && `font-semibold ${corDaMedia(l.media, regra)}`}`}>
                         {l.media === null ? "—" : numero(l.media)}
                       </td>
-                      <td data-rotulo="Frequência" className={`px-2 py-3 text-right tabular-nums ${corDaFrequencia(l.frequencia) && `font-semibold ${corDaFrequencia(l.frequencia)}`}`}>
+                      <td data-rotulo="Frequência" className={`px-2 py-3 text-right tabular-nums ${corDaFrequencia(l.frequencia, regra) && `font-semibold ${corDaFrequencia(l.frequencia, regra)}`}`}>
                         {l.frequencia === null ? "—" : `${numero(l.frequencia)}%`}
                       </td>
                       <td data-rotulo="Situação" className="py-3 pl-4"><Situacao situacao={l.situacao} /></td>

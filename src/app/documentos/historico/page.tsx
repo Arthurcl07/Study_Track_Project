@@ -1,3 +1,4 @@
+import { REGRA_PADRAO, textoDaRegra } from "@/domain/situacao-academica";
 import { notFound } from "next/navigation";
 import { FolhaDocumento, ResultadoTurma, TabelaDocumento, emissao } from "@/components/documento";
 import { formatarNumero } from "@/components/ui";
@@ -33,10 +34,28 @@ export default async function HistoricoEscolar({ searchParams }: { searchParams:
       rodape={
         <>
           <span>Emitido por {instituicao?.nome ?? "StudyTrack"} em {emissao(historico.emitidoEm)} (horário de Brasília).</span>
-          <span>Aprovado: média ≥ 6,0 e frequência ≥ 75%; no exame, nota final = (média + exame) ÷ 2 ≥ 5,0.</span>
+          <span>Aprovado: {textoDaRegra(periodos.at(-1)?.linhas[0]?.regra ?? REGRA_PADRAO)} (regra de cada período no encerramento); no exame, nota final = (média + exame) ÷ 2.</span>
         </>
       }
     >
+      {/* SPEC-058: cursado no sistema anterior (aprovado pela regra vigente conta na carga aprovada). */}
+      {historico.anterior.length > 0 && (
+        <section className="mt-5">
+          <h2 className="mb-2 text-sm font-semibold text-marinho">Cursado no sistema anterior</h2>
+          <TabelaDocumento cabecalho={[{ texto: "Período" }, { texto: "Disciplina" }, { texto: "CH", numero: true }, { texto: "Média", numero: true }, { texto: "Frequência", numero: true }, { texto: "Resultado" }]}>
+            {historico.anterior.map((a) => (
+              <tr key={a.id} className="border-t border-traco">
+                <td className="px-2 py-2">{a.periodo}</td>
+                <td className="px-2 py-2">{a.disciplina}</td>
+                <td className="px-2 py-2 text-right tabular-nums">{a.cargaHoraria} h</td>
+                <td className="px-2 py-2 text-right tabular-nums">{formatarNumero(a.media)}</td>
+                <td className="px-2 py-2 text-right tabular-nums">{formatarNumero(a.frequencia)}%</td>
+                <td className="px-2 py-2"><ResultadoTurma resultado={a.resultado} /></td>
+              </tr>
+            ))}
+          </TabelaDocumento>
+        </section>
+      )}
       {periodos.length === 0 ? (
         <p className="mt-6 text-mudo">Nenhuma turma cursada ainda.</p>
       ) : (

@@ -1,5 +1,5 @@
-# CI do StudyTrack (OPEN-024, seguranca-ssdlc.md camada 4): tipos e suíte completa de testes
-# em todo PR e push para development e main, com um PostgreSQL 17 descartável.
+# CI do StudyTrack (OPEN-024, seguranca-ssdlc.md camada 4): tipos, suíte completa de testes e, desde a SPEC-055,
+# os testes de tela (Playwright), em todo PR e push para development e main, com um PostgreSQL 17 descartável.
 # Nenhum segredo real: o banco só existe durante a execução e o JWT_SECRET é gerado a cada rodada.
 name: CI
 
@@ -61,3 +61,65 @@ jobs:
       # Garante que a aplicação compila em modo de produção (o mesmo `next build` de uma publicação).
       - name: Build de produção
         run: npm run build
+
+  # SPEC-055 (ADR-006): testes de tela com o Playwright (Chromium) contra o build de produção, com o seed da
+  # faculdade povoada. Falha deixa captura de tela, vídeo e rastro como artefato do job.
+  telas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: studytrack
+          POSTGRES_PASSWORD: studytrack_ci
+          POSTGRES_DB: studytrack_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U studytrack"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://studytrack:studytrack_ci@localhost:5432/studytrack_ci
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Gerar JWT_SECRET só desta execução
+        run: echo "JWT_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+
+      - name: Instalar dependências (inclui prisma generate)
+        run: npm ci
+
+      - name: Aplicar migrações e carregar o seed
+        run: |
+          npx prisma migrate deploy
+          npm run seed
+
+      - name: Build de produção
+        run: npm run build
+
+      - name: Instalar o Chromium do Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Testes de tela (Playwright + axe)
+        run: npm run e2e
+
+      - name: Guardar capturas, vídeos e relatório
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testes-de-tela
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7

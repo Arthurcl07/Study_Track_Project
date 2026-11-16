@@ -4,8 +4,9 @@ import { RECURSOS } from "@/domain/autorizacao";
 import { consultarAulas, registrarChamada } from "@/server/academico/chamada";
 import { lerCorpo, respostaDeResultado } from "@/server/academico/respostas";
 import { autorizarApi } from "@/server/auth/guardas";
+import { comRegistroDeErro } from "@/server/dados/erros";
 
-export async function GET(requisicao: Request) {
+async function rotaGET(requisicao: Request) {
   const acesso = await autorizarApi(requisicao, RECURSOS.registroFrequenciaAtividades);
   if ("negado" in acesso) return acesso.negado;
   const turmaId = new URL(requisicao.url).searchParams.get("turmaId") ?? "";
@@ -13,8 +14,12 @@ export async function GET(requisicao: Request) {
   return aulas ? Response.json(aulas) : Response.json({ erro: "Turma não encontrada." }, { status: 404 });
 }
 
-export async function POST(requisicao: Request) {
+async function rotaPOST(requisicao: Request) {
   const acesso = await autorizarApi(requisicao, RECURSOS.registroFrequenciaAtividades);
   if ("negado" in acesso) return acesso.negado;
   return respostaDeResultado(await registrarChamada(await lerCorpo(requisicao), acesso.sessao.usuarioId), 200);
 }
+
+// SPEC-057 (AC-057-01): erro inesperado vira 500 com o código, gravado no registro de erros.
+export const GET = comRegistroDeErro(rotaGET);
+export const POST = comRegistroDeErro(rotaPOST);

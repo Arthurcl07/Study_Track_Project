@@ -78,6 +78,17 @@ flowchart LR
     Administrador --> UC38
     Administrador --> UC39[UC-39 Aproveitamento e Conclusão]
     Administrador --> UC40[UC-40 Exportar Apoio ao Censo]
+    Estudante --> UC41[UC-41 Aceitar Termos e Baixar Meus Dados]
+    Estudante --> UC42[UC-42 Ser Bloqueado por Tentativas Erradas]
+    Professor --> UC43[UC-43 Emitir Documentos Oficiais da Turma]
+    Professor --> UC44[UC-44 Exportar Relatório em Excel e PDF]
+    Coordenador --> UC45[UC-45 Acompanhar Evasão]
+    Coordenador --> UC46[UC-46 Acompanhar Professores]
+    Administrador --> UC47[UC-47 Configurar Regras de Avaliação]
+    Administrador --> UC48[UC-48 Trocar Perfil e Importar Professores]
+    Administrador --> UC49[UC-49 Acompanhar a Saúde do Sistema]
+    Administrador --> UC50[UC-50 Importar do Sistema Anterior]
+    Estudante --> UC51[UC-51 Usar a Ajuda e o Tour]
 
     UC3 -.include.-> REC[Recalcular Indicador Acadêmico]
     UC8 -.include.-> REC
@@ -85,6 +96,6 @@ flowchart LR
     UC10 -.extend.-> UC4
 ```
 
-Os casos de uso completos estão em arquivos individuais nesta pasta: `UC-01-autenticar.md`, `UC-02-consultar-situacao-academica.md`, `UC-03-registrar-nota.md`, `UC-04-criar-plano-recuperacao.md`, `UC-05-consultar-relatorios.md`, `UC-06-cadastrar-estudante.md`, `UC-07-cadastrar-disciplina-turma.md`, `UC-08-registrar-frequencia.md`, `UC-09-cadastrar-atividade-registrar-entrega.md` `UC-10-consultar-dashboard-turma.md`, `UC-11-gerenciar-contas.md`, `UC-12-definir-alterar-senha.md`, `UC-13-consultar-historico-notas.md`, `UC-14-gerenciar-cursos.md`, `UC-15-montar-grade-curso.md`, `UC-16-consultar-dashboard.md` e os UC-17 a UC-40 (um arquivo por caso de uso, mesmo padrão de nome; UC-25 a UC-31 incluídos em 2026-11-06 com as SPEC-026 a SPEC-035 e UC-32 a UC-40 em 2026-11-08 com as SPEC-036 a SPEC-043).
+Os casos de uso completos estão em arquivos individuais nesta pasta: `UC-01-autenticar.md`, `UC-02-consultar-situacao-academica.md`, `UC-03-registrar-nota.md`, `UC-04-criar-plano-recuperacao.md`, `UC-05-consultar-relatorios.md`, `UC-06-cadastrar-estudante.md`, `UC-07-cadastrar-disciplina-turma.md`, `UC-08-registrar-frequencia.md`, `UC-09-cadastrar-atividade-registrar-entrega.md` `UC-10-consultar-dashboard-turma.md`, `UC-11-gerenciar-contas.md`, `UC-12-definir-alterar-senha.md`, `UC-13-consultar-historico-notas.md`, `UC-14-gerenciar-cursos.md`, `UC-15-montar-grade-curso.md`, `UC-16-consultar-dashboard.md` e os UC-17 a UC-40 (um arquivo por caso de uso, mesmo padrão de nome; UC-25 a UC-31 incluídos em 2026-11-06 com as SPEC-026 a SPEC-035 UC-32 a UC-40 em 2026-11-08 com as SPEC-036 a SPEC-043 e UC-41 a UC-51 em 2026-11-14 com as SPEC-045 a SPEC-059).
 
 Todo RF tem caso de uso (ver `docs/rastreabilidade.md`). Diagramas de sequência dos UC-03 e UC-04 em `docs/uml/sequencias.md`.

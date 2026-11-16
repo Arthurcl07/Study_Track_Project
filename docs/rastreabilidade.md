@@ -57,6 +57,18 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 | RF-51 | Conclusão de curso | RB-30, RB-40 | UC-39 | SPEC-042 | — | `tests/spec-042/` | SPEC-036-043.md |
 | RF-52 | Exportação de apoio ao Censo | RB-13, RB-22 | UC-40 | SPEC-043 | — | `tests/spec-043/` | SPEC-036-043.md |
 | RF-53 | Trancamento de disciplina e de curso por requerimento | RB-22, RB-30, RB-34, RB-42 | UC-32, UC-33 | SPEC-044 | — | `tests/spec-044/` | SPEC-044.md |
+| RF-54 | Termos, privacidade e dados do titular | RB-22, RB-43 | UC-41 | SPEC-045 | — | `tests/spec-045/` | SPEC-045-059.md |
+| RF-55 | Limite de tentativas no login | RB-22, RB-44 | UC-42 | SPEC-046 | — | `tests/spec-046/` | SPEC-045-059.md |
+| RF-56 | Página de erro própria | — | — | SPEC-047 | — | `tests/spec-057/`, `e2e/06-erro-e-saude.spec.ts` | SPEC-045-059.md |
+| RF-57 | Documentos oficiais da turma | RB-24, RB-37, RB-47 | UC-43 | SPEC-048 | — | `tests/spec-048/` | SPEC-045-059.md |
+| RF-58 | Relatórios em Excel e PDF | RB-03, RB-04 | UC-44 | SPEC-049 | — | `tests/spec-049/` | SPEC-045-059.md |
+| RF-59 | Alerta de evasão | RB-45 | UC-45 | SPEC-050 | — | `tests/spec-050/` | SPEC-045-059.md |
+| RF-60 | Acompanhamento dos professores | RB-46 | UC-46 | SPEC-051 | — | `tests/spec-051/` | SPEC-045-059.md |
+| RF-61 | Regras de avaliação configuráveis | RB-05, RB-06, RB-07, RB-29, RB-47 | UC-47 | SPEC-052 | — | `tests/spec-052/` | SPEC-045-059.md |
+| RF-62 | Trocar perfil e importar professores | RB-15, RB-48 | UC-48 | SPEC-053 | — | `tests/spec-053/` | SPEC-045-059.md |
+| RF-63 | Registro de erros e saúde do sistema | RB-22 | UC-49 | SPEC-057 | — | `tests/spec-057/` | SPEC-045-059.md |
+| RF-64 | Importação do sistema anterior | RB-19, RB-33, RB-49 | UC-50 | SPEC-058 | — | `tests/spec-058/` | SPEC-045-059.md |
+| RF-65 | Ajuda: manual e tour | — | UC-51 | SPEC-059 | — | `tests/spec-059/` | SPEC-045-059.md |
 
 ## Lacunas conhecidas
 
@@ -66,6 +78,8 @@ Liga cada requisito funcional aos artefatos que o sustentam: regras de negócio,
 - RF-35 a RF-43 (SPEC-026 a SPEC-035) sem issue: pedido de Arthur em 2026-11-06 ("Nível 1" para uso real), registrado nos OPEN-048 a OPEN-057.
 - RF-44 a RF-52 (SPEC-036 a SPEC-043) sem issue: pedido de Arthur em 2026-11-08 (Nível 3, sem os itens 28 e 30), registrado nos OPEN-058 a OPEN-065.
 - RF-53 (SPEC-044) sem issue: pedido de Arthur em 2026-11-09, registrado no OPEN-066.
+- RF-54 a RF-65 e RNF-07/RNF-08 (SPEC-045 a SPEC-059) sem issue: pedido de Arthur em 2026-11-14, registrado nos OPEN-067 a OPEN-075.
+- RNF-01, RNF-07 e RNF-08 (SPEC-054 a SPEC-057) são verificados fora do Vitest: `npm run carga` (`docs/verificacao/desempenho.md`), `npm run e2e` com o axe (`e2e/`, `docs/verificacao/acessibilidade.md`) e `tests/spec-057/`.
 
 - Todo RF tem caso de uso: RF-03, RF-04, RF-07, RF-08 e RF-13 ganharam os UC-06 a UC-10 em 2026-10-17.
 - RB-08 (atraso) e RB-12 (progresso do plano) viraram contrato com o fechamento do OPEN-010, do OPEN-003 e do OPEN-021.

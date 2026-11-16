@@ -226,8 +226,9 @@ describe("SPEC-004 — registro e alteração de nota (integração)", () => {
 
     falhaNoRecalculo.ativa = true;
     try {
-      await expect(alterar(nota.id, 3, c.tokenProfessor)).rejects.toThrow("Falha simulada");
-      await expect(lancar(c, 5, c.tokenProfessor, p2.id)).rejects.toThrow("Falha simulada");
+      // SPEC-057 (AC-057-01): a falha vira 500 com o código do erro (registrado), sem gravar nada.
+      expect((await alterar(nota.id, 3, c.tokenProfessor)).status).toBe(500);
+      expect((await lancar(c, 5, c.tokenProfessor, p2.id)).status).toBe(500);
     } finally {
       falhaNoRecalculo.ativa = false;
     }

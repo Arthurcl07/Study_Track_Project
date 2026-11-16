@@ -1,6 +1,7 @@
 // Exportação de apoio ao Censo (SPEC-043, RF-52, UC-40). Só a secretaria (recurso secretaria, RB-13). A exportação
 // vai para a auditoria com o período e o número de linhas, sem dados pessoais (INV-043-02).
 import { resultadoDaTurma } from "@/domain/documentos";
+import { CAMPOS_REGRA_DO_PERIODO, regraGuardada, regraVigente } from "@/server/dados/regras";
 import { gerarCsvCenso, type LinhaCenso } from "@/domain/censo";
 import { ROTULO_SITUACAO_CURSO, type SituacaoCurso } from "@/domain/secretaria";
 import { deData } from "@/server/dados/atividades";
@@ -13,7 +14,7 @@ const sucesso = <T>(valor: T): Resultado<T> => ({ ok: true, valor });
 const falha = <T>(f: Falha): Resultado<T> => ({ ok: false, falha: f });
 
 export async function linhasDoCenso(periodo: string): Promise<LinhaCenso[] | null> {
-  const p = await prisma.periodoLetivo.findUnique({ where: { nome: periodo }, select: { status: true } });
+  const p = await prisma.periodoLetivo.findUnique({ where: { nome: periodo }, select: CAMPOS_REGRA_DO_PERIODO });
   if (!p) return null;
   const matriculas = await prisma.matricula.findMany({
     where: { turma: { periodo } },
@@ -29,6 +30,8 @@ export async function linhasDoCenso(periodo: string): Promise<LinhaCenso[] | nul
   const exames = await prisma.nota.findMany({ where: { avaliacao: { tipo: "Exame", turma: { periodo } } }, select: { estudanteId: true, valor: true, avaliacao: { select: { turmaId: true } } } });
   const exameDe = new Map(exames.map((e) => [`${e.estudanteId}:${e.avaliacao.turmaId}`, e.valor]));
   const encerrado = p.status === "Encerrado";
+  // SPEC-052 (INV-052-02): a regra com que o período foi encerrado.
+  const regra = (encerrado ? regraGuardada(p) : null) ?? (await regraVigente());
   return matriculas.map((m) => ({
     matricula: m.estudante.ficha?.numeroMatricula ?? "",
     nome: m.estudante.nome,
@@ -41,7 +44,7 @@ export async function linhasDoCenso(periodo: string): Promise<LinhaCenso[] | nul
     turma: m.turma.nome,
     cargaHoraria: m.turma.disciplina.cargaHoraria,
     frequencia: m.indicador?.frequenciaAtual ?? null,
-    resultado: resultadoDaTurma({ encerrado, media: m.indicador?.media ?? null, frequencia: m.indicador?.frequenciaAtual ?? null, exame: exameDe.get(`${m.estudanteId}:${m.turma.id}`) ?? null, matricula: m.situacao }),
+    resultado: resultadoDaTurma({ encerrado, media: m.indicador?.media ?? null, frequencia: m.indicador?.frequenciaAtual ?? null, exame: exameDe.get(`${m.estudanteId}:${m.turma.id}`) ?? null, matricula: m.situacao, regra }),
   }));
 }
 

@@ -1,6 +1,21 @@
-# Verificação de qualidade e segurança — SPEC-001 a SPEC-044
+# Verificação de qualidade e segurança — SPEC-001 a SPEC-059
 
 **Data:** 2026-10-16 (SPEC-001 a 009); reverificada em 2026-10-17 com a SPEC-010 (seção 0), em 2026-10-19 com as SPEC-011 a 014 (seção 00) em 2026-10-22 com as SPEC-015 e 016 (seção 000) em 2026-11-06 com as SPEC-017 a 022 (seção 0000) e, no mesmo dia, com as SPEC-023 a 025 (seção 00000) e com as SPEC-026 a 035 (seção 000000); em 2026-11-08 com as SPEC-036 a 043 (seção 0000000) e em 2026-11-09 com a **SPEC-044** (seção 00000000).
+
+## 000000000. Reverificação de 2026-11-14 (depois das SPEC-045 a SPEC-059, Níveis 5 e 6)
+
+| Verificação | Resultado |
+|---|---|
+| Testes | 58 arquivos, **460 testes aprovados** (`npm test`); `tsc --noEmit` e `next build` sem erros |
+| Testes de tela | **7** fluxos de ponta a ponta no Chromium (`npm run e2e`), cada um com dados próprios apagados no fim; job `telas` na CI |
+| Acessibilidade | axe (WCAG 2.1 A/AA) sem violação em 23 telas, depois de corrigir o contraste da cor Mudo, o nome do logotipo e a linha selecionada (`acessibilidade.md`) |
+| Desempenho (RNF-01) | `npm run carga` com a faculdade povoada, build de produção: P95 de todas as telas abaixo de 0,9 s (`desempenho.md`) |
+| Critérios AC (SPEC-045 a 059) | 61 novos, todos verificados (Vitest, testes de tela ou o script de carga) |
+| Invariantes INV | 32 novas, todas com teste |
+| Regras RB-01 a RB-49 | 49, todas com teste (RB-43 a RB-49 nas `spec-045` a `spec-058`; RB-05, 06, 07, 24 e 29 também com a regra configurada) |
+| Regra única (DA-02) | a classificação continua numa função pura só; a regra configurada entra como parâmetro (padrão 6,0 · 5,0 · 75% · 5,0) |
+| Erros | toda rota de API passa por `comRegistroDeErro` (500 com o código, erro gravado e mascarado); páginas pelo `onRequestError` |
+| Dependências | `exceljs` 4.4.0 (produção); `@playwright/test` 1.64.1, `playwright-core` 1.64.1 e `@axe-core/playwright` 4.14.0 (desenvolvimento) — ADR-005 e ADR-006 |
 
 ## 00000000. Reverificação de 2026-11-09 (depois da SPEC-044, trancamento por requerimento)
 

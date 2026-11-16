@@ -3,15 +3,20 @@ import { RECURSOS } from "@/domain/autorizacao";
 import { lerCorpo, respostaDeResultado } from "@/server/academico/respostas";
 import { autorizarApi } from "@/server/auth/guardas";
 import { obterInstituicao, salvarInstituicao } from "@/server/academico/secretaria";
+import { comRegistroDeErro } from "@/server/dados/erros";
 
-export async function GET(requisicao: Request) {
+async function rotaGET(requisicao: Request) {
   const acesso = await autorizarApi(requisicao, RECURSOS.secretaria);
   if ("negado" in acesso) return acesso.negado;
   return Response.json(await obterInstituicao());
 }
 
-export async function PUT(requisicao: Request) {
+async function rotaPUT(requisicao: Request) {
   const acesso = await autorizarApi(requisicao, RECURSOS.secretaria);
   if ("negado" in acesso) return acesso.negado;
   return respostaDeResultado(await salvarInstituicao(await lerCorpo(requisicao), acesso.sessao.usuarioId), 200);
 }
+
+// SPEC-057 (AC-057-01): erro inesperado vira 500 com o código, gravado no registro de erros.
+export const GET = comRegistroDeErro(rotaGET);
+export const PUT = comRegistroDeErro(rotaPUT);

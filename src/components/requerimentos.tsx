@@ -195,7 +195,7 @@ export function Requerimentos({ itens, perfil, podeResponder, turmas }: { itens:
           </thead>
           <tbody>
             {itens.map((r) => (
-              <tr key={r.id} className={`border-t border-traco ${r.id === aberto ? "bg-azul-suave" : ""}`}>
+              <tr key={r.id} className={`border-t border-traco ${r.id === aberto ? "bg-info-fundo shadow-[inset_3px_0_0_var(--color-azul)]" : ""}`}>
                 <td data-rotulo="Protocolo" className="py-3 pr-2 whitespace-nowrap tabular-nums">
                   {podeResponder && (r.status === "Aberto" || r.status === "EmAnalise") ? (
                     <button type="button" onClick={() => setAberto(r.id)} className="font-medium text-azul hover:underline">{r.protocolo}</button>

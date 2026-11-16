@@ -2,6 +2,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, describe, expect, it } from "vitest";
 import { MENSAGEM_DEFINIR_SENHA, MENSAGEM_SENHA_ATUAL_INCORRETA, validarTrocaDeSenha } from "@/domain/senha";
+import { VERSAO_TERMOS } from "@/domain/lgpd";
 import { POST as loginApi } from "@/app/api/auth/login/route";
 import { POST as senhaApi } from "@/app/api/auth/senha/route";
 import { POST as criarContaApi } from "@/app/api/contas/route";
@@ -97,6 +98,9 @@ describe("SPEC-011 — senha provisória e troca", () => {
     expect(depois.trocarSenha).toBe(false);
     expect(depois.senhaHash).not.toBe(hashAntes);
     expect(depois.senhaHash).not.toBe("minha-senha-1");
+    // SPEC-045 (RB-43): depois da senha, o primeiro acesso ainda pede o aceite dos termos.
+    expect((await destinoDoLogin(email, "minha-senha-1")).destino).toBe("/termos/aceite");
+    await prisma.aceiteTermos.create({ data: { usuarioId: depois.id, versao: VERSAO_TERMOS } });
     expect((await turmasApi(requisicaoComSessao(URL_TURMAS, token))).status).toBe(200);
     expect((await destinoDoLogin(email, SENHA_INICIAL)).status).toBe(401);
     expect(await destinoDoLogin(email, "minha-senha-1")).toEqual({ status: 200, destino: "/estudante" });

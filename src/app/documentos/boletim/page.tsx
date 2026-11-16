@@ -1,3 +1,4 @@
+import { REGRA_PADRAO, textoDaRegra } from "@/domain/situacao-academica";
 import { notFound } from "next/navigation";
 import { FolhaDocumento, ResultadoTurma, TabelaDocumento, emissao } from "@/components/documento";
 import { SeloSituacao, formatarNumero } from "@/components/ui";
@@ -34,7 +35,7 @@ export default async function Boletim({ searchParams }: { searchParams: Promise<
       rodape={
         <>
           <span>Emitido por {emissor} em {emissao(boletim.emitidoEm)} (horário de Brasília).</span>
-          <span>{periodo?.status === "Encerrado" ? "Aprovado: média ≥ 6,0 e frequência ≥ 75%; no exame, nota final = (média + exame) ÷ 2 ≥ 5,0." : "Resultado final só após o encerramento do período."}</span>
+          <span>{periodo?.status === "Encerrado" ? `Aprovado: ${textoDaRegra(turmas[0]?.regra ?? REGRA_PADRAO)}; no exame, nota final = (média + exame) ÷ 2.` : "Resultado final só após o encerramento do período."}</span>
         </>
       }
     >

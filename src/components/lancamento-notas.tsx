@@ -6,6 +6,7 @@
 // Layout aprovado em docs/layout/prototipo.html#professor-notas.
 // SPEC-026/029: tipo da avaliação; editar e excluir avaliação; no exame final só aparecem os estudantes em exame
 // (média < 6,0 e frequência ≥ 75%, RB-29), com a nota final (#correcao-avaliacao e #avaliacao-tipos).
+import type { RegraAvaliacao } from "@/domain/situacao-academica";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { ROTULO_TIPO, TIPOS_AVALIACAO, temPeso, type TipoAvaliacao } from "@/domain/registro-notas";
@@ -57,7 +58,8 @@ function Mensagens({ retorno }: { retorno: Retorno }) {
   );
 }
 
-export function LancamentoNotas({ turmas }: { turmas: TurmaParaLancamento[] }) {
+// SPEC-052: quem está em exame segue a regra vigente.
+export function LancamentoNotas({ turmas, regra }: { turmas: TurmaParaLancamento[]; regra?: RegraAvaliacao }) {
   const router = useRouter();
   const [turmaId, setTurmaId] = useState(turmas[0]?.id ?? "");
   const [avaliacaoId, setAvaliacaoId] = useState("");
@@ -176,7 +178,7 @@ export function LancamentoNotas({ turmas }: { turmas: TurmaParaLancamento[] }) {
       <div className="grid items-start gap-5 lg:grid-cols-[1.6fr_1fr]">
         <Cartao titulo={avaliacao ? `${avaliacao.nome} · ${descreverAvaliacao(avaliacao)} · ${formatarData(avaliacao.data)}` : "Notas da avaliação"}>
           {avaliacao?.tipo === "Exame" && (
-            <p className="mb-3 text-sm text-mudo">Só aparecem os estudantes em exame: média menor que 6,0 e frequência de pelo menos 75%. Nota final = (média + exame) ÷ 2; aprovado com 5,0.</p>
+            <p className="mb-3 text-sm text-mudo">Só aparecem os estudantes em exame: média menor que {formatarNota(regra?.mediaMinima ?? 6)} e frequência de pelo menos {regra?.frequenciaMinima ?? 75}%. Nota final = (média + exame) ÷ 2; aprovado com {formatarNota(regra?.notaExame ?? 5)}.</p>
           )}
           {avaliacao?.tipo === "Substitutiva" && (
             <p className="mb-3 text-sm text-mudo">A nota da substitutiva troca a menor prova de cada estudante (prova sem nota conta como zero), se isso aumentar a média.</p>
@@ -197,11 +199,11 @@ export function LancamentoNotas({ turmas }: { turmas: TurmaParaLancamento[] }) {
                 </tr>
               </thead>
               <tbody>
-                {turma.estudantes.filter((e) => avaliacao.tipo !== "Exame" || elegivelAoExame(e.media, e.frequencia) || avaliacao.notas.some((n) => n.estudanteId === e.id)).map((e) => {
+                {turma.estudantes.filter((e) => avaliacao.tipo !== "Exame" || elegivelAoExame(e.media, e.frequencia, regra) || avaliacao.notas.some((n) => n.estudanteId === e.id)).map((e) => {
                   const nota = avaliacao.notas.find((n) => n.estudanteId === e.id);
                   const selecionado = e.id === estudanteId;
                   return (
-                    <tr key={e.id} className={`border-t border-traco ${selecionado ? "bg-azul-suave" : ""}`}>
+                    <tr key={e.id} className={`border-t border-traco ${selecionado ? "bg-info-fundo shadow-[inset_3px_0_0_var(--color-azul)]" : ""}`}>
                       <td data-rotulo="Estudante" className="px-2 py-3">
                         {e.nome}
                         {e.matricula && <span className="block text-xs text-mudo">{e.matricula}</span>}

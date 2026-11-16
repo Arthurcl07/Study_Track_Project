@@ -83,6 +83,20 @@ Pré-requisitos: Node.js 24 LTS e PostgreSQL 17 rodando em `localhost:5432`.
    npm test
    ```
 
+7. Testes de tela (Playwright + axe, SPEC-055 e 056) e teste de carga (SPEC-054), com o seed carregado. Na primeira
+   vez, instale o navegador com `npx playwright install chromium`:
+
+   ```bash
+   npm run e2e
+   ```
+
+   `npm run e2e:ver` abre a janela e mostra o sistema sendo usado sozinho (bom para a apresentação). Com o build de
+   produção rodando (`npm run build` e `npm run start`):
+
+   ```bash
+   npm run carga
+   ```
+
 ### Jeito mais fácil de abrir (Windows)
 
 Com o PostgreSQL ligado e o `.env` criado, dê dois cliques em **`Iniciar StudyTrack.bat`** na pasta do projeto.
@@ -164,12 +178,20 @@ em Risco aparece **Criar plano** (um item por linha). No plano, o professor marc
 (o progresso é concluídos ÷ previstos) e encerra o plano quando achar adequado.
 
 Relatório da SPEC-009 (OPEN-005): entre como Professor ou Coordenador e abra **Relatórios**. Filtre por
-turma e situação e use **Exportar CSV** para baixar as mesmas linhas (separador `;`, abre no Excel).
+turma e situação e baixe as mesmas linhas em **Excel** (.xlsx com as abas Resumo e Estudantes), **PDF** (versão
+para impressão) ou **CSV** (SPEC-049).
+
+Níveis 5 e 6 (SPEC-045 a SPEC-059): aceite dos termos e **Meus dados** (LGPD), bloqueio depois de 5 senhas erradas,
+página de erro com código, ata/diário/lista de presença na turma, **Evasão** e **Acompanhamento** na coordenação,
+**Configurações** (regras de avaliação), **Importar do sistema anterior** e **Saúde do sistema** na secretaria e
+**Ajuda** com o tour em todo perfil. O roteiro de 8 minutos está em `docs/roteiro-apresentacao.md` e as planilhas de
+exemplo em `docs/exemplos/`.
 
 ## Integração contínua
 
 Todo PR e todo push para `development` e `main` roda `.github/workflows/ci.yml`: um PostgreSQL 17
-descartável, as migrações, `tsc --noEmit`, `npm test` e o build de produção (`npm run build`) (OPEN-024).
+descartável, as migrações, `tsc --noEmit`, `npm test` e o build de produção (`npm run build`) (OPEN-024). Um segundo
+job (`telas`, SPEC-055) carrega o seed, faz o build e roda os testes de tela do Playwright com o axe.
 
 ## Documentação
 

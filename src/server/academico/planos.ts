@@ -1,8 +1,9 @@
 // Casos de uso da SPEC-008: dashboard da turma (RF-13) e plano de recuperação (RF-14, UC-04).
 // Quem pode: Professor responsável pela turma (conferido na rota pelo perfil e aqui pela query, ADR-003).
+import { regraDaTurma } from "@/server/dados/regras";
 import { MENSAGEM_FORA_DE_RISCO, podeReceberPlano, progressoDoPlano, validarItensPlano, type Progresso } from "@/domain/plano";
 import type { Situacao } from "@/domain/situacao-academica";
-import { METAS, notaNecessaria, type NotaNecessaria } from "@/domain/simulador";
+import { notaNecessaria, type NotaNecessaria } from "@/domain/simulador";
 import { temPeso } from "@/domain/registro-notas";
 import { auditar, nomeDoUsuario, turmaParaAuditoria } from "@/server/dados/auditoria";
 import { executarEmTransacao } from "@/server/dados/notas";
@@ -40,6 +41,8 @@ export async function consultarTurmaDoProfessor(professorId: string, turmaId: st
   const turma = await dados.turmaDoProfessorParaDashboard(professorId, turmaId);
   if (!turma) return null;
   const contagem = { Normal: 0, Atencao: 0, Risco: 0, SemDados: 0 };
+  // SPEC-052: meta pela regra vigente.
+  const regra = await regraDaTurma(turma.id);
   const estudantes = turma.matriculas.map(({ estudante }) => {
     const indicador = turma.indicadores.find((i) => i.estudanteId === estudante.id);
     // Plano mais recente do estudante nesta turma (ativo tem prioridade sobre encerrado).
@@ -54,7 +57,7 @@ export async function consultarTurmaDoProfessor(professorId: string, turmaId: st
       situacao: indicador?.situacao ?? null,
       plano: plano ? { id: plano.id, status: plano.status, progresso: progressoDoPlano(plano.itens) } : null,
       // SPEC-029 / RB-25: substitutiva e exame não contam como avaliação restante.
-      precisa: notaNecessaria(turma.avaliacoes.filter((a) => temPeso(a.tipo)).map((a) => ({ nome: a.nome, peso: a.peso, nota: a.notas.find((n) => n.estudanteId === estudante.id)?.valor ?? null })), METAS.normal),
+      precisa: notaNecessaria(turma.avaliacoes.filter((a) => temPeso(a.tipo)).map((a) => ({ nome: a.nome, peso: a.peso, nota: a.notas.find((n) => n.estudanteId === estudante.id)?.valor ?? null })), regra.mediaMinima),
     };
   });
   return { id: turma.id, nome: turma.nome, periodo: turma.periodo, disciplina: turma.disciplina.nome, contagem, estudantes };

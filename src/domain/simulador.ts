@@ -1,6 +1,6 @@
 // Simulador "Quanto preciso tirar?" (SPEC-023, RF-32, RB-25, OPEN-045). Funções puras: sem Next.js nem Prisma.
 // Usa a mesma média ponderada (OPEN-002) e a mesma classificação (DA-02) de situacao-academica.ts.
-import { calcularMedia, classificarSituacao, FREQUENCIA_MINIMA, MEDIA_NORMAL, MEDIA_RISCO, NOTA_MAXIMA, type Situacao } from "./situacao-academica";
+import { calcularMedia, classificarSituacao, NOTA_MAXIMA, REGRA_PADRAO, type RegraAvaliacao, type Situacao } from "./situacao-academica";
 
 export type AvaliacaoSimulada = { nome: string; peso: number; nota: number | null };
 export type NotaNecessaria =
@@ -9,7 +9,9 @@ export type NotaNecessaria =
   | { tipo: "inalcancavel"; valor: number }
   | { tipo: "sem-restante" };
 
-export const METAS = { normal: MEDIA_NORMAL, saidaDoRisco: MEDIA_RISCO } as const;
+export const METAS = { normal: REGRA_PADRAO.mediaMinima, saidaDoRisco: REGRA_PADRAO.limiteRisco } as const;
+// SPEC-052 / RB-47: metas pela regra vigente.
+export const metasDaRegra = (regra: RegraAvaliacao = REGRA_PADRAO) => ({ normal: regra.mediaMinima, saidaDoRisco: regra.limiteRisco });
 
 // RB-25 / INV-023-01: (meta × soma dos pesos − soma de peso × nota das com nota) ÷ soma dos pesos das sem nota,
 // arredondada para cima com uma casa (o estudante precisa de pelo menos esse valor).
@@ -35,12 +37,12 @@ export function mediaSimulada(avaliacoes: readonly AvaliacaoSimulada[], hipoteti
   return calcularMedia(notas);
 }
 
-export function situacaoSimulada(media: number | null, frequencia: number | null): Situacao {
-  return classificarSituacao(media, frequencia);
+export function situacaoSimulada(media: number | null, frequencia: number | null, regra: RegraAvaliacao = REGRA_PADRAO): Situacao {
+  return classificarSituacao(media, frequencia, regra);
 }
 
-// RB-25 / RB-05: abaixo de 75% de frequência a situação é Risco qualquer que seja a nota.
-export const riscoPelaFrequencia = (frequencia: number | null) => frequencia !== null && frequencia < FREQUENCIA_MINIMA;
+// RB-25 / RB-05: abaixo da frequência mínima (75%) a situação é Risco qualquer que seja a nota.
+export const riscoPelaFrequencia = (frequencia: number | null, regra: RegraAvaliacao = REGRA_PADRAO) => frequencia !== null && frequencia < regra.frequenciaMinima;
 
 const virgula = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 

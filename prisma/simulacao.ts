@@ -7,6 +7,7 @@
 // - Cada estudante é de um curso e só é matriculado em turmas desse curso (RB-19).
 // - SPEC-018: a frequência sai da chamada de cada aula (presenças ÷ aulas, RB-21), nunca de um percentual digitado.
 // - SPEC-017 / OPEN-044: além de 2026/2 (aberto), o semestre 2026/1 (encerrado) para o histórico escolar.
+import { hojeEmBrasilia } from "../src/domain/atividades";
 import { frequenciaPelaChamada } from "../src/domain/frequencia";
 import { recalcularIndicador } from "../src/server/academico/indicador";
 import { salvarConta } from "../src/server/auth/contas";
@@ -369,7 +370,8 @@ function datasDeAula(inicio: string, quantidade: number): string[] {
   }
   return datas;
 }
-export const AULAS_2026_2 = datasDeAula("2026-08-11", 20);
+// SPEC-050 e SPEC-051: o semestre atual tem chamada até hoje (até o fim das aulas, em 12/12).
+export const AULAS_2026_2 = datasDeAula("2026-08-11", 35).filter((d) => d <= hojeEmBrasilia());
 export const AULAS_2026_1 = datasDeAula("2026-02-24", 20);
 
 // Presenças de um estudante nas aulas da turma, com as faltas espalhadas, para chegar perto do percentual pedido.

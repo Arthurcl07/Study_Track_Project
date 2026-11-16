@@ -3,11 +3,15 @@
 import { RECURSOS } from "@/domain/autorizacao";
 import { listarEstudantes } from "@/server/academico/secretaria";
 import { autorizarApi } from "@/server/auth/guardas";
+import { comRegistroDeErro } from "@/server/dados/erros";
 
-export async function GET(requisicao: Request) {
+async function rotaGET(requisicao: Request) {
   const acesso = await autorizarApi(requisicao, RECURSOS.estudantes);
   if ("negado" in acesso) return acesso.negado;
   const p = new URL(requisicao.url).searchParams;
   const lista = await listarEstudantes(acesso.sessao, { q: p.get("q"), pagina: p.get("pagina"), cursoId: p.get("cursoId"), situacao: p.get("situacao") });
   return lista ? Response.json(lista) : Response.json({ erro: "Acesso negado." }, { status: 403 });
 }
+
+// SPEC-057 (AC-057-01): erro inesperado vira 500 com o código, gravado no registro de erros.
+export const GET = comRegistroDeErro(rotaGET);

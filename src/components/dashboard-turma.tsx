@@ -74,7 +74,7 @@ export function DashboardTurmaProfessor({ turma }: { turma: DashboardTurma }) {
             </thead>
             <tbody>
               {turma.estudantes.map((e) => (
-                <tr key={e.id} className={`border-t border-traco ${e.id === estudanteId ? "bg-azul-suave" : ""}`}>
+                <tr key={e.id} className={`border-t border-traco ${e.id === estudanteId ? "bg-info-fundo shadow-[inset_3px_0_0_var(--color-azul)]" : ""}`}>
                   <td data-rotulo="Estudante" className="py-3 pr-2">{e.nome}</td>
                   <td data-rotulo="Média" className={`px-2 py-3 text-right tabular-nums ${corDaMedia(e.media) && `font-semibold ${corDaMedia(e.media)}`}`}>{e.media === null ? "—" : numero(e.media)}</td>
                   <td data-rotulo="Frequência" className={`px-2 py-3 text-right tabular-nums ${corDaFrequencia(e.frequencia) && `font-semibold ${corDaFrequencia(e.frequencia)}`}`}>{e.frequencia === null ? "—" : `${numero(e.frequencia)}%`}</td>

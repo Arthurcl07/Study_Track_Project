@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { PERFIS, type Perfil } from "@/domain/perfil";
 import { CampoBusca, FiltroSelecao, Paginacao, type Pagina } from "./busca-paginacao";
+import { TrocarPerfil } from "./contas-n5";
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_BOTAO_SECUNDARIO, CLASSE_CAMPO, CLASSE_ROTULO, ErroCampo, EstadoVazio, Etiqueta, Mensagem } from "./ui";
 
 export type Conta = { id: string; nome: string; email: string; perfil: Perfil; ativo: boolean; curso: { nome: string } | null };
@@ -63,12 +64,14 @@ function EditarConta({ conta, aoFechar }: { conta: Conta; aoFechar: (aviso?: str
   );
 }
 
-export function ListaContas({ contas, pagina, usuarioId }: { contas: Conta[]; pagina: Pagina; usuarioId: string }) {
+export function ListaContas({ contas, pagina, usuarioId, cursos = [] }: { contas: Conta[]; pagina: Pagina; usuarioId: string; cursos?: { id: string; nome: string }[] }) {
   const router = useRouter();
   const [erro, setErro] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [salvando, setSalvando] = useState<string | null>(null);
   const [editando, setEditando] = useState<string | null>(null);
+  // SPEC-053: conta com o formulário "Trocar perfil" aberto.
+  const [trocando, setTrocando] = useState<string | null>(null);
 
   async function alternar(conta: Conta) {
     setErro(null);
@@ -113,7 +116,23 @@ export function ListaContas({ contas, pagina, usuarioId }: { contas: Conta[]; pa
           </thead>
           <tbody>
             {contas.map((c) =>
-              editando === c.id ? (
+              trocando === c.id ? (
+                <tr key={c.id} className="border-t border-traco">
+                  <td colSpan={4} className="py-3">
+                    <TrocarPerfil
+                      conta={c}
+                      cursos={cursos}
+                      aoFechar={(texto) => {
+                        setTrocando(null);
+                        if (texto) {
+                          setAviso(texto);
+                          router.refresh();
+                        }
+                      }}
+                    />
+                  </td>
+                </tr>
+              ) : editando === c.id ? (
                 <tr key={c.id} className="border-t border-traco">
                   <td colSpan={4} className="py-3">
                     <EditarConta
@@ -144,7 +163,10 @@ export function ListaContas({ contas, pagina, usuarioId }: { contas: Conta[]; pa
                   <td data-rotulo="Situação" className="px-2 py-3"><SeloConta ativo={c.ativo} /></td>
                   <td data-rotulo="Ações" className="py-3 pl-2 text-right">
                     <span className="inline-flex flex-wrap justify-end gap-3">
-                      <button type="button" onClick={() => { setEditando(c.id); setAviso(null); setErro(null); }} className="font-medium text-azul hover:underline">Editar</button>
+                      <button type="button" onClick={() => { setEditando(c.id); setTrocando(null); setAviso(null); setErro(null); }} className="font-medium text-azul hover:underline">Editar</button>
+                      {c.id !== usuarioId && (
+                        <button type="button" onClick={() => { setTrocando(c.id); setEditando(null); setAviso(null); setErro(null); }} className="font-medium text-azul hover:underline">Trocar perfil</button>
+                      )}
                       {c.id === usuarioId ? (
                         <span className="text-mudo">(você)</span>
                       ) : (

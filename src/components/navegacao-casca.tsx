@@ -25,7 +25,7 @@ export function NavegacaoCasca({ itens, ativo, nome, perfil }: { itens: Item[]; 
     <>
       {/* Barra superior: só no celular */}
       <div className="sticky top-0 z-30 flex h-14 items-center justify-between bg-marinho px-4 md:hidden">
-        <Link href={itens[0]?.href ?? "/"} aria-label="Início"><Logotipo inverso /></Link>
+        <Link href={itens[0]?.href ?? "/"} aria-label="StudyTrack, voltar ao início"><Logotipo inverso /></Link>
         <button
           type="button"
           onClick={() => setAberto((v) => !v)}
@@ -41,9 +41,9 @@ export function NavegacaoCasca({ itens, ativo, nome, perfil }: { itens: Item[]; 
       <nav
         id="menu-principal"
         aria-label="Menu principal"
-        className={`${aberto ? "flex" : "hidden"} fixed inset-x-0 top-14 bottom-0 z-20 flex-col gap-1 bg-marinho px-3.5 py-4 text-white md:sticky md:top-0 md:flex md:h-dvh md:py-5`}
+        className={`${aberto ? "flex" : "hidden"} fixed inset-x-0 top-14 bottom-0 z-20 flex-col gap-1 overflow-y-auto bg-marinho px-3.5 py-4 text-white md:sticky md:top-0 md:flex md:h-dvh md:py-5`}
       >
-        <Link href={itens[0]?.href ?? "/"} className="mb-4 hidden px-2 md:block" aria-label="Início">
+        <Link href={itens[0]?.href ?? "/"} className="mb-4 hidden px-2 md:block" aria-label="StudyTrack, voltar ao início">
           <Logotipo inverso />
         </Link>
         {itens.map((item) => {
@@ -54,6 +54,7 @@ export function NavegacaoCasca({ itens, ativo, nome, perfil }: { itens: Item[]; 
               href={item.href}
               onClick={() => setAberto(false)}
               aria-current={atual ? "page" : undefined}
+              data-tour={item.id}
               className={`flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-[15px] transition-colors ${
                 atual ? "bg-marinho-claro text-white shadow-[inset_3px_0_0_var(--color-ceu)]" : "text-slate-300 hover:bg-marinho-claro hover:text-white"
               }`}

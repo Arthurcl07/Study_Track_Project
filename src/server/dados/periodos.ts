@@ -1,6 +1,8 @@
 // Acesso a dados dos períodos letivos (SPEC-017, RF-26, RB-20).
 import type { Prisma } from "@prisma/client";
+import type { RegraAvaliacao } from "@/domain/situacao-academica";
 import { prisma } from "./prisma";
+import { regraParaGuardar } from "./regras";
 
 // INV-017-05: sem período escolhido, só as turmas de períodos abertos; com período, só as daquele período.
 export function filtroDePeriodo(periodo?: string | null): Prisma.TurmaWhereInput {
@@ -41,10 +43,11 @@ export function criarPeriodo(nome: string, db: Prisma.TransactionClient | typeof
   return db.periodoLetivo.create({ data: { nome }, select: { id: true, nome: true, status: true } });
 }
 
-export function mudarStatus(id: string, status: "Aberto" | "Encerrado", db: Prisma.TransactionClient | typeof prisma = prisma) {
+// SPEC-052 / RB-47 (INV-052-02): ao encerrar, guarda a regra vigente; ao reabrir, volta a valer a vigente.
+export function mudarStatus(id: string, status: "Aberto" | "Encerrado", db: Prisma.TransactionClient | typeof prisma = prisma, regra: RegraAvaliacao | null = null) {
   return db.periodoLetivo.update({
     where: { id },
-    data: { status, encerradoEm: status === "Encerrado" ? new Date() : null },
+    data: { status, encerradoEm: status === "Encerrado" ? new Date() : null, ...regraParaGuardar(status === "Encerrado" ? regra : null) },
     select: { id: true, nome: true, status: true, encerradoEm: true, _count: { select: { turmas: true } } },
   });
 }

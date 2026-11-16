@@ -198,6 +198,45 @@
 - WHEN um estudante pede o trancamento de uma disciplina que está cursando ou do curso, o sistema SHALL abrir um requerimento para a secretaria.
 - WHEN a secretaria defere o requerimento, o sistema SHALL trancar a matrícula da disciplina ou o curso na mesma operação, notificar o estudante e registrar na auditoria.
 
+## RF-54 — Termos, privacidade e dados do titular (LGPD) (incluído em 2026-11-14, OPEN-067)
+- WHEN um usuário entra e ainda não aceitou a versão vigente dos termos de uso e da política de privacidade, o sistema SHALL pedir o aceite antes de qualquer outra tela.
+- WHEN um usuário pede "Baixar meus dados", o sistema SHALL entregar um arquivo com os dados pessoais e acadêmicos dele e registrar o pedido na auditoria.
+
+## RF-55 — Limite de tentativas no login (incluído em 2026-11-14, OPEN-068)
+- WHEN um e-mail acumula 5 tentativas de login erradas seguidas, o sistema SHALL bloquear o login desse e-mail por 15 minutos e informar quando ele volta.
+
+## RF-56 — Página de erro própria (incluído em 2026-11-14, —)
+- IF ocorrer um erro inesperado numa tela, THEN o sistema SHALL apresentar uma página de erro com a identidade visual, um código para o suporte e o caminho de volta, sem mostrar detalhes técnicos.
+
+## RF-57 — Documentos oficiais da turma (incluído em 2026-11-14, OPEN-069)
+- WHEN o professor da turma, a coordenação do curso ou a secretaria pede a ata de resultados finais, o diário de classe ou a lista de presença de uma turma, o sistema SHALL gerar o documento com o cabeçalho da instituição, pronto para imprimir ou salvar em PDF.
+
+## RF-58 — Relatórios em Excel e PDF (incluído em 2026-11-14, OPEN-070)
+- WHEN o usuário exporta o relatório acadêmico, o sistema SHALL oferecer planilha Excel (.xlsx), PDF e CSV com os mesmos filtros da tela.
+
+## RF-59 — Alerta de evasão (incluído em 2026-11-14, OPEN-071)
+- WHEN um estudante cursando some das aulas (RB-45), o sistema SHALL apresentá-lo no painel de evasão da coordenação do curso e da secretaria e notificar o coordenador.
+
+## RF-60 — Acompanhamento dos professores (incluído em 2026-11-14, OPEN-072)
+- WHEN o coordenador abre o acompanhamento dos professores, o sistema SHALL apresentar, por professor do curso, as chamadas atrasadas, as notas atrasadas e os diários não fechados (RB-46).
+
+## RF-61 — Regras de avaliação configuráveis (incluído em 2026-11-14, OPEN-073)
+- WHEN a secretaria altera a média mínima, o limite de Risco, a frequência mínima ou a nota final mínima do exame, o sistema SHALL validar os valores, recalcular os indicadores dos períodos abertos e registrar a mudança na auditoria.
+
+## RF-62 — Trocar perfil e importar professores (incluído em 2026-11-14, OPEN-074)
+- WHEN o administrador troca o perfil de uma conta, o sistema SHALL aceitar só sem vínculos incompatíveis com o novo perfil (RB-48).
+- WHEN o administrador importa uma planilha de professores, o sistema SHALL mostrar a prévia e, confirmada, criar as contas com senha provisória.
+
+## RF-63 — Registro de erros e saúde do sistema (incluído em 2026-11-14, —)
+- WHEN ocorre um erro inesperado no servidor, o sistema SHALL registrá-lo com data, rota, perfil e código, sem dados pessoais nem senhas.
+- WHEN o administrador abre a saúde do sistema, o sistema SHALL apresentar o estado do banco, o tempo das consultas principais e os erros recentes.
+
+## RF-64 — Importação do sistema anterior (incluído em 2026-11-14, OPEN-075)
+- WHEN a secretaria importa as planilhas de alunos e de histórico do sistema anterior, o sistema SHALL validar tudo, mostrar a prévia e, confirmada, gravar tudo ou nada (RB-49).
+
+## RF-65 — Ajuda: manual e tour (incluído em 2026-11-14, —)
+- WHEN um usuário entra pela primeira vez, o sistema SHALL oferecer um tour guiado pelas funções do perfil, que pode ser revisto na página Ajuda junto com o manual do perfil.
+
 ---
 
 
