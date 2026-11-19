@@ -14,6 +14,7 @@ CONTAS PRINCIPAIS (use estas na apresentação)
 Administradora   Renata Duarte   admin@studytrack.test         -> Dashboard de contas e cursos, Contas, Cursos
 Coordenadora     Marina Alves    coordenador@studytrack.test   -> Engenharia da Computação: grade, turmas, relatórios
 Professor        Carlos Lima     professor@studytrack.test     -> turmas em 2 cursos, notas, frequência, atividades, planos
+Estudante        Lucas Ferreira  lucas.ferreira@studytrack.test -> PRIMEIRO ACESSO (aceite dos termos); Risco, Atenção e Normal + plano
 Estudante        Carla Mendes    carla.mendes@studytrack.test  -> em Risco, com plano de recuperação
 Estudante        João Pereira    estudante@studytrack.test     -> 2º semestre de Eng. da Computação, 7 disciplinas
 Estudante        Ana Souza       ana.souza@studytrack.test     -> painel com tudo em Normal
