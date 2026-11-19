@@ -136,7 +136,7 @@ Entrar como `admin@studytrack.test`.
 
 ## 4g. Níveis 5 e 6 (detalhe) — SPEC-045 a SPEC-059
 
-- **LGPD (SPEC-045):** `coordenador@` (Marina) mostra o primeiro acesso (termos e tour); as outras contas da apresentação já aceitaram. Em qualquer perfil, **Meus dados** baixa um JSON só com os dados da pessoa (fica na auditoria).
+- **LGPD (SPEC-045):** `coordenador@` (Marina) mostra o primeiro acesso (termos e tour) e o aluno **Lucas Ferreira** (`lucas.ferreira@`) mostra o aceite do lado do estudante; o dashboard dele tem Risco, Atenção e Normal e o plano de recuperação do Carlos. As outras contas da apresentação já aceitaram. Em qualquer perfil, **Meus dados** baixa um JSON só com os dados da pessoa (fica na auditoria).
 - **Login (SPEC-046):** 5 erradas bloqueiam o e-mail por 15 minutos (a auditoria registra o bloqueio).
 - **Erro e saúde (SPEC-047 e 057):** **Administrador → Saúde do sistema → Testar a página de erro**; o código mostrado é achado na busca.
 - **Documentos oficiais (SPEC-048):** em qualquer turma (professor ou coordenação), os botões **Ata de resultados**, **Diário de classe** e **Lista de presença**. A ata só sai com o diário homologado: homologue o diário da Turma ER-B em **Diários** e abra a ata.
